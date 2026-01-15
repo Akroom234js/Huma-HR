@@ -1,24 +1,13 @@
-<<<<<<< HEAD
-
-import './App.css'
-
-function App() {
-
-
-  return (
-    <>
-      <p>Test</p>
-    </>
-=======
-import './App.css'
-
+import './App.css';
+import LanSw from './Components/LanSw.jsx';
 function App() {
   return (
     <div className="app">
-      <h1>Huma HR</h1>
+      <LanSw/>
+      <h1>Huma HR3</h1>
+      <i className='bi bi-alarm'></i>
       <p>مرحباً بك في نظام إدارة الموارد البشرية</p>
     </div>
->>>>>>> 4aeb5f1ed15c6477c47063965b4a4b6bc1f6fd92
   )
 }
 
