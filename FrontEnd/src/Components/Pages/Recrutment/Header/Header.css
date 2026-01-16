@@ -2,7 +2,8 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0;
+    /* Reduced to 0 to move Tabs further up */
 }
 
 .header-actions {
@@ -39,8 +40,8 @@
 
 .btn-icon {
     padding: 0.625rem;
-    color: var(--text-gray);
-    background-color: var(--card-bg);
+    color: var(--text-secondary);
+    background-color: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
@@ -52,7 +53,7 @@
 }
 
 .btn-icon:hover {
-    color: var(--text-dark);
+    color: var(--text-main);
     background-color: var(--border-light);
 }
 
