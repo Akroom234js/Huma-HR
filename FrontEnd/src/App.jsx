@@ -1,13 +1,20 @@
+// App.jsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Sidebar from './Components/Sidebar/Sidebar';
+import Recruitment from './Components/Pages/Recrutment/Main-page/Recrutment';
+
+import './App.css';
 
 function App() {
   return (
     <BrowserRouter>
-      <div style={{ display: 'flex', minHeight: '100vh' }}>
+      <div className="app-container">
         <Sidebar />
-        <main style={{ marginLeft: '260px', width: 'calc(100% - 260px)' }}>
-          {/* المحتوى هنا */}
+        <main className="main-content">
+          <Routes>
+            <Route path="/recruitment" element={<Recruitment />} />
+            <Route path="/" element={<Recruitment />} />
+          </Routes>
         </main>
       </div>
     </BrowserRouter>
