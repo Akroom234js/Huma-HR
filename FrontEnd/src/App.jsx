@@ -1,14 +1,17 @@
-import './App.css';
-import LanSw from './Components/LanSw.jsx';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Sidebar from './Components/Sidebar/Sidebar';
+
 function App() {
   return (
-    <div className="app">
-      <LanSw/>
-      <h1>Huma HR3</h1>
-      <i className='bi bi-alarm'></i>
-      <p>مرحباً بك في نظام إدارة الموارد البشرية</p>
-    </div>
-  )
+    <BrowserRouter>
+      <div style={{ display: 'flex', minHeight: '100vh' }}>
+        <Sidebar />
+        <main style={{ marginLeft: '260px', width: 'calc(100% - 260px)' }}>
+          {/* المحتوى هنا */}
+        </main>
+      </div>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
