@@ -1,5 +1,5 @@
 .sidebar {
-    width: 260px;
+    width: 270px;
     min-height: 100vh;
     background: var(--sidebar-bg);
     border-right: 1px solid var(--border-color);
@@ -27,46 +27,40 @@
 .sidebar-header {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem;
-    margin-bottom: 1.5rem;
+    justify-content: flex-start;
+    /* Changed from center to flex-start */
+    padding: 1rem 0.5rem;
+    padding-left: 0.75rem;
+    /* Added left padding for better alignment */
+    margin-bottom: 0.25rem;
+    /* Reduced from 1rem */
 }
 
-.logo-icon {
-    background: var(--primary-color);
-    color: white;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 1.25rem;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+.sidebar-logo {
+    width: 50px;
+    /* Fixed width for icon-like appearance */
+    height: auto;
+    object-fit: contain;
 }
 
-.logo-text h1 {
-    color: var(--text-main);
-    font-size: 1.125rem;
+.sidebar-title {
+    font-size: 1.5rem;
     font-weight: 700;
+    color: var(--primary-color);
     margin: 0;
-    line-height: 1.5;
-}
-
-.logo-text p {
-    color: #4c9a59;
-    font-size: 0.75rem;
-    margin: 0;
-    line-height: 1.5;
+    margin-left: 0.5rem;
+    /* Gap between logo and text */
+    letter-spacing: -0.025em;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    /* Ensuring it uses the nice font */
 }
 
 .sidebar-nav {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    margin-top: 1rem;
+    margin-top: 0.25rem;
+    /* Reduced from 1rem */
 }
 
 .sidebar-bottom {
@@ -165,7 +159,8 @@
 }
 
 .mobile-toggle.active {
-    left: 270px; /* Adjust based on sidebar width + padding */
+    left: 270px;
+    /* Adjust based on sidebar width + padding */
     transition: left 0.3s ease;
 }
 
@@ -201,7 +196,8 @@
         position: fixed;
         height: 100vh;
         box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-        display: flex; /* Keep it flex, just hidden by transform */
+        display: flex;
+        /* Keep it flex, just hidden by transform */
     }
 
     .sidebar.open {
@@ -213,11 +209,12 @@
     .sidebar {
         transform: none;
         display: flex;
-        position: fixed; /* Restore fixed position for desktop if needed, or relative depending on layout */
+        position: fixed;
+        /* Restore fixed position for desktop if needed, or relative depending on layout */
         z-index: 10;
         box-shadow: none;
     }
-    
+
     .mobile-toggle {
         display: none;
     }

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Sidebar.css';
 
+import logo from '../../assets/logo.png';
+
 const Sidebar = () => {
     const [departmentOpen, setDepartmentOpen] = useState(false);
     const [salaryOpen, setSalaryOpen] = useState(false);
@@ -25,10 +27,8 @@ const Sidebar = () => {
                 <div className="sidebar-content">
                     <div className="sidebar-top">
                         <div className="sidebar-header">
-                            <div className="logo-icon">H</div>
-                            <div className="logo-text">
-                                <h1>Huma</h1>
-                            </div>
+                            <img src={logo} alt="Huma HR Logo" className="sidebar-logo" />
+                            <h1 className="sidebar-title">Huma</h1>
                         </div>
 
                         <nav className="sidebar-nav">
