@@ -14,7 +14,6 @@ const Sidebar = () => {
                         <div className="logo-icon">H</div>
                         <div className="logo-text">
                             <h1>Huma</h1>
-                            <p>Recruitment</p>
                         </div>
                     </div>
 
@@ -87,10 +86,10 @@ const Sidebar = () => {
                 </div>
 
                 <div className="sidebar-bottom">
-                    <Link to="/settings" className="nav-item">
+                    {/* <Link to="/settings" className="nav-item">
                         <span className="material-symbols-outlined">settings</span>
                         <p>Settings</p>
-                    </Link>
+                    </Link> */}
 
                     <Link to="/logout" className="nav-item">
                         <span className="material-symbols-outlined">logout</span>
