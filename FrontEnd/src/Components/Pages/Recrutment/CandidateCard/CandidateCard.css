@@ -1,5 +1,5 @@
 .candidate-card {
-    background-color: var(--card-bg);
+    background-color: var(--bg-card);
     padding: 1.25rem;
     border-radius: var(--radius-xl);
     border: 1px solid var(--border-color);
@@ -29,14 +29,14 @@
 .candidate-name {
     font-size: 1rem;
     font-weight: 700;
-    color: var(--text-dark);
+    color: var(--text-main);
     margin: 0;
     line-height: 1.25;
 }
 
 .candidate-department {
     font-size: 0.75rem;
-    color: var(--text-gray);
+    color: var(--text-secondary);
     margin: 0.125rem 0 0 0;
 }
 
@@ -46,14 +46,14 @@
 
 .position-label {
     font-size: 0.875rem;
-    color: var(--text-gray);
+    color: var(--text-secondary);
     margin: 0 0 0.25rem 0;
 }
 
 .position-title {
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--text-dark);
+    color: var(--text-main);
     margin: 0;
 }
 
@@ -75,7 +75,7 @@
 .score-label {
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--text-gray);
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.025em;
 }
@@ -99,7 +99,7 @@
 
 .score-bar {
     width: 100%;
-    background-color: #e5e7eb;
+    background-color: var(--border-color);
     border-radius: var(--radius-full);
     height: 0.375rem;
     overflow: hidden;
@@ -137,8 +137,8 @@
     border-radius: var(--radius-base);
     font-size: 0.625rem;
     font-weight: 500;
-    background-color: var(--card-bg);
-    color: var(--text-gray);
+    background-color: var(--bg-card);
+    color: var(--text-secondary);
     border: 1px solid var(--border-color);
 }
 
@@ -169,9 +169,9 @@
 
 .btn-contact {
     padding: 0.625rem 0.75rem;
-    background-color: var(--card-bg);
+    background-color: var(--bg-card);
     border: 1px solid var(--border-color);
-    color: var(--text-dark);
+    color: var(--text-main);
     font-weight: 500;
     border-radius: var(--radius-lg);
     cursor: pointer;
