@@ -5,6 +5,8 @@ import FilterDropdown from '../FilterDropdown/FilterDropdown';
 import CandidateCard from '../CandidateCard/CandidateCard';
 import './Recrutment.css';
 
+import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
+
 const Recruitment = () => {
     const [activeTab, setActiveTab] = useState('make-offer');
     const [selectedDepartment, setSelectedDepartment] = useState('');
@@ -77,8 +79,10 @@ const Recruitment = () => {
     return (
         <div className="recruitment-page">
             <div className="recruitment-container">
-                <Header />
-
+                <div className="recruitment-header-flex">
+                    <Header />
+                    <ThemeToggle />
+                </div>
                 <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
                 <FilterDropdown
