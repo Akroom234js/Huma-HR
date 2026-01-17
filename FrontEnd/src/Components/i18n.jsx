@@ -6,7 +6,7 @@ i18n
 	.use(HttpBackend) // يسمح بتحميل ملفات JSON ديناميكيًا
 	.use(initReactI18next)
 	.init({
-		lng: sessionStorage.getItem("lang") || "ar",
+		lng: sessionStorage.getItem("lang") || "en",
 		fallbackLng: "en",
 		debug: false,
 		backend: {
@@ -14,7 +14,7 @@ i18n
 		},
 
 		ns: [
-			
+			'ScheduleInterview'
 		], // أسماء الملفات
 
 		defaultNS: "Home",
