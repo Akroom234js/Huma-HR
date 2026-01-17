@@ -1,0 +1,69 @@
+.recruitment-page {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.recruitment-container {
+    width: 100%;
+    max-width: 87.5rem;
+    margin: 0 auto;
+}
+
+.recruitment-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.candidates-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+}
+
+.view-more {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.view-more-btn {
+    font-size: 0.875rem;
+    color: var(--primary-color);
+    font-weight: 500;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.view-more-btn:hover {
+    text-decoration: underline;
+}
+
+.view-more-btn .material-symbols-outlined {
+    font-size: 16px;
+}
+
+@media (min-width: 768px) {
+    .recruitment-page {
+        padding: 2rem;
+    }
+
+    .candidates-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .candidates-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
