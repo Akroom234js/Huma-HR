@@ -1,0 +1,29 @@
+.theme-toggle {
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-gray);
+    transition: all 0.2s ease;
+    background-color: var(--card-bg);
+}
+
+.theme-toggle:hover {
+    background-color: var(--bg-light);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .theme-toggle {
+    color: var(--text-main);
+    background-color: var(--bg-card);
+}
+
+[data-theme="dark"] .theme-toggle:hover {
+    background-color: var(--border-light);
+    color: var(--primary-color);
+}
