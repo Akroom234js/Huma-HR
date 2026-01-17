@@ -1,0 +1,144 @@
+div.sh_In_scr{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100vb;
+}
+div.sh_In_con{
+    border: 2px solid black;
+    padding: 20px;
+    height: 93vb;
+    border-radius: 8px;
+    width: 42%;
+     overflow-y: scroll;
+     overflow-x: hidden;
+    
+
+
+}
+div.sh_In_tpx{
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+  
+}
+div.sh_In_con hr{
+    width: 108%;
+    margin-top: -10px;
+    margin-inline-start: -20px;
+}
+p.sh_In_tit{
+    font-weight: 900;
+    font-size: 22px;
+    margin: 5px;
+}
+p.sh_In_for{
+    font-size: 18px;
+    color: gray;
+    
+}
+span.sh_In_name{
+    color:rgb(37, 37, 37);
+}
+button.sh_In_x{
+    border: none;
+    font-size: 32px;
+    color: gray;
+    background-color: transparent;
+}
+div.con{
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 5px;
+    margin-top: -10px;
+   
+    justify-content: space-between;
+    
+}
+div.date,div.type,div.start,div.end{
+    width: 48%;
+    margin: 5px;
+}
+div.date input,div.type select,div.start input,div.end input{
+    width: 90%;
+    height: 44px;
+    outline: none;
+    border-radius: 8px;
+}
+ input.hidden {
+  color: transparent ;
+  caret-color: transparent;
+}
+ input.black {
+  color: black ;
+}
+.hidden::-webkit-datetime-edit,
+.hidden::-webkit-datetime-edit-fields-wrapper,
+.hidden::-webkit-datetime-edit-text,
+.hidden::-webkit-datetime-edit-month-field,
+.hidden::-webkit-datetime-edit-day-field,
+.hidden::-webkit-datetime-edit-year-field,
+.hidden::-webkit-datetime-edit-hour-field,
+.hidden::-webkit-datetime-edit-hour-field,
+.hidden::-webkit-datetime-edit-minute-field,
+.hidden::-webkit-datetime-edit-second-field {
+  color: transparent;
+  background-color: transparent;
+    caret-color: transparent;
+}
+.hidden::before{
+    content: '';
+}
+div.date p,div.type p,div.start p,div.end p{
+    margin-bottom: 3px;
+}
+p.notes p.interviewers{
+    margin-bottom: 3px;
+}
+textarea.notes {
+    min-width: 100%;
+    min-height: 80px;
+    max-height: 80px;
+    outline: none;
+    cursor: text;
+    padding: 5px;
+    margin-top: -10px;
+}
+select.interviewers{
+    width: 100%;
+    height: 75px;
+    display: inline-block;
+     margin-top: -10px;
+    padding: 5px;
+}
+div.interviewers{
+    margin-bottom: 5px;
+}
+p.ctrl{
+    margin-bottom: 5px;
+    color: gray;
+    font-size: 14px;
+}
+div.cancon{
+    display: flex;
+    justify-content: end;
+    margin-top: 10px;
+}
+.cancon button{
+    padding: 3px;
+    outline: none;
+    border-radius: 8px;
+    border: 1px solid gray;
+    
+}
+button.confirm{
+    margin-inline-start: 10px;
+     width: 160px;
+     background-color: rgb(53 158 255 / var(--tw-bg-opacity, 1)); 
+     color: white;
+}
+button.cancel{
+    width: 90px;
+}
+/*     background-color: rgb(53 158 255 / var(--tw-bg-opacity, 1)); */
