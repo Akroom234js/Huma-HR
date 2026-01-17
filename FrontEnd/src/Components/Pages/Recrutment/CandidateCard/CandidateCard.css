@@ -1,0 +1,195 @@
+.candidate-card {
+    background-color: var(--bg-card);
+    padding: 1.25rem;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: box-shadow 0.3s ease;
+    height: 100%;
+}
+
+.candidate-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.card-content {
+    flex: 1;
+}
+
+.candidate-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.candidate-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+    line-height: 1.25;
+}
+
+.candidate-department {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: 0.125rem 0 0 0;
+}
+
+.position-info {
+    margin-bottom: 1rem;
+}
+
+.position-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0 0 0.25rem 0;
+}
+
+.position-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.score-container {
+    background-color: var(--score-bg);
+    padding: 0.75rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--score-border);
+    margin-bottom: 1.25rem;
+}
+
+.score-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 0.375rem;
+}
+
+.score-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.score-value {
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.score-value.score-emerald {
+    color: var(--emerald-600);
+}
+
+.score-value.score-amber {
+    color: var(--amber-500);
+}
+
+.score-value.score-red {
+    color: var(--red-500);
+}
+
+.score-bar {
+    width: 100%;
+    background-color: var(--border-color);
+    border-radius: var(--radius-full);
+    height: 0.375rem;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.score-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+    transition: width 0.3s ease;
+}
+
+.score-fill.score-fill-emerald {
+    background-color: var(--emerald-500);
+}
+
+.score-fill.score-fill-amber {
+    background-color: var(--amber-400);
+}
+
+.score-fill.score-fill-red {
+    background-color: var(--red-500);
+}
+
+.skills-container {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.skill-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.375rem;
+    border-radius: var(--radius-base);
+    font-size: 0.625rem;
+    font-weight: 500;
+    background-color: var(--bg-card);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.btn-move {
+    flex: 1;
+    padding: 0.625rem 0.75rem;
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 500;
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-family: inherit;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+}
+
+.btn-move:hover {
+    background-color: var(--primary-hover);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-contact {
+    padding: 0.625rem 0.75rem;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    font-weight: 500;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+}
+
+.btn-contact:hover {
+    background-color: var(--border-light);
+}
+
+.btn-contact .material-symbols-outlined {
+    font-size: 20px;
+    color: #EA4335;
+}
