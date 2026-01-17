@@ -16,7 +16,7 @@
     top: 50%;
     left: 0.75rem;
     transform: translateY(-50%);
-    color: var(--text-gray);
+    color: var(--text-secondary);
     font-size: 20px;
     pointer-events: none;
 }
@@ -26,8 +26,8 @@
     width: 100%;
     border-radius: var(--radius-lg);
     border: 1px solid var(--border-color);
-    background-color: var(--card-bg);
-    color: var(--text-dark);
+    background-color: var(--bg-card);
+    color: var(--text-main);
     font-size: 0.875rem;
     font-family: inherit;
     box-shadow: var(--shadow-sm);
@@ -47,7 +47,7 @@
 }
 
 .filter-dropdown:hover {
-    border-color: var(--text-light);
+    border-color: var(--text-muted);
 }
 
 @media (min-width: 640px) {

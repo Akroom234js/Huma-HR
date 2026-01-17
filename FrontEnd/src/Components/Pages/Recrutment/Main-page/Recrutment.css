@@ -10,6 +10,13 @@
     margin: 0 auto;
 }
 
+.recruitment-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
 .candidates-grid {
     display: grid;
     grid-template-columns: 1fr;
