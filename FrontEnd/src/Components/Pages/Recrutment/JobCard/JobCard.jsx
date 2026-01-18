@@ -1,14 +1,14 @@
 import React from 'react';
 import './JobCard.css';
 
-const JobCard = ({ job }) => {
+const JobCard = ({ job, onEdit, onDelete }) => {
     return (
         <div className="job-card">
             <div className="job-card-header">
                 <h3>{job.title}</h3>
                 <div className="card-actions">
-                    <button className="icon-btn"><span className="material-symbols-outlined">edit</span></button>
-                    <button className="icon-btn"><span className="material-symbols-outlined">delete</span></button>
+                    <button className="icon-btn" onClick={onEdit}><span className="material-symbols-outlined">edit</span></button>
+                    <button className="icon-btn" onClick={onDelete}><span className="material-symbols-outlined">delete</span></button>
                 </div>
             </div>
 
