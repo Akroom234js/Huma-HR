@@ -33,8 +33,8 @@ export default function ScheduleInterview() {
     }
     return (
         <>
-            <div className="sh_In_scr">
-                <div className="sh_In_con">
+            <div className="sh_In_scr ">
+                <div className="sh_In_con ">
                     <form>
                         <div className="sh_In_tpx">
                             <div>

@@ -1,0 +1,18 @@
+{
+    "create":"إنشاء وظيفة",
+ "Tabs":{
+        "Interview-Happening":"مقابلات جارية",
+        "To-Schedule-Interview":"جدولة المقابلات",
+        "To-Make-Offer":"مقابلات مجدولة"
+    },
+ "CandidateCard":{
+        "Applying":"التقدم لوظيفة:",
+        "SCORE":"نتيجة ATS",
+        "schedule":"جدولة",
+        "Attachments":"عرض المرفقات"
+    },
+    "departmentOptions":{
+        "all":"كل الأقسام"
+    },
+    "applicants":"عرض المزيد من المتقدمين"
+}

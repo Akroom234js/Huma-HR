@@ -7,18 +7,21 @@ import FilterDropdown from '../FilterDropdown/FilterDropdown';
 // import CandidateCard from '../CandidateCard/CandidateCard';
 import CandidateCardToScheduleInterview from '../CandidateCardScheduleInterview/CandidateCardToScheduleInterview';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import ScheduleInterview from '../ScheduleInterview/ScheduleInterview';
 export default function ToScheduleInterview(){
      const [activeTab, setActiveTab] = useState('schedule-interview');
-        const [selectedDepartment, setSelectedDepartment] = useState('');
-        const ToScheduleInterview=true
+        const [selectedDepartment1, setSelectedDepartment1] = useState('');
+        const [visisibilty,setVisisibilty]=useState('shinhidden')
+        const {t}=useTranslation("Recrutment/ToScheduleInterview")
         const tabs = [
-            { id: 'interview-happening', label: 'Interview Happening', count: 3 },
-            { id: 'schedule-interview', label: 'To Schedule Interview', count: 8 },
-            { id: 'make-offer', label: 'To Make Offer', count: 6 },
+            { id: 'interview-happening', label: t('Tabs.Interview-Happening'), count: 3 },
+            { id: 'schedule-interview', label: t('Tabs.To-Schedule-Interview'), count: 8 },
+            { id: 'make-offer', label: t('Tabs.To-Make-Offer'), count: 6 },
         ];
     
         const departmentOptions = [
-            { value: '', label: 'All Departments' },
+            { value: '', label: t('departmentOptions.all')},
             { value: 'engineering', label: 'Engineering' },
             { value: 'design', label: 'Design' },
             { value: 'product', label: 'Product Management' },
@@ -76,7 +79,11 @@ export default function ToScheduleInterview(){
             }
         ];
     return(<>
-     <div className="recruitment-page">
+    <div className='shinvisibility'>
+            <ScheduleInterview/>
+        </div>
+     <div className="recruitment-page ">
+        
                 <div className="recruitment-container">
                     <div className="recruitment-header-flex">
                         <Header />
@@ -85,8 +92,8 @@ export default function ToScheduleInterview(){
                     <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
     
                     <FilterDropdown
-                        value={selectedDepartment}
-                        onChange={setSelectedDepartment}
+                        value={selectedDepartment1}
+                        onChange={setSelectedDepartment1}
                         options={departmentOptions}
                     />
     
@@ -99,7 +106,7 @@ export default function ToScheduleInterview(){
     
                     <div className="view-more">
                         <button className="view-more-btn">
-                            View more applicants
+                           { t('applicants')}
                             <span className="material-symbols-outlined">expand_more</span>
                         </button>
                     </div>

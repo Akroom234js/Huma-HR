@@ -1,0 +1,17 @@
+{"create":"Create Job",
+    "Tabs":{
+        "Interview-Happening":"Interview Happening",
+        "To-Schedule-Interview":"To Schedule Interview",
+        "To-Make-Offer":"To Make Offer"
+    },
+    "CandidateCard":{
+        "Applying":"Applying for:",
+        "SCORE":"ATS SCORE",
+        "schedule":"schedule",
+        "Attachments":"View Attachments"
+    },
+    "departmentOptions":{
+        "all":"All Departments"
+    },
+    "applicants":" View more applicants"
+}

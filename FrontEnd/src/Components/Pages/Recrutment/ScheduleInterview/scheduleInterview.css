@@ -1,19 +1,26 @@
 div.sh_In_scr{
     display: flex;
-    align-items: center;
-    justify-content: center;
+    background-color: var(--bg-card,1);
+     position: absolute;
+     align-items: center;
+    justify-content: space-around;
+       background-color: rgb(17 24 39 / 0.6);
     width: 100%;
     height: 100vb;
 }
 div.sh_In_con{
-    border: 2px solid black;
+    border: 2px solid var(--border-color);
     padding: 20px;
+    background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1)
+1
+);background-color: var(--bg-page);
     height: 93vb;
     border-radius: 8px;
-    width: 42%;
+     /* margin: auto; */
+    /* width: 42%; */
      overflow-y: scroll;
      overflow-x: hidden;
-    
+     
 
 
 }
@@ -21,6 +28,7 @@ div.sh_In_tpx{
     display: flex;
     align-items: start;
     justify-content: space-between;
+    
   
 }
 div.sh_In_con hr{
@@ -35,16 +43,17 @@ p.sh_In_tit{
 }
 p.sh_In_for{
     font-size: 18px;
-    color: gray;
+    /* color: gray; */
     
 }
-span.sh_In_name{
+/* span.sh_In_name{
     color:rgb(37, 37, 37);
-}
+} */
 button.sh_In_x{
     border: none;
+    
     font-size: 32px;
-    color: gray;
+    color: var(--text-main);
     background-color: transparent;
 }
 div.con{
@@ -58,13 +67,15 @@ div.con{
 }
 div.date,div.type,div.start,div.end{
     width: 48%;
-    margin: 5px;
+    margin: 4px;
 }
 div.date input,div.type select,div.start input,div.end input{
     width: 90%;
     height: 44px;
     outline: none;
     border-radius: 8px;
+
+    background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1));
 }
  input.hidden {
   color: transparent ;
@@ -103,6 +114,8 @@ textarea.notes {
     outline: none;
     cursor: text;
     padding: 5px;
+    
+    background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1));
     margin-top: -10px;
 }
 select.interviewers{
@@ -111,6 +124,8 @@ select.interviewers{
     display: inline-block;
      margin-top: -10px;
     padding: 5px;
+    
+    background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1));
 }
 div.interviewers{
     margin-bottom: 5px;
@@ -134,11 +149,35 @@ div.cancon{
 }
 button.confirm{
     margin-inline-start: 10px;
-     width: 160px;
+     width: fit-content;
      background-color: rgb(53 158 255 / var(--tw-bg-opacity, 1)); 
      color: white;
 }
+.confirm:hover {
+    background-color: var(--primary-hover);
+    box-shadow: var(--shadow-md);
+}
+
 button.cancel{
     width: 90px;
+    color: var(--text-main);
+    background-color: transparent;
+}
+.cancel:hover {
+    background-color: var(--border-light);
+}
+.shinhidden{
+   display: none;
+}
+.shinvisibility{
+   display: flex; 
+       padding: 1rem;
+     
+  justify-content: center;
+      align-items: center;
+          z-index: 50;
+              inset: 0px;
+                  position: fixed;
+                  animation: fadeIn 0.2s ease-out;
 }
 /*     background-color: rgb(53 158 255 / var(--tw-bg-opacity, 1)); */

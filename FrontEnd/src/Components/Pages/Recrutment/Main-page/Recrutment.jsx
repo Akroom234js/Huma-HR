@@ -11,14 +11,14 @@ import CreateJobModal from '../CreateJobModal/CreateJobModal';
 const Recruitment = () => {
     const [activeTab, setActiveTab] = useState('make-offer');
     const [selectedDepartment, setSelectedDepartment] = useState('');
-<<<<<<< HEAD
+
     const ToScheduleInterview=false
     const tabs = [
         { id: 'interview-happening', label: 'Interview Happening', count: 3 },
         { id: 'schedule-interview', label: 'To Schedule Interview', count: 8 },
         { id: 'make-offer', label: 'To Make Offer', count: 6 },
     ];
-=======
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingJob, setEditingJob] = useState(null);
 
@@ -27,7 +27,7 @@ const Recruitment = () => {
         { id: 2, title: 'Backend Developer', description: 'Join our engineering team to build scalable and high-performance backend systems using modern technologies.', department: 'Engineering', salary: '$90k - $135k', applicants: 18 },
         { id: 3, title: 'Marketing Manager', description: 'Drive our growth strategy and manage our marketing campaigns across various digital channels.', department: 'Marketing', salary: '$70k - $105k', applicants: 29 },
     ]);
->>>>>>> e8889062dafbe438e966073bbb19b185f423f9e4
+
 
     const departmentOptions = [
         { value: '', label: 'All Departments' },
@@ -137,11 +137,11 @@ const Recruitment = () => {
                     options={departmentOptions}
                 />
 
-                {/* <div className="candidates-grid">
+                 <div className="candidates-grid">
                     {candidates.map((candidate) => (
                         <CandidateCard key={candidate.id} candidate={candidate}  />
                     ))}
-                </div> */}
+                </div> 
                 <div className="candidates-grid">
                     {/* إذا كان التبويب المختار هو الوظائف، اعرض JobCard */}
                     {activeTab === 'opening-jobs' ? (
