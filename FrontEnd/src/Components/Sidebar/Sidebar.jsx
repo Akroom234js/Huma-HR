@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import './Sidebar.css';
 
 import logo from '../../assets/logo.png';
+
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
 
 const Sidebar = () => {
@@ -101,9 +102,11 @@ const Sidebar = () => {
                     </div>
 
                     <div className="sidebar-bottom">
+
                         {/* <div style={{ padding: '0 0.75rem', marginBottom: '0.5rem' }}>
                             <ThemeToggle />
                         </div> */}
+
                         <Link to="/logout" className="nav-item">
                             <span className="material-symbols-outlined">logout</span>
                             <p>Logout</p>
