@@ -4,6 +4,8 @@ import './Sidebar.css';
 import LanSw from '../LanSw'
 import logo from '../../assets/logo.png';
 
+import ThemeToggle from '../ThemeToggle/ThemeToggle';
+
 const Sidebar = () => {
     const [departmentOpen, setDepartmentOpen] = useState(false);
     const [salaryOpen, setSalaryOpen] = useState(false);
@@ -100,11 +102,19 @@ const Sidebar = () => {
                     </div>
 
                     <div className="sidebar-bottom">
+<<<<<<< HEAD
                         {/* <Link to="/settings" className="nav-item">
                         <span className="material-symbols-outlined">settings</span>
                         <p>Settings</p>
                     </Link> */}
                         <LanSw/>
+=======
+
+                        {/* <div style={{ padding: '0 0.75rem', marginBottom: '0.5rem' }}>
+                            <ThemeToggle />
+                        </div> */}
+
+>>>>>>> e8889062dafbe438e966073bbb19b185f423f9e4
                         <Link to="/logout" className="nav-item">
                             <span className="material-symbols-outlined">logout</span>
                             <p>Logout</p>
