@@ -3,25 +3,25 @@ import { useTranslation } from "react-i18next";
 
 const LanguageSwitcher = () => {
 	const { i18n } = useTranslation();
-	const [isArabic, setIsArabic] = useState(i18n.language === "ar");
+	const [isEnglish, setIsEnglish] = useState(i18n.language === "en");
 
 	const toggleLanguage = () => {
-		const newLang = isArabic ? "en" : "ar";
+		const newLang = isEnglish ? "ar" : "en";
 		i18n.changeLanguage(newLang);
 		sessionStorage.setItem("lang", newLang);
-		setIsArabic(!isArabic);
+		setIsEnglish(!isEnglish);
 	};
 
 	useEffect(() => {
-		document.body.style.direction = isArabic ? "rtl" : "ltr";
-		document.body.style.textAlign = isArabic ? "right" : "left";
-	}, [isArabic]);
+		document.body.style.direction = isEnglish ? "ltr" : "rtl";
+		document.body.style.textAlign = isEnglish ? "left" : "right";
+	}, [isEnglish]);
 
 	return (
 		<button onClick={toggleLanguage} className="translation">
 			<i className="bi bi-globe"></i>
 
-			<p> {isArabic ? "English" : "عربي"}</p>
+			<p> {isEnglish ? "عربي" : "English"}</p>
 		</button>
 	);
 };
