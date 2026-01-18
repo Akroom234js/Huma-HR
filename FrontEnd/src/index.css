@@ -44,6 +44,7 @@
   --radius-lg: 0.5rem;
   --radius-xl: 0.75rem;
   --radius-full: 9999px;
+   font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 [data-theme="dark"] {

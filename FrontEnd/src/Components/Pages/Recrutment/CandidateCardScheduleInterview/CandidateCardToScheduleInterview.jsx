@@ -1,8 +1,5 @@
-import React, { useEffect } from 'react';
-import './CandidateCard.css';
-
-const CandidateCard = ({ candidate  }) => {
-    const { name, department, position, score, skills } = candidate;
+export default function CandidateCardToScheduleInterview({ candidate  }){
+     const { name, department, position, score, skills } = candidate;
     // Determine score color based on value
     const getScoreColor = (score) => {
         if (score >= 80) return 'emerald';
@@ -47,17 +44,15 @@ const CandidateCard = ({ candidate  }) => {
             </div>
 
             <div className="card-actions">
-                <button className="btn-move">
-                  
-                     <span >Move to schedule interview</span>
+                <button className="btn-move calender">
+                      <i className="bi bi-calendar"></i>
+                     <span >schedule</span>
                 </button>
                 <button className="btn-contact">
-                    <span className="material-symbols-outlined">mail</span>
-                    <span>Contact</span>
+                   <i className="bi bi-file-earmark"></i>
+                    <span>View Attachments</span>
                 </button>
             </div>
         </div>
     );
-};
-
-export default CandidateCard;
+}

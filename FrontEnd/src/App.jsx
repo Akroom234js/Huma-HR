@@ -5,6 +5,7 @@ import Recruitment from './Components/Pages/Recrutment/Main-page/Recrutment';
 import ScheduleInterview from './Components/Pages/Recrutment/ScheduleInterview/ScheduleInterview';
 import LanSw from './Components/LanSw'
 import './App.css';
+import ToScheduleInterview from './Components/Pages/Recrutment/ToScheduleInterview/ToScheduleInterview';
 
 function App() {
   return (
@@ -13,8 +14,9 @@ function App() {
         <Sidebar />
         <main className="main-content">
           <Routes>
-            <Route path="/recruitment" element={<Recruitment />} />
-            <Route path="/" element={<Recruitment />} />
+            {/* <Route path='/make-offer' element={<Recruitment />} /> */}
+            <Route path={"/"} element={<Recruitment />} />
+            <Route path='/schedule-interview' element={<ToScheduleInterview/>}/>
           </Routes>
         </main>
         {/* <ScheduleInterview/> */}

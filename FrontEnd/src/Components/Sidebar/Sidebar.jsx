@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Sidebar.css';
-
+import LanSw from '../LanSw'
 import logo from '../../assets/logo.png';
 
 const Sidebar = () => {
@@ -104,7 +104,7 @@ const Sidebar = () => {
                         <span className="material-symbols-outlined">settings</span>
                         <p>Settings</p>
                     </Link> */}
-
+                        <LanSw/>
                         <Link to="/logout" className="nav-item">
                             <span className="material-symbols-outlined">logout</span>
                             <p>Logout</p>

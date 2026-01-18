@@ -10,7 +10,7 @@ import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 const Recruitment = () => {
     const [activeTab, setActiveTab] = useState('make-offer');
     const [selectedDepartment, setSelectedDepartment] = useState('');
-
+    const ToScheduleInterview=false
     const tabs = [
         { id: 'interview-happening', label: 'Interview Happening', count: 3 },
         { id: 'schedule-interview', label: 'To Schedule Interview', count: 8 },
@@ -75,7 +75,7 @@ const Recruitment = () => {
             skills: ['Research', 'Testing']
         }
     ];
-
+    
     return (
         <div className="recruitment-page">
             <div className="recruitment-container">
@@ -93,7 +93,7 @@ const Recruitment = () => {
 
                 <div className="candidates-grid">
                     {candidates.map((candidate) => (
-                        <CandidateCard key={candidate.id} candidate={candidate} />
+                        <CandidateCard key={candidate.id} candidate={candidate}  />
                     ))}
                 </div>
 

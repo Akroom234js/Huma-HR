@@ -10,7 +10,9 @@
     transition: box-shadow 0.3s ease;
     height: 100%;
 }
-
+span.hiddeb-but-move{
+    visibility: hidden;
+}
 .candidate-card:hover {
     box-shadow: var(--shadow-md);
 }
@@ -184,7 +186,12 @@
     box-shadow: var(--shadow-sm);
     transition: all 0.2s ease;
 }
-
+button.calender{
+     display: flex;
+     align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
 .btn-contact:hover {
     background-color: var(--border-light);
 }

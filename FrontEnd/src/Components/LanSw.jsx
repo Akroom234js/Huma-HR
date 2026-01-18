@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-
+import '../Components/Sidebar/Sidebar'
 const LanguageSwitcher = () => {
 	const { i18n } = useTranslation();
 	const [isEnglish, setIsEnglish] = useState(i18n.language === "en");
@@ -19,9 +19,11 @@ const LanguageSwitcher = () => {
 
 	return (
 		<button onClick={toggleLanguage} className="translation">
-			<i className="bi bi-globe"></i>
+			<div  className="translation">
+				<i className="bi bi-globe"></i>
 
-			<p> {isEnglish ? "عربي" : "English"}</p>
+			<p> {isEnglish ? "تغيير اللغة" : "Change Language"}</p>
+			</div>
 		</button>
 	);
 };
