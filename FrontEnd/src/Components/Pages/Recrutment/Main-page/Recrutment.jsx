@@ -6,17 +6,19 @@ import CandidateCard from '../CandidateCard/CandidateCard';
 import './Recrutment.css';
 import JobCard from '../JobCard/JobCard';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
+import CreateJobModal from '../CreateJobModal/CreateJobModal';
 
 const Recruitment = () => {
     const [activeTab, setActiveTab] = useState('make-offer');
     const [selectedDepartment, setSelectedDepartment] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingJob, setEditingJob] = useState(null);
 
-    const tabs = [
-        { id: 'interview-happening', label: 'Interview Happening', count: 3 },
-        { id: 'schedule-interview', label: 'To Schedule Interview', count: 8 },
-        { id: 'make-offer', label: 'To Make Offer', count: 6 },
-        { id: 'opening-jobs', label: 'Opening Jobs', count: 2 },
-    ];
+    const [jobs, setJobs] = useState([
+        { id: 1, title: 'Senior UX Designer', description: 'We are looking for a Senior UX Designer to lead our design team and create intuitive user experiences.', department: 'Design Department', salary: '$85k - $120k', applicants: 42 },
+        { id: 2, title: 'Backend Developer', description: 'Join our engineering team to build scalable and high-performance backend systems using modern technologies.', department: 'Engineering', salary: '$90k - $135k', applicants: 18 },
+        { id: 3, title: 'Marketing Manager', description: 'Drive our growth strategy and manage our marketing campaigns across various digital channels.', department: 'Marketing', salary: '$70k - $105k', applicants: 29 },
+    ]);
 
     const departmentOptions = [
         { value: '', label: 'All Departments' },
@@ -24,12 +26,6 @@ const Recruitment = () => {
         { value: 'design', label: 'Design' },
         { value: 'product', label: 'Product Management' },
         { value: 'marketing', label: 'Marketing' },
-    ];
-    const jobsData = [
-        { id: 1, title: 'Senior UX Designer', description: 'We are looking for a Senior UX Designer...', department: 'Design Department', salary: '$85k - $120k', applicants: 42 },
-        { id: 2, title: 'Backend Developer', description: 'Join our engineering team to build scalable...', department: 'Engineering', salary: '$90k - $135k', applicants: 18 },
-        { id: 3, title: 'Marketing Manager', description: 'Drive our growth strategy and manage...', department: 'Marketing', salary: '$70k - $105k', applicants: 29 },
-
     ];
 
     const candidates = [
@@ -83,15 +79,48 @@ const Recruitment = () => {
         },
     ];
 
+    const handleAddJob = (jobData) => {
+        if (editingJob) {
+            setJobs(jobs.map(j => j.id === editingJob.id ? { ...j, ...jobData } : j));
+        } else {
+            const newJob = {
+                ...jobData,
+                id: Date.now(),
+                applicants: 0
+            };
+            setJobs([newJob, ...jobs]);
+        }
+        setIsModalOpen(false);
+        setEditingJob(null);
+    };
+
+    const handleDeleteJob = (id) => {
+        if (window.confirm('Are you sure you want to delete this job?')) {
+            setJobs(jobs.filter(job => job.id !== id));
+        }
+    };
+
+    const handleOpenEdit = (job) => {
+        setEditingJob(job);
+        setIsModalOpen(true);
+    };
+
+    const updatedTabs = [
+        { id: 'interview-happening', label: 'Interview Happening', count: 3 },
+        { id: 'schedule-interview', label: 'To Schedule Interview', count: 8 },
+        { id: 'make-offer', label: 'To Make Offer', count: 6 },
+        { id: 'opening-jobs', label: 'Opening Jobs', count: jobs.length },
+    ];
+
     return (
         <div className="recruitment-page">
             <div className="recruitment-container">
                 <div className="recruitment-header-flex">
-                    <Header />
+                    <Header onCreateJob={() => { setEditingJob(null); setIsModalOpen(true); }} />
                     <ThemeToggle />
                 </div>
 
-                <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+                <Tabs tabs={updatedTabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
                 <FilterDropdown
                     value={selectedDepartment}
@@ -107,8 +136,13 @@ const Recruitment = () => {
                 <div className="candidates-grid">
                     {/* إذا كان التبويب المختار هو الوظائف، اعرض JobCard */}
                     {activeTab === 'opening-jobs' ? (
-                        jobsData.map((job) => (
-                            <JobCard key={job.id} job={job} />
+                        jobs.map((job) => (
+                            <JobCard
+                                key={job.id}
+                                job={job}
+                                onDelete={() => handleDeleteJob(job.id)}
+                                onEdit={() => handleOpenEdit(job)}
+                            />
                         ))
                     ) : (
                         /* في أي تبويب آخر (مثل Interview Happening)، اعرض CandidateCard */
@@ -124,6 +158,16 @@ const Recruitment = () => {
                     </button>
                 </div>
             </div>
+
+            {isModalOpen && (
+                <CreateJobModal
+                    isOpen={isModalOpen}
+                    onClose={() => { setIsModalOpen(false); setEditingJob(null); }}
+                    onSave={handleAddJob}
+                    editingJob={editingJob}
+                    departmentOptions={departmentOptions.filter(opt => opt.value !== '')}
+                />
+            )}
         </div>
     );
 };
