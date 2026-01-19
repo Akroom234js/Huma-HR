@@ -4,12 +4,14 @@
 }
 
 .main-content {
-    margin-left: 260px;
+    margin-inline-start: 260px;
     width: calc(100% - 260px);
     min-height: 100vh;
     transition: all 0.3s ease;
 }
-
+.main-content[dir='rtl']{
+    margin-inline-end: 260px;
+}
 @media (max-width: 767px) {
     .main-content {
         margin-left: 0;

@@ -1,14 +1,20 @@
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+
 export default function CandidateCardToScheduleInterview({ candidate  }){
-     const { name, department, position, score, skills } = candidate;
+     const {id, name, department, position, score, skills } = candidate;
+     
     // Determine score color based on value
     const getScoreColor = (score) => {
         if (score >= 80) return 'emerald';
         if (score >= 60) return 'amber';
         return 'red';
     };
-   
-    const scoreColor = getScoreColor(score);
+    const schedule=(e,id)=>{
 
+    }
+    const scoreColor = getScoreColor(score);
+    const {t}=useTranslation("Recrutment/ToScheduleInterview")
     return (
         <div className="candidate-card">
             <div className="card-content">
@@ -20,13 +26,13 @@ export default function CandidateCardToScheduleInterview({ candidate  }){
                 </div>
 
                 <div className="position-info">
-                    <p className="position-label">Applying for:</p>
+                    <p className="position-label">{t('CandidateCard.Applying')}</p>
                     <p className="position-title">{position}</p>
                 </div>
 
                 <div className="score-container">
                     <div className="score-header">
-                        <span className="score-label">ATS SCORE</span>
+                        <span className="score-label">{t('CandidateCard.SCORE')}</span>
                         <span className={`score-value score-${scoreColor}`}>{score}/100</span>
                     </div>
                     <div className="score-bar">
@@ -44,13 +50,13 @@ export default function CandidateCardToScheduleInterview({ candidate  }){
             </div>
 
             <div className="card-actions">
-                <button className="btn-move calender">
+                <button className="btn-move calender" onClick={(e)=>{schedule(e,id)}}>
                       <i className="bi bi-calendar"></i>
-                     <span >schedule</span>
+                     <span >{t('CandidateCard.schedule')}</span>
                 </button>
                 <button className="btn-contact">
                    <i className="bi bi-file-earmark"></i>
-                    <span>View Attachments</span>
+                    <span>{t('CandidateCard.Attachments')}</span>
                 </button>
             </div>
         </div>

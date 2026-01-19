@@ -7,6 +7,9 @@ import FilterDropdown from '../FilterDropdown/FilterDropdown';
 // import CandidateCard from '../CandidateCard/CandidateCard';
 import CandidateCardToScheduleInterview from '../CandidateCardScheduleInterview/CandidateCardToScheduleInterview';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import ScheduleInterview from '../ScheduleInterview/ScheduleInterview';
+
 export default function ToScheduleInterview() {
     const [activeTab, setActiveTab] = useState('schedule-interview');
     const [selectedDepartment, setSelectedDepartment] = useState('');

@@ -27,6 +27,7 @@ const Recruitment = () => {
 
     const [selectedDepartment, setSelectedDepartment] = useState('');
 
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingJob, setEditingJob] = useState(null);
 
@@ -144,11 +145,7 @@ const Recruitment = () => {
                     options={departmentOptions}
                 />
 
-                {/* <div className="candidates-grid">
-                    {candidates.map((candidate) => (
-                        <CandidateCard key={candidate.id} candidate={candidate}  />
-                    ))}
-                </div> */}
+
                 <div className="candidates-grid">
                     {/* إذا كان التبويب المختار هو الوظائف، اعرض JobCard */}
                     {activeTab === 'opening-jobs' ? (
