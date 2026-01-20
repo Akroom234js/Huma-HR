@@ -2,6 +2,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Sidebar from './Components/Sidebar/sidebar';
 import Recruitment from './Components/Pages/Recrutment/Main-page/Recrutment';
+import ScheduleInterview from './Components/Pages/Recrutment/ScheduleInterview/ScheduleInterview';
+import LanSw from './Components/LanSw'
 import Home from './Components/Pages/Home/Home';
 import Jops from './Components/Pages/Home/Jops';
 import './App.css';
@@ -31,6 +33,8 @@ function App() {
                   <Route path="interview-happening" element={<Recruitment />} />
                 </Routes>
               </main>
+              {/* <ScheduleInterview/> */}
+              {/* <LanSw/> */}
             </div>
           }
         />
