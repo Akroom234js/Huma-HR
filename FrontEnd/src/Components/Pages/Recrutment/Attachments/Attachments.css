@@ -1,0 +1,42 @@
+div.attachments{
+   background-color:   var(--bg-card); 
+   width: 80%;
+   border-radius: 10px;
+   height: 90vb;
+   border: 1px solid var(--border-color);
+   
+}
+div.att-name-x{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color:  var(--bg-card);
+    padding: 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+div.down-x{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+button.x{
+    color: var(--text-main);
+}
+p.att-name{
+    font-weight: 800;
+    font-size: 18px;
+}
+p.att-attachments{
+    color: gray;
+}
+div.doc{
+    height: 60vb;
+    background-color:  rgb(249 250 251 / var(--tw-bg-opacity, 1));
+}
+div.total{
+    display: flex;
+    align-items: center;
+    padding-inline-start: 10px;
+    padding-top: 40px;
+}

@@ -12,7 +12,7 @@ import ScheduleInterview from '../ScheduleInterview/ScheduleInterview';
 export default function ToScheduleInterview(){
      const [activeTab, setActiveTab] = useState('schedule-interview');
         const [selectedDepartment1, setSelectedDepartment1] = useState('');
-        const [visisibilty,setVisisibilty]=useState('shinhidden')
+        
         const {t}=useTranslation("Recrutment/ToScheduleInterview")
         const tabs = [
             { id: 'interview-happening', label: t('Tabs.Interview-Happening'), count: 3 },
@@ -35,7 +35,8 @@ export default function ToScheduleInterview(){
                 department: 'Engineering',
                 position: 'Senior Frontend Developer',
                 score: 92,
-                skills: ['React', 'TypeScript']
+                skills: ['React', 'TypeScript'],
+                att:['pdf','png']
             },
             {
                 id: 2,
@@ -43,7 +44,8 @@ export default function ToScheduleInterview(){
                 department: 'Design',
                 position: 'Product Designer',
                 score: 88,
-                skills: ['Figma', 'UI/UX']
+                skills: ['Figma', 'UI/UX'],
+                att:['pdf','png']
             },
             {
                 id: 3,
@@ -51,7 +53,8 @@ export default function ToScheduleInterview(){
                 department: 'Product',
                 position: 'Product Manager',
                 score: 74,
-                skills: ['Agile', 'Scrum']
+                skills: ['Agile', 'Scrum'],
+                att:['pdf','png']
             },
             {
                 id: 4,
@@ -59,7 +62,8 @@ export default function ToScheduleInterview(){
                 department: 'Marketing',
                 position: 'Marketing Specialist',
                 score: 81,
-                skills: ['SEO', 'Content']
+                skills: ['SEO', 'Content'],
+                att:['word','png']
             },
             {
                 id: 5,
@@ -67,7 +71,8 @@ export default function ToScheduleInterview(){
                 department: 'Engineering',
                 position: 'DevOps Engineer',
                 score: 45,
-                skills: ['AWS', 'Docker']
+                skills: ['AWS', 'Docker'],
+                att:['pdf','zip']
             },
             {
                 id: 6,
@@ -75,13 +80,12 @@ export default function ToScheduleInterview(){
                 department: 'Design',
                 position: 'UX Researcher',
                 score: 95,
-                skills: ['Research', 'Testing']
+                skills: ['Research', 'Testing'],
+                att:['pdf','png']
             }
         ];
     return(<>
-    <div className='shinvisibility'>
-            <ScheduleInterview/>
-        </div>
+ 
      <div className="recruitment-page ">
         
                 <div className="recruitment-container">

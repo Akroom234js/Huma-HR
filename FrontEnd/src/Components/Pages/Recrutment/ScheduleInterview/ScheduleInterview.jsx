@@ -1,17 +1,41 @@
 import { useState } from 'react';
 import './scheduleInterview.css'
 import { useTranslation } from 'react-i18next'
-export default function ScheduleInterview() {
+export default function ScheduleInterview({name,department}) {
     const { t } = useTranslation("Recrutment/ScheduleInterview")
     const [hidden, setHidden] = useState(true)
     const [hidden1, setHidden1] = useState(true)
     const [hidden2, setHidden2] = useState(true)
+    const [add, setAdd] = useState(true)
     const employees = [];
-
+    const addSub=(e,i)=>{
+        const {id}=e.target.id
+        const element=document.querySelector(`.addsub${i}`)
+        console.log(i)
+   if(element){
+ 
+    console.log(element)
+    if(  element.innerHTML=='+'){
+        console.log(add)
+        setAdd(true)
+      element.innerHTML='-'
+      
+   }else{
+    console.log(add)
+    setAdd(false)
+    element.innerHTML='+'
+      
+   }
+   }
+    }
     const e = ['p1', 'p2', 'p3', 'p4']
     for (let i = 0; i < 5; i++) {
         employees.push(
-            <option key={i} option={e[i]}>{e[i]}</option>
+            <div>
+                <p>{e[i]}</p>
+                <button type='button' className={`addsub${i}`} id={i} onClick={(e)=>{addSub(e,i)}}>+</button>
+            </div>
+            // <option key={i} option={e[i]}></option>
         )
     }
     const Interviews = []
@@ -31,6 +55,16 @@ export default function ScheduleInterview() {
             setHidden2(false)
         }
     }
+    const close=(e)=>{
+       console.log('2')
+        const element=document.querySelector('.shinvisibility')
+        console.log(element)
+        if(element){
+               console.log('fff')
+
+            element.className='shinhidden'
+        }
+    }
     return (
         <>
             <div className="sh_In_scr ">
@@ -39,9 +73,9 @@ export default function ScheduleInterview() {
                         <div className="sh_In_tpx">
                             <div>
                                 <p className="sh_In_tit">{t("shinterview")}</p>
-                                <p className="sh_In_for"> <span className="sh_In_name">hadeel </span>- recrutment</p>
+                                <p className="sh_In_for"> <span className="sh_In_name">{name} </span>- {department}</p>
                             </div>
-                            <button className='sh_In_x' type='button'>x</button>
+                            <button className='sh_In_x' type='button' onClick={(e)=>{close(e)}}>x</button>
                         </div>
                         <hr />
                         <div className='con'>
@@ -66,9 +100,9 @@ export default function ScheduleInterview() {
                         </div>
                         <div className='interviewers'>
                             <p className='interviewers'>{t("interviewers")}</p>
-                            <select className='interviewers' multiple={true}>
+                            <div className='selectinterviewers' >
                                 {employees}
-                            </select>
+                            </div>
                             <p className='ctrl'>{t("ctrl")}</p>
                         </div>
                         <div className='notes'>
@@ -76,7 +110,7 @@ export default function ScheduleInterview() {
                             <textarea className='notes' placeholder={t("placeholder")}></textarea>
                         </div>
                         <div className='cancon'>
-                            <button className='cancel' type='button'>{t("cancel")}</button>
+                            <button className='cancel' type='button' onClick={(e)=>{close(e)}}>{t("cancel")}</button>
                             <button className='confirm' type='submit'><i className='bi bi-check'></i> {t("confirm")}</button>
                         </div>
                     </form>

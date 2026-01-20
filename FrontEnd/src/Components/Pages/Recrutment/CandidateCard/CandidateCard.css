@@ -170,6 +170,7 @@ span.hiddeb-but-move{
 }
 
 .btn-contact {
+   
     padding: 0.625rem 0.75rem;
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -199,4 +200,7 @@ button.calender{
 .btn-contact .material-symbols-outlined {
     font-size: 20px;
     color: #EA4335;
+}
+.btn-view-att{
+width: 170px;
 }
