@@ -3,7 +3,8 @@
  "Tabs":{
         "Interview-Happening":"مقابلات جارية",
         "To-Schedule-Interview":"جدولة المقابلات",
-        "To-Make-Offer":"مقابلات مجدولة"
+        "To-Make-Offer":"مقابلات مجدولة",
+        "Opening":"الوظائف الشاغرة"
     },
  "CandidateCard":{
         "Applying":"التقدم لوظيفة:",

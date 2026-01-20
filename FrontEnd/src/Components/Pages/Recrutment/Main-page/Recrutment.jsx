@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Header from '../Header/Header';
 import Tabs from '../Tabs/Tabs';
 import FilterDropdown from '../FilterDropdown/FilterDropdown';
@@ -9,15 +10,23 @@ import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import CreateJobModal from '../CreateJobModal/CreateJobModal';
 
 const Recruitment = () => {
+    const location = useLocation();
     const [activeTab, setActiveTab] = useState('make-offer');
+
+    // مزامنة التبويب النشط مع الرابط (URL)
+    useEffect(() => {
+        const path = location.pathname;
+        if (path.includes('opening-jobs')) {
+            setActiveTab('opening-jobs');
+        } else if (path.includes('interview-happening')) {
+            setActiveTab('interview-happening');
+        } else {
+            setActiveTab('make-offer'); // الافتراضي
+        }
+    }, [location]);
+
     const [selectedDepartment, setSelectedDepartment] = useState('');
 
-    const ToScheduleInterview=false
-    const tabs = [
-        { id: 'interview-happening', label: 'Interview Happening', count: 3 },
-        { id: 'schedule-interview', label: 'To Schedule Interview', count: 8 },
-        { id: 'make-offer', label: 'To Make Offer', count: 6 },
-    ];
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingJob, setEditingJob] = useState(null);
@@ -27,7 +36,6 @@ const Recruitment = () => {
         { id: 2, title: 'Backend Developer', description: 'Join our engineering team to build scalable and high-performance backend systems using modern technologies.', department: 'Engineering', salary: '$90k - $135k', applicants: 18 },
         { id: 3, title: 'Marketing Manager', description: 'Drive our growth strategy and manage our marketing campaigns across various digital channels.', department: 'Marketing', salary: '$70k - $105k', applicants: 29 },
     ]);
-
 
     const departmentOptions = [
         { value: '', label: 'All Departments' },
@@ -115,12 +123,12 @@ const Recruitment = () => {
     };
 
     const updatedTabs = [
-        { id: 'interview-happening', label: 'Interview Happening', count: 3 },
-        { id: 'schedule-interview', label: 'To Schedule Interview', count: 8 },
-        { id: 'make-offer', label: 'To Make Offer', count: 6 },
-        { id: 'opening-jobs', label: 'Opening Jobs', count: jobs.length },
+        { id: 'interview-happening', label: 'Interview Happening', count: 3, path: '/recruitment/interview-happening' },
+        { id: 'schedule-interview', label: 'To Schedule Interview', count: 8, path: '/recruitment/schedule-interview' },
+        { id: 'make-offer', label: 'To Make Offer', count: 6, path: '/recruitment/make-offer' },
+        { id: 'opening-jobs', label: 'Opening Jobs', count: jobs.length, path: '/recruitment/opening-jobs' },
     ];
-    
+
     return (
         <div className="recruitment-page">
             <div className="recruitment-container">
@@ -129,7 +137,7 @@ const Recruitment = () => {
                     <ThemeToggle />
                 </div>
 
-                <Tabs tabs={updatedTabs} activeTab={activeTab} onTabChange={setActiveTab} />
+                <Tabs tabs={updatedTabs} />
 
                 <FilterDropdown
                     value={selectedDepartment}
@@ -137,11 +145,7 @@ const Recruitment = () => {
                     options={departmentOptions}
                 />
 
-                 <div className="candidates-grid">
-                    {candidates.map((candidate) => (
-                        <CandidateCard key={candidate.id} candidate={candidate}  />
-                    ))}
-                </div> 
+
                 <div className="candidates-grid">
                     {/* إذا كان التبويب المختار هو الوظائف، اعرض JobCard */}
                     {activeTab === 'opening-jobs' ? (

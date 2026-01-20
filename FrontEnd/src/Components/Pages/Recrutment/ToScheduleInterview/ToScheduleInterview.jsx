@@ -9,6 +9,7 @@ import CandidateCardToScheduleInterview from '../CandidateCardScheduleInterview/
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ScheduleInterview from '../ScheduleInterview/ScheduleInterview';
+
 export default function ToScheduleInterview(){
      const [activeTab, setActiveTab] = useState('schedule-interview');
         const [selectedDepartment1, setSelectedDepartment1] = useState('');
@@ -18,6 +19,7 @@ export default function ToScheduleInterview(){
             { id: 'interview-happening', label: t('Tabs.Interview-Happening'), count: 3 },
             { id: 'schedule-interview', label: t('Tabs.To-Schedule-Interview'), count: 8 },
             { id: 'make-offer', label: t('Tabs.To-Make-Offer'), count: 6 },
+        { id: 'opening-jobs', label: t('Tabs.Opening'), count: 3, path: '/recruitment/opening-jobs' },
         ];
     
         const departmentOptions = [
@@ -114,7 +116,9 @@ export default function ToScheduleInterview(){
                             <span className="material-symbols-outlined">expand_more</span>
                         </button>
                     </div>
-                </div>
+
+                
             </div>
+        </div>
     </>)
 }

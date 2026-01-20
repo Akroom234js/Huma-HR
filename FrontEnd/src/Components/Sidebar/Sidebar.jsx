@@ -11,7 +11,7 @@ const Sidebar = () => {
     const [departmentOpen, setDepartmentOpen] = useState(false);
     const [salaryOpen, setSalaryOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
-    const {t}=useTranslation('Sidebar/Sidebar')
+    const { t } = useTranslation('Sidebar/Sidebar')
     return (
         <>
             <button
@@ -104,25 +104,14 @@ const Sidebar = () => {
 
                     <div className="sidebar-bottom">
 
-                         {/* <Link to="/settings" className="nav-item">
-                        <span className="material-symbols-outlined">settings</span>
-                        <p>Settings</p>
-                    </Link>  */}
-                        <LanSw/>
-
-
-                         {/* <div style={{ padding: '0 0.75rem', marginBottom: '0.5rem' }}>
-                            <ThemeToggle />
-                        </div>  */}
-
-
+                        <LanSw />
                         <Link to="/logout" className="nav-item">
                             <span className="material-symbols-outlined">logout</span>
                             <p>{t('Logout')}</p>
                         </Link>
-                    </div>
-                </div>
-            </aside>
+                    </div >
+                </div >
+            </aside >
         </>
     );
 };

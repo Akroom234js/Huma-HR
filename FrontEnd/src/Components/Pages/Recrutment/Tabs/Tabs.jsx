@@ -1,30 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import './Tabs.css';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
-const Tabs = ({ tabs, activeTab, onTabChange }) => {
-//     const [label1,setLabel]=useState('/recruitment')
-//    useEffect(()=>{ if(tabs.label==='Interview Happening')
-//     {setLabel('/recruitment')
-//     }
-//     else if(tabs.label==='To Schedule Interview'){
-//         setLabel('/ToScheduleInterview')
-//     }else{
-//        setLabel('/recruitment') 
-//     }},[])
-
+const Tabs = ({ tabs }) => {
     return (
         <div className="tabs-container">
             <div className="tabs-wrapper">
                 {tabs.map((tab) => (
-                    <Link
-                        to={tab.id==='make-offer'?'/':tab.id}
+                    <NavLink
+                        to={`${tab.path}`}
                         key={tab.id}
-                        className={`tab ${activeTab === tab.id ? 'tab-active' : ''}`}
-                        onClick={() => onTabChange(tab.id)}
+                        className={({ isActive }) => `tab ${isActive ? 'tab-active' : ''}`}
                     >
                         {tab.label} ({tab.count})
-                    </Link>
+                    </NavLink>
                 ))}
             </div>
         </div>
