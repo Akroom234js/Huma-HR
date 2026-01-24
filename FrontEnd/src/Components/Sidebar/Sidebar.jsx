@@ -30,8 +30,10 @@ const Sidebar = () => {
                 <div className="sidebar-content">
                     <div className="sidebar-top">
                         <div className="sidebar-header">
-                            <img src={logo} alt="Huma HR Logo" className="sidebar-logo" />
-                            <h1 className="sidebar-title">Huma</h1>
+                            <Link to="/home">
+                                <img src={logo} alt="Huma HR Logo" className="sidebar-logo" />
+                                <h1 className="sidebar-title">Huma</h1>
+                            </Link>
                         </div>
 
                         <nav className="sidebar-nav">

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import "./Home.css";
 import Footer from "./Footer";
+import logo from '../../../assets/logo.png';
 export default function Home() {
   return (
     <>
@@ -8,11 +9,8 @@ export default function Home() {
         <div className="navbar">
           <div className="logo-con">
             <Link to="/">
-              {" "}
-              <span>
-                <i className="fa-solid fa-house"></i>
-              </span>
-              <div className="logo">Huma</div>
+              <img src={logo} alt="Huma HR Logo" className="sidebar-logo" />
+              <h1 className="sidebar-title">Huma</h1>
             </Link>
           </div>
           <div className="other-option-con">
