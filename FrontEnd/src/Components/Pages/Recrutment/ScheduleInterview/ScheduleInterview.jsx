@@ -93,8 +93,8 @@ export default function ScheduleInterview({name,department}) {
                                 <p>{t('start')}</p>
                                 <input type='time' required onChange={(e)=>changeDate(e,'1')} className={hidden1 ? 'hidden' : 'black'} onKeyDown={(e) => e.preventDefault()} />
                             </div>
-                            <div className='end'>
-                                <p>{t('end')}</p>
+                            <div className='enddate'>
+                                <p >{t('end')}</p>
                                 <input type='time' required onChange={(e)=>changeDate(e,'2')} className={hidden2 ? 'hidden' : 'black'} onKeyDown={(e) => e.preventDefault()} />
                             </div>
                         </div>

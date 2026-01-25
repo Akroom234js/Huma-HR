@@ -66,11 +66,11 @@ div.con{
     justify-content: space-between;
     
 }
-div.date,div.type,div.start,div.end{
+div.date,div.type,div.start,div.enddate{
     width: 48%;
     margin: 4px;
 }
-div.date input,div.type select,div.start input,div.end input{
+div.date input,div.type select,div.start input,div.enddate input{
     width: 90%;
     height: 44px;
     outline: none;
@@ -102,7 +102,7 @@ div.date input,div.type select,div.start input,div.end input{
 .hidden::before{
     content: '';
 }
-div.date p,div.type p,div.start p,div.end p{
+div.date p,div.type p,div.start p,div.enddate p{
     margin-bottom: 3px;
 }
 p.notes p.interviewers{
