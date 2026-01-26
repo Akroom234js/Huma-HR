@@ -8,6 +8,7 @@ import Home from './Components/Pages/Home/Home';
 import Jops from './Components/Pages/Home/Jops';
 import './App.css';
 import ToScheduleInterview from './Components/Pages/Recrutment/ToScheduleInterview/ToScheduleInterview';
+import InterviewHappening from './Components/Pages/Recrutment/InterviewHappening/InterviewHappening';
 
 function App() {
   return (
@@ -30,7 +31,7 @@ function App() {
                   <Route path="make-offer" element={<Recruitment />} />
                   <Route path="opening-jobs" element={<Recruitment />} />
                   <Route path="schedule-interview" element={<ToScheduleInterview />} />
-                  <Route path="interview-happening" element={<Recruitment />} />
+                  <Route path="interview-happening" element={<InterviewHappening/>} />
                 </Routes>
               </main>
               {/* <ScheduleInterview/> */}

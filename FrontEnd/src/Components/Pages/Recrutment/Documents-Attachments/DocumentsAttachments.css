@@ -1,0 +1,82 @@
+div.doc-att{
+    width: 22%;
+    height: 350px;
+    border: 1px solid var(--border-color);
+    background-color: var( --bg-card);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+  
+    transition: box-shadow 0.3s ease;
+}
+div.doc-att img.doc{
+ width: 100%;
+ height: 200px;
+ border-top-right-radius:var(--radius-xl);
+ border-top-left-radius:var(--radius-xl);
+ border: 1px solid var(--border-color);
+}
+div.doc-att p.name-doc{
+padding: 5px 5px 0px 5px ;
+margin-bottom: -1px;
+font-size: 1rem;
+font-weight: 700;
+color: var(--text-color);
+}
+div.doc-att p.size-doc{
+    padding: 0px 5px 0px 5px ;
+    font-size: 1rem;
+ 
+    color:gray;
+    }
+    div.preview-download{
+        display: flex;
+        justify-content: space-between;
+        margin-top: 40px;
+        padding: 5px;
+    }
+
+
+
+    
+    div.preview-download button.eye ,div.preview-download button.down-doc{
+   
+    padding: 0.625rem 0.75rem;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    font-weight: 500;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+}
+div.preview-download button.eye:hover ,div.preview-download button.down-doc:hover {
+    background-color: var(--border-light);
+}
+
+div.preview-download button.eye .material-symbols-outlined {
+    font-size: 20px;
+    color: #EA4335;
+}
+div.preview-download button.eye{
+width: 70%;
+}
+div.preview-download button.down-doc{
+
+}
+@media (min-width: 768px) {
+    div.doc-att{
+        width: 100%;}
+}
+
+@media (min-width: 1024px) {
+    div.doc-att{
+        width: 22%;}
+}
