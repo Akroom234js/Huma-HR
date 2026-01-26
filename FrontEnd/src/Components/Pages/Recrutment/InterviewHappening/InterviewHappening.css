@@ -1,0 +1,11 @@
+div.interviewhappening{
+    width: 100%;
+    display: flex;
+}
+p.dateInterview{
+    padding: 0px 15px;
+    width: fit-content;
+}
+hr.hr{
+    width: 50%;
+}

@@ -1,5 +1,5 @@
 div.attachments{
-   background-color:   var(--bg-card); 
+    background-color:  var(--bg-page);
    width: 80%;
    border-radius: 10px;
    height: 90vb;
@@ -10,10 +10,11 @@ div.att-name-x{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color:  var(--bg-card);
-    padding: 10px;
+    background-color:  var(--bg-page);
+    padding: 10px 10px 2px 10px;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
+    border-bottom: 1px solid var(--border-color);
 }
 div.down-x{
     display: flex;
@@ -32,10 +33,18 @@ p.att-attachments{
 }
 div.doc{
     height: 60vb;
-    background-color:  rgb(249 250 251 / var(--tw-bg-opacity, 1));
+    background-color:  var(--bg-page);
+    display: flex;
+    padding: 5px 20px;
+    gap: 2rem;
+    flex-wrap: wrap;
+    overflow-y: scroll;
+    
+    
 }
 div.total{
     display: flex;
+   
     align-items: center;
     padding-inline-start: 10px;
     padding-top: 40px;

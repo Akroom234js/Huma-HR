@@ -63,7 +63,7 @@
     width: 5px;
 }
 ::-webkit-scrollbar-thumb{
-    background: transparent;
+    background: gray;
     border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb:hover{
