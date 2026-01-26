@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import "./Home.css";
 import Footer from "./Footer";
-import logo from '../../../assets/logo.png';
+import logo from "../../../assets/logo.png";
 export default function Jops() {
   return (
     <>
@@ -10,7 +10,9 @@ export default function Jops() {
           <div className="logo-con">
             <Link to="/">
               <img src={logo} alt="Huma HR Logo" className="sidebar-logo" />
-              <h1 className="sidebar-title">Huma</h1>
+              <h1 className="sidebar-title" style={{ display: "inline-block" }}>
+                Huma
+              </h1>
             </Link>
           </div>
           <div className="other-option-con">

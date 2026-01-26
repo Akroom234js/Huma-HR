@@ -11,10 +11,10 @@
   margin: auto;
   display: flex;
   justify-content: space-between;
+  align-items: flex-end;
   padding-top: 25px;
   position: relative;
 }
-
 .nav-profile::after {
   content: "";
   position: absolute;
@@ -38,7 +38,7 @@
   color: #ffffff;
   font-weight: 600;
   margin: 0px 0px 0px 32px;
-  padding: 2px 16px;
+  padding: 8px 16px;
 }
 
 .other-option-con {
@@ -102,7 +102,8 @@
   outline: 1px solid #ffffff;
   border-radius: 50%;
   margin-top: -11px;
-  background-image: url("../public/dd.jpg");
+  background-image: url("../../../assets/dd.jpg");
+  /* background-image: url("../public/dd.jpg"); */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -177,11 +178,13 @@
 .poop2 {
   width: 90vw;
   height: 80vh;
-  background: linear-gradient(to right,
-      #1e3a8a 0%,
-      #1383ed 35%,
-      rgb(15 23 42) 35%,
-      rgb(15 23 42) 100%);
+  background: linear-gradient(
+    to right,
+    #1e3a8a 0%,
+    #1383ed 35%,
+    rgb(15 23 42) 35%,
+    rgb(15 23 42) 100%
+  );
   border-radius: 24px;
   margin: auto;
   transform: translateY(-100px);
@@ -510,7 +513,7 @@
   font-size: 17px;
   color: #0a1942;
   margin: 20px 0px;
-  width: 140px;
+  width: 148px;
   height: 45px;
   border-radius: 12px;
   padding: 10px 24px;
@@ -524,7 +527,7 @@
 
 .footer {
   width: 100%;
-  height: 50vh;
+  height: 55vh;
   background: linear-gradient(to right, rgb(15 23 42), #0a1942);
   display: flex;
   justify-content: space-evenly;
@@ -598,7 +601,9 @@
 .end {
   display: flex;
   justify-content: space-between;
-  height: 70px;
+  /* height: 70px; */
+  margin-top: -100px;
+  /* padding-top: 30px; */
   background: linear-gradient(to right, rgb(15 23 42), #0a1942);
 }
 
@@ -619,7 +624,9 @@
   border: none;
   outline: 1px solid #ffffff;
   border-radius: 50%;
-  background-image: url(../public/dd.jpg);
+  /* background-image: url(../public/dd.jpg); */
+  background-image: url("../../../assets/dd.jpg");
+
   background-size: cover;
   background-position: center;
   margin-top: 23px;
@@ -825,7 +832,11 @@
   }
 
   .navbar {
-    flex-direction: column;
+    display: flex;
+    flex-direction: row;
+
+    justify-content: center;
+
     gap: 15px;
     width: 95%;
     padding-top: 15px;
@@ -970,9 +981,11 @@
     width: 100%;
     padding: 20px;
     border-radius: 24px;
-    background: linear-gradient(to right,
-        rgb(15 23 42) 35%,
-        rgb(15 23 42) 100%);
+    background: linear-gradient(
+      to right,
+      rgb(15 23 42) 35%,
+      rgb(15 23 42) 100%
+    );
   }
 
   .container5 {
@@ -982,7 +995,9 @@
     padding: 0px 0;
     margin-top: 10px;
   }
-
+  .end {
+    margin-top: -82px;
+  }
   .container5 div {
     width: 100%;
     height: auto;

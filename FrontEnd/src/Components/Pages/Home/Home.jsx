@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import "./Home.css";
 import Footer from "./Footer";
-import logo from '../../../assets/logo.png';
+import logo from "../../../assets/logo.png";
+import ff from "../../../assets/dd.jpg";
 export default function Home() {
   return (
     <>
@@ -10,7 +11,9 @@ export default function Home() {
           <div className="logo-con">
             <Link to="/">
               <img src={logo} alt="Huma HR Logo" className="sidebar-logo" />
-              <h1 className="sidebar-title">Huma</h1>
+              <h1 className="sidebar-title" style={{ display: "inline-block" }}>
+                Huma
+              </h1>
             </Link>
           </div>
           <div className="other-option-con">
@@ -190,7 +193,7 @@ export default function Home() {
             <button>Learn More</button>
           </div>
           <div>
-            <img src="/dd.jpg" alt="er" width={"90%"} height={"85%"} />
+            <img src={ff} alt="er" width={"90%"} height={"85%"} />
           </div>
         </div>
         {/* ww */}
