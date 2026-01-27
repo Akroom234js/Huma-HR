@@ -48,7 +48,7 @@ div.interview div.empdet p.name{
     font-size: 1rem;
     color: var(--text-color);
 }
-div.interview div.empdet p span{
+div.interview div.empdet p span,div.interview div.empdet p.det-inteerview,div.interview div.interviewers p.interviewers{
     
     font-size: 1rem;
     color: gray;
@@ -57,4 +57,21 @@ div.interview div.interviewers{
 width: 25%;
 padding: 5px;
 background-color: var(--bg-card);
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: column;
+padding: 10px;
+}
+div.interview div.interviewers div.interviewer{
+    display: flex;
+    justify-content: center;
+}
+div.interview div.interviewers div.interviewer div.interviewers{
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    margin-inline-start: -10px;
+    border: 1px solid var(--border-color);
+    background-color: aqua;
 }
