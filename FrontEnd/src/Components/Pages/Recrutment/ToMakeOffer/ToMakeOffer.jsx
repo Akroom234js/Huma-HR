@@ -4,12 +4,16 @@ import Header from '../Header/Header';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import Tabs from '../Tabs/Tabs';
 import FilterDropdown from '../FilterDropdown/FilterDropdown';
-import CandidateCardToScheduleInterview from '../CandidateCardScheduleInterview/CandidateCardToScheduleInterview';
+import CandidateCard from '../CandidateCard/CandidateCard';
+import CreateJobModal from '../CreateJobModal/CreateJobModal';
+import '../Main-page/Recrutment.css';
 import './ToMakeOffer.css';
 
 export default function ToMakeOffer() {
     const [activeTab, setActiveTab] = useState('make-offer');
     const [selectedDepartment, setSelectedDepartment] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingJob, setEditingJob] = useState(null);
 
     const { t } = useTranslation("Recrutment/ToMakeOffer");
 
@@ -27,6 +31,13 @@ export default function ToMakeOffer() {
         { value: 'product', label: 'Product Management' },
         { value: 'marketing', label: 'Marketing' },
     ];
+
+    const handleAddJob = (jobData) => {
+        // This page primarily lists candidates, but the Header button should still work
+        console.log('New job created:', jobData);
+        setIsModalOpen(false);
+        setEditingJob(null);
+    };
 
     const candidates = [
         {
@@ -90,7 +101,7 @@ export default function ToMakeOffer() {
             <div className="recruitment-page">
                 <div className="recruitment-container">
                     <div className="recruitment-header-flex">
-                        <Header />
+                        <Header onCreateJob={() => { setEditingJob(null); setIsModalOpen(true); }} />
                         <ThemeToggle />
                     </div>
                     <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
@@ -103,7 +114,7 @@ export default function ToMakeOffer() {
 
                     <div className="candidates-grid">
                         {candidates.map((candidate) => (
-                            <CandidateCardToScheduleInterview key={candidate.id} candidate={candidate} />
+                            <CandidateCard key={candidate.id} candidate={candidate} />
                         ))}
                     </div>
 
@@ -115,6 +126,16 @@ export default function ToMakeOffer() {
                     </div>
                 </div>
             </div>
+
+            {isModalOpen && (
+                <CreateJobModal
+                    isOpen={isModalOpen}
+                    onClose={() => { setIsModalOpen(false); setEditingJob(null); }}
+                    onSave={handleAddJob}
+                    editingJob={editingJob}
+                    departmentOptions={departmentOptions.filter(opt => opt.value !== '')}
+                />
+            )}
         </>
     );
 }

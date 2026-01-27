@@ -3,11 +3,15 @@ import { useState } from "react";
 import Header from "../Header/Header";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
 import Tabs from "../Tabs/Tabs";
+import CreateJobModal from '../CreateJobModal/CreateJobModal';
+import '../Main-page/Recrutment.css';
 import './InterviewHappening.css'
 import Interview from "../Interview/Interview";
-export default function InterviewHappening(){
-    const [activeTab, setActiveTab] = useState('schedule-interview');
-    const [selectedDepartment1, setSelectedDepartment1] = useState('');
+
+export default function InterviewHappening() {
+    const [activeTab, setActiveTab] = useState('interview-happening');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingJob, setEditingJob] = useState(null);
 
     const { t } = useTranslation("Recrutment/ToScheduleInterview")
     const tabs = [
@@ -24,6 +28,12 @@ export default function InterviewHappening(){
         { value: 'product', label: 'Product Management' },
         { value: 'marketing', label: 'Marketing' },
     ];
+
+    const handleAddJob = (jobData) => {
+        console.log('New job created:', jobData);
+        setIsModalOpen(false);
+        setEditingJob(null);
+    };
 
     const candidates = [
         {
@@ -81,32 +91,35 @@ export default function InterviewHappening(){
             att: ['pdf', 'png']
         }
     ];
+
     return (<>
-
         <div className="recruitment-page ">
-
             <div className="recruitment-container">
                 <div className="recruitment-header-flex">
-                    <Header />
+                    <Header onCreateJob={() => { setEditingJob(null); setIsModalOpen(true); }} />
                     <ThemeToggle />
                 </div>
                 <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
-              
-              <div className="interviewhappening">
-                <hr className="hr"/>
-                <p className="dateInterview">todayyyy</p>
-                <hr className="hr"/>
-               
+                <div className="interviewhappening">
+                    <hr className="hr" />
+                    <p className="dateInterview">todayyyy</p>
+                    <hr className="hr" />
                 </div>
                 <div>
-                   {candidates.map((candidate=>( <Interview key={candidate.id} candidates={candidate}/>)))}
+                    {candidates.map((candidate => (<Interview key={candidate.id} candidates={candidate} />)))}
                 </div>
-
-             
-
-
             </div>
         </div>
+
+        {isModalOpen && (
+            <CreateJobModal
+                isOpen={isModalOpen}
+                onClose={() => { setIsModalOpen(false); setEditingJob(null); }}
+                onSave={handleAddJob}
+                editingJob={editingJob}
+                departmentOptions={departmentOptions.filter(opt => opt.value !== '')}
+            />
+        )}
     </>)
 }
