@@ -1,0 +1,19 @@
+{
+    "create": "إنشاء وظيفة",
+    "Tabs": {
+        "Interview-Happening": "مقابلات جارية",
+        "To-Schedule-Interview": "جدولة المقابلات",
+        "To-Make-Offer": "مقابلات مجدولة",
+        "Opening": "الوظائف الشاغرة"
+    },
+    "CandidateCard": {
+        "Applying": "التقدم لوظيفة:",
+        "SCORE": "نتيجة ATS",
+        "makeOffer": "إرسال عرض",
+        "Attachments": "عرض المرفقات"
+    },
+    "departmentOptions": {
+        "all": "كل الأقسام"
+    },
+    "applicants": "عرض المزيد من المتقدمين"
+}
