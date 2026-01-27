@@ -81,24 +81,6 @@
   display: inline-block;
 }
 
-.ptn-switch {
-  border: none;
-  background-color: var(--glass-bg);
-  width: 42px;
-  height: 42px;
-  margin-top: -6px;
-  border-radius: 14px;
-  color: var(--text-on-primary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.ptn-switch i {
-  margin-top: -1px;
-  display: block;
-}
 
 .nav-profile {
   width: 50px;
