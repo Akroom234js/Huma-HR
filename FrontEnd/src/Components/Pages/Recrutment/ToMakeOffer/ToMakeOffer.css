@@ -1,0 +1,37 @@
+/* ToMakeOffer.css - Responsive styles for To Make Offer page */
+
+/* Mobile-first approach - styles inherit from Main-page/Recrutment.css */
+/* Only add page-specific styles here if needed */
+
+/* Tablet breakpoint */
+@media (max-width: 768px) {
+    .recruitment-container {
+        padding: 1rem;
+    }
+
+    .candidates-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .recruitment-header-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+/* Mobile breakpoint */
+@media (max-width: 480px) {
+    .recruitment-container {
+        padding: 0.75rem;
+    }
+
+    .view-more-btn {
+        width: 100%;
+        min-height: 44px;
+    }
+
+    .candidates-grid {
+        gap: 0.75rem;
+    }
+}
