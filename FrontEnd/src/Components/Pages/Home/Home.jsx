@@ -3,6 +3,7 @@ import "./Home.css";
 import Footer from "./Footer";
 import logo from "../../../assets/logo.png";
 import ff from "../../../assets/dd.jpg";
+import ThemeToggle from "../../ThemeToggle/ThemeToggle";
 export default function Home() {
   return (
     <>
@@ -20,7 +21,7 @@ export default function Home() {
             <Link to="/home">Home</Link>
             <Link to="/jops">Jops</Link>
             <Link to="/recruitment">Go to website</Link>
-            <button className="ptn-switch"> ☀️</button>
+            <ThemeToggle />
             <div className="nav-profile"> </div>
           </div>
         </div>
@@ -36,7 +37,7 @@ export default function Home() {
       </div>
       <div className="container2">
         <div className="poop1">
-          <span style={{ color: "#1e3a8a" }}>.</span>
+          <span style={{ color: "var(--primary-color)" }}>.</span>
           <div className="poop2">
             <div className="left-side">
               <span className="icon1">
@@ -212,7 +213,7 @@ export default function Home() {
               <h4
                 style={{
                   fontSize: "14px",
-                  color: "#ffff",
+                  color: "var(--text-main)",
                   display: "inline-block",
                 }}
               >

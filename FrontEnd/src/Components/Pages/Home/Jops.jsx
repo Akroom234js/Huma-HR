@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import "./Home.css";
 import Footer from "./Footer";
 import logo from "../../../assets/logo.png";
+import ThemeToggle from "../../ThemeToggle/ThemeToggle";
 export default function Jops() {
   return (
     <>
@@ -19,7 +20,7 @@ export default function Jops() {
             <Link to="/home">Home</Link>
             <Link to="/jops">Jops</Link>
             <Link to="/recruitment">Go to website</Link>
-            <button className="ptn-switch"> ☀️</button>
+            <ThemeToggle />
 
             <div className="nav-profile"> </div>
           </div>
@@ -55,7 +56,7 @@ export default function Jops() {
                   user experience of our platform.
                 </p>
                 <div className="con-salary">
-                  <span style={{ color: "#ffffff" }}> Huma</span>
+                  <span style={{ color: "var(--text-main)" }}> Huma</span>
                   <span> 120$ -180$</span>
                 </div>
               </div>
@@ -73,7 +74,7 @@ export default function Jops() {
                   tools. Experience with React needed.
                 </p>
                 <div className="con-salary">
-                  <span style={{ color: "#ffffff" }}> Huma</span>
+                  <span style={{ color: "var(--text-main)" }}> Huma</span>
                   <span> 120$ -130$</span>
                 </div>
               </div>
@@ -91,7 +92,7 @@ export default function Jops() {
                   growth initiatives.
                 </p>
                 <div className="con-salary">
-                  <span style={{ color: "#ffffff" }}> Huma</span>
+                  <span style={{ color: "var(--text-main)" }}> Huma</span>
                   <span> 120$ -180$</span>
                 </div>
               </div>
@@ -108,7 +109,7 @@ export default function Jops() {
                   Support our growing team by managing day-to-day HR operations.
                 </p>
                 <div className="con-salary">
-                  <span style={{ color: "#ffffff" }}> Huma</span>
+                  <span style={{ color: "var(--text-main)" }}> Huma</span>
                   <span> 120$ -180$</span>
                 </div>
               </div>
