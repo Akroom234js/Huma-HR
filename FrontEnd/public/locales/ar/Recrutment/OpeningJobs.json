@@ -1,0 +1,19 @@
+{
+    "create": "إنشاء وظيفة",
+    "Tabs": {
+        "Interview-Happening": "مقابلات جارية",
+        "To-Schedule-Interview": "جدولة المقابلات",
+        "To-Make-Offer": "مقابلات مجدولة",
+        "Opening": "الوظائف الشاغرة"
+    },
+    "JobCard": {
+        "Edit": "تعديل",
+        "Delete": "حذف",
+        "Applicants": "متقدمين",
+        "Department": "القسم",
+        "Salary": "الراتب"
+    },
+    "departmentOptions": {
+        "all": "كل الأقسام"
+    }
+}

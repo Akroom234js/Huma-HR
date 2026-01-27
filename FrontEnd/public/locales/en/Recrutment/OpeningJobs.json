@@ -1,0 +1,19 @@
+{
+    "create": "Create Job",
+    "Tabs": {
+        "Interview-Happening": "Interview Happening",
+        "To-Schedule-Interview": "To Schedule Interview",
+        "To-Make-Offer": "To Make Offer",
+        "Opening": "Opening Jobs"
+    },
+    "JobCard": {
+        "Edit": "Edit",
+        "Delete": "Delete",
+        "Applicants": "Applicants",
+        "Department": "Department",
+        "Salary": "Salary"
+    },
+    "departmentOptions": {
+        "all": "All Departments"
+    }
+}

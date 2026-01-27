@@ -9,6 +9,8 @@ import Jops from './Components/Pages/Home/Jops';
 import './App.css';
 import ToScheduleInterview from './Components/Pages/Recrutment/ToScheduleInterview/ToScheduleInterview';
 import InterviewHappening from './Components/Pages/Recrutment/InterviewHappening/InterviewHappening';
+import ToMakeOffer from './Components/Pages/Recrutment/ToMakeOffer/ToMakeOffer';
+import OpeningJobs from './Components/Pages/Recrutment/OpeningJobs/OpeningJobs';
 
 function App() {
   return (
@@ -28,10 +30,10 @@ function App() {
               <main className="main-content">
                 <Routes>
                   <Route path="/" element={<Recruitment />} />
-                  <Route path="make-offer" element={<Recruitment />} />
-                  <Route path="opening-jobs" element={<Recruitment />} />
+                  <Route path="make-offer" element={<ToMakeOffer />} />
+                  <Route path="opening-jobs" element={<OpeningJobs />} />
                   <Route path="schedule-interview" element={<ToScheduleInterview />} />
-                  <Route path="interview-happening" element={<InterviewHappening/>} />
+                  <Route path="interview-happening" element={<InterviewHappening />} />
                 </Routes>
               </main>
               {/* <ScheduleInterview/> */}
