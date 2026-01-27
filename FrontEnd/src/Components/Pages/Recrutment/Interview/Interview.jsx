@@ -13,9 +13,17 @@ export default function Interview({candidates}){
              </div>
              <div className='empdet'>
                 <p className='name'>{name}</p>
-                <p> <span>{t('Applying')}</span>{position}</p>
+                <p> <span>{t('Applying')} </span>{ position}</p>
+                <p className='det-inteerview'><i className='bi bi-geo-alt-fill'></i> Room 4</p>
              </div>
-             <div className='interviewers'>hhh</div>
+             <div className='interviewers'>
+                <div className='interviewer'>
+                <div className='interviewers'></div>
+                <div className='interviewers'></div>
+                <div className='interviewers'></div>
+               
+                </div>
+                <p className='interviewers'>{t('interviewers')}</p></div>
         </div>
         </>
     )

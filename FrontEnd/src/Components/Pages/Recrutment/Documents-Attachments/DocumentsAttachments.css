@@ -57,6 +57,10 @@ div.doc-att p.size-doc{
     box-shadow: var(--shadow-sm);
     transition: all 0.2s ease;
 }
+  div.preview-download button.disabled span,  div.preview-download button.disabled i{
+    color:rgb(128, 128, 128) ;
+   
+}
 div.preview-download button.eye:hover ,div.preview-download button.down-doc:hover {
     background-color: var(--border-light);
 }
