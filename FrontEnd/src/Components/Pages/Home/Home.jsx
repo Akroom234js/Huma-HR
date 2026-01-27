@@ -222,6 +222,47 @@ export default function Home() {
               HR Director, TechFlow
             </p>
           </div>
+          <div>
+            <p style={{ marginTop: "10px", fontSize: "16px" }}>
+              "The automated screening process has cut our recruitment time by
+              40%. It's a game-changer for our small HR team."
+            </p>
+
+            <p className="dd">
+              <span className="user1"> </span>
+              <h4
+                style={{
+                  fontSize: "14px",
+                  color: "var(--text-main)",
+                  display: "inline-block",
+                }}
+              >
+                Sarah Jenkins
+              </h4>
+              HR Director, TechFlow
+            </p>
+          </div>
+          <div>
+            <p style={{ marginTop: "10px", fontSize: "16px" }}>
+              "The automated screening process has cut our recruitment time by
+              40%. It's a game-changer for our small HR team."
+            </p>
+
+            <p className="dd">
+              <span className="user1"> </span>
+              <h4
+                style={{
+                  fontSize: "14px",
+                  color: "var(--text-main)",
+                  display: "inline-block",
+                }}
+              >
+                Sarah Jenkins
+              </h4>
+              HR Director, TechFlow
+            </p>
+          </div>
+
         </div>
       </div>
       <Footer />

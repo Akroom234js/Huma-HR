@@ -396,15 +396,16 @@
 .con_cart2 div {
   width: 30%;
   height: 35vh;
-  background-color: #1e293b;
+  background-color: var(--bg-card);
   border-radius: 12px;
+  border: 1px solid var(--border-color);
   display: flex;
   justify-content: center;
-
   align-items: flex-start;
   flex-direction: column;
   gap: 25px;
   padding: 0px 20px;
+  transition: all 0.3s ease;
 }
 
 .con_cart h3,
