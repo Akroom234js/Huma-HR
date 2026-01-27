@@ -4,6 +4,7 @@ import Header from "../Header/Header";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
 import Tabs from "../Tabs/Tabs";
 import './InterviewHappening.css'
+import Interview from "../Interview/Interview";
 export default function InterviewHappening(){
     const [activeTab, setActiveTab] = useState('schedule-interview');
     const [selectedDepartment1, setSelectedDepartment1] = useState('');
@@ -96,6 +97,10 @@ export default function InterviewHappening(){
                 <hr className="hr"/>
                 <p className="dateInterview">todayyyy</p>
                 <hr className="hr"/>
+               
+                </div>
+                <div>
+                   {candidates.map((candidate=>( <Interview key={candidate.id} candidates={candidate}/>)))}
                 </div>
 
              

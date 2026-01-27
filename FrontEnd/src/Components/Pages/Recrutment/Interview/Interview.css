@@ -1,0 +1,60 @@
+div.interview{
+    border: 1px solid var(--border-color);
+    margin: auto;
+    display: flex;
+    height: 150px;
+    width: 98%;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    margin-bottom: 5px;
+
+}
+div.interview div.interviewTime{
+width: 20%;
+background-color: var(--bg-page);
+border-radius: var(--radius-xl);
+padding: 5px;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+}
+div.interview div.interviewTime p.interviewTime{
+    font-weight: 900;
+    font-size: 2rem;
+    color: var(--text-color);
+    margin-bottom: -3px;
+}
+div.interview div.interviewTime p.AmPm{
+    color: grey;
+    margin-bottom: 3px;
+}
+div.interview div.interviewTime p.duration{
+    color: grey;
+}
+div.interview div.empdet{
+    width: 55%;
+    padding: 5px;
+    display: flex;
+flex-direction: column;
+justify-content: center;
+
+background-color: var(--bg-card);
+border-left: 1px solid var(--border-color);
+border-right: 1px solid var(--border-color);
+}
+div.interview div.empdet p.name{
+    font-weight: 900;
+    font-size: 1rem;
+    color: var(--text-color);
+}
+div.interview div.empdet p span{
+    
+    font-size: 1rem;
+    color: gray;
+}
+div.interview div.interviewers{
+width: 25%;
+padding: 5px;
+background-color: var(--bg-card);
+}
