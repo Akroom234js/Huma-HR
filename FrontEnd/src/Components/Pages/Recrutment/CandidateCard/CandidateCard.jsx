@@ -1,15 +1,18 @@
 import React, { useEffect } from 'react';
 import './CandidateCard.css';
+import { useTranslation } from 'react-i18next';
 
-const CandidateCard = ({ candidate  }) => {
+const CandidateCard = ({ candidate }) => {
     const { name, department, position, score, skills } = candidate;
+    const { t } = useTranslation("Recrutment/ToMakeOffer");
+
     // Determine score color based on value
     const getScoreColor = (score) => {
         if (score >= 80) return 'emerald';
         if (score >= 60) return 'amber';
         return 'red';
     };
-   
+
     const scoreColor = getScoreColor(score);
 
     return (
@@ -23,13 +26,13 @@ const CandidateCard = ({ candidate  }) => {
                 </div>
 
                 <div className="position-info">
-                    <p className="position-label">Applying for:</p>
+                    <p className="position-label">{t('CandidateCard.Applying')}</p>
                     <p className="position-title">{position}</p>
                 </div>
 
                 <div className="score-container">
                     <div className="score-header">
-                        <span className="score-label">ATS SCORE</span>
+                        <span className="score-label">{t('CandidateCard.SCORE')}</span>
                         <span className={`score-value score-${scoreColor}`}>{score}/100</span>
                     </div>
                     <div className="score-bar">
@@ -48,12 +51,11 @@ const CandidateCard = ({ candidate  }) => {
 
             <div className="card-actions">
                 <button className="btn-move">
-                  
-                     <span >Move to schedule interview</span>
+                    <span >{t('CandidateCard.moveSchedule')}</span>
                 </button>
                 <button className="btn-contact">
                     <span className="material-symbols-outlined">mail</span>
-                    <span>Contact</span>
+                    <span>{t('CandidateCard.contact')}</span>
                 </button>
             </div>
         </div>
