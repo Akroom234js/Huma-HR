@@ -44,7 +44,7 @@ export default function Footer() {
         style={{
           width: 70,
           height: 2,
-          backgroundColor: "#ffffff",
+          backgroundColor: "var(--text-on-primary)",
           border: "none",
         }}
       />
