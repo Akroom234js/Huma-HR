@@ -6,7 +6,7 @@ const initialState = {
     loading: false,
     error: null,
 };
-
+// create slice
 const recrutmentSlice = createSlice({
     name: 'recrutment',
     initialState,
