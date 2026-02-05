@@ -11,6 +11,7 @@ import ToScheduleInterview from './Components/Pages/Recrutment/ToScheduleIntervi
 import InterviewHappening from './Components/Pages/Recrutment/InterviewHappening/InterviewHappening';
 import ToMakeOffer from './Components/Pages/Recrutment/ToMakeOffer/ToMakeOffer';
 import OpeningJobs from './Components/Pages/Recrutment/OpeningJobs/OpeningJobs';
+import AddDepartment from './Components/Pages/Department/AddDepartment/AddDepartment';
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
           }
         />
       </Routes>
+      {/* <AddDepartment/> */}
     </BrowserRouter>
   );
 }
