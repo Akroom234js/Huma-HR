@@ -1,6 +1,6 @@
 // App.jsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Sidebar from './Components/Sidebar/sidebar';
+import Sidebar from './Components/Sidebar/Sidebar'
 import Recruitment from './Components/Pages/Recrutment/Main-page/Recrutment';
 import ScheduleInterview from './Components/Pages/Recrutment/ScheduleInterview/ScheduleInterview';
 import LanSw from './Components/LanSw'
