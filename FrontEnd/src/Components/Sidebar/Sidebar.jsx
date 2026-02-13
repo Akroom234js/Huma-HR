@@ -60,6 +60,19 @@ const Sidebar = () => {
                                         expand_more
                                     </span>
                                 </button>
+                                {departmentOpen && (
+                                    <div className="sub-menu">
+                                        <Link to="/department/overview" className="sub-nav-item">
+                                            {t('Department-Overview')}
+                                        </Link>
+                                        <Link to="/department/org-chart" className="sub-nav-item">
+                                            {t('Organizational-Chart')}
+                                        </Link>
+                                        <Link to="/department/positions" className="sub-nav-item">
+                                            {t('Positions-Roles')}
+                                        </Link>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="nav-section">

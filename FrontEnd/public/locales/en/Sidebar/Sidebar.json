@@ -1,12 +1,15 @@
 {
-    "Dashboard":"Dashboard",
-    "Employee-Management":"Employee Management",
-    "Department":"Department",
-    "Salary-Management":"Salary Management",
-    "Leaves":"Leaves",
-    "Performance":"Performance",
-    "Recruitment":"Recruitment",
-    "Request":"Request",
-    "Reports":"Reports",
-    "Logout":"Logout"
+    "Dashboard": "Dashboard",
+    "Employee-Management": "Employee Management",
+    "Department": "Department",
+    "Salary-Management": "Salary Management",
+    "Leaves": "Leaves",
+    "Performance": "Performance",
+    "Recruitment": "Recruitment",
+    "Request": "Request",
+    "Reports": "Reports",
+    "Logout": "Logout",
+    "Department-Overview": "Department Overview",
+    "Organizational-Chart": "Organizational Chart",
+    "Positions-Roles": "Positions & Roles"
 }
