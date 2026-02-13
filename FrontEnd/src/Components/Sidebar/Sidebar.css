@@ -156,6 +156,32 @@ button.translation:hover {
     gap: 0.25rem;
 }
 
+.sub-menu {
+    display: flex;
+    flex-direction: column;
+    padding-left: 3.25rem;
+    gap: 0.25rem;
+    margin-top: 0.25rem;
+}
+
+.sub-nav-item {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+}
+
+.sub-nav-item:hover {
+    background-color: var(--border-light);
+    color: var(--text-main);
+}
+
+.sub-nav-item.active {
+    color: var(--primary-color);
+}
+
 .nav-toggle {
     justify-content: space-between;
 }

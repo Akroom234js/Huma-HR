@@ -1,12 +1,15 @@
 {
-    "Dashboard":"لوحة التحكم",
-    "Employee-Management":"إدارة الموظفين",
-    "Department":"أقسام",
-    "Salary-Management":"إدارة الرواتب",
-    "Leaves":"إجازات",
-    "Performance":"أداء",
-    "Recruitment":"توظيف",
-    "Request":"طلبات",
-    "Reports":"تقارير",
-    "Logout":"تسجيل خروج"
+    "Dashboard": "لوحة التحكم",
+    "Employee-Management": "إدارة الموظفين",
+    "Department": "أقسام",
+    "Salary-Management": "إدارة الرواتب",
+    "Leaves": "إجازات",
+    "Performance": "أداء",
+    "Recruitment": "توظيف",
+    "Request": "طلبات",
+    "Reports": "تقارير",
+    "Logout": "تسجيل خروج",
+    "Department-Overview": "نظرة عامة على القسم",
+    "Organizational-Chart": "الهيكل التنظيمي",
+    "Positions-Roles": "المناصب والأدوار"
 }

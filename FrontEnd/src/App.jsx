@@ -13,6 +13,10 @@ import ToMakeOffer from './Components/Pages/Recrutment/ToMakeOffer/ToMakeOffer';
 import OpeningJobs from './Components/Pages/Recrutment/OpeningJobs/OpeningJobs';
 import AddDepartment from './Components/Pages/Department/AddDepartment/AddDepartment';
 
+import DepartmentOverview from './Components/Pages/Department/DepartmentOverview/DepartmentOverview';
+import OrganizationalChart from './Components/Pages/Department/OrganizationalChart/OrganizationalChart';
+import PositionsRoles from './Components/Pages/Department/PositionsRoles/PositionsRoles';
+
 function App() {
   return (
     <BrowserRouter>
@@ -23,6 +27,21 @@ function App() {
         <Route path="/jops" element={<Jops />} />
 
         {/* Dashboard Routes with Sidebar */}
+        <Route
+          path="/department/*"
+          element={
+            <div className="app-container">
+              <Sidebar />
+              <main className="main-content">
+                <Routes>
+                  <Route path="overview" element={<DepartmentOverview />} />
+                  <Route path="org-chart" element={<OrganizationalChart />} />
+                  <Route path="positions" element={<PositionsRoles />} />
+                </Routes>
+              </main>
+            </div>
+          }
+        />
         <Route
           path="/recruitment/*"
           element={

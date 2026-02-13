@@ -1,76 +1,90 @@
-div.sh_In_scr{
+div.sh_In_scr {
     display: flex;
-    background-color: var(--bg-card,1);
-     position: absolute;
-     align-items: center;
+    background-color: var(--bg-card, 1);
+    position: absolute;
+    align-items: center;
     justify-content: space-around;
-       background-color: rgb(17 24 39 / 0.4);
+    background-color: rgb(17 24 39 / 0.4);
     width: 100%;
     height: 100vb;
-    
+
 }
-div.sh_In_con{
+
+div.sh_In_con {
     border: 2px solid var(--border-color);
     padding: 20px;
-    background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1)
-1
-);background-color: var(--bg-page);
+    background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1) 1);
+    background-color: var(--bg-page);
     height: 93vb;
     border-radius: 8px;
-     /* margin: auto; */
+    /* margin: auto; */
     /* width: 42%; */
-     overflow-y: scroll;
-     overflow-x: hidden;
-     
+    overflow-y: scroll;
+    overflow-x: hidden;
+
 
 
 }
-div.sh_In_tpx{
+
+div.sh_In_tpx {
     display: flex;
     align-items: start;
     justify-content: space-between;
-    
-  
+
+
 }
-div.sh_In_con hr{
+
+div.sh_In_con hr {
     width: 108%;
     margin-top: -10px;
     margin-inline-start: -20px;
 }
-p.sh_In_tit{
+
+p.sh_In_tit {
     font-weight: 900;
     font-size: 22px;
     margin: 5px;
 }
-p.sh_In_for{
+
+p.sh_In_for {
     font-size: 18px;
     /* color: gray; */
-    
+
 }
+
 /* span.sh_In_name{
     color:rgb(37, 37, 37);
 } */
-button.sh_In_x{
+button.sh_In_x {
     border: none;
-    
+
     font-size: 32px;
     color: var(--text-main);
     background-color: transparent;
 }
-div.con{
+
+div.con {
     display: flex;
     flex-wrap: wrap;
     margin-bottom: 5px;
     margin-top: -10px;
-   
+
     justify-content: space-between;
-    
+
 }
-div.date,div.type,div.start,div.enddate{
+
+div.date,
+div.type,
+div.start,
+div.enddate {
     width: 48%;
     margin: 4px;
 }
-div.date input,div.type select,div.start input,div.enddate input{
+
+div.date input,
+div.type select,
+div.start input,
+div.enddate input {
     width: 90%;
     height: 44px;
     outline: none;
@@ -78,13 +92,16 @@ div.date input,div.type select,div.start input,div.enddate input{
 
     background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1));
 }
- input.hidden {
-  color: transparent ;
-  caret-color: transparent;
+
+input.hidden {
+    color: transparent;
+    caret-color: transparent;
 }
- input.black {
-  color: black ;
+
+input.black {
+    color: black;
 }
+
 .hidden::-webkit-datetime-edit,
 .hidden::-webkit-datetime-edit-fields-wrapper,
 .hidden::-webkit-datetime-edit-text,
@@ -95,19 +112,26 @@ div.date input,div.type select,div.start input,div.enddate input{
 .hidden::-webkit-datetime-edit-hour-field,
 .hidden::-webkit-datetime-edit-minute-field,
 .hidden::-webkit-datetime-edit-second-field {
-  color: transparent;
-  background-color: transparent;
+    color: transparent;
+    background-color: transparent;
     caret-color: transparent;
 }
-.hidden::before{
+
+.hidden::before {
     content: '';
 }
-div.date p,div.type p,div.start p,div.enddate p{
+
+div.date p,
+div.type p,
+div.start p,
+div.enddate p {
     margin-bottom: 3px;
 }
-p.notes p.interviewers{
+
+p.notes p.interviewers {
     margin-bottom: 3px;
 }
+
 textarea.notes {
     min-width: 100%;
     min-height: 80px;
@@ -115,106 +139,122 @@ textarea.notes {
     outline: none;
     cursor: text;
     padding: 5px;
-    
+
     background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1));
     margin-top: -10px;
 }
-div.selectinterviewers{
+
+div.selectinterviewers {
     width: 100%;
     height: 95px;
     display: flex;
     flex-direction: column;
-     margin-top: -10px;
+    margin-top: -10px;
     padding: 5px;
     /* padding-top: 8px; */
-   color: black;
-   overflow-y: scroll;
-   justify-content: start;
+    color: black;
+    overflow-y: scroll;
+    justify-content: start;
     background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1));
 }
-div.selectinterviewers div{
- display: flex;
- justify-content: space-between;
- margin-bottom:2px ;
- align-items: center;
- height: 27px;
- padding: 5px;
-   
-   border-radius: 3px;
+
+div.selectinterviewers div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2px;
+    align-items: center;
+    height: 27px;
+    padding: 5px;
+
+    border-radius: 3px;
 }
-div.selectinterviewers div button{
+
+div.selectinterviewers div button {
     height: 21px;
     width: 21px;
-display: flex;
-justify-content: center;
-align-items: center;
- /* font-weight: bold; */
- font-size: large;
-border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* font-weight: bold; */
+    font-size: large;
+    border: none;
     background-color: transparent;
 }
+
 div.selectinterviewers div button:hover {
     font-weight: bolder;
     transition: all 0.2s;
     /* background-color: blue; */
 }
-div.selectinterviewers div p{
+
+div.selectinterviewers div p {
     margin-bottom: 5px;
 }
-div.selectinterviewers div:hover{
+
+div.selectinterviewers div:hover {
     background-color: rgb(128 128 128 /0.5);
 }
-div.interviewers{
+
+div.interviewers {
     margin-bottom: 5px;
 }
-p.ctrl{
+
+p.ctrl {
     margin-bottom: 5px;
     color: gray;
     font-size: 14px;
 }
-div.cancon{
+
+div.cancon {
     display: flex;
     justify-content: end;
     margin-top: 10px;
 }
-.cancon button{
+
+.cancon button {
     padding: 3px;
     outline: none;
     border-radius: 8px;
     border: 1px solid gray;
-    
+
 }
-button.confirm{
+
+button.confirm {
     margin-inline-start: 10px;
-     width: fit-content;
-     background-color: rgb(53 158 255 / var(--tw-bg-opacity, 1)); 
-     color: white;
+    width: fit-content;
+    background-color: rgb(53 158 255 / var(--tw-bg-opacity, 1));
+    color: white;
 }
+
 .confirm:hover {
     background-color: var(--primary-hover);
     box-shadow: var(--shadow-md);
 }
 
-button.cancel{
+button.cancel {
     width: 90px;
     color: var(--text-main);
     background-color: transparent;
 }
+
 .cancel:hover {
     background-color: var(--border-light);
 }
-.shinhidden{
-   display: none;
+
+.shinhidden {
+    display: none;
 }
-.shinvisibility{
-   display: flex; 
-       /* padding: 1rem; */
-     
-  /* justify-content: center;
+
+.shinvisibility {
+    display: flex;
+    /* padding: 1rem; */
+
+    /* justify-content: center;
       align-items: center; */
-          z-index: 50;
-              inset: 0px;
-                  position: fixed;
-                  animation: fadeIn 0.2s ease-out;
+    z-index: 50;
+    inset: 0px;
+    position: fixed;
+    animation: fadeIn 0.2s ease-out;
 }
+
 /*     background-color: rgb(53 158 255 / var(--tw-bg-opacity, 1)); */

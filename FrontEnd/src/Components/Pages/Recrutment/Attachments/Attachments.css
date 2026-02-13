@@ -1,50 +1,57 @@
-div.attachments{
-    background-color:  var(--bg-page);
-   width: 80%;
-   border-radius: 10px;
-   height: 90vb;
-   border: 1px solid var(--border-color);
-   
+div.attachments {
+    background-color: var(--bg-page);
+    width: 80%;
+    border-radius: 10px;
+    height: 90vb;
+    border: 1px solid var(--border-color);
+
 }
-div.att-name-x{
+
+div.att-name-x {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color:  var(--bg-page);
+    background-color: var(--bg-page);
     padding: 10px 10px 2px 10px;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     border-bottom: 1px solid var(--border-color);
 }
-div.down-x{
+
+div.down-x {
     display: flex;
     align-items: center;
     gap: 10px;
 }
-button.x{
+
+button.x {
     color: var(--text-main);
 }
-p.att-name{
+
+p.att-name {
     font-weight: 800;
     font-size: 18px;
 }
-p.att-attachments{
+
+p.att-attachments {
     color: gray;
 }
-div.doc{
+
+div.doc {
     height: 60vb;
-    background-color:  var(--bg-page);
+    background-color: var(--bg-page);
     display: flex;
     padding: 5px 20px;
     gap: 2rem;
     flex-wrap: wrap;
     overflow-y: scroll;
-    
-    
+
+
 }
-div.total{
+
+div.total {
     display: flex;
-   
+
     align-items: center;
     padding-inline-start: 10px;
     padding-top: 40px;
