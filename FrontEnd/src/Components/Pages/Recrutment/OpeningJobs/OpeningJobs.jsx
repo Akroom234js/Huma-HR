@@ -75,7 +75,7 @@ export default function OpeningJobs() {
     };
 
     const handleDeleteJob = (id) => {
-        if (window.confirm('Are you sure you want to delete this job?')) {
+        if (window.confirm(t('Messages.Delete-Confirm'))) {
             setJobs(jobs.filter(job => job.id !== id));
         }
     };

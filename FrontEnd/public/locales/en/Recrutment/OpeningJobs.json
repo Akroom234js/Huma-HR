@@ -15,5 +15,23 @@
     },
     "departmentOptions": {
         "all": "All Departments"
+    },
+    "Messages": {
+        "Delete-Confirm": "Are you sure you want to delete this job?"
+    },
+    "Modal": {
+        "Edit-Title": "Edit Job",
+        "Create-Title": "Create New Job",
+        "Job-Title": "Job Title",
+        "Department": "Department",
+        "Select-Department": "Select Department",
+        "Salary-Range": "Salary Range",
+        "Job-Description": "Job Description",
+        "Cancel": "Cancel",
+        "Update": "Update Job",
+        "Post": "Post Job",
+        "Placeholder-Title": "e.g. Senior Backend Engineer",
+        "Placeholder-Salary": "e.g. $120k - $150k",
+        "Placeholder-Description": "Describe the responsibilities and requirements..."
     }
 }

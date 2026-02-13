@@ -37,7 +37,7 @@ const Sidebar = () => {
                         </div>
 
                         <nav className="sidebar-nav">
-                            <NavLink to="/" className="nav-item" end>
+                            <NavLink to="/Dashboard" className="nav-item" end>
                                 <span className="material-symbols-outlined">dashboard</span>
                                 <p>{t('Dashboard')}</p>
                             </NavLink>

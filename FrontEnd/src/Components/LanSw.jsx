@@ -19,10 +19,10 @@ const LanguageSwitcher = () => {
 
 	return (
 		<button onClick={toggleLanguage} className="translation">
-			<div  className="translation">
+			<div className="translation">
 				<i className="bi bi-globe"></i>
 
-			<p> {isEnglish ? "تغيير اللغة" : "Change Language"}</p>
+				<p> {isEnglish ? "Change Language" : "تغيير اللغة"}</p>
 			</div>
 		</button>
 	);
