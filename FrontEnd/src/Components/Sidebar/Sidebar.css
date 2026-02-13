@@ -179,6 +179,7 @@ button.translation:hover {
 }
 
 .sub-nav-item.active {
+    background: var(--primary-light);
     color: var(--primary-color);
 }
 
