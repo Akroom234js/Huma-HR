@@ -12,6 +12,7 @@ import InterviewHappening from './Components/Pages/Recrutment/InterviewHappening
 import ToMakeOffer from './Components/Pages/Recrutment/ToMakeOffer/ToMakeOffer';
 import OpeningJobs from './Components/Pages/Recrutment/OpeningJobs/OpeningJobs';
 import AddDepartment from './Components/Pages/Department/AddDepartment/AddDepartment';
+
 import DepartmentOverview from './Components/Pages/Department/DepartmentOverview/DepartmentOverview';
 import OrganizationalChart from './Components/Pages/Department/OrganizationalChart/OrganizationalChart';
 import PositionsRoles from './Components/Pages/Department/PositionsRoles/PositionsRoles';
