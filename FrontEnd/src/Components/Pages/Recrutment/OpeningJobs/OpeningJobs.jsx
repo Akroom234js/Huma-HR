@@ -102,13 +102,7 @@ export default function OpeningJobs() {
                             onChange={setSelectedDepartment}
                             options={departmentOptions}
                         />
-                        <button
-                            className="create-job-btn"
-                            onClick={() => { setEditingJob(null); setIsModalOpen(true); }}
-                        >
-                            <span className="material-symbols-outlined">add</span>
-                            {t('create')}
-                        </button>
+
                     </div>
 
                     <div className="jobs-grid">

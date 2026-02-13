@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import './Sidebar.css';
 import LanSw from '../LanSw'
 import logo from '../../assets/logo.png';
@@ -37,15 +37,15 @@ const Sidebar = () => {
                         </div>
 
                         <nav className="sidebar-nav">
-                            <Link to="/" className="nav-item">
+                            <NavLink to="/" className="nav-item" end>
                                 <span className="material-symbols-outlined">dashboard</span>
                                 <p>{t('Dashboard')}</p>
-                            </Link>
+                            </NavLink>
 
-                            <Link to="/employees" className="nav-item">
+                            <NavLink to="/employees" className="nav-item">
                                 <span className="material-symbols-outlined">group</span>
                                 <p>{t('Employee-Management')}</p>
-                            </Link>
+                            </NavLink>
 
                             <div className="nav-section">
                                 <button
@@ -62,15 +62,15 @@ const Sidebar = () => {
                                 </button>
                                 {departmentOpen && (
                                     <div className="sub-menu">
-                                        <Link to="/department/overview" className="sub-nav-item">
+                                        <NavLink to="/department/overview" className="sub-nav-item">
                                             {t('Department-Overview')}
-                                        </Link>
-                                        <Link to="/department/org-chart" className="sub-nav-item">
+                                        </NavLink>
+                                        <NavLink to="/department/org-chart" className="sub-nav-item">
                                             {t('Organizational-Chart')}
-                                        </Link>
-                                        <Link to="/department/positions" className="sub-nav-item">
+                                        </NavLink>
+                                        <NavLink to="/department/positions" className="sub-nav-item">
                                             {t('Positions-Roles')}
-                                        </Link>
+                                        </NavLink>
                                     </div>
                                 )}
                             </div>
@@ -90,30 +90,30 @@ const Sidebar = () => {
                                 </button>
                             </div>
 
-                            <Link to="/leaves" className="nav-item">
+                            <NavLink to="/leaves" className="nav-item">
                                 <span className="material-symbols-outlined">event_busy</span>
                                 <p>{t('Leaves')}</p>
-                            </Link>
+                            </NavLink>
 
-                            <Link to="/performance" className="nav-item">
+                            <NavLink to="/performance" className="nav-item">
                                 <span className="material-symbols-outlined">trending_up</span>
                                 <p>{t('Performance')}</p>
-                            </Link>
+                            </NavLink>
 
-                            <Link to="/recruitment" className="nav-item active">
+                            <NavLink to="/recruitment" className="nav-item">
                                 <span className="material-symbols-outlined material-symbols-filled">person_add</span>
                                 <p>{t('Recruitment')}</p>
-                            </Link>
+                            </NavLink>
 
-                            <Link to="/request" className="nav-item">
+                            <NavLink to="/request" className="nav-item">
                                 <span className="material-symbols-outlined">task_alt</span>
                                 <p>{t('Request')}</p>
-                            </Link>
+                            </NavLink>
 
-                            <Link to="/reports" className="nav-item">
+                            <NavLink to="/reports" className="nav-item">
                                 <span className="material-symbols-outlined">summarize</span>
                                 <p>{t('Reports')}</p>
-                            </Link>
+                            </NavLink>
                         </nav>
                     </div>
 
