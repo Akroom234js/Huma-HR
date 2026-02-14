@@ -1,0 +1,15 @@
+{
+    "add":"Add Department & Assign persons",
+    "details":"Department Details",
+    "name":"Department Name",
+    "head":"Department Head",
+    "e.g":"e.g, Engining",
+    "select":"Select an employee",
+    "assign":"Assign Employees to Department & Role",
+    "selectemp":"Select employee",
+    "selectpos":"Select position/Role",
+      "selectrol":"Select a role",
+      "addemp":"Add Another Employee ",
+      "cancel":"Cancel",
+      "submit":"Submit"
+}
