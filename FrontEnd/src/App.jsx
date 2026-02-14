@@ -37,8 +37,7 @@ function App() {
                   <Route path="interview-happening" element={<InterviewHappening />} />
                 </Routes>
               </main>
-              {/* <ScheduleInterview/> */}
-              {/* <LanSw/> */}
+         
             </div>
           }
         />
