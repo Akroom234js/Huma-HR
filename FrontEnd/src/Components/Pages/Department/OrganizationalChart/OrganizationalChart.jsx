@@ -54,19 +54,19 @@ const getLayoutedElements = (nodes, edges, direction = "TB") => {
 /* ---------- Custom Node ---------- */
 const CardNode = ({ data }) => {
   return (
-    <div className="card-node">
-      <Handle type="target" position={Position.Top} className="handle" />
-      <div className="card-content">
-        <div className="image-container">
-          <img src={data.image} alt={data.label} className="card-image" />
-          <div className="badge">{data.dept}</div>
+    <div className="occ-card-node">
+      <Handle type="target" position={Position.Top} className="occ-handle" />
+      <div className="occ-card-content">
+        <div className="occ-image-container">
+          <img src={data.image} alt={data.label} className="occ-card-image" />
+          <div className="occ-badge">{data.dept}</div>
         </div>
-        <div className="info">
-          <div className="card-name">{data.label}</div>
-          <div className="card-title">{data.title}</div>
+        <div className="occ-info">
+          <div className="occ-card-name">{data.label}</div>
+          <div className="occ-card-title">{data.title}</div>
         </div>
       </div>
-      <Handle type="source" position={Position.Bottom} className="handle" />
+      <Handle type="source" position={Position.Bottom} className="occ-handle" />
     </div>
   );
 };
