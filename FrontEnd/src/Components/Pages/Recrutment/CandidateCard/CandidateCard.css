@@ -10,9 +10,11 @@
     transition: box-shadow 0.3s ease;
     height: 100%;
 }
-span.hiddeb-but-move{
+
+span.hiddeb-but-move {
     visibility: hidden;
 }
+
 .candidate-card:hover {
     box-shadow: var(--shadow-md);
 }
@@ -170,7 +172,7 @@ span.hiddeb-but-move{
 }
 
 .btn-contact {
-   
+
     padding: 0.625rem 0.75rem;
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -187,12 +189,14 @@ span.hiddeb-but-move{
     box-shadow: var(--shadow-sm);
     transition: all 0.2s ease;
 }
-button.calender{
-     display: flex;
-     align-items: center;
+
+button.calender {
+    display: flex;
+    align-items: center;
     justify-content: center;
     gap: 0.5rem;
 }
+
 .btn-contact:hover {
     background-color: var(--border-light);
 }
@@ -201,6 +205,7 @@ button.calender{
     font-size: 20px;
     color: #EA4335;
 }
-.btn-view-att{
-width: 170px;
+
+.btn-view-att {
+    width: 170px;
 }
