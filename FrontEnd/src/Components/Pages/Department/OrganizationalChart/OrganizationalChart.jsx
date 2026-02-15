@@ -13,6 +13,7 @@ import dagre from "dagre";
 
 import "@xyflow/react/dist/style.css";
 import "./OrganizationalChart.css";
+import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
 
 /* ---------- Dagre Layout Engine ---------- */
 const dagreGraph = new dagre.graphlib.Graph();
@@ -165,6 +166,7 @@ const OrganizationalChart = () => {
       <div className="chart-header">
         <h1>Organizational Chart</h1>
         <div className="controls-btns">
+          <ThemeToggle />
           <button onClick={() => onLayout("TB")}>Vertical</button>
           <button onClick={() => onLayout("LR")}>Horizontal</button>
         </div>
