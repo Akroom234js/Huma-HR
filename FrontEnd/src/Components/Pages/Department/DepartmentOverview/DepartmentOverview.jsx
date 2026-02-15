@@ -1,5 +1,5 @@
 import "./DepartmentOverview.css";
-import React from "react";
+// import React from "react";
 import {
   BarChart,
   Bar,
