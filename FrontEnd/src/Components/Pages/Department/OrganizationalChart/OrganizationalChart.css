@@ -1,21 +1,42 @@
 .org-chart-wrapper {
-  padding: 24px;
-  background-color: #f8fafc;
+  padding: 1.5rem;
+  background-color: var(--bg-page);
   min-height: 100vh;
+}
+
+@media (min-width: 768px) {
+  .org-chart-wrapper {
+    padding: 2rem;
+  }
 }
 
 .chart-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 .chart-header h1 {
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 800;
-  color: #1e293b;
+  color: var(--text-main);
   margin: 0;
+}
+
+@media (max-width: 768px) {
+  .chart-header h1 {
+    font-size: 1.25rem;
+  }
 }
 
 .controls-btns {
@@ -25,12 +46,12 @@
 
 .controls-btns button {
   padding: 8px 16px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
-  color: #475569;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -41,19 +62,26 @@
 }
 
 .flow-container {
-  background: white;
+  background: var(--bg-card);
   border-radius: 16px;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px var(--shadow-md);
+  border: 1px solid var(--border-color);
+  height: 70vh;
+}
+
+@media (min-width: 1024px) {
+  .flow-container {
+    height: 80vh;
+  }
 }
 
 /* Custom Node Styling */
 .occ-card-node {
   width: 220px;
-  background: #ffffff;
+  background: var(--bg-card);
   border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
   overflow: visible;
   transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -79,7 +107,7 @@
   height: 48px;
   border-radius: 10px;
   object-fit: cover;
-  border: 2px solid #f1f5f9;
+  border: 2px solid var(--border-light);
 }
 
 .occ-badge {
@@ -105,12 +133,12 @@
 .occ-card-name {
   font-size: 14px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-main);
 }
 
 .occ-card-title {
   font-size: 11px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -124,7 +152,7 @@
 
 /* React Flow Overrides */
 .react-flow__edge-path {
-  stroke: #cbd5e1;
+  stroke: var(--text-muted);
   stroke-width: 2;
 }
 
@@ -136,4 +164,32 @@
 .react-flow__minimap {
   border-radius: 12px !important;
   overflow: hidden !important;
+  background-color: var(--bg-card) !important;
+}
+
+.react-flow__minimap-mask {
+  fill: var(--bg-page) !important;
+  fill-opacity: 0.6 !important;
+}
+
+.react-flow__background {
+  background-color: var(--bg-card);
+}
+
+.react-flow__background-pattern {
+  stroke: var(--border-color) !important;
+}
+
+[data-theme="dark"] .react-flow__controls button {
+  background-color: var(--bg-card-dark);
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .react-flow__controls button:hover {
+  background-color: var(--border-light);
+}
+
+[data-theme="dark"] .react-flow__controls button svg {
+  fill: var(--text-main);
 }
