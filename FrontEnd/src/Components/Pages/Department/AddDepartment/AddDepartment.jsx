@@ -40,7 +40,7 @@ export default function AddDepartment(){
     
     return(
         <div className='add-department'>
-            <ThemeToggle/>
+
             <div className='add-department-co'>
                  <div className='add-department-title'>
                     <p>{t('add')}</p>

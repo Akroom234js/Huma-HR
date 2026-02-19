@@ -1,0 +1,15 @@
+{
+    "add":"Add New Position/Role",
+    "position":"Position Title",
+    "name":"Department",
+    "e.gtitle":"e.g Senior Frontend Engineer",
+    "number":"Number of Openings",
+    "e.g":"e.g 3",
+    "Role":"Role Description",
+      "enter":"Enter a brief description of the role...",
+      "skill":"skills Required",
+      "addskill":"Add skill",
+      "reporting":"Reporting To",
+      "cancel":"Cancel",
+      "submit":"Submit"
+}
