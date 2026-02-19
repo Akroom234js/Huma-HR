@@ -1,0 +1,16 @@
+.all-employees-page {
+    padding: 2rem;
+    height: 100%;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.header-info h1 {
+    font-size: 1.8rem;
+    color: var(--text-color);
+}
