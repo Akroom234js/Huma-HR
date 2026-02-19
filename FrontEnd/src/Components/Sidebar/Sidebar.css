@@ -179,10 +179,16 @@ button.translation:hover {
 }
 
 .sub-nav-item.active {
-    background: #ecfeff;
+    background: rgba(8, 145, 178, 0.1);
     color: #0891b2;
     font-weight: 600;
     border-left: 3px solid #0891b2;
+}
+
+[data-theme='dark'] .sub-nav-item.active {
+    background: rgba(34, 211, 238, 0.1);
+    color: #22d3ee;
+    border-left-color: #22d3ee;
 }
 
 .nav-toggle {
