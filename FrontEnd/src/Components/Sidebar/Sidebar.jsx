@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 const Sidebar = () => {
     const [departmentOpen, setDepartmentOpen] = useState(false);
+    const [employeeOpen, setEmployeeOpen] = useState(false);
     const [salaryOpen, setSalaryOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const { t } = useTranslation('Sidebar/Sidebar')
@@ -42,10 +43,30 @@ const Sidebar = () => {
                                 <p>{t('Dashboard')}</p>
                             </NavLink>
 
-                            <NavLink to="/employees" className="nav-item">
-                                <span className="material-symbols-outlined">group</span>
-                                <p>{t('Employee-Management')}</p>
-                            </NavLink>
+                            <div className="nav-section">
+                                <button
+                                    className="nav-item nav-toggle"
+                                    onClick={() => setEmployeeOpen(!employeeOpen)}
+                                >
+                                    <div className="nav-item-content">
+                                        <span className="material-symbols-outlined">group</span>
+                                        <p>{t('Employee-Management')}</p>
+                                    </div>
+                                    <span className={`material-symbols-outlined expand-icon ${employeeOpen ? 'expanded' : ''}`}>
+                                        expand_more
+                                    </span>
+                                </button>
+                                {employeeOpen && (
+                                    <div className="sub-menu">
+                                        <NavLink to="/employees/all" className="sub-nav-item">
+                                            {t('All-Employees')}
+                                        </NavLink>
+                                        <NavLink to="/employees/movement" className="sub-nav-item">
+                                            {t('Employee-Movement')}
+                                        </NavLink>
+                                    </div>
+                                )}
+                            </div>
 
                             <div className="nav-section">
                                 <button
