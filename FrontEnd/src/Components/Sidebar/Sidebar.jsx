@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useLocation } from 'react-router-dom';
 import './Sidebar.css';
 import LanSw from '../LanSw'
 import logo from '../../assets/logo.png';
@@ -12,7 +12,13 @@ const Sidebar = () => {
     const [employeeOpen, setEmployeeOpen] = useState(false);
     const [salaryOpen, setSalaryOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
-    const { t } = useTranslation('Sidebar/Sidebar')
+    const { t } = useTranslation('Sidebar/Sidebar');
+    const location = useLocation();
+
+    // Check if sub-routes are active
+    const isEmployeeActive = location.pathname.startsWith('/employees');
+    const isDepartmentActive = location.pathname.startsWith('/department');
+    const isSalaryActive = location.pathname.startsWith('/salary'); // Placeholder for future use
     return (
         <>
             <button
@@ -45,7 +51,7 @@ const Sidebar = () => {
 
                             <div className="nav-section">
                                 <button
-                                    className="nav-item nav-toggle"
+                                    className={`nav-item nav-toggle ${isEmployeeActive || employeeOpen ? 'active' : ''}`}
                                     onClick={() => setEmployeeOpen(!employeeOpen)}
                                 >
                                     <div className="nav-item-content">
@@ -70,7 +76,7 @@ const Sidebar = () => {
 
                             <div className="nav-section">
                                 <button
-                                    className="nav-item nav-toggle"
+                                    className={`nav-item nav-toggle ${isDepartmentActive || departmentOpen ? 'active' : ''}`}
                                     onClick={() => setDepartmentOpen(!departmentOpen)}
                                 >
                                     <div className="nav-item-content">
@@ -98,7 +104,7 @@ const Sidebar = () => {
 
                             <div className="nav-section">
                                 <button
-                                    className="nav-item nav-toggle"
+                                    className={`nav-item nav-toggle ${isSalaryActive || salaryOpen ? 'active' : ''}`}
                                     onClick={() => setSalaryOpen(!salaryOpen)}
                                 >
                                     <div className="nav-item-content">
