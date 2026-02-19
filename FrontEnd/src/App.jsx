@@ -17,6 +17,9 @@ import DepartmentOverview from './Components/Pages/Department/DepartmentOverview
 import OrganizationalChart from './Components/Pages/Department/OrganizationalChart/OrganizationalChart';
 import PositionsRoles from './Components/Pages/Department/PositionsRoles/PositionsRoles';
 
+import AllEmployees from './Components/Pages/EmployeeManagement/AllEmployees/AllEmployees';
+import EmployeeMovement from './Components/Pages/EmployeeManagement/EmployeeMovement/EmployeeMovement';
+
 function App() {
   return (
     <BrowserRouter>
@@ -43,6 +46,20 @@ function App() {
           }
         />
         <Route
+          path="/employees/*"
+          element={
+            <div className="app-container">
+              <Sidebar />
+              <main className="main-content">
+                <Routes>
+                  <Route path="all" element={<AllEmployees />} />
+                  <Route path="movement" element={<EmployeeMovement />} />
+                </Routes>
+              </main>
+            </div>
+          }
+        />
+        <Route
           path="/recruitment/*"
           element={
             <div className="app-container">
@@ -56,7 +73,7 @@ function App() {
                   <Route path="interview-happening" element={<InterviewHappening />} />
                 </Routes>
               </main>
-         
+
             </div>
           }
         />
