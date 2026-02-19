@@ -81,7 +81,6 @@
   display: inline-block;
 }
 
-
 .nav-profile {
   width: 50px;
   height: 50px;
@@ -120,6 +119,7 @@
   padding: 6px 18px 6px;
   margin: 42px;
   border: 1px solid var(--glass-border);
+  color: #ffffff !important;
 }
 
 .title {
@@ -132,6 +132,7 @@
 .description {
   letter-spacing: -1px;
   color: var(--text-accent);
+  color: #ffffff !important;
   margin: auto;
   padding: 9px 29px;
   font-size: 24px;
@@ -165,11 +166,13 @@
 .poop2 {
   width: 90vw;
   height: 80vh;
-  background: linear-gradient(to right,
-      #1e3a8a 0%,
-      #1383ed 35%,
-      var(--bg-page) 35%,
-      var(--bg-page) 100%);
+  background: linear-gradient(
+    to right,
+    #1e3a8a 0%,
+    #1383ed 35%,
+    var(--bg-page) 35%,
+    var(--bg-page) 100%
+  );
   border-radius: 24px;
   margin: auto;
   transform: translateY(-100px);
@@ -978,9 +981,11 @@
     width: 100%;
     padding: 20px;
     border-radius: 24px;
-    background: linear-gradient(to right,
-        rgb(15 23 42) 35%,
-        rgb(15 23 42) 100%);
+    background: linear-gradient(
+      to right,
+      rgb(15 23 42) 35%,
+      rgb(15 23 42) 100%
+    );
   }
 
   .container5 {
