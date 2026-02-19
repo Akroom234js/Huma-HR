@@ -64,6 +64,7 @@ div.add-department div.add-department-co div.assign div.select-emp-role select {
     width: 90%;
     height: 6vb;
     padding: 5px;
+     outline: none;
     border-radius: 5px;
 
 }

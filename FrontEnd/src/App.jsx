@@ -16,6 +16,7 @@ import AddDepartment from './Components/Pages/Department/AddDepartment/AddDepart
 import DepartmentOverview from './Components/Pages/Department/DepartmentOverview/DepartmentOverview';
 import OrganizationalChart from './Components/Pages/Department/OrganizationalChart/OrganizationalChart';
 import PositionsRoles from './Components/Pages/Department/PositionsRoles/PositionsRoles';
+import AddRole from './Components/Pages/Department/AddRole/AddRole';
 
 import AllEmployees from './Components/Pages/EmployeeManagement/AllEmployees/AllEmployees';
 import EmployeeMovement from './Components/Pages/EmployeeManagement/EmployeeMovement/EmployeeMovement';
@@ -79,6 +80,7 @@ function App() {
         />
       </Routes>
       {/* <AddDepartment/> */}
+      {/* <AddRole/> */}
     </BrowserRouter>
   );
 }
