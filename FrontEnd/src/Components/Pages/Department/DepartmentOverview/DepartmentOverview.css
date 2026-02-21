@@ -136,7 +136,7 @@
 .department-table thead {
   background-color: var(--bg-card);
   color: var(--text-main);
-  text-align: left;
+  text-align: start;
 }
 
 .department-table th {
