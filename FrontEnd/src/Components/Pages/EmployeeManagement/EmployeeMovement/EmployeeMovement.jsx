@@ -4,20 +4,12 @@ import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import FilterDropdown from '../../Recrutment/FilterDropdown/FilterDropdown';
 import { useTranslation } from 'react-i18next';
 
-const movementTypeOptions = [
-    { value: '', label: 'Filter by Movement Type' },
-    { value: 'Promotion', label: 'Promotion' },
-    { value: 'Transfer', label: 'Transfer' },
-    { value: 'Department Change', label: 'Department Change' },
-    { value: 'Salary Adjustment', label: 'Salary Adjustment' },
-];
-
 const movementData = [
     {
         name: 'Olivia Rhye',
         id: 'EMP001',
         date: '2024-07-26',
-        type: 'Promotion',
+        typeKey: 'type-promotion',
         previousValue: 'Product Designer',
         newValue: 'Senior Product Designer',
         changedBy: 'Admin',
@@ -26,7 +18,7 @@ const movementData = [
         name: 'Phoenix Baker',
         id: 'EMP002',
         date: '2024-07-20',
-        type: 'Transfer',
+        typeKey: 'type-transfer',
         previousValue: 'Marketing Team',
         newValue: 'Sales Team',
         changedBy: 'HR Manager',
@@ -35,7 +27,7 @@ const movementData = [
         name: 'Lana Steiner',
         id: 'EMP003',
         date: '2024-07-15',
-        type: 'Salary Adjustment',
+        typeKey: 'type-salary-adjustment',
         previousValue: '$72,000',
         newValue: '$78,000',
         changedBy: 'Finance Dept',
@@ -44,7 +36,7 @@ const movementData = [
         name: 'Demi Wilkinson',
         id: 'EMP004',
         date: '2024-07-01',
-        type: 'Department Change',
+        typeKey: 'type-department-change',
         previousValue: 'Engineering',
         newValue: 'Research & Development',
         changedBy: 'Admin',
@@ -53,7 +45,7 @@ const movementData = [
         name: 'Candice Wu',
         id: 'EMP005',
         date: '2024-06-25',
-        type: 'Promotion',
+        typeKey: 'type-promotion',
         previousValue: 'Junior Developer',
         newValue: 'Software Engineer',
         changedBy: 'Admin',
@@ -62,7 +54,7 @@ const movementData = [
         name: 'Natali Craig',
         id: 'EMP006',
         date: '2024-06-10',
-        type: 'Salary Adjustment',
+        typeKey: 'type-salary-adjustment',
         previousValue: '$90,000',
         newValue: '$95,000',
         changedBy: 'HR Manager',
@@ -72,36 +64,41 @@ const movementData = [
 const policyItems = [
     {
         icon: 'verified',
-        title: 'Eligibility',
-        description:
-            'Reviewed annually during performance appraisal cycles based on performance ratings, skill development, and leadership potential.',
+        titleKey: 'policy-eligibility-title',
+        descKey: 'policy-eligibility-desc',
     },
     {
         icon: 'assignment_turned_in',
-        title: 'Review Process',
-        description:
-            'Involves a formal review by the employee\'s direct manager, department head, and the HR department.',
+        titleKey: 'policy-review-title',
+        descKey: 'policy-review-desc',
     },
     {
         icon: 'card_giftcard',
-        title: 'Benefits',
-        description:
-            'A promotion typically comes with a title change, an increase in salary, and expanded job responsibilities.',
+        titleKey: 'policy-benefits-title',
+        descKey: 'policy-benefits-desc',
     },
 ];
 
 const EmployeeMovement = () => {
-    const { t } = useTranslation('Sidebar/Sidebar');
+    const { t } = useTranslation('EmployeeMovement/EmployeeMovement');
     const [searchQuery, setSearchQuery] = useState('');
     const [typeFilter, setTypeFilter] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
 
+    const movementTypeOptions = [
+        { value: '', label: t('filter-movement-type') },
+        { value: 'type-promotion', label: t('filter-promotion') },
+        { value: 'type-transfer', label: t('filter-transfer') },
+        { value: 'type-department-change', label: t('filter-department-change') },
+        { value: 'type-salary-adjustment', label: t('filter-salary-adjustment') },
+    ];
+
     const filteredData = movementData.filter((item) => {
         const matchesSearch = item.name
             .toLowerCase()
             .includes(searchQuery.toLowerCase());
-        const matchesType = typeFilter ? item.type === typeFilter : true;
+        const matchesType = typeFilter ? item.typeKey === typeFilter : true;
         const matchesStart = startDate ? item.date >= startDate : true;
         const matchesEnd = endDate ? item.date <= endDate : true;
         return matchesSearch && matchesType && matchesStart && matchesEnd;
@@ -111,21 +108,18 @@ const EmployeeMovement = () => {
         <div className="em-page">
             <header className="em-header">
                 <div className="em-header-info">
-                    <h1 className="em-title">Company-Wide Movement Log</h1>
-                    <p className="em-subtitle">
-                        A comprehensive log of all employee movements within the
-                        company.
-                    </p>
+                    <h1 className="em-title">{t('page-title')}</h1>
+                    <p className="em-subtitle">{t('page-subtitle')}</p>
                 </div>
                 <div className="em-header-actions">
                     <ThemeToggle />
                     <button className="em-btn em-btn-secondary">
                         <span className="material-symbols-outlined">military_tech</span>
-                        Promote Employee
+                        {t('btn-promote')}
                     </button>
                     <button className="em-btn em-btn-primary">
                         <span className="material-symbols-outlined">person_add</span>
-                        Add New Movement
+                        {t('btn-add-movement')}
                     </button>
                 </div>
             </header>
@@ -141,7 +135,7 @@ const EmployeeMovement = () => {
                         <input
                             type="text"
                             className="em-input em-search-input"
-                            placeholder="Filter by employee name..."
+                            placeholder={t('filter-search-placeholder')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -178,16 +172,16 @@ const EmployeeMovement = () => {
                             <tr>
                                 <th>
                                     <div className="em-th-content">
-                                        Employee Name
+                                        {t('th-employee-name')}
                                         <span className="material-symbols-outlined em-sort-icon">
                                             unfold_more
                                         </span>
                                     </div>
                                 </th>
-                                <th>Employee ID</th>
+                                <th>{t('th-employee-id')}</th>
                                 <th>
                                     <div className="em-th-content">
-                                        Date of Movement
+                                        {t('th-date')}
                                         <span className="material-symbols-outlined em-sort-icon">
                                             unfold_more
                                         </span>
@@ -195,15 +189,15 @@ const EmployeeMovement = () => {
                                 </th>
                                 <th>
                                     <div className="em-th-content">
-                                        Movement Type
+                                        {t('th-movement-type')}
                                         <span className="material-symbols-outlined em-sort-icon">
                                             unfold_more
                                         </span>
                                     </div>
                                 </th>
-                                <th>Previous Value</th>
-                                <th>New Value</th>
-                                <th>Changed By</th>
+                                <th>{t('th-previous-value')}</th>
+                                <th>{t('th-new-value')}</th>
+                                <th>{t('th-changed-by')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -213,8 +207,8 @@ const EmployeeMovement = () => {
                                     <td>{item.id}</td>
                                     <td>{item.date}</td>
                                     <td>
-                                        <span className={`em-badge em-badge-${item.type.toLowerCase().replace(/\s+/g, '-')}`}>
-                                            {item.type}
+                                        <span className={`em-badge em-badge-${item.typeKey.replace('type-', '')}`}>
+                                            {t(item.typeKey)}
                                         </span>
                                     </td>
                                     <td>{item.previousValue}</td>
@@ -225,7 +219,7 @@ const EmployeeMovement = () => {
                             {filteredData.length === 0 && (
                                 <tr>
                                     <td colSpan="7" className="em-no-data">
-                                        No movements found matching your filters.
+                                        {t('no-data')}
                                     </td>
                                 </tr>
                             )}
@@ -234,20 +228,15 @@ const EmployeeMovement = () => {
                 </div>
             </div>
 
-            {/* Policy Section - Redesigned with cards */}
+            {/* Policy Section */}
             <div className="em-policy-section">
                 <div className="em-policy-header">
                     <span className="material-symbols-outlined em-policy-header-icon">
                         gavel
                     </span>
                     <div>
-                        <h2 className="em-policy-title">
-                            Promotions: Policy & Process
-                        </h2>
-                        <p className="em-policy-subtitle">
-                            Promotions recognize exceptional performance, increased
-                            responsibilities, and readiness for new challenges.
-                        </p>
+                        <h2 className="em-policy-title">{t('policy-title')}</h2>
+                        <p className="em-policy-subtitle">{t('policy-subtitle')}</p>
                     </div>
                 </div>
                 <div className="em-policy-cards">
@@ -258,8 +247,8 @@ const EmployeeMovement = () => {
                                     {item.icon}
                                 </span>
                             </div>
-                            <h3 className="em-policy-card-title">{item.title}</h3>
-                            <p className="em-policy-card-desc">{item.description}</p>
+                            <h3 className="em-policy-card-title">{t(item.titleKey)}</h3>
+                            <p className="em-policy-card-desc">{t(item.descKey)}</p>
                         </div>
                     ))}
                 </div>
