@@ -212,7 +212,6 @@ button.translation:hover {
 }
 
 /* Hide sidebar on mobile by default */
-/* التعديل المقترح */
 /* Mobile Toggle Button */
 .mobile-toggle {
     display: none;

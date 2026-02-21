@@ -28,5 +28,15 @@
     "policy-review-title": "عملية المراجعة",
     "policy-review-desc": "تتضمن مراجعة رسمية من المدير المباشر للموظف ورئيس القسم وإدارة الموارد البشرية.",
     "policy-benefits-title": "المزايا",
-    "policy-benefits-desc": "تأتي الترقية عادةً مع تغيير المسمى الوظيفي وزيادة في الراتب وتوسيع مسؤوليات العمل."
+    "policy-benefits-desc": "تأتي الترقية عادةً مع تغيير المسمى الوظيفي وزيادة في الراتب وتوسيع مسؤوليات العمل.",
+    "modal-title": "إضافة نقل جديد",
+    "modal-select-employee": "اختيار الموظف",
+    "modal-search-placeholder": "البحث بالاسم أو رقم الموظف",
+    "modal-current-dept": "القسم/الموقع الحالي",
+    "modal-current-dept-placeholder": "اختر موظفاً لعرض القسم الحالي",
+    "modal-new-dept": "القسم/الموقع الجديد",
+    "modal-new-dept-placeholder": "اختر القسم الجديد",
+    "modal-date-of-transfer": "تاريخ النقل",
+    "modal-cancel": "إلغاء",
+    "modal-submit": "إرسال"
 }

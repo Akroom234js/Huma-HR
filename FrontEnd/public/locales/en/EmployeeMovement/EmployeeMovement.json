@@ -28,5 +28,15 @@
     "policy-review-title": "Review Process",
     "policy-review-desc": "Involves a formal review by the employee's direct manager, department head, and the HR department.",
     "policy-benefits-title": "Benefits",
-    "policy-benefits-desc": "A promotion typically comes with a title change, an increase in salary, and expanded job responsibilities."
+    "policy-benefits-desc": "A promotion typically comes with a title change, an increase in salary, and expanded job responsibilities.",
+    "modal-title": "Add New Transfer",
+    "modal-select-employee": "Select Employee",
+    "modal-search-placeholder": "Search by name or employee ID",
+    "modal-current-dept": "Current Department/Location",
+    "modal-current-dept-placeholder": "Select an employee to see current department",
+    "modal-new-dept": "New Department/Location",
+    "modal-new-dept-placeholder": "Select new department",
+    "modal-date-of-transfer": "Date of Transfer",
+    "modal-cancel": "Cancel",
+    "modal-submit": "Submit"
 }
