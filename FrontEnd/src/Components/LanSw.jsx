@@ -13,7 +13,8 @@ const LanguageSwitcher = () => {
 	};
 
 	useEffect(() => {
-		document.body.style.direction = isEnglish ? "ltr" : "rtl";
+		const dir = isEnglish ? "ltr" : "rtl";
+		document.body.dir = dir;
 		document.body.style.textAlign = isEnglish ? "left" : "right";
 	}, [isEnglish]);
 

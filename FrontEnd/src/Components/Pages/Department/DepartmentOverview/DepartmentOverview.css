@@ -14,10 +14,12 @@
   padding: 20px;
   border-radius: 12px;
 }
+
 .card h6,
 .center-text {
   color: var(--text-secondary);
 }
+
 .donut {
   flex: 1;
   /* min-width: 300px; */
