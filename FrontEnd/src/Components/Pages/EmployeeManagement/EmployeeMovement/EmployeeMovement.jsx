@@ -113,15 +113,13 @@ const EmployeeMovement = () => {
                     <p className="em-subtitle">{t('page-subtitle')}</p>
                 </div>
                 <div className="em-header-actions">
-                    <ThemeToggle />
-                    <button className="em-btn em-btn-secondary">
-                        <span className="material-symbols-outlined">military_tech</span>
-                        {t('btn-promote')}
-                    </button>
                     <button className="em-btn em-btn-primary" onClick={() => setShowTransferModal(true)}>
                         <span className="material-symbols-outlined">person_add</span>
                         {t('btn-add-movement')}
                     </button>
+                </div>
+                <div className="em-theme-toggle-wrapper">
+                    <ThemeToggle />
                 </div>
             </header>
 

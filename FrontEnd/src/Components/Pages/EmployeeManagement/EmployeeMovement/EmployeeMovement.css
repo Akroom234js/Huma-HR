@@ -17,6 +17,8 @@
     margin-bottom: 2rem;
     gap: 1rem;
     flex-wrap: wrap;
+    position: relative;
+    /* Add relative for absolute children */
 }
 
 .em-title {
@@ -38,6 +40,81 @@
     align-items: center;
     gap: 0.75rem;
     flex-wrap: wrap;
+    margin-right: 4.5rem;
+    /* Ensure space for the corner ThemeToggle */
+}
+
+[dir="rtl"] .em-header-actions {
+    margin-right: 0;
+    margin-left: 4.5rem;
+}
+
+/* ---- Theme Toggle Positioning ---- */
+.em-theme-toggle-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+}
+
+.em-theme-toggle-wrapper .theme-toggle {
+    background-color: var(--bg-card);
+    border: none;
+    color: var(--text-main);
+    box-shadow: -4px 4px 12px rgba(0, 0, 0, 0.08);
+    /* Shadow as per mockup */
+    border-radius: 0 0 0 60px;
+    /* Deep bottom-left rounding */
+    /* To handle the container's top-right corner rounding: */
+    /* If em-page has a radius, we match it: */
+    border-top-right-radius: 12px;
+
+    width: 64px;
+    height: 64px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 15px;
+    /* Offset icon towards the rounded edge */
+    padding-bottom: 15px;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+[dir="rtl"] .em-theme-toggle-wrapper {
+    right: auto;
+    left: 0;
+}
+
+[dir="rtl"] .em-theme-toggle-wrapper .theme-toggle {
+    border-radius: 0 0 60px 0;
+    border-top-left-radius: 12px;
+    padding-left: 0;
+    padding-right: 15px;
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.em-theme-toggle-wrapper .theme-toggle:hover {
+    background-color: var(--bg-page);
+    transform: scale(1.05);
+    /* Slight pop on hover */
+}
+
+.em-theme-toggle-wrapper .theme-toggle .material-symbols-outlined {
+    font-size: 1.5rem;
+    color: #475569;
+    /* Slate-600 logic */
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .em-theme-toggle-wrapper .theme-toggle {
+    background-color: #1e293b;
+    box-shadow: -4px 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .em-theme-toggle-wrapper .theme-toggle .material-symbols-outlined {
+    color: #f8fafc;
 }
 
 /* ---- Buttons ---- */
@@ -333,6 +410,7 @@
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -343,6 +421,7 @@
         opacity: 0;
         transform: translateY(30px) scale(0.96);
     }
+
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
