@@ -572,6 +572,7 @@
 @media (max-width: 768px) {
     .em-page {
         padding: 1rem;
+        padding-top: 4.5rem;
     }
 
     .em-header {

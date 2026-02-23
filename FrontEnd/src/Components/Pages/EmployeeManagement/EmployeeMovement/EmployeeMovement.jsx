@@ -107,6 +107,9 @@ const EmployeeMovement = () => {
 
     return (
         <div className="em-page">
+            <div className="em-theme-toggle-wrapper">
+                <ThemeToggle />
+            </div>
             <header className="em-header">
                 <div className="em-header-info">
                     <h1 className="em-title">{t('page-title')}</h1>
@@ -118,9 +121,7 @@ const EmployeeMovement = () => {
                         {t('btn-add-movement')}
                     </button>
                 </div>
-                <div className="em-theme-toggle-wrapper">
-                    <ThemeToggle />
-                </div>
+
             </header>
 
             {/* Filters & Table Card */}
