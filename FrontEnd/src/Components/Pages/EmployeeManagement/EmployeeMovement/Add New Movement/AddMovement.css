@@ -194,7 +194,7 @@
 
 .em-modal-wrapper {
     display: flex;
-    width: 200%;
+    width: 300%;
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -207,15 +207,23 @@
 }
 
 .em-modal-wrapper.step-promotion {
-    transform: translateX(-50%);
+    transform: translateX(-33.33%);
 }
 
 [dir="rtl"] .em-modal-wrapper.step-promotion {
-    transform: translateX(50%);
+    transform: translateX(33.33%);
+}
+
+.em-modal-wrapper.step-transfer {
+    transform: translateX(-66.66%);
+}
+
+[dir="rtl"] .em-modal-wrapper.step-transfer {
+    transform: translateX(66.66%);
 }
 
 .em-modal-step {
-    width: 50%;
+    width: 33.33%;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;

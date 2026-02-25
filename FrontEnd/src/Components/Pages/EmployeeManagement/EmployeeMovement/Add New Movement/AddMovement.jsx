@@ -3,18 +3,18 @@ import './AddMovement.css';
 import { useTranslation } from 'react-i18next';
 
 const mockEmployees = [
-    { id: 'EMP001', name: 'Olivia Rhye', position: 'Product Designer', department: 'Design Team' },
-    { id: 'EMP002', name: 'Phoenix Baker', position: 'Marketing Manager', department: 'Marketing Team' },
-    { id: 'EMP003', name: 'Lana Steiner', position: 'Software Engineer', department: 'Engineering' },
-    { id: 'EMP004', name: 'Demi Wilkinson', position: 'Researcher', department: 'R&D' },
-    { id: 'EMP005', name: 'Candice Wu', position: 'Junior Developer', department: 'Engineering' },
-    { id: 'EMP006', name: 'Natali Craig', position: 'Hr Coordinator', department: 'HR Team' },
+    { id: 'EMP001', name: 'Olivia Rhye', position: 'Product Designer', department: 'Design Team', location: 'New York HQ - Sales Dept' },
+    { id: 'EMP002', name: 'Phoenix Baker', position: 'Marketing Manager', department: 'Marketing Team', location: 'London Office' },
+    { id: 'EMP003', name: 'Lana Steiner', position: 'Software Engineer', department: 'Engineering', location: 'Berlin Branch' },
+    { id: 'EMP004', name: 'Demi Wilkinson', position: 'Researcher', department: 'R&D', location: 'San Francisco Tech Center' },
+    { id: 'EMP005', name: 'Candice Wu', position: 'Junior Developer', department: 'Engineering', location: 'Dubai Hub' },
+    { id: 'EMP006', name: 'Natali Craig', position: 'Hr Coordinator', department: 'HR Team', location: 'Paris HQ' },
 ];
 
 const AddMovement = ({ onAddMovement }) => {
     const { t } = useTranslation('EmployeeMovement/EmployeeMovement');
     const [showMovementModal, setShowMovementModal] = useState(false);
-    const [modalStep, setModalStep] = useState('selection'); // 'selection' or 'promotion'
+    const [modalStep, setModalStep] = useState('selection'); // 'selection', 'promotion', or 'transfer'
 
     // Form and Search State
     const [searchQuery, setSearchQuery] = useState('');
@@ -22,6 +22,7 @@ const AddMovement = ({ onAddMovement }) => {
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [formData, setFormData] = useState({
         newPosition: '',
+        newLocation: '',
         effectiveDate: '',
         manager: ''
     });
@@ -38,8 +39,18 @@ const AddMovement = ({ onAddMovement }) => {
     };
 
     const handleConfirm = () => {
-        if (!selectedEmployee || !formData.newPosition || !formData.effectiveDate) {
+        if (!selectedEmployee || !formData.effectiveDate) {
             alert('Please fill in all required fields');
+            return;
+        }
+
+        if (modalStep === 'promotion' && !formData.newPosition) {
+            alert('Please select a new position');
+            return;
+        }
+
+        if (modalStep === 'transfer' && !formData.newLocation) {
+            alert('Please select a new location');
             return;
         }
 
@@ -47,9 +58,9 @@ const AddMovement = ({ onAddMovement }) => {
             name: selectedEmployee.name,
             id: selectedEmployee.id,
             date: formData.effectiveDate,
-            typeKey: 'type-promotion',
-            previousValue: selectedEmployee.position,
-            newValue: formData.newPosition,
+            typeKey: modalStep === 'promotion' ? 'type-promotion' : 'type-transfer',
+            previousValue: modalStep === 'promotion' ? selectedEmployee.position : selectedEmployee.location,
+            newValue: modalStep === 'promotion' ? formData.newPosition : formData.newLocation,
         };
 
         onAddMovement(newMovement);
@@ -63,6 +74,7 @@ const AddMovement = ({ onAddMovement }) => {
         setSelectedEmployee(null);
         setFormData({
             newPosition: '',
+            newLocation: '',
             effectiveDate: '',
             manager: ''
         });
@@ -109,7 +121,7 @@ const AddMovement = ({ onAddMovement }) => {
                                             <span className="em-selection-action">{t('btn-select')}</span>
                                         </button>
 
-                                        <button className="em-selection-btn">
+                                        <button className="em-selection-btn" onClick={() => setModalStep('transfer')}>
                                             <div className="em-selection-content">
                                                 <div className="em-selection-icon-box em-type-transfer-bg">
                                                     <span className="material-symbols-outlined">move_location</span>
@@ -272,7 +284,6 @@ const AddMovement = ({ onAddMovement }) => {
                                             <span className="material-symbols-outlined em-icon-right">expand_more</span>
                                         </div>
                                     </div>
-
                                 </div>
                                 <div className="em-modal-footer em-form-footer">
                                     <button className="em-back-btn" onClick={() => setModalStep('selection')}>
@@ -283,6 +294,133 @@ const AddMovement = ({ onAddMovement }) => {
                                         <button className="em-confirm-btn" onClick={handleConfirm}>
                                             <span className="material-symbols-outlined">check</span>
                                             {t('btn-confirm-promotion')}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Step 3: Transfer Form */}
+                            <div className="em-modal-step">
+                                <div className="em-modal-header em-modal-header-form">
+                                    <div className="em-header-with-icon">
+                                        <div className="em-selection-icon-box em-type-transfer-bg">
+                                            <span className="material-symbols-outlined">move_location</span>
+                                        </div>
+                                        <div>
+                                            <h2 className="em-modal-title">{t('transfer-modal-title')}</h2>
+                                            <p className="em-subtitle">{t('transfer-modal-subtitle')}</p>
+                                        </div>
+                                    </div>
+                                    <button className="em-modal-close" onClick={() => setShowMovementModal(false)}>
+                                        <span className="material-symbols-outlined">close</span>
+                                    </button>
+                                </div>
+                                <div className="em-modal-body em-form-body">
+                                    <div className="em-form-group full-width">
+                                        <label className="em-label">{t('label-select-employee')}</label>
+                                        <div className="em-search-container">
+                                            <span className="material-symbols-outlined em-icon-left">search</span>
+                                            <input
+                                                type="text"
+                                                className="em-input-with-icon"
+                                                placeholder={t('placeholder-search-employee')}
+                                                value={searchQuery}
+                                                onChange={(e) => {
+                                                    setSearchQuery(e.target.value);
+                                                    setShowSearchResults(true);
+                                                    if (selectedEmployee) setSelectedEmployee(null);
+                                                }}
+                                                onFocus={() => setShowSearchResults(true)}
+                                            />
+                                            {showSearchResults && searchQuery && (
+                                                <div className="em-search-results">
+                                                    {filteredEmployees.length > 0 ? (
+                                                        filteredEmployees.map(emp => (
+                                                            <div
+                                                                key={emp.id}
+                                                                className="em-search-result-item"
+                                                                onClick={() => handleEmployeeSelect(emp)}
+                                                            >
+                                                                <div className="em-result-info">
+                                                                    <span className="em-result-name">{emp.name}</span>
+                                                                    <span className="em-result-id">{emp.id}</span>
+                                                                </div>
+                                                                <span className="em-result-pos">{emp.location}</span>
+                                                            </div>
+                                                        ))
+                                                    ) : (
+                                                        <div className="em-no-results">No employees found</div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="em-form-row">
+                                        <div className="em-form-group">
+                                            <label className="em-label">{t('label-current-branch')}</label>
+                                            <div className="em-readonly-input">
+                                                {selectedEmployee ? selectedEmployee.location : '—'}
+                                            </div>
+                                        </div>
+                                        <div className="em-form-group">
+                                            <label className="em-label">{t('label-new-branch')}</label>
+                                            <div className="em-select-container">
+                                                <select
+                                                    className="em-select-input"
+                                                    value={formData.newLocation}
+                                                    onChange={(e) => setFormData({ ...formData, newLocation: e.target.value })}
+                                                >
+                                                    <option value="" disabled>{t('placeholder-select-location')}</option>
+                                                    <option>New York HQ - Sales Dept</option>
+                                                    <option>London Office</option>
+                                                    <option>Berlin Branch</option>
+                                                    <option>San Francisco Tech Center</option>
+                                                    <option>Dubai Hub</option>
+                                                    <option>Paris HQ</option>
+                                                </select>
+                                                <span className="material-symbols-outlined em-icon-right">expand_more</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="em-form-group full-width">
+                                        <label className="em-label">{t('label-effective-date')}</label>
+                                        <input
+                                            type="date"
+                                            className="em-date-input"
+                                            value={formData.effectiveDate}
+                                            onChange={(e) => setFormData({ ...formData, effectiveDate: e.target.value })}
+                                        />
+                                    </div>
+
+                                    <div className="em-form-group full-width">
+                                        <label className="em-label">{t('label-direct-manager')}</label>
+                                        <div className="em-select-container">
+                                            <span className="material-symbols-outlined em-icon-left">person</span>
+                                            <select
+                                                className="em-select-input has-icon-left"
+                                                value={formData.manager}
+                                                onChange={(e) => setFormData({ ...formData, manager: e.target.value })}
+                                            >
+                                                <option value="" disabled>{t('placeholder-select-manager')}</option>
+                                                <option>Admin</option>
+                                                <option>HR Manager</option>
+                                                <option>Technical Director</option>
+                                            </select>
+                                            <span className="material-symbols-outlined em-icon-right">expand_more</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="em-modal-footer em-form-footer">
+                                    <button className="em-back-btn" onClick={() => setModalStep('selection')}>
+                                        <span className="material-symbols-outlined">arrow_back</span>
+                                        {t('btn-back')}
+                                    </button>
+                                    <div className="em-footer-actions">
+                                        <button className="em-confirm-btn" onClick={handleConfirm}>
+                                            <span className="material-symbols-outlined">check</span>
+                                            {t('btn-confirm-transfer')}
                                         </button>
                                     </div>
                                 </div>

@@ -58,5 +58,11 @@
     "placeholder-select-new-role": "اختر المنصب الجديد...",
     "placeholder-select-manager": "اختر المدير...",
     "btn-back": "رجوع",
-    "btn-confirm-promotion": "تأكيد الترقية"
+    "btn-confirm-promotion": "تأكيد الترقية",
+    "transfer-modal-title": "حركة نقل",
+    "transfer-modal-subtitle": "تسجيل نقل موظف إلى موقع جديد.",
+    "label-current-branch": "الفرع/المكتب الحالي",
+    "label-new-branch": "الفرع/المكتب الجديد",
+    "placeholder-select-location": "اختر الموقع...",
+    "btn-confirm-transfer": "تأكيد النقل"
 }

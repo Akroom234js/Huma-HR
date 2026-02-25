@@ -58,5 +58,11 @@
     "placeholder-select-new-role": "Select new role...",
     "placeholder-select-manager": "Select manager...",
     "btn-back": "Back",
-    "btn-confirm-promotion": "Confirm Promotion"
+    "btn-confirm-promotion": "Confirm Promotion",
+    "transfer-modal-title": "Transfer Movement",
+    "transfer-modal-subtitle": "Record an employee transfer to a new location.",
+    "label-current-branch": "Current Branch/Office",
+    "label-new-branch": "New Branch/Office",
+    "placeholder-select-location": "Select location...",
+    "btn-confirm-transfer": "Confirm Transfer"
 }
