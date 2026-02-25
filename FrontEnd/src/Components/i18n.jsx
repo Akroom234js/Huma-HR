@@ -14,7 +14,8 @@ i18n
 		},
 
 		ns: [
-			'ScheduleInterview'
+			'ScheduleInterview',
+			'EmployeeMovement/EmployeeMovement'
 		], // أسماء الملفات
 
 		defaultNS: "Home",

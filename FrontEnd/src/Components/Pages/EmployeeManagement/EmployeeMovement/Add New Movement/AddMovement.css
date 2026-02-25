@@ -1,0 +1,536 @@
+/* ---- Movement Modal Styles (Common) ---- */
+.em-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+    backdrop-filter: blur(4px);
+    padding: 1rem;
+}
+
+@keyframes em-modal-slide-up {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* The .em-modal styles are now integrated into .em-modal-container and .em-modal-step */
+
+.em-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.em-modal-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.em-modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 0.25rem;
+    border-radius: 0.375rem;
+    transition: color 0.2s, background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.em-modal-close:hover {
+    color: var(--text-main);
+    background-color: var(--bg-page);
+}
+
+.em-modal-body {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* ---- Selection Step Styles ---- */
+.em-modal-selection-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.em-selection-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: left;
+    font-family: inherit;
+}
+
+[dir="rtl"] .em-selection-btn {
+    text-align: right;
+}
+
+.em-selection-btn:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.em-selection-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.em-selection-icon-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.em-type-promotion-bg {
+    background-color: rgba(37, 99, 235, 0.1);
+    color: #2563eb;
+}
+
+.em-type-transfer-bg {
+    background-color: rgba(147, 51, 234, 0.1);
+    color: #9333ea;
+}
+
+.em-type-salary-bg {
+    background-color: rgba(22, 163, 74, 0.1);
+    color: #16a34a;
+}
+
+.em-type-dept-bg {
+    background-color: rgba(234, 88, 12, 0.1);
+    color: #ea580c;
+}
+
+.em-selection-text h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.em-selection-text p {
+    margin: 0.25rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+.em-selection-action {
+    padding: 0.5rem 1rem;
+    background-color: var(--bg-page);
+    color: var(--text-secondary);
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.em-selection-btn:hover .em-selection-action {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.em-modal-footer-info {
+    padding: 0.75rem 1.25rem;
+    background-color: var(--bg-page);
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+}
+
+.em-modal-footer-info p {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* ---- Sliding Transitions ---- */
+.em-modal-container {
+    position: relative;
+    width: 95%;
+    max-width: 28rem;
+    max-height: 90vh;
+    overflow: hidden;
+    background-color: var(--bg-card);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-xl);
+    animation: em-modal-slide-up 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.em-modal-wrapper {
+    display: flex;
+    width: 200%;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.em-modal-wrapper.step-selection {
+    transform: translateX(0);
+}
+
+[dir="rtl"] .em-modal-wrapper.step-selection {
+    transform: translateX(0);
+}
+
+.em-modal-wrapper.step-promotion {
+    transform: translateX(-50%);
+}
+
+[dir="rtl"] .em-modal-wrapper.step-promotion {
+    transform: translateX(50%);
+}
+
+.em-modal-step {
+    width: 50%;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+}
+
+.em-modal-header-form {
+    padding: 1.25rem 1.5rem;
+}
+
+.em-header-with-icon {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.em-header-with-icon div {
+    display: flex;
+    flex-direction: column;
+}
+
+.em-form-body {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow-y: auto;
+}
+
+.em-form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.em-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.em-form-group.full-width {
+    grid-column: span 2;
+}
+
+.em-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.em-search-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.em-search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-top: none;
+    border-radius: 0 0 0.5rem 0.5rem;
+    box-shadow: var(--shadow-lg);
+    z-index: 10;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: -1px;
+}
+
+.em-search-result-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.em-search-result-item:last-child {
+    border-bottom: none;
+}
+
+.em-search-result-item:hover {
+    background-color: var(--bg-page);
+}
+
+.em-result-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.em-result-name {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-main);
+}
+
+.em-result-id {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.em-result-pos {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.em-no-results {
+    padding: 1rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.em-icon-left {
+    position: absolute;
+    left: 0.75rem;
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.em-input-with-icon,
+.em-select-input,
+.em-date-input,
+.em-textarea {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+}
+
+.em-input-with-icon {
+    padding-left: 2.5rem;
+}
+
+.em-readonly-input {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    background-color: var(--bg-page);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    cursor: not-allowed;
+}
+
+.em-select-input {
+    appearance: none;
+    padding-right: 2.5rem;
+    cursor: pointer;
+}
+
+.em-select-input.has-icon-left {
+    padding-left: 2.5rem;
+}
+
+.em-icon-right {
+    position: absolute;
+    right: 0.75rem;
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.em-textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.em-form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.em-footer-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.em-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    transition: background-color 0.2s;
+}
+
+.em-back-btn:hover {
+    background-color: var(--bg-page);
+    color: var(--text-main);
+}
+
+/* .em-cancel-btn removed */
+
+.em-confirm-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 0.5rem;
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.em-confirm-btn:hover {
+    background-color: var(--primary-hover);
+}
+
+/* Dark mode overrides */
+[data-theme="dark"] .em-selection-btn {
+    background-color: var(--bg-card);
+    border-color: #374151;
+}
+
+[data-theme="dark"] .em-modal-footer-info {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .em-selection-action {
+    background-color: #435063;
+    color: #d1d5db;
+}
+
+/* RTL overrides */
+[dir="rtl"] .em-icon-left {
+    left: auto;
+    right: 0.75rem;
+}
+
+[dir="rtl"] .em-input-with-icon {
+    padding-left: 0.75rem;
+    padding-right: 2.5rem;
+}
+
+[dir="rtl"] .em-select-input.has-icon-left {
+    padding-left: 0.75rem;
+    padding-right: 2.5rem;
+}
+
+[dir="rtl"] .em-icon-right {
+    right: auto;
+    left: 0.75rem;
+}
+
+[dir="rtl"] .em-select-input {
+    padding-right: 0.75rem;
+    padding-left: 2.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .em-modal-container {
+        width: 100%;
+        max-width: 100%;
+        height: 100%;
+        max-height: 100%;
+        border-radius: 0;
+        margin: 0;
+    }
+
+    .em-modal-step {
+        height: 100%;
+        max-height: 100%;
+    }
+
+    .em-selection-action {
+        display: none;
+    }
+
+    .em-form-row {
+        gap: 0.75rem;
+    }
+
+    .em-modal-header,
+    .em-modal-header-form,
+    .em-modal-body,
+    .em-form-body,
+    .em-form-footer {
+        padding: 1rem;
+    }
+
+    .em-modal-title {
+        font-size: 1.125rem;
+    }
+}
+
+@media (max-height: 600px) {
+    .em-form-body {
+        max-height: 300px;
+    }
+}

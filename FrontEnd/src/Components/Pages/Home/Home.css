@@ -166,13 +166,11 @@
 .poop2 {
   width: 90vw;
   height: 80vh;
-  background: linear-gradient(
-    to right,
-    #1e3a8a 0%,
-    #1383ed 35%,
-    var(--bg-page) 35%,
-    var(--bg-page) 100%
-  );
+  background: linear-gradient(to right,
+      #1e3a8a 0%,
+      #1383ed 35%,
+      var(--bg-page) 35%,
+      var(--bg-page) 100%);
   border-radius: 24px;
   margin: auto;
   transform: translateY(-100px);
@@ -981,11 +979,9 @@
     width: 100%;
     padding: 20px;
     border-radius: 24px;
-    background: linear-gradient(
-      to right,
-      rgb(15 23 42) 35%,
-      rgb(15 23 42) 100%
-    );
+    background: linear-gradient(to right,
+        rgb(15 23 42) 35%,
+        rgb(15 23 42) 100%);
   }
 
   .container5 {

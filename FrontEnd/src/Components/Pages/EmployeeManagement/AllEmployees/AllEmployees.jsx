@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import './AllEmployees.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ const AllEmployees = () => {
             <header className="page-header">
                 <div className="header-info">
                     <h1>{t('All-Employees')}</h1>
+
                 </div>
                 <ThemeToggle />
             </header>
