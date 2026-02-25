@@ -54,11 +54,9 @@
     "label-department": "Department",
     "label-effective-date": "Effective Date",
     "label-direct-manager": "Direct Manager",
-    "label-promotion-reason": "Promotion Reason",
     "placeholder-search-employee": "Search by name or ID...",
     "placeholder-select-new-role": "Select new role...",
     "placeholder-select-manager": "Select manager...",
-    "placeholder-promotion-reason": "Describe the reason for promotion, achievements, etc...",
     "btn-back": "Back",
     "btn-confirm-promotion": "Confirm Promotion"
 }

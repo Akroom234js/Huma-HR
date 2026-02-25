@@ -54,11 +54,9 @@
     "label-department": "القسم",
     "label-effective-date": "تاريخ النفاذ",
     "label-direct-manager": "المدير المباشر",
-    "label-promotion-reason": "سبب الترقية",
     "placeholder-search-employee": "البحث بالاسم أو الرقم الوظيفي...",
     "placeholder-select-new-role": "اختر المنصب الجديد...",
     "placeholder-select-manager": "اختر المدير...",
-    "placeholder-promotion-reason": "صف سبب الترقية، الإنجازات، إلخ...",
     "btn-back": "رجوع",
     "btn-confirm-promotion": "تأكيد الترقية"
 }

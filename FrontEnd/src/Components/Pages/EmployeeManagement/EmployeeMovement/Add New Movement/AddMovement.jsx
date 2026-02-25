@@ -23,8 +23,7 @@ const AddMovement = ({ onAddMovement }) => {
     const [formData, setFormData] = useState({
         newPosition: '',
         effectiveDate: '',
-        manager: '',
-        reason: ''
+        manager: ''
     });
 
     const filteredEmployees = mockEmployees.filter(emp =>
@@ -65,8 +64,7 @@ const AddMovement = ({ onAddMovement }) => {
         setFormData({
             newPosition: '',
             effectiveDate: '',
-            manager: '',
-            reason: ''
+            manager: ''
         });
     };
 
@@ -275,15 +273,6 @@ const AddMovement = ({ onAddMovement }) => {
                                         </div>
                                     </div>
 
-                                    <div className="em-form-group full-width">
-                                        <label className="em-label">{t('label-promotion-reason')}</label>
-                                        <textarea
-                                            className="em-textarea"
-                                            placeholder={t('placeholder-promotion-reason')}
-                                            value={formData.reason}
-                                            onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
-                                        ></textarea>
-                                    </div>
                                 </div>
                                 <div className="em-modal-footer em-form-footer">
                                     <button className="em-back-btn" onClick={() => setModalStep('selection')}>
