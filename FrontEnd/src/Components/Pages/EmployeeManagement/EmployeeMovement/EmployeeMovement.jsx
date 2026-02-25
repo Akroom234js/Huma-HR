@@ -3,6 +3,7 @@ import './EmployeeMovement.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import FilterDropdown from '../../Recrutment/FilterDropdown/FilterDropdown';
 import { useTranslation } from 'react-i18next';
+import AddMovement from './Add New Movement/AddMovement';
 
 const movementData = [
     {
@@ -85,7 +86,6 @@ const EmployeeMovement = () => {
     const [typeFilter, setTypeFilter] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
-    const [showTransferModal, setShowTransferModal] = useState(false);
 
     const movementTypeOptions = [
         { value: '', label: t('filter-movement-type') },
@@ -116,10 +116,7 @@ const EmployeeMovement = () => {
                     <p className="em-subtitle">{t('page-subtitle')}</p>
                 </div>
                 <div className="em-header-actions">
-                    <button className="em-btn em-btn-primary" onClick={() => setShowTransferModal(true)}>
-                        <span className="material-symbols-outlined">person_add</span>
-                        {t('btn-add-movement')}
-                    </button>
+                    <AddMovement />
                 </div>
 
             </header>
@@ -254,67 +251,6 @@ const EmployeeMovement = () => {
                 </div>
             </div>
 
-            {/* Add New Transfer Modal */}
-            {showTransferModal && (
-                <div className="em-modal-overlay" onClick={() => setShowTransferModal(false)}>
-                    <div className="em-modal" onClick={(e) => e.stopPropagation()}>
-                        <div className="em-modal-header">
-                            <h2 className="em-modal-title">{t('modal-title')}</h2>
-                            <button className="em-modal-close" onClick={() => setShowTransferModal(false)}>
-                                <span className="material-symbols-outlined">close</span>
-                            </button>
-                        </div>
-                        <form className="em-modal-body">
-                            <div className="em-modal-field">
-                                <label className="em-modal-label" htmlFor="select-employee">{t('modal-select-employee')}</label>
-                                <div className="em-search-wrapper">
-                                    <span className="material-symbols-outlined em-search-icon">search</span>
-                                    <input
-                                        type="text"
-                                        className="em-input em-search-input"
-                                        id="select-employee"
-                                        placeholder={t('modal-search-placeholder')}
-                                    />
-                                </div>
-                            </div>
-                            <div className="em-modal-field">
-                                <label className="em-modal-label">{t('modal-current-dept')}</label>
-                                <p className="em-modal-readonly">{t('modal-current-dept-placeholder')}</p>
-                            </div>
-                            <div className="em-modal-field">
-                                <label className="em-modal-label" htmlFor="new-department">{t('modal-new-dept')}</label>
-                                <div className="em-select-wrapper">
-                                    <select className="em-input em-select" id="new-department">
-                                        <option disabled selected>{t('modal-new-dept-placeholder')}</option>
-                                        <option>Product</option>
-                                        <option>Engineering</option>
-                                        <option>Marketing</option>
-                                        <option>Sales</option>
-                                        <option>Human Resources</option>
-                                    </select>
-                                    <span className="material-symbols-outlined em-select-icon">expand_more</span>
-                                </div>
-                            </div>
-                            <div className="em-modal-field">
-                                <label className="em-modal-label" htmlFor="effective-date">{t('modal-date-of-transfer')}</label>
-                                <input
-                                    type="date"
-                                    className="em-input"
-                                    id="effective-date"
-                                />
-                            </div>
-                        </form>
-                        <div className="em-modal-footer">
-                            <button type="button" className="em-btn em-btn-cancel" onClick={() => setShowTransferModal(false)}>
-                                {t('modal-cancel')}
-                            </button>
-                            <button type="submit" className="em-btn em-btn-primary">
-                                {t('modal-submit')}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };
