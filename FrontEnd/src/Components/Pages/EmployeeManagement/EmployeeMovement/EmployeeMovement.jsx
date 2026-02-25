@@ -81,11 +81,14 @@ const policyItems = [
 ];
 
 const EmployeeMovement = () => {
-    const { t } = useTranslation('EmployeeMovement/EmployeeMovement');
+    const { t, i18n } = useTranslation('EmployeeMovement/EmployeeMovement');
     const [searchQuery, setSearchQuery] = useState('');
     const [typeFilter, setTypeFilter] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
+
+    // State for movements list
+    const [movements, setMovements] = useState(movementData);
 
     const movementTypeOptions = [
         { value: '', label: t('filter-movement-type') },
@@ -95,7 +98,18 @@ const EmployeeMovement = () => {
         { value: 'type-salary-adjustment', label: t('filter-salary-adjustment') },
     ];
 
-    const filteredData = movementData.filter((item) => {
+    const handleAddMovement = (newMovement) => {
+        setMovements(prev => [
+            {
+                ...newMovement,
+                date: newMovement.date || new Date().toISOString().split('T')[0],
+                changedBy: 'Admin' // Simulation
+            },
+            ...prev
+        ]);
+    };
+
+    const filteredData = movements.filter((item) => {
         const matchesSearch = item.name
             .toLowerCase()
             .includes(searchQuery.toLowerCase());
@@ -116,7 +130,7 @@ const EmployeeMovement = () => {
                     <p className="em-subtitle">{t('page-subtitle')}</p>
                 </div>
                 <div className="em-header-actions">
-                    <AddMovement />
+                    <AddMovement onAddMovement={handleAddMovement} />
                 </div>
 
             </header>
