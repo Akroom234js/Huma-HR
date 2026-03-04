@@ -1,0 +1,13 @@
+{
+    "Positions":"Positions & Roles Managment",
+    "add":"Add Department and Assign Persons",
+    "create":"Create new department and assign employees to roles",
+    "adddep":"Add Department & assign",
+    "addrole":"Add New Position/Role",
+     "all":"All Departments",
+       "position":"Position Title",
+           "name":"Department",
+           "action":"Actions",
+              "Role":"Role Description",
+              "opening":"Openings"
+}
