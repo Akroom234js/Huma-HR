@@ -1,16 +1,142 @@
 .all-employees-page {
-    padding: 2rem;
-    height: 100%;
+  padding: 2rem;
+  height: 100%;
 }
 
 .page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
 }
 
 .header-info h1 {
-    font-size: 1.8rem;
-    color: var(--text-color);
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text-color);
+}
+.con-filter {
+  background: var(--bg-card);
+  width: 100%;
+  height: 100px;
+  margin: 0px 16px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 12px;
+}
+.con-filter input {
+  width: 50%;
+  height: 30px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  margin-top: 15px;
+}
+.con-filter input::placeholder {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.con2-filter {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-top: 10px;
+}
+/* .con2-filter select {
+  display: block;
+  width: 140px;
+} */
+.all-filt {
+  width: 80%;
+}
+.con-filter button {
+  width: 200px;
+  height: 35px;
+  padding: 0px 16px;
+  font-size: 16px;
+  background-color: rgb(19 131 237);
+  color: #ffffff;
+  border-radius: 8px;
+  /* border: 1px solid var(--border-color); */
+  border: none;
+}
+.con-filter button:hover {
+  background-color: rgb(63, 147, 225);
+}
+
+.table-container {
+  width: 100%;
+  margin: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: var(--bg-card);
+  text-align: left;
+}
+
+th {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 15px;
+  color: var(--text-color);
+}
+
+td {
+  color: var(--text-secondary);
+  padding: 15px;
+  border-top: 1px solid var(--border-color);
+  font-size: 14px;
+}
+
+.emp-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #d1d5db;
+  background: red;
+  background-image: url("../../../../assets/dd.jpg");
+  background-size: cover;
+
+  background-repeat: no-repeat;
+}
+
+.status {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status.active {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.status.leave {
+  background-color: #fef9c3;
+  color: #a16207;
+}
+
+.actions button {
+  border-radius: 8px;
+  margin: 0px 5px;
+  border: var(--border-color);
+  background-color: var(--bg-card);
 }
