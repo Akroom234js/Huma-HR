@@ -1,5 +1,17 @@
 div.add-department div.add-department-co {
     height: 97vb;
+    overflow: scroll;
+}
+div.add-department {
+    background-color: rgb(17 24 39 / 0.4);
+    align-items: center;
+    justify-content: center;
+    height: 100vb;
+    width: 81%;
+    display: flex;
+    position: absolute;
+    
+    z-index: 20;
 }
 
 div.add-department div.add-department-co div.details-dep div.name-head div select,
