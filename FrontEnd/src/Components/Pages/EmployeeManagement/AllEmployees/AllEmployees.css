@@ -1,6 +1,7 @@
 .all-employees-page {
   padding: 2rem;
   height: 100%;
+  position: relative;
 }
 
 .page-header {
@@ -44,10 +45,7 @@
   gap: 10px;
   margin-top: 10px;
 }
-/* .con2-filter select {
-  display: block;
-  width: 140px;
-} */
+
 .all-filt {
   width: 80%;
 }
@@ -73,6 +71,7 @@
   border: 1px solid var(--border-color);
   border-radius: 12px;
   overflow: hidden;
+  position: relative;
 }
 
 table {
@@ -139,4 +138,102 @@ td {
   margin: 0px 5px;
   border: var(--border-color);
   background-color: var(--bg-card);
+}
+
+.poop_create {
+  width: 100%;
+  top: 10%;
+  height: 50%;
+  background-color: var(--bg-page);
+  position: absolute;
+  margin: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  text-align: center;
+  padding-top: 25px;
+}
+.poop_create h2 {
+  margin-bottom: 20px;
+}
+.con_ptn1 {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+.con_ptn1 button {
+  width: 90px;
+  height: 35px;
+  border: none;
+  border-radius: 12px;
+  color: var(--text-color);
+  background-color: var(--bg-card);
+}
+.con_ptn1 :last-child {
+  color: red;
+}
+.con_ptn1 button:hover {
+  background-color: rgb(147, 176, 233);
+  font-size: 17px;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  /* background: rgba(0, 0, 0, 0.4); */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 55%;
+  height: 80%;
+}
+
+.modal {
+  position: absolute;
+  background: var(--bg-page);
+  padding: 30px;
+  width: 100%;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-form input,
+.modal-form select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+.modal-buttons button {
+  border-radius: 12px;
+  width: 90px;
+  border: 1px solid var(--border-color);
+}
+.modal-buttons :last-child {
+  background-color: rgb(19 131 237);
+}
+.modal-buttons button:hover {
+  background-color: #949494;
+}
+.error {
+  color: red;
+  font-size: 12px;
 }
