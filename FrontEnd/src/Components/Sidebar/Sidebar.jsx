@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useLocation } from 'react-router-dom';
 import './Sidebar.css';
 import LanSw from '../LanSw'
 import logo from '../../assets/logo.png';
@@ -9,9 +9,16 @@ import { useTranslation } from 'react-i18next';
 
 const Sidebar = () => {
     const [departmentOpen, setDepartmentOpen] = useState(false);
+    const [employeeOpen, setEmployeeOpen] = useState(false);
     const [salaryOpen, setSalaryOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
-    const { t } = useTranslation('Sidebar/Sidebar')
+    const { t } = useTranslation('Sidebar/Sidebar');
+    const location = useLocation();
+
+    // Check if sub-routes are active
+    const isEmployeeActive = location.pathname.startsWith('/employees');
+    const isDepartmentActive = location.pathname.startsWith('/department');
+    const isSalaryActive = location.pathname.startsWith('/salary'); // Placeholder for future use
     return (
         <>
             <button
@@ -42,14 +49,34 @@ const Sidebar = () => {
                                 <p>{t('Dashboard')}</p>
                             </NavLink>
 
-                            <NavLink to="/employees" className="nav-item">
-                                <span className="material-symbols-outlined">group</span>
-                                <p>{t('Employee-Management')}</p>
-                            </NavLink>
+                            <div className="nav-section">
+                                <button
+                                    className={`nav-item nav-toggle ${isEmployeeActive || employeeOpen ? 'active' : ''}`}
+                                    onClick={() => setEmployeeOpen(!employeeOpen)}
+                                >
+                                    <div className="nav-item-content">
+                                        <span className="material-symbols-outlined">group</span>
+                                        <p>{t('Employee-Management')}</p>
+                                    </div>
+                                    <span className={`material-symbols-outlined expand-icon ${employeeOpen ? 'expanded' : ''}`}>
+                                        expand_more
+                                    </span>
+                                </button>
+                                {employeeOpen && (
+                                    <div className="sub-menu">
+                                        <NavLink to="/employees/all" className="sub-nav-item">
+                                            {t('All-Employees')}
+                                        </NavLink>
+                                        <NavLink to="/employees/movement" className="sub-nav-item">
+                                            {t('Employee-Movement')}
+                                        </NavLink>
+                                    </div>
+                                )}
+                            </div>
 
                             <div className="nav-section">
                                 <button
-                                    className="nav-item nav-toggle"
+                                    className={`nav-item nav-toggle ${isDepartmentActive || departmentOpen ? 'active' : ''}`}
                                     onClick={() => setDepartmentOpen(!departmentOpen)}
                                 >
                                     <div className="nav-item-content">
@@ -77,7 +104,7 @@ const Sidebar = () => {
 
                             <div className="nav-section">
                                 <button
-                                    className="nav-item nav-toggle"
+                                    className={`nav-item nav-toggle ${isSalaryActive || salaryOpen ? 'active' : ''}`}
                                     onClick={() => setSalaryOpen(!salaryOpen)}
                                 >
                                     <div className="nav-item-content">

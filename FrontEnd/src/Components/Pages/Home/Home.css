@@ -81,7 +81,6 @@
   display: inline-block;
 }
 
-
 .nav-profile {
   width: 50px;
   height: 50px;
@@ -120,6 +119,7 @@
   padding: 6px 18px 6px;
   margin: 42px;
   border: 1px solid var(--glass-border);
+  color: #ffffff !important;
 }
 
 .title {
@@ -132,6 +132,7 @@
 .description {
   letter-spacing: -1px;
   color: var(--text-accent);
+  color: #ffffff !important;
   margin: auto;
   padding: 9px 29px;
   font-size: 24px;

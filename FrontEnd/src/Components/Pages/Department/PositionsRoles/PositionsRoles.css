@@ -1,0 +1,135 @@
+div.page-container{
+    padding: 0px;
+}
+header.page-header{
+    width: 94%;
+    margin:10px auto;
+}
+div.page-container div.adddepartment{
+    display: none;
+}
+div.page-container div.add-role{
+    display: none;
+}
+div.adddep{
+    border: 1px solid var(--border-color);
+    padding: 5px;
+    width: 93%;
+    margin: auto;
+    border-radius: 10px;
+    background-color: var(--bg-card);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+div.adddep button,div.addrole button.addrole{
+  
+    padding: 0.625rem 0.75rem;
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 500;
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-family: inherit;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;   flex: 1;
+    padding: 0.625rem 0.75rem;
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 500;
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-family: inherit;
+    
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+    height: 50px;
+      flex: none;
+}
+div.adddep p.create{
+color: gray;
+font-size: 1rem;
+}
+div.adddep button:hover,div.addrole button.addrole:hover {
+    background-color: var(--primary-hover);
+    box-shadow: var(--shadow-md);
+}
+/* add role */
+div.addrole{
+      border: 1px solid var(--border-color);
+    padding: 5px;
+    width: 93%;
+    margin:15px auto;
+    border-radius: 10px;
+    background-color: var(--bg-card);
+}
+div.addrole div.header,div.search-filter{
+    display: flex;
+    align-items: center;
+    height: 100px;
+    justify-content: space-between;
+}
+div.search-filter{
+    padding-top: 10px;
+    gap: 10px;
+}
+div.search-filter input{
+    margin-top: -20px;
+    height: 38px;
+          border: 1px solid var(--border-color);
+          outline: none;
+          border-radius: 10px;
+
+}
+table.table{
+    width: 100%;
+}
+header.header{
+    background-color: rgb(226, 223, 223);
+    padding: 5px 10px;
+    justify-content: space-between;
+    display: flex;
+ 
+}
+header.header th{
+    width: 17%;
+     display: flex;
+    justify-content: center;
+
+}
+div.row-table-co p,div.row-table-co div{
+    width: 17%;
+
+     display: flex;
+    justify-content: center;
+    overflow: hidden;
+    text-overflow:ellipsis;
+}
+th.h-position,p.row-table1{
+    width: 20%;
+  
+}
+th.h-role,p.row-table3{
+    width: 30%;
+  
+}
+
+div.row-table-co{
+    display: flex;
+    width: 100%;
+      justify-content: space-between;  
+       padding: 5px 10px;
+}
+div.button-actions button{
+margin-inline-start: 3px;
+border: none;
+
+}
+div.button-actions{
+    display: flex;
+    justify-content: center;
+}

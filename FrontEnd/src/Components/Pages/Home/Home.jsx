@@ -262,7 +262,6 @@ export default function Home() {
               HR Director, TechFlow
             </p>
           </div>
-
         </div>
       </div>
       <Footer />

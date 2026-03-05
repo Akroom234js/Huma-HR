@@ -3,7 +3,10 @@ div.add-department {
     align-items: center;
     justify-content: center;
     height: 100vb;
+    width: 81%;
     display: flex;
+    position: absolute;
+    z-index: 20;
 }
 
 div.add-department div.add-department-co {
@@ -11,8 +14,7 @@ div.add-department div.add-department-co {
     background-color: var(--bg-page);
     border: 1px solid var(--border-color);
     width: 40%;
-    height: 90vb;
-
+    height: 82vb !important;
     overflow: hidden;
 }
 
@@ -64,6 +66,7 @@ div.add-department div.add-department-co div.assign div.select-emp-role select {
     width: 90%;
     height: 6vb;
     padding: 5px;
+     outline: none;
     border-radius: 5px;
 
 }
@@ -74,7 +77,7 @@ div.addemploy{
 }
 div.send-can-adddepartment{
  
-    height: 11vb;
+   
     display: flex;
     justify-content: end;
     align-items: end;

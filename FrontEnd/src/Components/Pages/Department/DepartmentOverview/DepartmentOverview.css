@@ -15,6 +15,11 @@
   border-radius: 12px;
 }
 
+.card h6,
+.center-text {
+  color: var(--text-secondary);
+}
+
 .donut {
   flex: 1;
   /* min-width: 300px; */
@@ -131,7 +136,7 @@
 .department-table thead {
   background-color: var(--bg-card);
   color: var(--text-main);
-  text-align: left;
+  text-align: start;
 }
 
 .department-table th {

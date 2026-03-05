@@ -37,10 +37,14 @@ export default function AddDepartment(){
             // <option key={i} option={e[i]}></option>
         )
     }
-    
+        const hidden=(e)=>{
+        const hid=document.querySelector('.adddepartment')
+        hid.style.display='none'
+        
+    }
     return(
         <div className='add-department'>
-            <ThemeToggle/>
+
             <div className='add-department-co'>
                  <div className='add-department-title'>
                     <p>{t('add')}</p>
@@ -88,7 +92,7 @@ export default function AddDepartment(){
                             </div>
                     </div>
                    <div className='send-can-adddepartment cancon'>
-                <button className='cancel'>{t('cancel')}</button>
+                <button className='cancel' onClick={(e)=>{hidden(e)}}>{t('cancel')}</button>
                 <button className='confirm'>{t('submit')}</button>
             </div> 
             </div>
