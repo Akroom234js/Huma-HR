@@ -6,44 +6,62 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
+        // Drop the default users table and rebuild it with our fields
+        Schema::dropIfExists('users');
+
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('full_name');
+
+            // ── Auth ───────────────────────────────────────────────────────
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
+
+            // ── Personal Information ───────────────────────────────────────
+            $table->string('full_name');
+            $table->string('employee_id')->unique();
+            $table->text('address')->nullable();
+            $table->text('emergency_contacts')->nullable();
+
+            // ── Employment & Contract ──────────────────────────────────────
+            $table->date('start_date')->nullable();
+            $table->string('job_title')->nullable();
+            $table->string('department')->nullable();
+            $table->string('direct_supervisor')->nullable();
+
             $table->timestamps();
         });
 
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
+        // ── Previous Experience ────────────────────────────────────────────
+        Schema::create('employee_experiences', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->string('company_name');
+            $table->string('job_title');
+            $table->string('period');
+            $table->text('skills_acquired')->nullable();
+            $table->timestamps();
         });
 
-        Schema::create('sessions', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
-            $table->string('ip_address', 45)->nullable();
-            $table->text('user_agent')->nullable();
-            $table->longText('payload');
-            $table->integer('last_activity')->index();
+        // ── Change Log ─────────────────────────────────────────────────────
+        Schema::create('employee_change_logs', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->string('field_changed');
+            $table->string('changed_by');
+            $table->text('previous_value')->nullable();
+            $table->text('new_value')->nullable();
+            $table->timestamp('changed_at')->useCurrent();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
+        Schema::dropIfExists('employee_change_logs');
+        Schema::dropIfExists('employee_experiences');
         Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
-        Schema::dropIfExists('sessions');
     }
 };
