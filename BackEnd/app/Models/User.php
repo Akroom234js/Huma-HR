@@ -2,59 +2,70 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
-        'full_name',
+        // Auth
         'email',
         'password',
+
+        // Personal Information
+        'full_name',
+        'employee_id',
+        'address',
+        'emergency_contacts',
+
+        // Employment & Contract
+        'start_date',
+        'job_title',
+        'department',
+        'direct_supervisor',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
+            'start_date'        => 'date',
         ];
     }
-public function employee(): HasOne
-{
-    return $this->hasOne(Employee::class);
-}
-      public function testimonials(): HasMany
+
+    // ── Relationships ──────────────────────────────────────────────────────────
+
+    public function experiences(): HasMany
     {
-        return $this->hasMany(Testimonial::class);
+        return $this->hasMany(EmployeeExperience::class);
+    }
+
+    public function changeLogs(): HasMany
+    {
+        return $this->hasMany(EmployeeChangeLog::class)->orderByDesc('changed_at');
+    }
+
+    // ── Helper: log a field change ─────────────────────────────────────────────
+
+    public function logChange(string $field, mixed $oldValue, mixed $newValue, string $changedBy): void
+    {
+        $this->changeLogs()->create([
+            'field_changed'  => $field,
+            'changed_by'     => $changedBy,
+            'previous_value' => $oldValue ?? '-',
+            'new_value'      => $newValue ?? '-',
+        ]);
     }
 }

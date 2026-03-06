@@ -28,12 +28,13 @@ class Employee extends Model
     protected function casts(): array
     {
         return [
-            'start_date' => 'date',
+            'start_date'    => 'date',
             'last_login_at' => 'datetime',
         ];
     }
 
-    // Relationships
+    // ── Existing Relationships ─────────────────────────────────────────────────
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -54,7 +55,20 @@ class Employee extends Model
         return $this->hasMany(Employee::class, 'manager_id');
     }
 
-    // Accessors
+    // ── New Relationships ──────────────────────────────────────────────────────
+
+    public function experiences(): HasMany
+    {
+        return $this->hasMany(EmployeeExperience::class);
+    }
+
+    public function changeLogs(): HasMany
+    {
+        return $this->hasMany(EmployeeChangeLog::class)->orderByDesc('changed_at');
+    }
+
+    // ── Existing Accessors ─────────────────────────────────────────────────────
+
     public function getProfilePicUrlAttribute(): ?string
     {
         return $this->profile_pic ? asset('storage/' . $this->profile_pic) : null;
@@ -64,4 +78,17 @@ class Employee extends Model
     {
         return $this->user->name;
     }
+
+    // ── New Helper ─────────────────────────────────────────────────────────────
+
+    public function logChange(string $field, mixed $oldValue, mixed $newValue, string $changedBy): void
+    {
+        $this->changeLogs()->create([
+            'field_changed'  => $field,
+            'changed_by'     => $changedBy,
+            'previous_value' => $oldValue ?? '-',
+            'new_value'      => $newValue ?? '-',
+        ]);
+    }
 }
+
