@@ -3,10 +3,12 @@ import "./AllEmployees.css";
 import FilterDropdown from "../../Recrutment/FilterDropdown/FilterDropdown";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
 // import { useTranslation } from "react-i18next";
+import AddEmployeeModal from "../Add New Employee/AddEmployeeModal";
 import { useState } from "react";
 const AllEmployees = () => {
   // const { t } = useTranslation("Sidebar/Sidebar");
   const [selectedDepartment1, setSelectedDepartment1] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const departmentOptions = [
     // { value: '', label: t('departmentOptions.all') },
@@ -78,7 +80,7 @@ const AllEmployees = () => {
             {/* </div> */}
           </div>
         </div>
-        <button>+ Add New Employee</button>
+        <button onClick={() => setIsModalOpen(true)}>+ Add New Employee</button>
       </div>
 
       <div className="table-container">
@@ -128,6 +130,11 @@ const AllEmployees = () => {
           </tbody>
         </table>
       </div>
+      <AddEmployeeModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={(data) => console.log("Sending to Laravel:", data)}
+      />
     </div>
   );
 };
