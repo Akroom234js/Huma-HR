@@ -15,6 +15,7 @@
   font-weight: 700;
   color: var(--text-color);
 }
+
 .con-filter {
   background: var(--bg-card);
   width: 100%;
@@ -26,6 +27,7 @@
   align-items: center;
   border-radius: 12px;
 }
+
 .con-filter input {
   width: 50%;
   height: 30px;
@@ -34,16 +36,19 @@
   border-radius: 6px;
   margin-top: 15px;
 }
+
 .con-filter input::placeholder {
   font-size: 14px;
   color: var(--text-secondary);
 }
+
 .con2-filter {
   display: flex;
   justify-content: flex-start;
   gap: 10px;
   margin-top: 10px;
 }
+
 /* .con2-filter select {
   display: block;
   width: 140px;
@@ -51,6 +56,7 @@
 .all-filt {
   width: 80%;
 }
+
 .con-filter button {
   width: 200px;
   height: 35px;
@@ -62,6 +68,7 @@
   /* border: 1px solid var(--border-color); */
   border: none;
 }
+
 .con-filter button:hover {
   background-color: rgb(63, 147, 225);
 }
