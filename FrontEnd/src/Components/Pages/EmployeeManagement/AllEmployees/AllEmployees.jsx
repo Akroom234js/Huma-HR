@@ -3,13 +3,12 @@ import "./AllEmployees.css";
 import FilterDropdown from "../../Recrutment/FilterDropdown/FilterDropdown";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
 // import { useTranslation } from "react-i18next";
-import AddEmployeeModal from "../Add New Employee/AddEmployeeModal";
 import { useState } from "react";
+import AddEmployeeModal from "../Add New Employee/AddEmployeeModal";
 const AllEmployees = () => {
   // const { t } = useTranslation("Sidebar/Sidebar");
   const [selectedDepartment1, setSelectedDepartment1] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const departmentOptions = [
     // { value: '', label: t('departmentOptions.all') },
     { value: "", label: "Department" },
@@ -77,12 +76,10 @@ const AllEmployees = () => {
               onChange={setSelectedDepartment1}
               options={departmentOptions}
             />
-            {/* </div> */}
           </div>
         </div>
         <button onClick={() => setIsModalOpen(true)}>+ Add New Employee</button>
       </div>
-
       <div className="table-container">
         <table>
           <thead>
