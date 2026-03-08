@@ -21,16 +21,18 @@ align-items: center;
 }
 div.interview div.interviewTime p.interviewTime{
     font-weight: 900;
-    font-size: 2rem;
+    font-size: 1.5rem;
     color: var(--text-color);
     margin-bottom: -3px;
 }
 div.interview div.interviewTime p.AmPm{
     color: grey;
+     font-size: 0.7rem;
     margin-bottom: 3px;
 }
 div.interview div.interviewTime p.duration{
     color: grey;
+    font-size: 1rem;
 }
 div.interview div.empdet{
     width: 55%;
@@ -45,12 +47,12 @@ border-right: 1px solid var(--border-color);
 }
 div.interview div.empdet p.name{
     font-weight: 900;
-    font-size: 1rem;
+    font-size: 0.8rem;
     color: var(--text-color);
 }
 div.interview div.empdet p span,div.interview div.empdet p.det-inteerview,div.interview div.interviewers p.interviewers{
     
-    font-size: 1rem;
+    font-size: 0.8rem;
     color: gray;
 }
 div.interview div.interviewers{
@@ -74,4 +76,59 @@ div.interview div.interviewers div.interviewer div.interviewers{
     margin-inline-start: -10px;
     border: 1px solid var(--border-color);
     background-color: aqua;
+}
+@media(max-width:615px){
+    div.interview div.interviewTime p.duration{
+    font-size: 0.9rem;
+}
+div.interview div.interviewers div.interviewer div.interviewers{
+    
+    width: 27px;
+    height: 27px;
+}
+div.interview{
+    border: 1px solid var(--border-color);
+    margin: auto;
+    display: flex;
+    
+    height: fit-content;
+    flex-direction: column;
+    width: 98%;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    margin-bottom: 5px;
+
+}
+div.interview div.empdet{
+    width: 100%;
+    padding: 5px;
+    display: flex;
+flex-direction: column;
+justify-content: center;
+
+background-color: var(--bg-card);
+border-left: 1px solid var(--border-color);
+border-right: 1px solid var(--border-color);
+}
+div.interview div.interviewers{
+width: 100%;
+padding: 5px;
+background-color: var(--bg-card);
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: column;
+border-top: 1px solid var(--border-color);
+padding: 10px;
+}
+div.interview div.interviewTime{
+width: 100%;
+background-color: var(--bg-page);
+border-radius: var(--radius-xl);
+padding: 5px;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+}
 }

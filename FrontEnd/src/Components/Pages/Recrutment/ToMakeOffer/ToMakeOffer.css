@@ -4,9 +4,10 @@
 /* Only add page-specific styles here if needed */
 
 /* Tablet breakpoint */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
     .recruitment-container {
         padding: 1rem;
+           margin-top: 30px;
     }
 
     .candidates-grid {
@@ -15,7 +16,7 @@
     }
 
     .recruitment-header-flex {
-        flex-direction: column;
+        /* flex-direction: column; */
         gap: 1rem;
     }
 }
@@ -24,6 +25,7 @@
 @media (max-width: 480px) {
     .recruitment-container {
         padding: 0.75rem;
+        margin-top: 50px;
     }
 
     .view-more-btn {

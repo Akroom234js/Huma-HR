@@ -42,7 +42,7 @@ export default function AddRole(){
        const hidden=(e)=>{
         const hid=document.querySelector('.add-role')
         hid.style.display='none'
-        
+          document.body.style.overflow='auto'
     }   
     return(<>
     <div className='add-department'>
