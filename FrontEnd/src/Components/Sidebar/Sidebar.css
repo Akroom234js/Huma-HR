@@ -264,7 +264,7 @@ button.translation:hover {
         transition: transform 0.3s ease;
         z-index: 1000;
         width: 260px;
-      
+
         position: fixed;
         height: 100vh;
         box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
@@ -272,7 +272,13 @@ button.translation:hover {
         /* Keep it flex, just hidden by transform */
     }
 
-    .sidebar.open {
+    body[dir="rtl"] .sidebar {
+        transform: translateX(100%);
+        box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar.open,
+    body[dir="rtl"] .sidebar.open {
         transform: translateX(0);
     }
 }
@@ -282,11 +288,7 @@ button.translation:hover {
         transform: none;
         display: flex;
         position: fixed;
-<<<<<<< Updated upstream
-=======
-         
         inset-inline-start: 0;
->>>>>>> Stashed changes
         /* Restore fixed position for desktop if needed, or relative depending on layout */
         z-index: 10;
         box-shadow: none;
