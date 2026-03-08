@@ -8,15 +8,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class EmployeeExperience extends Model
 {
     protected $fillable = [
-        'employee_id',
+        'user_id',
         'company_name',
         'job_title',
         'period',
         'skills_acquired',
     ];
+ public function user(): BelongsTo
+{
+    return $this->belongsTo(User::class);
+}
 
-    public function employee(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class);
-    }
+
 }
