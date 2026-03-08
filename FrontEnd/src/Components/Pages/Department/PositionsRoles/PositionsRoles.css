@@ -35,7 +35,7 @@ div.adddep button,div.addrole button.addrole{
     font-family: inherit;
     box-shadow: var(--shadow-sm);
     transition: all 0.2s ease;   flex: 1;
-    padding: 0.625rem 0.75rem;
+    padding: 0.625rem 0.75rem 1.5rem 0.75rem ;
     background-color: var(--primary-color);
     color: white;
     font-weight: 500;
@@ -48,6 +48,7 @@ div.adddep button,div.addrole button.addrole{
     box-shadow: var(--shadow-sm);
     transition: all 0.2s ease;
     height: 50px;
+    margin-inline-start: 5px;
       flex: none;
 }
 div.adddep p.create{
@@ -71,18 +72,24 @@ div.addrole div.header,div.search-filter{
     display: flex;
     align-items: center;
     height: 100px;
+
     justify-content: space-between;
 }
 div.search-filter{
-    padding-top: 10px;
+    padding-top: 20px;
     gap: 10px;
+
 }
 div.search-filter input{
     margin-top: -20px;
+    width: 90%;
+    padding-inline-start: 30px;
     height: 38px;
           border: 1px solid var(--border-color);
           outline: none;
           border-radius: 10px;
+          color: var(--text-color);
+          background-color: transparent;
 
 }
 table.table{
@@ -90,7 +97,7 @@ table.table{
 }
 header.header{
     background-color: rgb(226, 223, 223);
-    padding: 5px 10px;
+    padding: 0px 10px;
     justify-content: space-between;
     display: flex;
  
@@ -98,7 +105,11 @@ header.header{
 header.header th{
     width: 17%;
      display: flex;
+     padding:  8px;
+     font-size: 13px;
+     font-weight: bold;
     justify-content: center;
+    color: black;
 
 }
 div.row-table-co p,div.row-table-co div{
@@ -124,12 +135,137 @@ div.row-table-co{
       justify-content: space-between;  
        padding: 5px 10px;
 }
+i.icon-search{
+    position: absolute;
+    top: 36%;
+    color: black;
+    
+    padding: 0px 0.7rem;
+}
 div.button-actions button{
 margin-inline-start: 3px;
 border: none;
+background-color: transparent;
+color: var(--text-color);
 
 }
 div.button-actions{
     display: flex;
     justify-content: center;
+}
+div.row-table-co-mobile{
+    display: none;
+}
+/* ============================ */
+@media (max-width: 767px) {
+div.page-container{
+    margin-top: 50px;
+    margin-inline-start: 10px;
+}
+  div.adddep,
+  div.addrole {
+    width: 98%;
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  div.adddep button,
+  div.addrole button.addrole {
+    width: 100%;
+  }
+i.icon-search{
+
+    top: 54%;
+   
+}
+}
+@media (max-width: 559px){
+table.table{
+    display: none;
+}
+div.row-table-co-mobile{
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    border: 1px solid var(--border-color);
+    margin-top: 8px;
+    margin-bottom: 15px;
+    color: var(--text-color);
+    padding: 5px;
+}
+div.row-table-co-mobile div{
+    display: flex;
+  
+} 
+}
+@media (max-width: 450px){
+div.search-filter{
+    display: flex;
+    align-items: center;
+    height: 100px;
+flex-direction: column;
+    justify-content: space-between;
+}
+
+div.search-filter input{
+    margin-top: -10px;
+    width: 100%;
+    padding-inline-start: 30px;
+    padding: 10px 30px;
+    height: 150px;
+          border: 1px solid var(--border-color);
+          outline: none;
+          border-radius: 10px;
+
+}
+}
+
+/* ============================ */
+@media (min-width: 768px) and (max-width: 1023px) {
+div.page-container{
+    margin-top: 50px;
+    margin-inline-start: 10px;
+    
+}
+main.main-content{
+    margin-inline-start:0px; 
+     width: 100%;
+}
+i.icon-search{
+
+    top: 44%;
+   
+}
+  div.adddep,
+  div.addrole {
+    width: 95%;
+  }
+
+  div.search-filter {
+    gap: 15px;
+  }
+
+  table.table {
+    font-size: 14px;
+  }
+
+  div.row-table-co p,
+  div.row-table-co div {
+    font-size: 14px;
+  }
+}
+
+/*============================ */
+@media (min-width: 1024px) {
+
+  div.adddep,
+  div.addrole {
+    width: 93%;
+    
+  }
+
+  table.table {
+    font-size: 15px;
+  }
 }

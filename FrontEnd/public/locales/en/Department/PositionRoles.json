@@ -9,5 +9,6 @@
            "name":"Department",
            "action":"Actions",
               "Role":"Role Description",
-              "opening":"Openings"
+              "opening":"Openings",
+      "search":"search"
 }

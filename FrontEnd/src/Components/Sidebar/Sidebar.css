@@ -248,7 +248,7 @@ button.translation:hover {
 }
 
 /* Mobile Responsive Styles */
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
     .mobile-toggle {
         display: flex;
         align-items: center;
@@ -264,6 +264,7 @@ button.translation:hover {
         transition: transform 0.3s ease;
         z-index: 1000;
         width: 260px;
+      
         position: fixed;
         height: 100vh;
         box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
@@ -276,11 +277,16 @@ button.translation:hover {
     }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
     .sidebar {
         transform: none;
         display: flex;
         position: fixed;
+<<<<<<< Updated upstream
+=======
+         
+        inset-inline-start: 0;
+>>>>>>> Stashed changes
         /* Restore fixed position for desktop if needed, or relative depending on layout */
         z-index: 10;
         box-shadow: none;
