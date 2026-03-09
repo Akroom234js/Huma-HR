@@ -13,6 +13,7 @@ export default function Home() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -81,11 +82,19 @@ export default function Home() {
             </Link>
           </div>
           <div className="other-option-con">
-            <Link to="/home">Home</Link>
-            <Link to="/jops">Jops</Link>
-            <Link to="/recruitment">Go to website</Link>
-            <ThemeToggle />
-            <div className="nav-profile"> </div>
+            <button
+              className="hamburger-menu"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              <i className={`fa-solid ${isMobileMenuOpen ? 'fa-xmark' : 'fa-bars'}`}></i>
+            </button>
+            <div className={`nav-links ${isMobileMenuOpen ? 'open' : ''}`}>
+              <Link to="/home">Home</Link>
+              <Link to="/jops">Jops</Link>
+              <Link to="/recruitment">Go to website</Link>
+              <ThemeToggle />
+              <div className="nav-profile"> </div>
+            </div>
           </div>
         </div>
         <div className="intro-box">
@@ -97,7 +106,7 @@ export default function Home() {
             empower you with transparency.
           </p>
         </div>
-      </div>
+      </div >
       <div className="container2">
         <div className="poop1">
           <span style={{ color: "var(--primary-color)" }}>.</span>
