@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Home.css";
 import Footer from "./Footer";
 import logo from "../../../assets/logo.png";
 import ThemeToggle from "../../ThemeToggle/ThemeToggle";
 export default function Jops() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   return (
     <>
       <div className="container1">
@@ -17,12 +19,19 @@ export default function Jops() {
             </Link>
           </div>
           <div className="other-option-con">
-            <Link to="/home">Home</Link>
-            <Link to="/jops">Jops</Link>
-            <Link to="/recruitment">Go to website</Link>
-            <ThemeToggle />
-
-            <div className="nav-profile"> </div>
+            <button
+              className="hamburger-menu"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              <i className={`fa-solid ${isMobileMenuOpen ? 'fa-xmark' : 'fa-bars'}`}></i>
+            </button>
+            <div className={`nav-links ${isMobileMenuOpen ? 'open' : ''}`}>
+              <Link to="/home">Home</Link>
+              <Link to="/jops">Jops</Link>
+              <Link to="/recruitment">Go to website</Link>
+              <ThemeToggle />
+              <div className="nav-profile"> </div>
+            </div>
           </div>
         </div>
         <div className="intro-box">
@@ -33,7 +42,7 @@ export default function Jops() {
             talented individuals to join our mission of revolutionizing HR.
           </p>
         </div>
-      </div>
+      </div >
       <div className="container2">
         <div className="poop_jops">
           <div className="con_up">
