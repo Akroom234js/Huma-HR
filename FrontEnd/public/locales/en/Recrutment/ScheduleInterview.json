@@ -1,0 +1,14 @@
+{
+    "shinterview":"Schedule Interview",
+    "for":"for",
+    "date":"Interview Date",
+    "type":"Interview Type",
+    "start":"Start Time",
+    "end":"End Time",
+    "interviewers":"Interviewers",
+    "notes":"Notes / Instructions",
+    "cancel":"Cancel",
+    "confirm":"Confirm Schedule",
+    "placeholder":"Add any specific instructions for the candidate...",
+    "ctrl":"Hold Ctrl to select multiple"
+}

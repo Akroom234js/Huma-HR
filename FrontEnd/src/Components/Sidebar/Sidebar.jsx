@@ -1,103 +1,160 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink, Link, useLocation } from 'react-router-dom';
 import './Sidebar.css';
+import LanSw from '../LanSw'
+import logo from '../../assets/logo.png';
+
+import ThemeToggle from '../ThemeToggle/ThemeToggle';
+import { useTranslation } from 'react-i18next';
 
 const Sidebar = () => {
     const [departmentOpen, setDepartmentOpen] = useState(false);
+    const [employeeOpen, setEmployeeOpen] = useState(false);
     const [salaryOpen, setSalaryOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const { t } = useTranslation('Sidebar/Sidebar');
+    const location = useLocation();
 
+    // Check if sub-routes are active
+    const isEmployeeActive = location.pathname.startsWith('/employees');
+    const isDepartmentActive = location.pathname.startsWith('/department');
+    const isSalaryActive = location.pathname.startsWith('/salary'); // Placeholder for future use
     return (
-        <aside className="sidebar">
-            <div className="sidebar-content">
-                <div className="sidebar-top">
-                    <div className="sidebar-header">
-                        <div className="logo-icon">H</div>
-                        <div className="logo-text">
-                            <h1>Huma</h1>
+        <>
+            <button
+                className={`mobile-toggle ${isOpen ? 'active' : ''}`}
+                onClick={() => setIsOpen(!isOpen)}
+                aria-label="Toggle Menu"
+            >
+                <span className="material-symbols-outlined">
+                    {isOpen ? 'close' : 'menu'}
+                </span>
+            </button>
+
+            {isOpen && <div className="sidebar-overlay" onClick={() => setIsOpen(false)}></div>}
+
+            <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
+                <div className="sidebar-content">
+                    <div className="sidebar-top">
+                        <div className="sidebar-header">
+                            <Link to="/home">
+                                <img src={logo} alt="Huma HR Logo" className="sidebar-logo" />
+                                <h1 className="sidebar-title">Huma</h1>
+                            </Link>
                         </div>
+
+                        <nav className="sidebar-nav">
+                            <NavLink to="/Dashboard" className="nav-item" end>
+                                <span className="material-symbols-outlined">dashboard</span>
+                                <p>{t('Dashboard')}</p>
+                            </NavLink>
+
+                            <div className="nav-section">
+                                <button
+                                    className={`nav-item nav-toggle ${isEmployeeActive || employeeOpen ? 'active' : ''}`}
+                                    onClick={() => setEmployeeOpen(!employeeOpen)}
+                                >
+                                    <div className="nav-item-content">
+                                        <span className="material-symbols-outlined">group</span>
+                                        <p>{t('Employee-Management')}</p>
+                                    </div>
+                                    <span className={`material-symbols-outlined expand-icon ${employeeOpen ? 'expanded' : ''}`}>
+                                        expand_more
+                                    </span>
+                                </button>
+                                {employeeOpen && (
+                                    <div className="sub-menu">
+                                        <NavLink to="/employees/all" className="sub-nav-item">
+                                            {t('All-Employees')}
+                                        </NavLink>
+                                        <NavLink to="/employees/movement" className="sub-nav-item">
+                                            {t('Employee-Movement')}
+                                        </NavLink>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="nav-section">
+                                <button
+                                    className={`nav-item nav-toggle ${isDepartmentActive || departmentOpen ? 'active' : ''}`}
+                                    onClick={() => setDepartmentOpen(!departmentOpen)}
+                                >
+                                    <div className="nav-item-content">
+                                        <span className="material-symbols-outlined">corporate_fare</span>
+                                        <p>{t('Department')}</p>
+                                    </div>
+                                    <span className={`material-symbols-outlined expand-icon ${departmentOpen ? 'expanded' : ''}`}>
+                                        expand_more
+                                    </span>
+                                </button>
+                                {departmentOpen && (
+                                    <div className="sub-menu">
+                                        <NavLink to="/department/overview" className="sub-nav-item">
+                                            {t('Department-Overview')}
+                                        </NavLink>
+                                        <NavLink to="/department/org-chart" className="sub-nav-item">
+                                            {t('Organizational-Chart')}
+                                        </NavLink>
+                                        <NavLink to="/department/positions" className="sub-nav-item">
+                                            {t('Positions-Roles')}
+                                        </NavLink>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="nav-section">
+                                <button
+                                    className={`nav-item nav-toggle ${isSalaryActive || salaryOpen ? 'active' : ''}`}
+                                    onClick={() => setSalaryOpen(!salaryOpen)}
+                                >
+                                    <div className="nav-item-content">
+                                        <span className="material-symbols-outlined">payments</span>
+                                        <p>{t('Salary-Management')}</p>
+                                    </div>
+                                    <span className={`material-symbols-outlined expand-icon ${salaryOpen ? 'expanded' : ''}`}>
+                                        expand_more
+                                    </span>
+                                </button>
+                            </div>
+
+                            <NavLink to="/leaves" className="nav-item">
+                                <span className="material-symbols-outlined">event_busy</span>
+                                <p>{t('Leaves')}</p>
+                            </NavLink>
+
+                            <NavLink to="/performance" className="nav-item">
+                                <span className="material-symbols-outlined">trending_up</span>
+                                <p>{t('Performance')}</p>
+                            </NavLink>
+
+                            <NavLink to="/recruitment" className="nav-item">
+                                <span className="material-symbols-outlined material-symbols-filled">person_add</span>
+                                <p>{t('Recruitment')}</p>
+                            </NavLink>
+
+                            <NavLink to="/request" className="nav-item">
+                                <span className="material-symbols-outlined">task_alt</span>
+                                <p>{t('Request')}</p>
+                            </NavLink>
+
+                            <NavLink to="/reports" className="nav-item">
+                                <span className="material-symbols-outlined">summarize</span>
+                                <p>{t('Reports')}</p>
+                            </NavLink>
+                        </nav>
                     </div>
 
-                    <nav className="sidebar-nav">
-                        <Link to="/" className="nav-item">
-                            <span className="material-symbols-outlined">dashboard</span>
-                            <p>Dashboard</p>
+                    <div className="sidebar-bottom">
+
+                        <LanSw />
+                        <Link to="/logout" className="nav-item">
+                            <span className="material-symbols-outlined">logout</span>
+                            <p>{t('Logout')}</p>
                         </Link>
-
-                        <Link to="/employees" className="nav-item">
-                            <span className="material-symbols-outlined">group</span>
-                            <p>Employee Management</p>
-                        </Link>
-
-                        <div className="nav-section">
-                            <button
-                                className="nav-item nav-toggle"
-                                onClick={() => setDepartmentOpen(!departmentOpen)}
-                            >
-                                <div className="nav-item-content">
-                                    <span className="material-symbols-outlined">corporate_fare</span>
-                                    <p>Department</p>
-                                </div>
-                                <span className={`material-symbols-outlined expand-icon ${departmentOpen ? 'expanded' : ''}`}>
-                                    expand_more
-                                </span>
-                            </button>
-                        </div>
-
-                        <div className="nav-section">
-                            <button
-                                className="nav-item nav-toggle"
-                                onClick={() => setSalaryOpen(!salaryOpen)}
-                            >
-                                <div className="nav-item-content">
-                                    <span className="material-symbols-outlined">payments</span>
-                                    <p>Salary Management</p>
-                                </div>
-                                <span className={`material-symbols-outlined expand-icon ${salaryOpen ? 'expanded' : ''}`}>
-                                    expand_more
-                                </span>
-                            </button>
-                        </div>
-
-                        <Link to="/leaves" className="nav-item">
-                            <span className="material-symbols-outlined">event_busy</span>
-                            <p>Leaves</p>
-                        </Link>
-
-                        <Link to="/performance" className="nav-item">
-                            <span className="material-symbols-outlined">trending_up</span>
-                            <p>Performance</p>
-                        </Link>
-
-                        <Link to="/recruitment" className="nav-item active">
-                            <span className="material-symbols-outlined material-symbols-filled">person_add</span>
-                            <p>Recruitment</p>
-                        </Link>
-
-                        <Link to="/request" className="nav-item">
-                            <span className="material-symbols-outlined">task_alt</span>
-                            <p>Request</p>
-                        </Link>
-
-                        <Link to="/reports" className="nav-item">
-                            <span className="material-symbols-outlined">summarize</span>
-                            <p>Reports</p>
-                        </Link>
-                    </nav>
-                </div>
-
-                <div className="sidebar-bottom">
-                    {/* <Link to="/settings" className="nav-item">
-                        <span className="material-symbols-outlined">settings</span>
-                        <p>Settings</p>
-                    </Link> */}
-
-                    <Link to="/logout" className="nav-item">
-                        <span className="material-symbols-outlined">logout</span>
-                        <p>Logout</p>
-                    </Link>
-                </div>
-            </div>
-        </aside>
+                    </div >
+                </div >
+            </aside >
+        </>
     );
 };
 

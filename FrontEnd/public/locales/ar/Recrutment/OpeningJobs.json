@@ -1,0 +1,37 @@
+{
+    "create": "إنشاء وظيفة",
+    "Tabs": {
+        "Interview-Happening": "مقابلات جارية",
+        "To-Schedule-Interview": "جدولة المقابلات",
+        "To-Make-Offer": "مقابلات مجدولة",
+        "Opening": "الوظائف الشاغرة"
+    },
+    "JobCard": {
+        "Edit": "تعديل",
+        "Delete": "حذف",
+        "Applicants": "متقدمين",
+        "Department": "القسم",
+        "Salary": "الراتب"
+    },
+    "departmentOptions": {
+        "all": "كل الأقسام"
+    },
+    "Messages": {
+        "Delete-Confirm": "هل أنت متأكد أنك تريد حذف هذه الوظيفة؟"
+    },
+    "Modal": {
+        "Edit-Title": "تعديل وظيفة",
+        "Create-Title": "إنشاء وظيفة جديدة",
+        "Job-Title": "عنوان الوظيفة",
+        "Department": "القسم",
+        "Select-Department": "اختر القسم",
+        "Salary-Range": "نطاق الراتب",
+        "Job-Description": "وصف الوظيفة",
+        "Cancel": "إلغاء",
+        "Update": "تحديث الوظيفة",
+        "Post": "نشر الوظيفة",
+        "Placeholder-Title": "مثال: مهندس خلفية برمجية أول",
+        "Placeholder-Salary": "مثال: 120,000$ - 150,000$",
+        "Placeholder-Description": "صف المسؤوليات والمتطلبات..."
+    }
+}

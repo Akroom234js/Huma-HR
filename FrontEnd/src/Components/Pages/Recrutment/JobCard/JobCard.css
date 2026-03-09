@@ -1,0 +1,82 @@
+.job-card {
+    background-color: var(--bg-card);
+    /* تغيير من white */
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    /* تغيير من #e5e7eb */
+    transition: all 0.3s ease;
+    /* إضافة لضمان سلاسة التحول */
+    display: flex;
+    flex-direction: column;
+}
+
+.job-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.job-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.job-card-header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    /* تغيير من #111827 */
+}
+
+.card-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+}
+
+.icon-btn:hover {
+    color: #359EFF;
+    /* لون البريماري الخاص بك */
+}
+
+.job-desc {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    /* تغيير من #6b7280 */
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.job-details {
+    margin-bottom: 20px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    /* تغيير من #6b7280 */
+    margin-bottom: 8px;
+}
+
+.job-footer {
+    padding-top: 15px;
+    border-top: 1px solid var(--border-light);
+    /* تغيير من #f3f4f6 */
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* تعديل لون الأيقونات الافتراضي */
+.material-symbols-outlined {
+    color: var(--text-secondary);
+}
