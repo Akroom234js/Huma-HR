@@ -81,7 +81,7 @@ class AuthController extends Controller
     {
         if (!Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             return $this->errorResponse(
-                message: 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
+                message: 'Incorrect email or password.',
                 statusCode: 401
             );
         }
@@ -91,7 +91,7 @@ class AuthController extends Controller
         if ($user->account_status !== 'active') {
             Auth::logout();
             return $this->errorResponse(
-                message: 'الحساب غير مفعّل، تواصل مع الـ HR',
+                message: 'Account is not active, please contact HR.',
                 statusCode: 403
             );
         }
@@ -121,7 +121,7 @@ class AuthController extends Controller
                     'role'  => $user->roles->pluck('name')->first(),
                 ],
             ],
-            message: 'تم تسجيل الدخول بنجاح'
+            message: 'Login successful.'
         );
     }
 
@@ -130,7 +130,7 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return $this->successResponse(message: 'تم تسجيل الخروج بنجاح');
+        return $this->successResponse(message: 'Logout successful.');
     }
 
     // ─── نسيان كلمة المرور (إرسال رمز) ────────────────────────────────────
@@ -149,11 +149,10 @@ class AuthController extends Controller
 
         // إرسال الرمز بالإيميل
         Mail::raw(
-            "رمز إعادة تعيين كلمة المرور: {$code}\nصالح لمدة 15 دقيقة فقط.",
-            fn($msg) => $msg->to($request->email)->subject('إعادة تعيين كلمة المرور')
-        );
-
-        return $this->successResponse(message: 'تم إرسال رمز التحقق إلى بريدك الإلكتروني');
+    "Password reset code: {$code}\nThis code will expire in 15 minutes.",
+    fn($msg) => $msg->to($request->email)->subject('Password Reset')
+);
+        return $this->successResponse(message: 'Password reset code sent to your email.');
     }
 
     // ─── إعادة تعيين كلمة المرور ───────────────────────────────────────────
@@ -165,7 +164,7 @@ class AuthController extends Controller
 
         if (!$record || !Hash::check($request->code, $record->code)) {
             return $this->errorResponse(
-                message: 'الرمز غير صحيح',
+                message: 'Invalid code.',
                 statusCode: 422
             );
         }
@@ -173,7 +172,7 @@ class AuthController extends Controller
         if ($record->isExpired()) {
             $record->delete();
             return $this->errorResponse(
-                message: 'انتهت صلاحية الرمز، اطلب رمزاً جديداً',
+                message: 'The code has expired, please request a new one.',
                 statusCode: 422
             );
         }
@@ -183,7 +182,7 @@ class AuthController extends Controller
 
         $record->delete(); // حذف الرمز بعد الاستخدام
 
-        return $this->successResponse(message: 'تم تغيير كلمة المرور بنجاح');
+        return $this->successResponse(message: 'Password changed successfully.');
     }
 
     // ─── مساعد: تسجيل العمليات ─────────────────────────────────────────────
