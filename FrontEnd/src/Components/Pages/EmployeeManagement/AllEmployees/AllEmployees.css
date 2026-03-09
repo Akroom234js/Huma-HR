@@ -15,6 +15,7 @@
   font-weight: 700;
   color: var(--text-color);
 }
+
 .con-filter {
   background: var(--bg-card);
   width: 100%;
@@ -26,6 +27,7 @@
   align-items: center;
   border-radius: 12px;
 }
+
 .con-filter input {
   width: 50%;
   height: 30px;
@@ -34,20 +36,18 @@
   border-radius: 6px;
   margin-top: 15px;
 }
+
 .con-filter input::placeholder {
   font-size: 14px;
   color: var(--text-secondary);
 }
+
 .con2-filter {
   display: flex;
   justify-content: flex-start;
   gap: 10px;
   margin-top: 10px;
 }
-/* .con2-filter select {
-  display: block;
-  width: 140px;
-} */
 .all-filt {
   width: 80%;
 }
@@ -62,6 +62,7 @@
   /* border: 1px solid var(--border-color); */
   border: none;
 }
+
 .con-filter button:hover {
   background-color: rgb(63, 147, 225);
 }
@@ -133,10 +134,114 @@ td {
   background-color: #fef9c3;
   color: #a16207;
 }
-
 .actions button {
   border-radius: 8px;
   margin: 0px 5px;
   border: var(--border-color);
   background-color: var(--bg-card);
+}
+@media (min-width: 769px) and (max-width: 1024px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .header-info h1 {
+    font-size: 28px;
+  }
+
+  .con-filter {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    gap: 15px;
+  }
+
+  .all-filt {
+    width: 100%;
+  }
+
+  .con-filter input {
+    width: 100%;
+    margin-top: 0;
+  }
+
+  .con2-filter {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .con-filter button {
+    width: 100%;
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  table {
+    min-width: 700px;
+  }
+}
+
+@media (max-width: 768px) {
+  .all-employees-page {
+    padding: 1rem;
+  }
+
+  .header-info h1 {
+    font-size: 22px;
+  }
+  .all-filt input {
+    width: 100%;
+  }
+  .con-filter {
+    height: 400px;
+    /* background-color: rgb(15, 26, 67); */
+    margin: 0;
+    padding: 12px;
+    flex-direction: column;
+  }
+
+  .con2-filter {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .con-filter input {
+    height: 35px;
+  }
+
+  th,
+  td {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .emp-name {
+    gap: 6px;
+  }
+
+  .avatar {
+    width: 24px;
+    height: 24px;
+  }
+
+  .status {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+
+  .actions button {
+    margin: 0 2px;
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  table {
+    min-width: 650px;
+  }
 }

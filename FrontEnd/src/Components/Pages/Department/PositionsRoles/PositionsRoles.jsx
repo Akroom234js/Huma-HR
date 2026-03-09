@@ -21,7 +21,7 @@ const PositionsRoles = () => {
         add.style.display='none'
         if(add){
                console.log('fff')
-
+             document.body.style.overflow='hidden'
              add.style.display='block'
         }
     }
@@ -30,13 +30,13 @@ const PositionsRoles = () => {
         add.style.display='none'
         if(add){
                console.log('fff')
-
+            document.body.style.overflow='hidden'
              add.style.display='block'
         }
     }  
     const a=['aa','sasdsdsd','sddalkkda','dsdds']
     const table=[]
-   for(let i=0;i<3;i++){
+   for(let i=0;i<9;i++){
     <div>
         {
             table.push(
@@ -45,6 +45,36 @@ const PositionsRoles = () => {
                     <p>dscc,c;sd;</p>
                     <p>1</p>
                     <p className='row-table3'>dsffghgjghkhjjkjkhjhjhjhcc,c;sd;</p>
+                    <div className='button-actions'>
+                        <button><i className='bi bi-pen'></i></button>
+                        <button><i className='bi bi-trash'></i></button>
+                        <button><i className='bi bi-eye-fill'></i></button>
+                        </div>
+                </div>
+            )
+        }
+    </div>
+   }
+      const tablemobile=[]
+   for(let i=0;i<3;i++){
+    <div>
+        {
+            tablemobile.push(
+                <div className='row-table-co-mobile'>
+                    <div>
+                        <p>{t('position')} : </p>
+                        <p className='row-table1'> dscc,c;sd;</p>
+                        </div>
+                  <div>  <p>{t('name')} : </p>
+                  <p> dscc,c;sd;</p></div>
+                   <div>
+                    <p>{t('opening')} : </p>
+                     <p> 1</p>
+                    </div>
+                   <div>
+                    <p>{t('Role')} : </p>
+                     <p className='row-table3'> dsffghgjghkhjjkjkhjhjhjhcc,c;sd;</p>
+                    </div>
                     <div className='button-actions'>
                         <button><i className='bi bi-pen'></i></button>
                         <button><i className='bi bi-trash'></i></button>
@@ -75,7 +105,8 @@ const PositionsRoles = () => {
            <div className='addrole'>
             <div className='header'>
                 <div className='search-filter'>
-                <input type='search'/>
+                    {/* <i className='bi bi-search icon-search'></i> */}
+                <input type='search' placeholder={t('search')}/>
                   <FilterDropdown
                         value={selectedDepartment}
                         onChange={setSelectedDepartment}
@@ -97,6 +128,9 @@ const PositionsRoles = () => {
                     </header>
                     {table}
                 </table>
+                <div>
+                    {tablemobile}
+                </div>
             </div>
            </div>
      

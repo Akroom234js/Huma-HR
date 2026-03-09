@@ -195,9 +195,9 @@ div.selectinterviewers div:hover {
     background-color: rgb(128 128 128 /0.5);
 }
 
-div.interviewers {
+/* div.interviewers {
     margin-bottom: 5px;
-}
+} */
 
 p.ctrl {
     margin-bottom: 5px;
@@ -258,3 +258,37 @@ button.cancel {
 }
 
 /*     background-color: rgb(53 158 255 / var(--tw-bg-opacity, 1)); */
+@media(max-width:456px){
+    div.date,
+div.type,
+div.start,
+div.enddate {
+    width: 100%;
+   
+}
+
+div.date input,
+div.type select,
+div.start input,
+div.enddate input {
+    width: 100%;
+    height: 40px;
+    outline: none;
+}
+}
+
+@media (min-width: 768px) {
+    .recruitment-page {
+        padding: 2rem;
+    }
+
+    .candidates-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .candidates-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

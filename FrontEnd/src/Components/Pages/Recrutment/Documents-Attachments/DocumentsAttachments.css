@@ -75,9 +75,18 @@ width: 70%;
 div.preview-download button.down-doc{
 
 }
-@media (min-width: 768px) {
+
+@media (max-width: 699px) {
+    div.doc-att{
+        width: 39%;}
+}
+@media (max-width: 584px) {
     div.doc-att{
         width: 100%;}
+}
+@media (min-width: 700px) {
+    div.doc-att{
+        width: 35%;}
 }
 
 @media (min-width: 1024px) {
