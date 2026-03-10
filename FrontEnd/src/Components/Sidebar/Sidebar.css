@@ -247,7 +247,7 @@ button.translation:hover {
 }
 
 /* Mobile Responsive Styles */
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
     .mobile-toggle {
         display: flex;
         align-items: center;
@@ -263,6 +263,7 @@ button.translation:hover {
         transition: transform 0.3s ease;
         z-index: 1000;
         width: 260px;
+
         position: fixed;
         inset-inline-start: 0;
         height: 100vh;
@@ -282,7 +283,7 @@ button.translation:hover {
     }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
     .sidebar {
         transform: none;
         display: flex;

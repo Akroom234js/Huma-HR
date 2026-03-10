@@ -40,6 +40,7 @@ export default function AddDepartment(){
         const hidden=(e)=>{
         const hid=document.querySelector('.adddepartment')
         hid.style.display='none'
+         document.body.style.overflow='auto'
         
     }
     return(

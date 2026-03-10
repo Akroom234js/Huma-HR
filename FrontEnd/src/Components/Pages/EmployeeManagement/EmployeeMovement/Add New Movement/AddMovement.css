@@ -194,36 +194,57 @@
 
 .em-modal-wrapper {
     display: flex;
-    width: 300%;
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+    /* Sliding transition removed for direct transition */
 }
 
-.em-modal-wrapper.step-selection {
-    transform: translateX(0);
+/* --- Direct visibility control based on current step --- */
+.em-modal-wrapper .em-modal-step {
+    display: none;
+    width: 100%;
 }
 
-[dir="rtl"] .em-modal-wrapper.step-selection {
-    transform: translateX(0);
+.em-modal-wrapper.step-selection>.em-modal-step:nth-child(1),
+.em-modal-wrapper.step-promotion>.em-modal-step:nth-child(2),
+.em-modal-wrapper.step-transfer>.em-modal-step:nth-child(3),
+.em-modal-wrapper.step-salary>.em-modal-step:nth-child(4) {
+    display: flex;
+    animation: em-slide-in-right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.em-modal-wrapper.step-promotion {
-    transform: translateX(-33.33%);
+[dir="rtl"] .em-modal-wrapper.step-selection>.em-modal-step:nth-child(1),
+[dir="rtl"] .em-modal-wrapper.step-promotion>.em-modal-step:nth-child(2),
+[dir="rtl"] .em-modal-wrapper.step-transfer>.em-modal-step:nth-child(3),
+[dir="rtl"] .em-modal-wrapper.step-salary>.em-modal-step:nth-child(4) {
+    animation: em-slide-in-left 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-[dir="rtl"] .em-modal-wrapper.step-promotion {
-    transform: translateX(33.33%);
+@keyframes em-slide-in-right {
+    from {
+        opacity: 0;
+        transform: translateX(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
-.em-modal-wrapper.step-transfer {
-    transform: translateX(-66.66%);
-}
+@keyframes em-slide-in-left {
+    from {
+        opacity: 0;
+        transform: translateX(-15px);
+    }
 
-[dir="rtl"] .em-modal-wrapper.step-transfer {
-    transform: translateX(66.66%);
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 .em-modal-step {
-    width: 33.33%;
+    width: 100%;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
@@ -390,6 +411,58 @@
 
 .em-select-input.has-icon-left {
     padding-left: 2.5rem;
+}
+
+/* تعديل التموضع العام للأيقونات داخل الحقول */
+.em-icon-left,
+.em-icon-right {
+    position: absolute;
+    top: 50%;
+    /* التحريك للمنتصف */
+    transform: translateY(-50%);
+    /* التوسط الدقيق */
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    pointer-events: none;
+    display: flex;
+    /* لضمان استقامة الأيقونة نفسها */
+    align-items: center;
+}
+
+/* التأكد من وجود مسافات كافية للنص لكي لا يغطي الأيقونات */
+.em-input-with-icon {
+    padding-left: 2.75rem !important;
+}
+
+.em-select-input {
+    padding-right: 2.75rem !important;
+}
+
+.em-select-container {
+    position: relative;
+    /* ضروري لضبط مكان السهم */
+    display: flex;
+    align-items: center;
+}
+
+[dir="rtl"] .em-icon-left {
+    right: 0.75rem;
+    left: auto;
+}
+
+[dir="rtl"] .em-icon-right {
+    left: 0.75rem;
+    right: auto;
+}
+
+[dir="rtl"] .em-input-with-icon {
+    padding-right: 2.75rem !important;
+    padding-left: 0.75rem !important;
+}
+
+[dir="rtl"] .em-select-input {
+    padding-left: 2.75rem !important;
+    padding-right: 0.75rem !important;
 }
 
 .em-icon-right {
