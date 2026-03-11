@@ -40,7 +40,7 @@ const DepartmentOverview = () => {
           <h2>12</h2>
         </div>
         <div className="subcart1">
-          <h6>Total Departments</h6>
+          <h6>Avg. Employees / Dept.</h6>
           <h2>21.5</h2>
         </div>
         <div className="subcart1">
@@ -48,7 +48,7 @@ const DepartmentOverview = () => {
           <h2>Engineering (42)</h2>
         </div>
         <div className="subcart1">
-          <h6>Avg. Employees / Dept.</h6>
+          <h6>Lowest Turnover</h6>
           <h2>Design (2%)</h2>
         </div>
       </div>

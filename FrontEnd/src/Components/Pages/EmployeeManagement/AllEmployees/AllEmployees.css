@@ -1,6 +1,7 @@
 .all-employees-page {
   padding: 2rem;
   height: 100%;
+  /* width: 95%; */
 }
 
 .page-header {
@@ -192,6 +193,7 @@ td {
 
   .header-info h1 {
     font-size: 22px;
+    /* margin: 0px 20px; */
   }
   .all-filt input {
     width: 100%;
