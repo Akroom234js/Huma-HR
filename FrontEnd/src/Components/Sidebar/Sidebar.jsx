@@ -115,6 +115,25 @@ const Sidebar = () => {
                                         expand_more
                                     </span>
                                 </button>
+                                {salaryOpen && (
+                                    <div className="sub-menu">
+                                        <NavLink to="/salary/payroll-overview" className="sub-nav-item">
+                                            {t('Payroll-Overview')}
+                                        </NavLink>
+                                        <NavLink to="/salary/salary-structure" className="sub-nav-item">
+                                            {t('Salary-Structure')}
+                                        </NavLink>
+                                        <NavLink to="/salary/monthly-payroll" className="sub-nav-item">
+                                            {t('Monthly-Payroll')}
+                                        </NavLink>
+                                        <NavLink to="/salary/deductions-penalties" className="sub-nav-item">
+                                            {t('Deductions-Penalties')}
+                                        </NavLink>
+                                        <NavLink to="/salary/salary-adjustments" className="sub-nav-item">
+                                            {t('Salary-Adjustments')}
+                                        </NavLink>
+                                    </div>
+                                )}
                             </div>
 
                             <NavLink to="/leaves" className="nav-item">
