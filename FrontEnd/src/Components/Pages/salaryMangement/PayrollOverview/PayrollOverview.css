@@ -1,0 +1,66 @@
+.sm-page {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    width: 100%;
+    max-width: 87.5rem;
+    margin: 0 auto;
+    position: relative;
+}
+
+.sm-header {
+    margin-bottom: 2rem;
+}
+
+.sm-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.sm-subtitle {
+    color: var(--text-secondary);
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+}
+
+/* Theme Toggle Positioning - Matching EmployeeMovement */
+.sm-theme-toggle-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+}
+
+.sm-theme-toggle-wrapper .theme-toggle {
+    background-color: var(--bg-card);
+    border: none;
+    color: var(--text-main);
+    box-shadow: -4px 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 0 0 0 60px;
+    border-top-right-radius: 12px;
+    width: 64px;
+    height: 64px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 15px;
+    padding-bottom: 15px;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+[dir="rtl"] .sm-theme-toggle-wrapper {
+    right: auto;
+    left: 0;
+}
+
+[dir="rtl"] .sm-theme-toggle-wrapper .theme-toggle {
+    border-radius: 0 0 60px 0;
+    border-top-left-radius: 12px;
+    padding-left: 0;
+    padding-right: 15px;
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.08);
+}
