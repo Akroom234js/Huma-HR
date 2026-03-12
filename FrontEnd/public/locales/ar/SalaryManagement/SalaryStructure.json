@@ -1,0 +1,25 @@
+{
+  "title": "هيكلية الرواتب",
+  "subtitle": "تحديد وإدارة إطار الرواتب في الشركة.",
+  "editStructure": "تعديل الهيكلية",
+  "scalesTitle": "مقاييس الرواتب لكل مستوى وظيفي",
+  "searchPlaceholder": "البحث عن مسمى وظيفي...",
+  "table": {
+    "jobLevel": "المستوى الوظيفي",
+    "positionTitle": "المسمى الوظيفي",
+    "minSalary": "الحد الأدنى للراتب (USD)",
+    "maxSalary": "الحد الأقصى للراتب (USD)",
+    "range": "النطاق (USD)",
+    "noResults": "لم يتم العثور على نتائج"
+  },
+  "modal": {
+    "title": "تعديل هيكلية الرواتب",
+    "subtitle": "تعديل مقاييس الرواتب لكل مستوى وظيفي.",
+    "jobLevelLabel": "المستوى الوظيفي",
+    "selectJobLevel": "اختر مستوى وظيفي",
+    "minSalaryLabel": "الحد الأدنى للراتب",
+    "maxSalaryLabel": "الحد الأقصى للراتب",
+    "cancel": "إلغاء",
+    "saveChanges": "حفظ التغييرات"
+  }
+}

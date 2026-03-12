@@ -1,2 +1,299 @@
-/* Using the same styles as PayrollOverview for consistency */
+/* Using the same styles as PayrollOverview for common layout */
 @import '../PayrollOverview/PayrollOverview.css';
+
+.sm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.sm-btn-primary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: white;
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(53, 158, 255, 0.2);
+}
+
+.sm-btn-primary:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(53, 158, 255, 0.3);
+}
+
+.sm-btn-secondary {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background-color: var(--bg-page);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sm-btn-secondary:hover {
+    background-color: var(--bg-card);
+    border-color: var(--text-muted);
+}
+
+/* Card & Search */
+.sm-content-card {
+    background-color: var(--bg-card);
+    border-radius: 1rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+    margin-top: 1.5rem;
+}
+
+.sm-card-header {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.sm-card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.sm-search-wrapper {
+    position: relative;
+    max-width: 24rem;
+    width: 100%;
+}
+
+.sm-search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 1.25rem;
+}
+
+.sm-search-input {
+    padding-left: 2.5rem;
+    width: 100%;
+    font-size: 0.875rem;
+}
+
+/* Table */
+.sm-table-wrapper {
+    overflow-x: auto;
+}
+
+.sm-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.sm-table th {
+    padding: 1rem 1.5rem;
+    background-color: var(--bg-page);
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-align: left;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sm-table td {
+    padding: 1.25rem 1.5rem;
+    color: var(--text-main);
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
+}
+
+.sm-table tr:hover {
+    background-color: var(--bg-page);
+}
+
+.sm-no-data {
+    text-align: center;
+    padding: 3rem !important;
+    color: var(--text-muted);
+}
+
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.font-medium { font-weight: 500; }
+
+/* Modal */
+.sm-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.sm-modal {
+    background-color: var(--bg-card);
+    width: 100%;
+    max-width: 40rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    animation: sm-modal-fade 0.3s ease-out;
+}
+
+@keyframes sm-modal-fade {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.sm-modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sm-modal-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.sm-modal-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0.25rem 0 0;
+}
+
+.sm-modal-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    transition: background 0.2s;
+}
+
+.sm-modal-close:hover {
+    background-color: var(--bg-page);
+    color: var(--text-main);
+}
+
+.sm-modal-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.sm-modal-footer {
+    padding: 1.5rem;
+    background-color: var(--bg-page);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+/* Form Elements */
+.sm-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sm-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.sm-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.sm-input {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    font-size: 0.875rem;
+    transition: all 0.2s;
+}
+
+.sm-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(53, 158, 255, 0.1);
+}
+
+.sm-input-with-icon {
+    position: relative;
+}
+
+.sm-input-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.sm-input-with-icon .sm-input {
+    padding-left: 1.75rem;
+}
+
+[dir="rtl"] .sm-search-icon {
+    left: auto;
+    right: 0.75rem;
+}
+
+[dir="rtl"] .sm-search-input {
+    padding-left: 0.875rem;
+    padding-right: 2.5rem;
+}
+
+[dir="rtl"] .sm-input-icon {
+    left: auto;
+    right: 0.75rem;
+}
+
+[dir="rtl"] .sm-input-with-icon .sm-input {
+    padding-left: 0.875rem;
+    padding-right: 1.75rem;
+}
+
+[dir="rtl"] .sm-table th,
+[dir="rtl"] .sm-table td {
+    text-align: right;
+}
+
+[dir="rtl"] .text-right { text-align: left; }
