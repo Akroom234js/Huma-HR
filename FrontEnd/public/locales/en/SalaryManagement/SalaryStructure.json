@@ -1,0 +1,25 @@
+{
+  "title": "Salary Structure",
+  "subtitle": "Define and manage the company's salary framework.",
+  "editStructure": "Edit Structure",
+  "scalesTitle": "Salary Scales per Job Level",
+  "searchPlaceholder": "Search for position...",
+  "table": {
+    "jobLevel": "Job Level",
+    "positionTitle": "Position Title",
+    "minSalary": "Min Salary (USD)",
+    "maxSalary": "Max Salary (USD)",
+    "range": "Range (USD)",
+    "noResults": "No results found"
+  },
+  "modal": {
+    "title": "Edit Salary Structure",
+    "subtitle": "Modify the salary scales for each job level.",
+    "jobLevelLabel": "Job Level",
+    "selectJobLevel": "Select a job level",
+    "minSalaryLabel": "Min Salary",
+    "maxSalaryLabel": "Max Salary",
+    "cancel": "Cancel",
+    "saveChanges": "Save Changes"
+  }
+}
