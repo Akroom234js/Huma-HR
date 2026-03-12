@@ -1,0 +1,240 @@
+header.leavesManagementadd{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+div.leavesManagementHeader{
+      width: 94%;
+  margin-inline-start: 3%;
+
+    padding: 10px 20px 10px 10px;
+}
+div.leavesManagementHeader p.leavesManagement{
+     font-size: 2rem;
+      font-weight: 700;
+   
+}
+div.leavesManagementHeader p.Track{
+     font-size: 1rem;
+         color: gray;
+}
+header.leavesManagementadd button.add{
+  margin-inline-end: 3%;
+    padding: 0.625rem 0.75rem;
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 500;
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-family: inherit;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;   flex: 1;
+    padding: 0.625rem 0.75rem 1.5rem 0.75rem ;
+    background-color: var(--primary-color);
+    height: 50px;
+    margin-inline-start: 5px;
+      flex: none;
+}
+header.leavesManagementadd button.add:hover {
+    background-color: var(--primary-hover);
+    box-shadow: var(--shadow-md);
+}
+div.leaves-table-filter{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+div.leaves-filter{
+    display: flex;
+    gap: 10px;
+    
+}
+div.leaves-filter div.relative {
+    width: 100%;
+}
+div.leaves-filter select,div.leaves-filter input{
+    height: 30px;
+    outline: none;
+    width: 100%;
+    font-size: 12px;
+    border-radius: 5px;
+}
+div.leaves-policy,div.leaves-table{
+    background-color: white;
+    width: 94%;
+    border: 1px solid  var(--border-color);
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    margin-inline-start: 3%;
+    color: black;
+}
+div.leaves-table div table{
+    width: 100%;
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+}
+table thead.leaves tr,tbody tr.leaves-emp{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    border-top: 1px solid var(--border-color);
+    background-color: rgb(223, 221, 221);
+    padding: 10px 4px;
+     
+  
+}
+tbody tr.leaves-emp{
+    background-color: white;
+}
+td.check-x{
+    display: flex;
+    gap: 5px;
+}
+button.check-leaves,button.x-leaves{
+    border-radius: 50%;
+    color: white;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+button.check-leaveshidden{
+    display: none;
+}
+td span.status.green{
+background-color: rgb(126, 248, 126);
+color: green;
+}
+td span.status.red{
+background-color: rgb(245, 128, 128);
+color: red;
+}
+td span.status.brown{
+background-color: rgb(248, 196, 118);
+color: brown;
+}
+td span.status{
+    padding: 5px;
+    border-radius: 15px;
+}
+button.check-leaves,button.check-leaves-card{
+    background-color: rgb(31, 185, 10);
+}
+button.x-leaves,button.x-leaves-card{
+    background-color: red
+}
+button.check-leaves-card,button.x-leaves-card{
+    border-radius: 15px;
+    color: white;
+    padding: 4px;
+}
+table thead.leaves tr th,tbody tr.leaves-emp td{
+font-size: 0.8rem; 
+     font-weight: 600;
+     width: 15%;
+     
+     display: flex;
+     justify-content: center;
+}
+table thead.leaves tr th.PAID,tbody tr.leaves-emp td.PAID{
+font-size: 0.8rem; 
+     font-weight: 600;
+     width: 22%;
+        display: flex;
+     justify-content: center;
+}
+tbody tr.leaves-emp td.PAID,tbody tr.leaves-emp td{
+    font-size: 0.8rem; 
+     font-weight: 400;
+}
+h3.PolicyOverview{
+    font-size: 1.5rem;
+}
+div.Eligibility div h4,div.Types h4,div.Request h4{
+    font-size: 1.2rem; 
+}
+div.Eligibility div p,div.Request p{
+    font-size:1rem; 
+}
+div.Request2 p.Request2{
+font-size:0.8rem; 
+}
+ul li span.typesLeaves{
+    font-weight: 500;
+}
+div.addleaveshidden{
+    display: flex;
+    position: absolute;
+    visibility: hidden;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+top: 0;
+left: 0;
+      background-color: #b6b5b575;
+      width: 100%;
+      height: 100vh;
+}
+div.leavesinfocard{
+    display: none;
+    
+}
+div.leavescard-co{
+    margin: 5px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid gray;
+}
+div.leavescard,div.leavescard-button{
+    display: flex;
+    flex-wrap: wrap
+}
+div.leavescard-button{
+    justify-content: end;
+    gap: 20px;
+}
+@media (max-width: 830px) {
+ div.leaves-table-filter{
+    flex-direction: column;
+    align-items: start;
+ }
+}
+@media (max-width: 570px) {
+div.leaves-filter{
+    flex-direction: column;
+    width: 99%;
+    padding-inline-start: 10px;
+}
+header.leavesManagementadd{
+    flex-direction: column;
+    align-items: start;
+    
+}
+header.leavesManagementadd button.add{
+     width: 94%;
+     display: block;
+    margin-inline-start:15px;
+    margin-inline-end: 0px;
+    margin-bottom: 10px;
+}
+
+}
+@media (max-width:770px){
+    div.leavesManagementHeader{
+     margin-top: 50px;
+}
+}
+@media (max-width:600px){
+   div.leaves-table div table{
+    display: none;
+    
+}
+div.leavesinfocard{
+    display: block;
+}
+}

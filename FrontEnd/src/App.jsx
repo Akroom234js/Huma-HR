@@ -12,7 +12,7 @@ import InterviewHappening from './Components/Pages/Recrutment/InterviewHappening
 import ToMakeOffer from './Components/Pages/Recrutment/ToMakeOffer/ToMakeOffer';
 import OpeningJobs from './Components/Pages/Recrutment/OpeningJobs/OpeningJobs';
 import AddDepartment from './Components/Pages/Department/AddDepartment/AddDepartment';
-
+import LeavesManagement from './Components/Pages/Leaves/LeavesManagement/LeavesManagement'
 import DepartmentOverview from './Components/Pages/Department/DepartmentOverview/DepartmentOverview';
 import OrganizationalChart from './Components/Pages/Department/OrganizationalChart/OrganizationalChart';
 import PositionsRoles from './Components/Pages/Department/PositionsRoles/PositionsRoles';
@@ -78,9 +78,23 @@ function App() {
             </div>
           }
         />
+
+          <Route
+          path="/leaves/*"
+          element={
+            <div className="app-container">
+              <Sidebar />
+              <main className="main-content">
+                <Routes>
+                  <Route path="/" element={<LeavesManagement/>}/>
+                 
+                </Routes>
+              </main>
+            </div>
+          }
+        />
       </Routes>
-      {/* <AddDepartment/> */}
-      {/* <AddRole/> */}
+ 
     </BrowserRouter>
   );
 }
