@@ -1,1 +1,71 @@
 @import '../PayrollOverview/PayrollOverview.css';
+div.searchFilterco{
+    display: flex;
+    gap: 10px;
+}
+
+input.Searchemployee,select.AllDepartments,select.dateselect{
+border-radius: 8px;
+padding: 8px;
+min-width: 20%;
+outline: none;
+border: 1px solid var(--border-color);
+}
+div.tablesalary{
+    margin-top: 20px;
+    border: 1px solid var(--border-color);
+    
+}
+div.tablesalary table thead th,div.tablesalary table tbody td{
+    color: var(--text-color);
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+div.salaryinfocard div.infocard{
+    border: 1px solid var(--border-color);
+    margin-bottom: 10px;
+    margin-top: 10px;
+    border-radius: 8px;
+    padding: 10px;
+    display: none;
+}
+div.infocardsalary{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+
+}
+header.monthly div.sm-theme-toggle-wrapper{
+    top:20px
+}
+@media(max-width:1023px){
+    header.monthly{
+        margin-top: 25px;
+    }
+}
+
+@media (max-width:850px){
+    div.searchFilter input{
+    width: 100%;
+}
+    div.searchFilterco{
+    flex-direction: column;
+    max-width: 50%;
+}
+    div.tablesalary{
+        display: none;
+    }
+    div.salaryinfocard div.infocard{
+  
+    display: block;
+}
+ 
+}
+@media (max-width:600px){
+    div.searchFilter input{
+    width: 100%;
+}
+   div.searchFilterco{
+    flex-direction: column;
+    max-width: 100%;
+}}
