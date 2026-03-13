@@ -5,6 +5,9 @@ import Footer from "./Footer";
 import logo from "../../../assets/logo.png";
 import ff from "../../../assets/dd.jpg";
 import ThemeToggle from "../../ThemeToggle/ThemeToggle";
+import apiClient from "../../../apiConfig";
+
+
 export default function Home() {
   const [step, setStep] = useState("login"); // login, forgot, verify, reset
   const [email, setEmail] = useState("");
@@ -13,61 +16,122 @@ export default function Home() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const userStr = localStorage.getItem('user');
+  const user = userStr ? JSON.parse(userStr) : null;
+
+  const getInitials = (name) => {
+    if (!name) return '??';
+    const words = name.split(' ').filter(w => w.length > 0);
+    if (words.length >= 2) {
+      return (words[0][0] + words[1][0]).toUpperCase();
+    }
+    return words[0].substring(0, 2).toUpperCase();
+  };
+
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrors({});
+    setLoading(true);
     try {
-      const response = await fetch("http://localhost:8000/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const response = await apiClient.post('/auth/sessions', {
+        email,
+        password
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem("token", data.access_token);
-        alert("Login successful!");
-        // Redirect or update app state here
-      } else if (response.status === 422) {
-        setErrors(data.errors || { message: data.message });
-      } else {
-        alert(data.message || "Login failed");
-      }
+      const { data } = response.data;
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      alert("Login successful!");
+      window.location.href = "/employees/all";
     } catch (err) {
       console.error("Login error:", err);
-      alert("Failed to connect to server.");
+      if (err.response) {
+        setErrors(err.response.data.errors || { message: err.response.data.message });
+        if (err.response.data.message && !err.response.data.errors) {
+          alert(err.response.data.message);
+        }
+      } else {
+        alert("Failed to connect to server.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
+    setErrors({});
     if (!email) {
       alert("Please enter your email");
       return;
     }
-    // API logic for forgot password...
-    setStep("verify");
+    setLoading(true);
+    try {
+      await apiClient.post('/auth/password/forgot', { email });
+      alert("Verification code sent to your email.");
+      setStep("verify");
+    } catch (err) {
+      console.error("Forgot password error:", err);
+      if (err.response) {
+        setErrors(err.response.data.errors || { message: err.response.data.message });
+        alert(err.response.data.message || "Failed to send reset code.");
+      } else {
+        alert("Failed to connect to server.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleVerifyCode = async (e) => {
     e.preventDefault();
-    // API logic for verify code...
+    if (!verificationCode) {
+      alert("Please enter the verification code");
+      return;
+    }
     setStep("reset");
   };
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
+    setErrors({});
     if (newPassword !== confirmPassword) {
       alert("Passwords do not match");
       return;
     }
-    // API logic for reset password...
-    alert("Password reset successfully!");
-    setStep("login");
+    setLoading(true);
+    try {
+      await apiClient.put('/auth/password/reset', {
+        email,
+        code: verificationCode,
+        password: newPassword,
+        password_confirmation: confirmPassword
+      });
+
+      alert("Password reset successfully!");
+      setStep("login");
+      setNewPassword("");
+      setConfirmPassword("");
+      setVerificationCode("");
+    } catch (err) {
+      console.error("Reset password error:", err);
+      if (err.response) {
+        setErrors(err.response.data.errors || { message: err.response.data.message });
+        alert(err.response.data.message || "Reset failed.");
+      } else {
+        alert("Failed to connect to server.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
+
+
 
   return (
     <>
@@ -93,7 +157,22 @@ export default function Home() {
               <Link to="/jops">Jops</Link>
               <Link to="/recruitment">Go to website</Link>
               <ThemeToggle />
-              <div className="nav-profile"> </div>
+              <div className="nav-profile">
+                {user ? (
+                  <div className="user-avatar-container small">
+                    {user.profile_picture ? (
+                      <img src={`http://localhost:8000/storage/${user.profile_picture}`} alt={user.full_name} className="user-avatar" title={user.full_name} />
+                    ) : (
+                      <div className="user-avatar-initials" title={user.full_name || user.email}>
+                        {getInitials(user.full_name || user.email)}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="nav-profile-placeholder"> </div>
+                )}
+              </div>
+
             </div>
           </div>
         </div>
@@ -161,7 +240,10 @@ export default function Home() {
                       </span>
                       <Link onClick={() => setStep("forgot")}>forget Password ?</Link>
                     </div>
-                    <button className="ptn-login" onClick={handleLogin}>Sign In to Dashboard</button>
+                    <button className="ptn-login" onClick={handleLogin} disabled={loading}>
+                      {loading ? "Signing In..." : "Sign In to Dashboard"}
+                    </button>
+
                   </div>
                 </div>
 
@@ -177,7 +259,11 @@ export default function Home() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
-                    <button className="ptn-login" onClick={handleForgotPassword}>Send Reset Link</button>
+                    {errors.email && <span className="error-text">{errors.email[0]}</span>}
+                    <button className="ptn-login" onClick={handleForgotPassword} disabled={loading}>
+                      {loading ? "Sending..." : "Send Reset Link"}
+                    </button>
+
                     <button className="ptn-back-to-login" onClick={() => setStep("login")}>
                       <i className="fa-solid fa-arrow-left"></i> Back to Login
                     </button>
@@ -195,9 +281,11 @@ export default function Home() {
                       value={verificationCode}
                       onChange={(e) => setVerificationCode(e.target.value)}
                     />
-                    <button className="ptn-login" onClick={handleVerifyCode}>
+                    {errors.code && <span className="error-text">{errors.code[0]}</span>}
+                    <button className="ptn-login" onClick={handleVerifyCode} disabled={loading}>
                       Confirm Code
                     </button>
+
                     <button className="ptn-back-to-login" onClick={() => setStep("forgot")}>
                       <i className="fa-solid fa-arrow-left"></i> Back
                     </button>
@@ -223,9 +311,11 @@ export default function Home() {
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                     />
-                    <button className="ptn-login" onClick={handleResetPassword}>
-                      Save and Update
+                    {errors.password && <span className="error-text">{errors.password[0]}</span>}
+                    <button className="ptn-login" onClick={handleResetPassword} disabled={loading}>
+                      {loading ? "Updating..." : "Save and Update"}
                     </button>
+
                     <button className="ptn-back-to-login" onClick={() => setStep("verify")}>
                       <i className="fa-solid fa-arrow-left"></i> Back
                     </button>

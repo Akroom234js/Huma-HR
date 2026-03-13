@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { NavLink, Link, useLocation } from 'react-router-dom';
+import { NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
 import './Sidebar.css';
 import LanSw from '../LanSw'
+import apiClient from '../../apiConfig';
 import logo from '../../assets/logo.png';
 
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
@@ -19,6 +20,21 @@ const Sidebar = () => {
     const isEmployeeActive = location.pathname.startsWith('/employees');
     const isDepartmentActive = location.pathname.startsWith('/department');
     const isSalaryActive = location.pathname.startsWith('/salary'); // Placeholder for future use
+    const navigate = useNavigate();
+
+    const handleLogout = async (e) => {
+        e.preventDefault();
+        try {
+            await apiClient.delete('/auth/sessions');
+        } catch (err) {
+            console.error("Logout error:", err);
+        } finally {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            navigate('/');
+        }
+    };
+
     return (
         <>
             <button
@@ -42,7 +58,7 @@ const Sidebar = () => {
                                 <h1 className="sidebar-title">Huma</h1>
                             </Link>
                         </div>
-
+                        {/* ... existing nav ... */}
                         <nav className="sidebar-nav">
                             <NavLink to="/Dashboard" className="nav-item" end>
                                 <span className="material-symbols-outlined">dashboard</span>
@@ -164,15 +180,14 @@ const Sidebar = () => {
                     </div>
 
                     <div className="sidebar-bottom">
-
                         <LanSw />
-                        <Link to="/logout" className="nav-item">
+                        <button onClick={handleLogout} className="nav-item logout-button">
                             <span className="material-symbols-outlined">logout</span>
                             <p>{t('Logout')}</p>
-                        </Link>
-                    </div >
-                </div >
-            </aside >
+                        </button>
+                    </div>
+                </div>
+            </aside>
         </>
     );
 };
