@@ -1,66 +1,196 @@
 .sm-page {
-    flex: 1;
-    padding: 2rem;
-    overflow-y: auto;
-    width: 100%;
-    max-width: 87.5rem;
-    margin: 0 auto;
-    position: relative;
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 87.5rem;
+  margin: 0 auto;
+  position: relative;
 }
 
 .sm-header {
-    margin-bottom: 2rem;
+  margin-bottom: 2rem;
 }
 
 .sm-title {
-    font-size: 1.875rem;
-    font-weight: 700;
-    color: var(--text-main);
-    margin: 0;
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
 }
 
 .sm-subtitle {
-    color: var(--text-secondary);
-    margin: 0.25rem 0 0;
-    font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
 }
 
 /* Theme Toggle Positioning - Matching EmployeeMovement */
 .sm-theme-toggle-wrapper {
-    position: absolute;
-    top: 0;
-    right: 0;
-    z-index: 10;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
 }
 
 .sm-theme-toggle-wrapper .theme-toggle {
-    background-color: var(--bg-card);
-    border: none;
-    color: var(--text-main);
-    box-shadow: -4px 4px 12px rgba(0, 0, 0, 0.08);
-    border-radius: 0 0 0 60px;
-    border-top-right-radius: 12px;
-    width: 64px;
-    height: 64px;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-left: 15px;
-    padding-bottom: 15px;
-    cursor: pointer;
-    overflow: hidden;
+  background-color: var(--bg-card);
+  border: none;
+  color: var(--text-main);
+  box-shadow: -4px 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 0 0 0 60px;
+  border-top-right-radius: 12px;
+  width: 64px;
+  height: 64px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 15px;
+  padding-bottom: 15px;
+  cursor: pointer;
+  overflow: hidden;
 }
 
 [dir="rtl"] .sm-theme-toggle-wrapper {
-    right: auto;
-    left: 0;
+  right: auto;
+  left: 0;
 }
 
 [dir="rtl"] .sm-theme-toggle-wrapper .theme-toggle {
-    border-radius: 0 0 60px 0;
-    border-top-left-radius: 12px;
-    padding-left: 0;
-    padding-right: 15px;
-    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 0 0 60px 0;
+  border-top-left-radius: 12px;
+  padding-left: 0;
+  padding-right: 15px;
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.08);
+}
+.All_page {
+  width: 95%;
+  height: 4000px;
+  background-color: var(--bg-page);
+  margin: auto;
+}
+.all_chart {
+  border: 2px solid var(--border);
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+
+  background: var(--bg-card);
+}
+.salary-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.salary-title {
+  margin: 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+.salary-chart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.salary-legend {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  width: 50%;
+}
+.legend-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.legend-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+}
+.legend-color {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legend-value {
+  color: #6b7280;
+  /* background-color: rgb(40, 38, 42); */
+
+  font-weight: 500;
+}
+.con_divs {
+  width: 100%;
+  background-color: var(--bg-page);
+  height: 120px;
+  display: flex;
+  justify-content: space-between;
+}
+.con_divs div {
+  padding-top: 15px;
+  text-align: center;
+  width: 30%;
+  height: 100px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+}
+.con_divs div p {
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+.con_divs div h3 {
+  color: var(--text-main);
+  font-size: 23px;
+}
+.title_salary {
+  margin: 20px 0px;
+  font-size: 32px;
+  font-weight: 700;
+}
+.head1 {
+  display: flex;
+  justify-content: space-between;
+}
+.table-container2 {
+  background: var(--bg-card);
+  border-radius: 10px;
+  margin-top: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.payroll-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.payroll-table thead {
+  /* background: #f5f7fa; */
+  background: var(--bg-page);
+  color: var(--text-main);
+
+  border-radius: 8px;
+}
+
+.payroll-table th {
+  text-align: left;
+  padding: 14px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.payroll-table td {
+  padding: 16px 14px;
+  border-top: 1px solid var(--border-color);
+  font-size: 14px;
+  color: var(--text-secondary);
 }

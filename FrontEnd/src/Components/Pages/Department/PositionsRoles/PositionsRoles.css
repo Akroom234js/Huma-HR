@@ -37,16 +37,6 @@ div.adddep button,div.addrole button.addrole{
     transition: all 0.2s ease;   flex: 1;
     padding: 0.625rem 0.75rem 1.5rem 0.75rem ;
     background-color: var(--primary-color);
-    color: white;
-    font-weight: 500;
-    border: none;
-    border-radius: var(--radius-lg);
-    cursor: pointer;
-    font-size: 0.875rem;
-    font-family: inherit;
-    
-    box-shadow: var(--shadow-sm);
-    transition: all 0.2s ease;
     height: 50px;
     margin-inline-start: 5px;
       flex: none;
@@ -224,11 +214,12 @@ div.search-filter input{
 /* ============================ */
 @media (min-width: 768px) and (max-width: 1023px) {
 div.page-container{
-    margin-top: 50px;
+    /* margin-top: 50px; */
     margin-inline-start: 10px;
     
 }
 main.main-content{
+    margin-top: 50px;
     margin-inline-start:0px; 
      width: 100%;
 }

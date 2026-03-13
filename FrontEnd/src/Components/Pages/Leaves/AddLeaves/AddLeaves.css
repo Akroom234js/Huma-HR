@@ -1,0 +1,102 @@
+div.addleaves-co{
+    display: none;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+     background-color: var(--bg-card);
+    width: 40%;
+    height: 90vh;
+    margin: 2% auto;
+    padding: 10px;
+    overflow: scroll;
+    
+}
+form div.nameleaves,form div.Allocation,form div.DescriptionPolicy{
+    display: flex;
+    flex-direction: column;
+    margin: 5px;
+}
+form div.nameleaves input ,form div.Allocation input,form div.DescriptionPolicy textarea{
+   border-radius: 10px;
+   color: var(--text-main);
+   height: 35px;
+   outline: none;
+   background-color: rgba(202, 202, 202, 0.158);
+   margin-top: 5px;
+   border: 1px solid var(--border-color);
+   padding: 3px;
+}
+form div.DescriptionPolicy textarea{
+    max-height: 120px;
+    min-height: 120px;
+}
+div.paidApproval{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 30px;
+}
+
+div.cancon {
+    display: flex;
+    justify-content: end;
+    margin-top: 10px;
+}
+
+.cancon button {
+    padding: 3px;
+    outline: none;
+    border-radius: 8px;
+    border: 1px solid gray;
+
+}
+
+button.confirm {
+    margin-inline-start: 10px;
+    padding: 5px;
+    width: fit-content;
+    background-color: rgb(53 158 255 / var(--tw-bg-opacity, 1));
+    color: white;
+}
+
+.confirm:hover {
+    background-color: var(--primary-hover);
+    box-shadow: var(--shadow-md);
+}
+
+button.cancel {
+    width: 90px;
+    color: var(--text-main);
+    background-color: transparent;
+}
+
+.cancel:hover {
+    background-color: var(--border-light);
+}
+@media(max-width:880px){
+   div.addleaves-co{
+    width: 70%;
+   } 
+}
+@media(max-width:480px){
+   div.addleaves-co{
+    width: 100%;
+    padding-top: 50px;
+    height: 100vh;
+    
+   } 
+   div.cancon {
+   
+    justify-content: center;
+   
+}
+div.paidApproval{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: 5px;
+    justify-content: start;
+    
+}
+
+}

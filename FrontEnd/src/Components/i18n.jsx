@@ -15,7 +15,8 @@ i18n
 
 		ns: [
 			'ScheduleInterview',
-			'EmployeeMovement/EmployeeMovement'
+			'EmployeeMovement/EmployeeMovement',
+			'SalaryManagement/SalaryStructure'
 		], // أسماء الملفات
 
 		defaultNS: "Home",
