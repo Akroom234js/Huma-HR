@@ -113,7 +113,9 @@ const AllEmployees = () => {
         <div className="header-info">
           <h1>Employee Profile Management</h1>
         </div>
-        <ThemeToggle />
+        <div className="sm-theme-toggle-wrapper">
+          <ThemeToggle />
+        </div>
       </header>
       <div className="con-filter">
         <div className="all-filt">
