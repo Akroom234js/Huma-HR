@@ -1,0 +1,12 @@
+{
+ "MonthlyPayroll":"Monthly Payroll",
+ "name":"Employee Name",
+ "BasicSalary":"Basic Salary",
+ "AbsenceDeducted":"Absence Deducted",
+ "Overtime":"Overtime",
+ "Incentives":"Incentives",
+ "Deductions":"Deductions",
+ "FinalNetSalary":"Final Net Salary",
+ "Searchemployee":"Search employee..."
+ 
+}

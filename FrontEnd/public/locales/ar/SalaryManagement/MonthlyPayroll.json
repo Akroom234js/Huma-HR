@@ -1,0 +1,11 @@
+{
+ "MonthlyPayroll":"الرواتب الشهرية",
+  "name":"اسم الموظف",
+ "BasicSalary":"راتب الأساسي",
+ "AbsenceDeducted":"اقتطاع الغياب",
+ "Overtime":"إضافي",
+ "Incentives":"حوافز",
+ "Deductions":"اقتطاع",
+ "FinalNetSalary":"صافي راتب النهائي",
+ "Searchemployee":"البحث عن موظف..."
+}
