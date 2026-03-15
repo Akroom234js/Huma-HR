@@ -1,187 +1,260 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import './MonthlyPayroll.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
-import { useState } from 'react';
+
+const initialData = [
+    {
+        name: "John Doe", dept: "Engineering", month: "April 2024", basic: "$5,000.00", ot: "5 hrs",
+        dedTypes: [],
+        dedAmounts: [], final: "$4,500.00",
+        abs: "$0.00 (0 days)", date: "- -", ded: ["None"], reason: "-", by: "System"
+    },
+    {
+        name: "Jane Smith", dept: "Product", month: "April 2024", basic: "$6,200.00", ot: "0 hrs",
+        dedTypes: [{ label: "Unexcused Absence", class: "tag-unexcused" }, { label: "Lateness", class: "tag-lateness" }],
+        dedAmounts: [{ val: "$400.00", muted: false }, { val: "$50.00", muted: true }],
+        final: "$4,760.00",
+        abs: "$400.00 (2 days)", date: "2024-04-25", ded: ["Unexcused Absence: $400", "Lateness: $50"], reason: "2 days absence", by: "System"
+    },
+    {
+        name: "Peter Jones", dept: "Design", month: "April 2024", basic: "$4,500.00", ot: "10 hrs",
+        dedTypes: [{ label: "Policy Violation", class: "tag-policy" }],
+        dedAmounts: [{ val: "$75.00", muted: false }],
+        final: "$4,370.00",
+        abs: "$0.00 (0 days)", date: "2024-04-25", ded: ["Policy Violation: $75"], reason: "Policy Violation", by: "System"
+    },
+    {
+        name: "Mary Williams", dept: "Engineering", month: "March 2024", basic: "$7,000.00", ot: "2 hrs",
+        dedTypes: [],
+        dedAmounts: [], final: "$5,925.00",
+        abs: "$0.00 (0 days)", date: "- -", ded: ["None"], reason: "-", by: "System"
+    },
+    {
+        name: "David Brown", dept: "Product", month: "March 2024", basic: "$3,800.00", ot: "0 hrs",
+        dedTypes: [{ label: "Unexcused Absence", class: "tag-unexcused" }, { label: "Lateness", class: "tag-lateness" }],
+        dedAmounts: [{ val: "$126.67", muted: false }, { val: "$25.00", muted: true }],
+        final: "$3,188.33",
+        abs: "$126.67 (1 day)", date: "2024-03-25", ded: ["Unexcused Absence: $126.67", "Lateness: $25"], reason: "1 day absence", by: "System"
+    }
+];
+
 const MonthlyPayroll = () => {
     const { t } = useTranslation('SalaryManagement/MonthlyPayroll')
     const [details, setDetails] = useState([]);
+    
+    // Filter states
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedDept, setSelectedDept] = useState("All Departments");
+    const [selectedMonth, setSelectedMonth] = useState("April 2024");
+
+    const filteredData = initialData.filter(row => {
+        const matchesSearch = row.name.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesDept = selectedDept === "All Departments" || row.dept === selectedDept;
+        const matchesMonth = row.month === selectedMonth;
+        return matchesSearch && matchesDept && matchesMonth;
+    });
+
     const moredetails = (e, abs, ded, date, reason, by) => {
         const vis = document.querySelector(".details")
-          const zind=document.querySelector(".mobile-toggle")
-          zind.style.zIndex="-1"
-        vis.style.display = "block"
+        const zind=document.querySelector(".mobile-toggle")
+        if(zind) zind.style.zIndex="-1"
+        if(vis) vis.style.display = "block"
         document.body.style.overflow = 'hidden'
+        
         const newDetails = (
-            <div >
-                <div className='infocardsalary'>
-                    <p>{t('AbsenceDeducted')}:</p>
-                    <p>{abs}</p>
-                </div>
-
-                <div className='infocardsalary'>
-                    <p>{t('Deductions')}:</p>
-                    <div>{ded.map((d, i) => <div key={i}>{d}</div>)}</div>
-                </div>
-
-                <div className='infocardsalary'>
-                    <p>{t('deductiondate')}:</p>
-                    <p>{date}</p>
-                </div>
-
-                <div className='infocardsalary'>
-                    <p>{t('reason')}:</p>
-                    <p>{reason}</p>
-                </div>
-
-                <div className='infocardsalary'>
-                    <p>{t('Applied')}:</p>
-                    <p>{by}</p>
+            <div className='details-content-wrapper'>
+                <div className='details-body'>
+                    <div className='infocardsalary'>
+                        <p>{t('AbsenceDeducted', 'Absence Deducted')}:</p>
+                        <p>{abs}</p>
+                    </div>
+                    <div className='infocardsalary'>
+                        <p>{t('Deductions', 'Deductions')}:</p>
+                        <div>{ded.map((d, i) => <div key={i}>{d}</div>)}</div>
+                    </div>
+                    <div className='infocardsalary'>
+                        <p>{t('deductiondate', 'Deduction Date')}:</p>
+                        <p>{date}</p>
+                    </div>
+                    <div className='infocardsalary'>
+                        <p>{t('reason', 'Reason')}:</p>
+                        <p>{reason}</p>
+                    </div>
+                    <div className='infocardsalary'>
+                        <p>{t('Applied', 'Applied By')}:</p>
+                        <p>{by}</p>
+                    </div>
                 </div>
             </div>
         );
 
         setDetails([newDetails]);
     };
+
     const hidden = (e) => {
         const hid = document.querySelector(".details")
-        hid.style.display = "none"
+        if (hid) hid.style.display = "none"
         document.body.style.overflow='auto'
-               const zind=document.querySelector(".mobile-toggle")
-          zind.style.zIndex="10"
+        const zind=document.querySelector(".mobile-toggle")
+        if (zind) zind.style.zIndex="10"
     }
+
     return (
         <div className="sm-page">
-
             <header className="sm-header monthly">
-                <h1 className="sm-title">{t('MonthlyPayroll')}</h1>
+                <h1 className="sm-title">{t('MonthlyPayroll', 'Monthly Payroll & Deductions')}</h1>
                 <div className="sm-theme-toggle-wrapper">
                     <ThemeToggle />
                 </div>
             </header>
-            <div className='details'><div className='newdetails'>
-                {details}
-                <button onClick={(e) => { hidden(e) }}><span className='bi bi-x'></span></button></div></div>
-            <div className='monthlypayrollco'>
 
+            <div className='details'>
+                <div className='newdetails'>
+                    <div className='details-header-section'>
+                        <h3>{t('Details', 'Details')}</h3>
+                        <button onClick={(e) => { hidden(e) }} className='close-details-btn'>
+                            <span className='bi bi-x'></span>
+                        </button>
+                    </div>
+                    {details}
+                </div>
+            </div>
+
+            <div className='monthlypayrollco'>
                 <div className="searchFilterco">
                     <div className="searchFilter">
-
-                        <input className="Searchemployee" placeholder={t("Searchemployee")} type="text" />
+                        <i className="bi bi-search search-icon-input"></i>
+                        <input 
+                            className="Searchemployee" 
+                            placeholder={t("Searchemployee", "Search employee...")} 
+                            type="text" 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
                     </div>
-                    <select className="AllDepartments">
+                    <select 
+                        className="AllDepartments"
+                        value={selectedDept}
+                        onChange={(e) => setSelectedDept(e.target.value)}
+                    >
                         <option>All Departments</option>
                         <option>Engineering</option>
                         <option>Product</option>
                         <option>Design</option>
                     </select>
-                    <select className="dateselect">
+                    <select 
+                        className="dateselect"
+                        value={selectedMonth}
+                        onChange={(e) => setSelectedMonth(e.target.value)}
+                    >
                         <option>April 2024</option>
                         <option>March 2024</option>
                         <option>February 2024</option>
                     </select>
                 </div>
+
                 <div className="tablesalary">
                     <table className="">
                         <thead className="">
                             <tr>
-                                <th className="" >{t('name')}</th>
-                                <th className="" >{t('BasicSalary')}</th>
-                    
-                                <th className="" >{t('Overtime')}</th>
-                                <th className="" >{t('Incentives')}</th>
-                          
-                                <th className="" >{t('DeductionAmount')}</th>
-                                <th className="" >{t('FinalNetSalary')}</th>
-                                <th className="" >{t('Actions')}</th>
+                                <th className="" >{t('name', 'EMPLOYEE NAME')}</th>
+                                <th className="" >{t('BasicSalary', 'BASIC SALARY')}</th>
+                                <th className="" >{t('Overtime', 'OVERTIME HOURS')}</th>
+                                <th className="" >{t('DeductionType', 'DEDUCTION TYPE')}</th>
+                                <th className="" >{t('DeductionAmount', 'DEDUCTION AMOUNT')}</th>
+                                <th className="" >{t('FinalNetSalary', 'FINAL NET SALARY')}</th>
+                                <th className="" >{t('Actions', 'ACTIONS')}</th>
                             </tr>
                         </thead>
                         <tbody className='salaryinfo'>
-                            {[
-                                { name: "John Doe", basic: "$5,000.00", date: "2024-04-25", abs: "$0.00 (0 days)", ot: "5 hrs", inc: "$250.00", ded: ["Lateness: $0", "Tax: $850", "Security: $200"], amount: "1.1$", final: "$4,500.00", reason: "2 days absence", by: "System" },
-                                { name: "Jane Smith", basic: "$6,200.00", date: "2024-04-25", abs: "$400.00 (2 days)", ot: "0 hrs", inc: "$0.00", ded: ["Lateness: $50", "Tax: $1,100", "Security: $250"], amount: "1.1$", final: "$4,760.00", reason: "2 days absence", by: "System" },
-                                { name: "Peter Jones", basic: "$4,500.00", date: "2024-04-25", abs: "$0.00 (0 days)", ot: "10 hrs", inc: "$500.00", ded: ["Lateness: $0", "Tax: $750", "Security: $180"], amount: "1.1$", final: "$4,370.00", reason: "2 days absence", by: "System" },
-                                { name: "Mary Williams", basic: "$7,000.00", date: "2024-04-25", abs: "$0.00 (0 days)", ot: "2 hrs", inc: "$100.00", ded: ["Lateness: $0", "Tax: $1,300", "Security: $300"], amount: "1.1$", final: "$5,925.00", reason: "2 days absence", by: "System" },
-                                { name: "David Brown", basic: "$3,800.00", date: "2024-04-25", abs: "$126.67 (1 day)", ot: "0 hrs", inc: "$0.00", ded: ["Lateness: $25", "Tax: $550", "Security: $150"], amount: "1.1$", final: "$3,188.33", reason: "2 days absence", by: "System" },
-                            ].map((row, idx) => (
+                            {filteredData.length > 0 ? filteredData.map((row, idx) => (
                                 <tr key={idx} className="">
-                                    <td className="" >{row.name}</td>
+                                    <td className="" style={{fontWeight: '500'}}>{row.name}</td>
                                     <td className="">{row.basic}</td>
-                                   
                                     <td className="">{row.ot}</td>
-                                    <td className="">{row.inc}</td>
-                            
-                                    <td className="">{row.amount}</td>
-                                    <td className="">{row.final}</td>
-                                    <td ><button className="moredetails" onClick={(e) => { moredetails(e, row.abs, row.ded, row.date, row.reason, row.by) }}>{t('more')}</button></td>
-
+                                    <td className="">
+                                        {row.dedTypes.length > 0 ? (
+                                            <div className="deduction-container">
+                                                {row.dedTypes.map((type, i) => (
+                                                    <span key={i} className={`deduction-type-tag ${type.class}`}>{type.label}</span>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <span style={{color: 'var(--text-muted)'}}>None</span>
+                                        )}
+                                    </td>
+                                    <td className="">
+                                        {row.dedAmounts.length > 0 ? (
+                                            <div className="deduction-amount-col">
+                                                {row.dedAmounts.map((amt, i) => (
+                                                    <span key={i} className={amt.muted ? 'deduction-amount-muted' : 'deduction-amount-val'}>{amt.val}</span>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <span>$0.00</span>
+                                        )}
+                                    </td>
+                                    <td className="final-salary-bold">{row.final}</td>
+                                    <td >
+                                        <button className="moredetails" onClick={(e) => { moredetails(e, row.abs, row.ded, row.date, row.reason, row.by) }}>
+                                            {t('more', 'More Details')}
+                                        </button>
+                                    </td>
                                 </tr>
-                            ))}
+                            )) : (
+                                <tr>
+                                    <td colSpan="7" style={{textAlign: 'center', padding: '20px', color: 'var(--text-muted)'}}>
+                                        No data found
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
-
-
                     </table>
-
                 </div>
 
                 <div className='salaryinfocard'>
-                    {[
-                        { name: "John Doe", basic: "$5,000.00", date: "2024-04-25", abs: "$0.00 (0 days)", ot: "5 hrs", inc: "$250.00", ded: ["Lateness: $0", "Tax: $850", "Security: $200"], amount: "1.1$", final: "$4,500.00", reason: "2 days absence", by: "System" },
-                        { name: "Jane Smith", basic: "$6,200.00", date: "2024-04-25", abs: "$400.00 (2 days)", ot: "0 hrs", inc: "$0.00", ded: ["Lateness: $50", "Tax: $1,100", "Security: $250"], amount: "1.1$", final: "$4,760.00", reason: "2 days absence", by: "System" },
-                        { name: "Peter Jones", basic: "$4,500.00", date: "2024-04-25", abs: "$0.00 (0 days)", ot: "10 hrs", inc: "$500.00", ded: ["Lateness: $0", "Tax: $750", "Security: $180"], amount: "1.1$", final: "$4,370.00", reason: "2 days absence", by: "System" },
-                        { name: "Mary Williams", basic: "$7,000.00", date: "2024-04-25", abs: "$0.00 (0 days)", ot: "2 hrs", inc: "$100.00", ded: ["Lateness: $0", "Tax: $1,300", "Security: $300"], amount: "1.1$", final: "$5,925.00", reason: "2 days absence", by: "System" },
-                        { name: "David Brown", basic: "$3,800.00", date: "2024-04-25", abs: "$126.67 (1 day)", ot: "0 hrs", inc: "$0.00", ded: ["Lateness: $25", "Tax: $550", "Security: $150"], amount: "1.1$", final: "$3,188.33", reason: "2 days absence", by: "System" },
-                    ].map((row, idx) => (
+                    {filteredData.length > 0 ? filteredData.map((row, idx) => (
                         <div key={idx} className="infocard">
                             <div className='infocardsalary'>
                                 <p className="" >{t('name')}: </p>
-                                <p className="" >{row.name}</p>
+                                <p className="" style={{fontWeight:'bold'}}>{row.name}</p>
                             </div>
                             <div className='infocardsalary'>
                                 <p className="" >{t('BasicSalary')}: </p>
                                 <p className="">{row.basic}</p>
                             </div>
-
                             <div className='infocardsalary'>
                                 <p className="" >{t('Overtime')}: </p>
                                 <p className="">{row.ot}</p>
                             </div>
                             <div className='infocardsalary'>
-                                <p className="" >{t('Incentives')}: </p>
-                                <p className="">{row.inc}</p>
-                            </div>
-                            <div className='infocardsalary'>
-                                <p className="" >{t('Deductions')}: </p>
-                                <p className="">
-                                    {row.ded.map((d, i) => <div key={i}>{d}</div>)}
-                                </p>
+                                <p className="" >{t('DeductionType', 'Deduction Type')}: </p>
+                                <div className="">
+                                    {row.dedTypes.length > 0 ? row.dedTypes.map((type, i) => <div key={i} style={{fontSize:'12px'}} >{type.label}</div>) : "None"}
+                                </div>
                             </div>
                             <div className='infocardsalary'>
                                 <p className="" >{t('DeductionAmount')}: </p>
-                                <p className="">{row.amount}</p>
+                                <p className="">
+                                    {row.dedAmounts.length > 0 ? row.dedAmounts.map((amt, i) => <span key={i} style={{marginInlineEnd:'5px'}}>{amt.val}</span>) : "$0.00"}
+                                </p>
                             </div>
                             <div className='infocardsalary'>
                                 <p className="" >{t('FinalNetSalary')}: </p>
-                                <p className="">{row.final}</p>
+                                <p className="" style={{fontWeight:'bold'}}>{row.final}</p>
                             </div>
-                            <div className='infocardsalary'>
-                                <p className="" >{t('AbsenceDeducted')}: </p>
-                                <p className="">{row.abs}</p>
-                            </div>
-                            <div className='infocardsalary'>
-                                <p className="" >{t('deductiondate')}: </p>
-                                <p className="">{row.date}</p>
-                            </div>
-                            <div className='infocardsalary'>
-                                <p className="" >{t('reaspn')}: </p>
-                                <p className="">{row.reason}</p>
-                            </div>
-                            <div className='infocardsalary'>
-                                <p className="" >{t('Applied')}: </p>
-                                <p className="">{row.by}</p>
+                            <div style={{display:'flex', justifyContent:'flex-end', marginTop:'10px'}}>
+                               <button className="moredetails" onClick={(e) => { moredetails(e, row.abs, row.ded, row.date, row.reason, row.by) }}>
+                                  {t('more', 'More Details')}
+                               </button>
                             </div>
                         </div>
-                    ))}
+                    )) : (
+                        <div style={{textAlign: 'center', padding: '20px', color: 'var(--text-muted)'}}>
+                            No data found
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
