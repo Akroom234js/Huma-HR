@@ -1,0 +1,18 @@
+{
+  "PayrollOverview": "نظرة عامة على الرواتب",
+  "TotalMonthlyCompanyPayroll": "إجمالي الرواتب الشهرية للشركة",
+  "EmployeesPaid": "الموظفون الذين تم الدفع لهم",
+  "AvgSalaryEmployee": "متوسط الراتب / الموظف",
+  "SalaryDistribution": "توزيع الرواتب",
+  "DEPARTMENT": "القسم",
+  "TOTALPAYROLL": "إجمالي الرواتب",
+  "AVERAGESALARY": "متوسط الراتب",
+  "EMPLOYEES": "الموظفين",
+  "OFTOTAL": "% من الإجمالي",
+  "Engineering": "الهندسة",
+  "Product": "المنتج",
+  "Design": "التصميم",
+  "Other": "أخرى",
+  "Marketing": "التسويق",
+  "OtherDepartments": "أقسام أخرى"
+}
