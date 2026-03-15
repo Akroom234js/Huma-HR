@@ -1,0 +1,21 @@
+{
+  "Title": "Salary Adjustments History",
+  "TotalAdjustments": "Total Adjustments",
+  "AvgAdjustment": "Avg. Adjustment %",
+  "SearchEmployee": "Search by Employee...",
+  "FilterAll": "All Types",
+  "Promotion": "Promotion",
+  "Merit": "Merit",
+  "CostOfLiving": "Cost of Living",
+  "Employee": "EMPLOYEE",
+  "OldSalary": "OLD SALARY",
+  "NewSalary": "NEW SALARY",
+  "Type": "TYPE",
+  "Date": "DATE",
+  "By": "BY",
+  "Change": "CHANGE %",
+  "ReasonCol": "REASON",
+  "View": "View",
+  "NoData": "No matching records found",
+  "ReasonDetail": "Reason Details"
+}

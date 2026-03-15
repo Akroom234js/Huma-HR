@@ -1,0 +1,21 @@
+{
+  "Title": "سجل تعديلات الرواتب",
+  "TotalAdjustments": "إجمالي التعديلات",
+  "AvgAdjustment": "متوسط التعديل %",
+  "SearchEmployee": "البحث عن موظف...",
+  "FilterAll": "جميع الأنواع",
+  "Promotion": "ترقية",
+  "Merit": "إستحقاق (جدارة)",
+  "CostOfLiving": "تكاليف المعيشة",
+  "Employee": "الموظف",
+  "OldSalary": "الراتب القديم",
+  "NewSalary": "الراتب الجديد",
+  "Type": "النوع",
+  "Date": "التاريخ",
+  "By": "بواسطة",
+  "Change": "نسبة التغيير",
+  "ReasonCol": "السبب",
+  "View": "عرض",
+  "NoData": "لم يتم العثور على سجلات مطابقة",
+  "ReasonDetail": "التفاصيل (السبب)"
+}

@@ -97,14 +97,16 @@ const SalaryAdjustments = () => {
 
     return (
         <div className="sm-page">
+            <div className="sm-theme-toggle-wrapper">
+                <ThemeToggle />
+            </div>
+
             <header className="sm-header adjustments-header">
                 <div>
                     <h1 className="sm-title">{t('Title', 'Salary Adjustments History')}</h1>
                 </div>
-                <div className="sm-theme-toggle-wrapper" style={{position: 'static'}}>
-                    <ThemeToggle />
-                </div>
             </header>
+
 
             {/* Top Stat Cards */}
             <div className="adjustments-cards-container">
