@@ -144,6 +144,78 @@ div.tablesalary table tbody tr td {
     font-size: 14px;
 }
 
+/* Status and Payment Styles */
+.status-actions-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-badge.paid {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: #059669;
+}
+
+.status-badge.unpaid {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #dc2626;
+}
+
+.pay-btn {
+    background-color: var(--primary-color, #3b82f6);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.pay-btn:hover {
+    background-color: var(--primary-hover, #2563eb);
+}
+
+.pay-all-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.pay-all-btn {
+    background-color: #10b981;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.pay-all-btn:hover {
+    background-color: #059669;
+}
+
 button.moredetails {
     border: none;
     background-color: transparent;

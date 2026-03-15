@@ -5,55 +5,76 @@ import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 
 const initialData = [
     {
-        name: "John Doe", dept: "Engineering", month: "April 2024", basic: "$5,000.00", ot: "5 hrs",
+        id: 1, name: "John Doe", dept: "Engineering", month: "April 2024", basic: "$5,000.00", ot: "5 hrs",
         dedTypes: [],
         dedAmounts: [], final: "$4,500.00",
-        abs: "$0.00 (0 days)", date: "- -", ded: ["None"], reason: "-", by: "System"
+        abs: "$0.00 (0 days)", date: "- -", ded: ["None"], reason: "-", by: "System", status: "Unpaid"
     },
     {
-        name: "Jane Smith", dept: "Product", month: "April 2024", basic: "$6,200.00", ot: "0 hrs",
+        id: 2, name: "Jane Smith", dept: "Product", month: "April 2024", basic: "$6,200.00", ot: "0 hrs",
         dedTypes: [{ label: "Unexcused Absence", class: "tag-unexcused" }, { label: "Lateness", class: "tag-lateness" }],
         dedAmounts: [{ val: "$400.00", muted: false }, { val: "$50.00", muted: true }],
         final: "$4,760.00",
-        abs: "$400.00 (2 days)", date: "2024-04-25", ded: ["Unexcused Absence: $400", "Lateness: $50"], reason: "2 days absence", by: "System"
+        abs: "$400.00 (2 days)", date: "2024-04-25", ded: ["Unexcused Absence: $400", "Lateness: $50"], reason: "2 days absence", by: "System", status: "Unpaid"
     },
     {
-        name: "Peter Jones", dept: "Design", month: "April 2024", basic: "$4,500.00", ot: "10 hrs",
+        id: 3, name: "Peter Jones", dept: "Design", month: "April 2024", basic: "$4,500.00", ot: "10 hrs",
         dedTypes: [{ label: "Policy Violation", class: "tag-policy" }],
         dedAmounts: [{ val: "$75.00", muted: false }],
         final: "$4,370.00",
-        abs: "$0.00 (0 days)", date: "2024-04-25", ded: ["Policy Violation: $75"], reason: "Policy Violation", by: "System"
+        abs: "$0.00 (0 days)", date: "2024-04-25", ded: ["Policy Violation: $75"], reason: "Policy Violation", by: "System", status: "Paid"
     },
     {
-        name: "Mary Williams", dept: "Engineering", month: "March 2024", basic: "$7,000.00", ot: "2 hrs",
+        id: 4, name: "Mary Williams", dept: "Engineering", month: "March 2024", basic: "$7,000.00", ot: "2 hrs",
         dedTypes: [],
         dedAmounts: [], final: "$5,925.00",
-        abs: "$0.00 (0 days)", date: "- -", ded: ["None"], reason: "-", by: "System"
+        abs: "$0.00 (0 days)", date: "- -", ded: ["None"], reason: "-", by: "System", status: "Paid"
     },
     {
-        name: "David Brown", dept: "Product", month: "March 2024", basic: "$3,800.00", ot: "0 hrs",
+        id: 5, name: "David Brown", dept: "Product", month: "March 2024", basic: "$3,800.00", ot: "0 hrs",
         dedTypes: [{ label: "Unexcused Absence", class: "tag-unexcused" }, { label: "Lateness", class: "tag-lateness" }],
         dedAmounts: [{ val: "$126.67", muted: false }, { val: "$25.00", muted: true }],
         final: "$3,188.33",
-        abs: "$126.67 (1 day)", date: "2024-03-25", ded: ["Unexcused Absence: $126.67", "Lateness: $25"], reason: "1 day absence", by: "System"
+        abs: "$126.67 (1 day)", date: "2024-03-25", ded: ["Unexcused Absence: $126.67", "Lateness: $25"], reason: "1 day absence", by: "System", status: "Paid"
     }
 ];
 
 const MonthlyPayroll = () => {
-    const { t } = useTranslation('SalaryManagement/MonthlyPayroll')
+    const { t } = useTranslation('SalaryManagement/MonthlyPayroll');
     const [details, setDetails] = useState([]);
     
+    // Dataset State
+    const [payrollData, setPayrollData] = useState(initialData);
+
     // Filter states
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedDept, setSelectedDept] = useState("All Departments");
     const [selectedMonth, setSelectedMonth] = useState("April 2024");
 
-    const filteredData = initialData.filter(row => {
+    const filteredData = payrollData.filter(row => {
         const matchesSearch = row.name.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesDept = selectedDept === "All Departments" || row.dept === selectedDept;
         const matchesMonth = row.month === selectedMonth;
         return matchesSearch && matchesDept && matchesMonth;
     });
+
+    // Payment Logic
+    const handlePayEmployee = (id) => {
+        setPayrollData(prevData => prevData.map(emp => 
+            emp.id === id ? { ...emp, status: "Paid" } : emp
+        ));
+    };
+
+    const handlePayAll = () => {
+        setPayrollData(prevData => prevData.map(emp => {
+            // Only pay the ones exactly currently visible in the filter
+            const isVisible = filteredData.some(fEmp => fEmp.id === emp.id);
+            if (isVisible && emp.status === "Unpaid") {
+                return { ...emp, status: "Paid" };
+            }
+            return emp;
+        }));
+    };
 
     const moredetails = (e, abs, ded, date, reason, by) => {
         const vis = document.querySelector(".details")
@@ -122,36 +143,43 @@ const MonthlyPayroll = () => {
             </div>
 
             <div className='monthlypayrollco'>
-                <div className="searchFilterco">
-                    <div className="searchFilter">
-                        <i className="bi bi-search search-icon-input"></i>
-                        <input 
-                            className="Searchemployee" 
-                            placeholder={t("Searchemployee", "Search employee...")} 
-                            type="text" 
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
+                <div className="searchFilterco pay-all-container">
+                    <div style={{display: "flex", gap: "10px", flexWrap: "wrap", flex: 1}}>
+                        <div className="searchFilter">
+                            <i className="bi bi-search search-icon-input"></i>
+                            <input 
+                                className="Searchemployee" 
+                                placeholder={t("Searchemployee", "Search employee...")} 
+                                type="text" 
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+                        <select 
+                            className="AllDepartments"
+                            value={selectedDept}
+                            onChange={(e) => setSelectedDept(e.target.value)}
+                        >
+                            <option>All Departments</option>
+                            <option>Engineering</option>
+                            <option>Product</option>
+                            <option>Design</option>
+                        </select>
+                        <select 
+                            className="dateselect"
+                            value={selectedMonth}
+                            onChange={(e) => setSelectedMonth(e.target.value)}
+                        >
+                            <option>April 2024</option>
+                            <option>March 2024</option>
+                            <option>February 2024</option>
+                        </select>
                     </div>
-                    <select 
-                        className="AllDepartments"
-                        value={selectedDept}
-                        onChange={(e) => setSelectedDept(e.target.value)}
-                    >
-                        <option>All Departments</option>
-                        <option>Engineering</option>
-                        <option>Product</option>
-                        <option>Design</option>
-                    </select>
-                    <select 
-                        className="dateselect"
-                        value={selectedMonth}
-                        onChange={(e) => setSelectedMonth(e.target.value)}
-                    >
-                        <option>April 2024</option>
-                        <option>March 2024</option>
-                        <option>February 2024</option>
-                    </select>
+                    {filteredData.some(emp => emp.status === "Unpaid") && (
+                        <button className="pay-all-btn" onClick={handlePayAll}>
+                            <i className="bi bi-check2-all"></i> {t('PayAll', 'Pay All Unpaid')}
+                        </button>
+                    )}
                 </div>
 
                 <div className="tablesalary">
@@ -164,7 +192,7 @@ const MonthlyPayroll = () => {
                                 <th className="" >{t('DeductionType', 'DEDUCTION TYPE')}</th>
                                 <th className="" >{t('DeductionAmount', 'DEDUCTION AMOUNT')}</th>
                                 <th className="" >{t('FinalNetSalary', 'FINAL NET SALARY')}</th>
-                                <th className="" >{t('Actions', 'ACTIONS')}</th>
+                                <th className="" >{t('Actions', 'STATUS & ACTIONS')}</th>
                             </tr>
                         </thead>
                         <tbody className='salaryinfo'>
@@ -196,7 +224,15 @@ const MonthlyPayroll = () => {
                                         )}
                                     </td>
                                     <td className="final-salary-bold">{row.final}</td>
-                                    <td >
+                                    <td className="status-actions-cell">
+                                        <div className={`status-badge ${row.status === 'Paid' ? 'paid' : 'unpaid'}`}>
+                                            {t(row.status, row.status)}
+                                        </div>
+                                        {row.status === "Unpaid" && (
+                                            <button className="pay-btn" onClick={() => handlePayEmployee(row.id)}>
+                                                {t('Pay', 'Pay')}
+                                            </button>
+                                        )}
                                         <button className="moredetails" onClick={(e) => { moredetails(e, row.abs, row.ded, row.date, row.reason, row.by) }}>
                                             {t('more', 'More Details')}
                                         </button>
@@ -244,7 +280,18 @@ const MonthlyPayroll = () => {
                                 <p className="" >{t('FinalNetSalary')}: </p>
                                 <p className="" style={{fontWeight:'bold'}}>{row.final}</p>
                             </div>
-                            <div style={{display:'flex', justifyContent:'flex-end', marginTop:'10px'}}>
+                            <div className='infocardsalary'>
+                                <p className="" >{t('Status', 'Status')}: </p>
+                                <div className={`status-badge ${row.status === 'Paid' ? 'paid' : 'unpaid'}`}>
+                                    {t(row.status, row.status)}
+                                </div>
+                            </div>
+                            <div style={{display:'flex', justifyContent:'space-between', marginTop:'15px'}}>
+                                {row.status === "Unpaid" ? (
+                                    <button className="pay-btn" onClick={() => handlePayEmployee(row.id)}>
+                                        {t('Pay', 'Pay')}
+                                    </button>
+                                ) : <div></div>}
                                <button className="moredetails" onClick={(e) => { moredetails(e, row.abs, row.ded, row.date, row.reason, row.by) }}>
                                   {t('more', 'More Details')}
                                </button>
