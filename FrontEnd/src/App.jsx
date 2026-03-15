@@ -24,7 +24,6 @@ import EmployeeMovement from './Components/Pages/EmployeeManagement/EmployeeMove
 import PayrollOverview from './Components/Pages/salaryMangement/PayrollOverview/PayrollOverview';
 import SalaryStructure from './Components/Pages/salaryMangement/SalaryStructure/SalaryStructure';
 import MonthlyPayroll from './Components/Pages/salaryMangement/MonthlyPayroll/MonthlyPayroll';
-import DeductionsPenalties from './Components/Pages/salaryMangement/DeductionsPenalties/DeductionsPenalties';
 import SalaryAdjustments from './Components/Pages/salaryMangement/SalaryAdjustments/SalaryAdjustments';
 
 function App() {
@@ -76,7 +75,6 @@ function App() {
                   <Route path="payroll-overview" element={<PayrollOverview />} />
                   <Route path="salary-structure" element={<SalaryStructure />} />
                   <Route path="monthly-payroll" element={<MonthlyPayroll />} />
-                  <Route path="deductions-penalties" element={<DeductionsPenalties />} />
                   <Route path="salary-adjustments" element={<SalaryAdjustments />} />
                 </Routes>
               </main>
