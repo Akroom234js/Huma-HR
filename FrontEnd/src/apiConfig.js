@@ -10,7 +10,7 @@ const apiClient = axios.create({
   },
 });
 
-// إضافة التوكن تلقائياً لكل طلب إذا كان موجوداً
+
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
