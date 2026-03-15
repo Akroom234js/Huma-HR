@@ -1,3 +1,4 @@
+import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
 import "./DepartmentOverview.css";
 // import React from "react";
 import {
@@ -33,6 +34,9 @@ const DepartmentOverview = () => {
     <div className="page-container">
       <div className="page-title">
         <h2>Department Overview</h2>
+        <div className="sm-theme-toggle-wrapper">
+          <ThemeToggle />
+        </div>
       </div>
       <div className="container-subcard">
         <div className="subcart1">

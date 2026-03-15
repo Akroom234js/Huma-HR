@@ -5,6 +5,7 @@ import AddRole from '../AddRole/AddRole'
 import FilterDropdown from '../../Recrutment/FilterDropdown/FilterDropdown';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
+import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 const PositionsRoles = () => {
     const {t}=useTranslation('Department/PositionRoles')
     const [selectedDepartment, setSelectedDepartment] = useState('');
@@ -95,6 +96,7 @@ const PositionsRoles = () => {
             </div>
             <header className="page-header">
                 <h2>{t('Positions')}</h2>
+                <ThemeToggle/>
             </header>
            <div className='adddep'>
              <div>
@@ -113,7 +115,7 @@ const PositionsRoles = () => {
                         options={departmentOptions}
                     />
             </div>
-              <div>
+              <div className='addroleco'>
                 <button className='addrole' onClick={(e)=>{addRole(e)}}><i className='bi bi-plus'></i> {t('addrole')}</button>
               </div>
             </div>

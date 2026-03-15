@@ -194,3 +194,67 @@
   font-size: 14px;
   color: var(--text-secondary);
 }
+@media (max-width: 768px) {
+  .All_page {
+    padding-top: 40px;
+  }
+  .sm-page {
+    padding: 1rem;
+  }
+
+  .title_salary {
+    font-size: 24px;
+  }
+
+  .head1 {
+  }
+
+  .con_divs {
+    flex-direction: column;
+    height: auto;
+    gap: 15px;
+  }
+
+  .con_divs div {
+    width: 100%;
+    height: auto;
+    padding: 20px;
+  }
+  .all_chart {
+    margin-top: 20px;
+  }
+  .salary-legend {
+    width: 100%;
+  }
+
+  .salary-chart {
+    width: 100%;
+  }
+
+  .all_chart {
+    padding: 16px;
+  }
+
+  .table-container2 {
+    overflow-x: auto;
+  }
+}
+@media (min-width: 769px) and (max-width: 1024px) {
+  .con_divs {
+    flex-wrap: wrap;
+    height: auto;
+    gap: 15px;
+  }
+
+  .con_divs div {
+    width: 48%;
+    height: auto;
+  }
+  .all_chart {
+    margin-top: 20px;
+  }
+
+  .salary-legend {
+    width: 70%;
+  }
+}
