@@ -9,9 +9,14 @@
  "FinalNetSalary":"Final Net Salary",
  "Searchemployee":"Search employee...",                       
  "DeductionAmount":"Deduction Amount",
- "Actions":"Actions",
+ "Actions":"STATUS & ACTIONS",
  "more":"More Details",
  "deductiondate":"Deduction Date",
  "reaspn":"Reaspn",
- "Applied":"Applied By"
+ "Applied":"Applied By",
+ "Status": "Status",
+ "Paid": "Paid",
+ "Unpaid": "Unpaid",
+ "Pay": "Pay",
+ "PayAll": "Pay All Unpaid"
 }

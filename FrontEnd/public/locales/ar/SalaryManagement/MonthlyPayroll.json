@@ -9,9 +9,14 @@
  "FinalNetSalary":"صافي راتب النهائي",
  "Searchemployee":"البحث عن موظف...",                       
  "DeductionAmount":"كمية الاقتطاع",
- "Actions":"الإجراءات",
+ "Actions":"الحالة والإجراءات",
  "more":"المزيد من التفاصل",
  "deductiondate":"تاريخ الاقتطاع",
  "reaspn":"السبب",
- "Applied":"مطبق من قبل"
+ "Applied":"مطبق من قبل",
+ "Status": "الحالة",
+ "Paid": "تم الدفع",
+ "Unpaid": "غير مدفوع",
+ "Pay": "دفع",
+ "PayAll": "دفع رواتب الجميع المتبقية"
 }

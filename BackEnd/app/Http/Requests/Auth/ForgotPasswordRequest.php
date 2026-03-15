@@ -18,7 +18,7 @@ class ForgotPasswordRequest extends FormRequest
 public function messages(): array
     {
         return [
-           'email.exists' => 'This email is not registered in our system.',
+            'email.exists' => 'هذا البريد غير مسجّل في النظام',
         ];
     }
 }

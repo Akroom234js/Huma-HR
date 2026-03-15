@@ -1,0 +1,18 @@
+{
+  "PayrollOverview": "Payroll Overview",
+  "TotalMonthlyCompanyPayroll": "Total Monthly Company Payroll",
+  "EmployeesPaid": "Employees Paid",
+  "AvgSalaryEmployee": "Avg. Salary / Employee",
+  "SalaryDistribution": "Salary Distribution",
+  "DEPARTMENT": "DEPARTMENT",
+  "TOTALPAYROLL": "TOTAL PAYROLL",
+  "AVERAGESALARY": "AVERAGE SALARY",
+  "EMPLOYEES": "EMPLOYEES",
+  "OFTOTAL": "% OF TOTAL",
+  "Engineering": "Engineering",
+  "Product": "Product",
+  "Design": "Design",
+  "Other": "Other",
+  "Marketing": "Marketing",
+  "OtherDepartments": "Other Departments"
+}

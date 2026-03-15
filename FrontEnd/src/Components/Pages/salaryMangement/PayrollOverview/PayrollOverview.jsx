@@ -2,43 +2,46 @@ import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
 import React from "react";
 import "./PayrollOverview.css";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
-
-const data = [
-  { name: "Engineering", value: 45 },
-  { name: "Product", value: 30 },
-  { name: "Design", value: 15 },
-  { name: "Other", value: 10 },
-];
+import { useTranslation } from "react-i18next";
 
 const COLORS = ["#2563eb", "#3b82f6", "#60a5fa", "#cbd5e1"];
 
 const PayrollOverview = () => {
+  const { t } = useTranslation('SalaryManagement/PayrollOverview');
+
+  const data = [
+    { name: t('Engineering'), value: 45 },
+    { name: t('Product'), value: 30 },
+    { name: t('Design'), value: 15 },
+    { name: t('Other'), value: 10 },
+  ];
+
   return (
     <div className="All_page">
       <div className="head1">
-        <h2 className="title_salary"> Payroll Overview</h2>
+        <h2 className="title_salary"> {t('PayrollOverview')}</h2>
         <div className="sm-theme-toggle-wrapper">
           <ThemeToggle />
         </div>
       </div>
       <div className="con_divs">
         <div>
-          <p>Total Monthly Company Payroll</p>
+          <p>{t('TotalMonthlyCompanyPayroll')}</p>
           <h3>$450,320</h3>
         </div>
 
         <div>
-          <p>Employees Paid</p>
+          <p>{t('EmployeesPaid')}</p>
           <h3>258 / 258</h3>
         </div>
 
         <div>
-          <p>Avg. Salary / Employee</p>
+          <p>{t('AvgSalaryEmployee')}</p>
           <h3>$1,745</h3>
         </div>
       </div>
       <div className="all_chart">
-        <h4 className="salary-title">Salary Distribution</h4>
+        <h4 className="salary-title">{t('SalaryDistribution')}</h4>
         <div className="salary-card">
           <div className="salary-chart">
             <ResponsiveContainer width={250} height={250}>
@@ -73,21 +76,21 @@ const PayrollOverview = () => {
           </div>
         </div>
       </div>
-      <div class="table-container2">
-        <table class="payroll-table">
+      <div className="table-container2">
+        <table className="payroll-table">
           <thead>
             <tr>
-              <th>DEPARTMENT</th>
-              <th>TOTAL PAYROLL</th>
-              <th>AVERAGE SALARY</th>
-              <th>EMPLOYEES</th>
-              <th>% OF TOTAL</th>
+              <th>{t('DEPARTMENT')}</th>
+              <th>{t('TOTALPAYROLL')}</th>
+              <th>{t('AVERAGESALARY')}</th>
+              <th>{t('EMPLOYEES')}</th>
+              <th>{t('OFTOTAL')}</th>
             </tr>
           </thead>
 
           <tbody>
             <tr>
-              <td>Engineering</td>
+              <td>{t('Engineering')}</td>
               <td>$202,644</td>
               <td>$4,824</td>
               <td>42</td>
@@ -95,7 +98,7 @@ const PayrollOverview = () => {
             </tr>
 
             <tr>
-              <td>Product</td>
+              <td>{t('Product')}</td>
               <td>$135,096</td>
               <td>$5,873</td>
               <td>23</td>
@@ -103,7 +106,7 @@ const PayrollOverview = () => {
             </tr>
 
             <tr>
-              <td>Design</td>
+              <td>{t('Design')}</td>
               <td>$67,548</td>
               <td>$4,503</td>
               <td>15</td>
@@ -111,7 +114,7 @@ const PayrollOverview = () => {
             </tr>
 
             <tr>
-              <td>Marketing</td>
+              <td>{t('Marketing')}</td>
               <td>$22,516</td>
               <td>$1,250</td>
               <td>18</td>
@@ -119,7 +122,7 @@ const PayrollOverview = () => {
             </tr>
 
             <tr>
-              <td>Other Departments</td>
+              <td>{t('OtherDepartments')}</td>
               <td>$22,516</td>
               <td>$750</td>
               <td>30</td>

@@ -142,9 +142,6 @@ const Sidebar = () => {
                                         <NavLink to="/salary/monthly-payroll" className="sub-nav-item">
                                             {t('Monthly-Payroll')}
                                         </NavLink>
-                                        <NavLink to="/salary/deductions-penalties" className="sub-nav-item">
-                                            {t('Deductions-Penalties')}
-                                        </NavLink>
                                         <NavLink to="/salary/salary-adjustments" className="sub-nav-item">
                                             {t('Salary-Adjustments')}
                                         </NavLink>
