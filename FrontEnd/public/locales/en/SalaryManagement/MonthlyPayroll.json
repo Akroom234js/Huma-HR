@@ -2,11 +2,16 @@
  "MonthlyPayroll":"Monthly Payroll",
  "name":"Employee Name",
  "BasicSalary":"Basic Salary",
- "AbsenceDeducted":"Absence Deducted",
- "Overtime":"Overtime",
+ "AbsenceDeducted":"Absence Days Deducted",
+ "Overtime":"Overtime Hours",
  "Incentives":"Incentives",
  "Deductions":"Deductions",
  "FinalNetSalary":"Final Net Salary",
- "Searchemployee":"Search employee..."
- 
+ "Searchemployee":"Search employee...",                       
+ "DeductionAmount":"Deduction Amount",
+ "Actions":"Actions",
+ "more":"More Details",
+ "deductiondate":"Deduction Date",
+ "reaspn":"Reaspn",
+ "Applied":"Applied By"
 }

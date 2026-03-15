@@ -182,7 +182,7 @@ left: 0;
 }
 div.leavesinfocard{
     display: none;
-    
+       background-color: rgba(128, 128, 128, 0.041);
 }
 div.leavescard-co{
     margin: 5px;
@@ -229,7 +229,7 @@ header.leavesManagementadd button.add{
      margin-top: 50px;
 }
 }
-@media (max-width:600px){
+@media (max-width:850px){
    div.leaves-table div table{
     display: none;
     

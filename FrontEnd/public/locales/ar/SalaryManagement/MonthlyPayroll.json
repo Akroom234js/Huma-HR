@@ -2,10 +2,16 @@
  "MonthlyPayroll":"الرواتب الشهرية",
   "name":"اسم الموظف",
  "BasicSalary":"راتب الأساسي",
- "AbsenceDeducted":"اقتطاع الغياب",
- "Overtime":"إضافي",
+ "AbsenceDeducted":"اقتطاع أيام الغياب",
+ "Overtime":"ساعات الإضافي",
  "Incentives":"حوافز",
  "Deductions":"اقتطاع",
  "FinalNetSalary":"صافي راتب النهائي",
- "Searchemployee":"البحث عن موظف..."
+ "Searchemployee":"البحث عن موظف...",                       
+ "DeductionAmount":"كمية الاقتطاع",
+ "Actions":"الإجراءات",
+ "more":"المزيد من التفاصل",
+ "deductiondate":"تاريخ الاقتطاع",
+ "reaspn":"السبب",
+ "Applied":"مطبق من قبل"
 }
