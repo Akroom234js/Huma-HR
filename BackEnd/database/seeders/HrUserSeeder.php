@@ -12,7 +12,7 @@ class HrUserSeeder extends Seeder
 {
     public function run(): void
     {
-        $hr = User::create([
+        $hr = User::firstorcreate([
             'email'          => 'hr@company.com',
             'password'       => Hash::make('Hr@123456'),
             'account_status' => 'active',
@@ -20,7 +20,7 @@ class HrUserSeeder extends Seeder
         EmployeeProfile::create(['user_id' => $hr->id]);
         $hr->assignRole(Role::findByName('hr', 'api'));
 
-        $manager = User::create([
+        $manager = User::firstorcreate([
             'email'          => 'manager@company.com',
             'password'       => Hash::make('Manager@123456'),
             'account_status' => 'active',
