@@ -17,7 +17,9 @@ const PayrollOverview = () => {
     <div className="All_page">
       <div className="head1">
         <h2 className="title_salary"> Payroll Overview</h2>
-        <ThemeToggle />
+        <div className="sm-theme-toggle-wrapper">
+          <ThemeToggle />
+        </div>
       </div>
       <div className="con_divs">
         <div>
