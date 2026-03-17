@@ -26,6 +26,15 @@ import SalaryStructure from './Components/Pages/salaryMangement/SalaryStructure/
 import MonthlyPayroll from './Components/Pages/salaryMangement/MonthlyPayroll/MonthlyPayroll';
 import SalaryAdjustments from './Components/Pages/salaryMangement/SalaryAdjustments/SalaryAdjustments';
 
+// Dashboard Components
+import General from './Components/Pages/Dashboard/General/General';
+import EmployeeReports from './Components/Pages/Dashboard/EmployeeReports/EmployeeReports';
+import Attendance from './Components/Pages/Dashboard/Attendance/Attendance';
+import LeavesDashboard from './Components/Pages/Dashboard/Leaves/Leaves';
+import SalariesDashboard from './Components/Pages/Dashboard/Salaries/Salaries';
+import OverallPerformance from './Components/Pages/Dashboard/OverallPerformance/OverallPerformance';
+import ImprovementStatistics from './Components/Pages/Dashboard/ImprovementStatistics/ImprovementStatistics';
+
 function App() {
   return (
     <BrowserRouter>
@@ -34,6 +43,27 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/jops" element={<Jops />} />
+
+        {/* Dashboard Routes with Sidebar */}
+        <Route
+          path="/dashboard/*"
+          element={
+            <div className="app-container">
+              <Sidebar />
+              <main className="main-content">
+                <Routes>
+                  <Route path="general" element={<General />} />
+                  <Route path="employee-reports" element={<EmployeeReports />} />
+                  <Route path="attendance" element={<Attendance />} />
+                  <Route path="leaves" element={<LeavesDashboard />} />
+                  <Route path="salaries" element={<SalariesDashboard />} />
+                  <Route path="performance" element={<OverallPerformance />} />
+                  <Route path="improvement" element={<ImprovementStatistics />} />
+                </Routes>
+              </main>
+            </div>
+          }
+        />
 
         {/* Dashboard Routes with Sidebar */}
         <Route
