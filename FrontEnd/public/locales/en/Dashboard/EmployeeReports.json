@@ -1,0 +1,31 @@
+{
+    "title": "Employee Reports",
+    "searchPlaceholder": "Search by name or ID...",
+    "filters": {
+        "department": "Department",
+        "employmentStatus": "Employment Status",
+        "joinDate": "Join Date",
+        "all": "All"
+    },
+    "stats": {
+        "totalEmployees": "Total Employees",
+        "newHires": "New Hires (Period)",
+        "turnover": "Employee Turnover (Period)",
+        "stabilityRate": "Stability Rate"
+    },
+    "table": {
+        "title": "Full Employee Data Report",
+        "employeeName": "EMPLOYEE NAME",
+        "employeeId": "EMPLOYEE ID",
+        "jobTitle": "JOB TITLE",
+        "department": "DEPARTMENT",
+        "joiningDate": "JOINING DATE",
+        "employmentStatus": "EMPLOYMENT STATUS",
+        "noResults": "No results found."
+    },
+    "status": {
+        "active": "Active",
+        "onLeave": "On Leave",
+        "terminated": "Terminated"
+    }
+}

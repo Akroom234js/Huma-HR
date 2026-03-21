@@ -1,0 +1,845 @@
+/* =====================================================
+   ATTENDANCE PAGE — Styled to match EmployeeReports
+   ===================================================== */
+
+.at-page {
+    padding: 2rem;
+    height: 100%;
+    position: relative;
+    background-color: var(--bg-page);
+    transition: background-color 0.3s ease;
+}
+
+/* ════════════════════════════════════════════════════
+   WORK HOURS SETTINGS SECTION
+════════════════════════════════════════════════════ */
+.at-workhours-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+/* Toggle header button */
+.at-workhours-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-main);
+    font-family: inherit;
+    transition: background 0.2s ease;
+}
+
+.at-workhours-toggle:hover {
+    background: var(--bg-page);
+}
+
+.at-workhours-toggle-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.at-wh-icon {
+    font-size: 22px;
+    color: var(--primary-color);
+    background: var(--primary-light);
+    border-radius: 8px;
+    padding: 6px;
+}
+
+.at-workhours-title {
+    display: block;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    text-align: left;
+}
+
+.at-workhours-subtitle {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    text-align: left;
+    margin-top: 2px;
+}
+
+.at-wh-chevron {
+    font-size: 22px;
+    color: var(--text-muted);
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+}
+
+.at-wh-chevron.open {
+    transform: rotate(180deg);
+}
+
+/* ── Smooth accordion wrapper ── */
+.at-accordion-wrapper {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity   0.3s ease;
+    opacity: 0;
+}
+
+.at-accordion-wrapper[aria-hidden="false"] {
+    opacity: 1;
+}
+
+/* Body of the section */
+.at-workhours-body {
+    border-top: 1px solid var(--border-color);
+    padding: 0.5rem 0;
+}
+
+/* Each department row */
+.at-dept-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.2s ease;
+    flex-wrap: wrap;
+}
+
+.at-dept-row:last-child {
+    border-bottom: none;
+}
+
+.at-dept-row:hover {
+    background: var(--bg-page);
+}
+
+.at-dept-row.editing {
+    background: color-mix(in srgb, var(--primary-light) 40%, var(--bg-card));
+    border-inline-start: 3px solid var(--primary-color);
+}
+
+/* Dept name cell */
+.at-dept-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 140px;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    color: var(--text-main);
+    flex-shrink: 0;
+}
+
+.at-dept-icon {
+    font-size: 18px;
+    color: var(--text-muted);
+}
+
+/* Field wrapper */
+.at-dept-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.at-field-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+}
+
+/* Time input */
+.at-time-input {
+    height: 36px;
+    width: 120px;
+    background: var(--bg-page);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0 0.75rem;
+    font-size: 0.875rem;
+    color: var(--text-main);
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.at-time-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(53, 158, 255, 0.12);
+}
+
+.at-time-input:disabled {
+    opacity: 0.6;
+    cursor: default;
+    background: var(--bg-card);
+}
+
+/* Total hours display */
+.at-total-hours {
+    height: 36px;
+    width: 80px;
+    display: flex;
+    align-items: center;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* Grace period number input */
+.at-grace-input {
+    height: 36px;
+    width: 80px;
+    background: var(--bg-page);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0 0.75rem;
+    font-size: 0.875rem;
+    color: var(--text-main);
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.at-grace-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(53, 158, 255, 0.12);
+}
+
+.at-grace-input:disabled {
+    opacity: 0.6;
+    cursor: default;
+    background: var(--bg-card);
+}
+
+/* Work-day pills field */
+.at-dept-days-field {
+    flex: 1;
+    min-width: 220px;
+}
+
+.at-days-pills {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.at-day-pill {
+    min-width: 38px;
+    height: 32px;
+    border-radius: 999px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-page);
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: inherit;
+    padding: 0 8px;
+}
+
+.at-day-pill.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.at-day-pill.readonly {
+    cursor: default;
+}
+
+.at-day-pill:not(.readonly):hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.at-day-pill.active:not(.readonly):hover {
+    opacity: 0.85;
+    color: white;
+}
+
+/* Action buttons */
+.at-dept-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-inline-start: auto;
+    flex-shrink: 0;
+}
+
+.at-btn-edit,
+.at-btn-save,
+.at-btn-cancel {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    height: 34px;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0 14px;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.at-btn-edit {
+    background: var(--bg-page);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.at-btn-edit:hover {
+    background: var(--border-light);
+    color: var(--text-main);
+}
+
+.at-btn-edit.saved {
+    background: #dcfce7;
+    color: #15803d;
+    border-color: #bbf7d0;
+}
+
+.at-btn-save {
+    background: var(--primary-color);
+    color: white;
+}
+
+.at-btn-save:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.at-btn-cancel {
+    background: var(--bg-page);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.at-btn-cancel:hover {
+    background: var(--border-light);
+    color: var(--text-main);
+}
+
+.at-btn-edit   .material-symbols-outlined,
+.at-btn-save   .material-symbols-outlined,
+.at-btn-cancel .material-symbols-outlined {
+    font-size: 16px;
+}
+
+
+/* ---- Theme Toggle (top-right, same as EmployeeReports) ---- */
+.at-theme-toggle-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+}
+
+.at-theme-toggle-wrapper .theme-toggle {
+    background-color: var(--bg-card);
+    border: none;
+    color: var(--text-main);
+    box-shadow: -4px 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 0 0 0 60px;
+    width: 64px;
+    height: 64px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 15px;
+    padding-bottom: 15px;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+[dir="rtl"] .at-theme-toggle-wrapper {
+    right: auto;
+    left: 0;
+}
+
+[dir="rtl"] .at-theme-toggle-wrapper .theme-toggle {
+    border-radius: 0 0 60px 0;
+    padding-left: 0;
+    padding-right: 15px;
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.at-theme-toggle-wrapper .theme-toggle:hover {
+    background-color: var(--bg-page);
+    transform: scale(1.05);
+}
+
+/* ---- Header ---- */
+.at-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.at-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--text-color);
+    transition: color 0.3s ease;
+}
+
+/* ---- Stats Row ---- */
+.at-stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.at-stat-card {
+    background-color: var(--bg-card);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s ease;
+}
+
+.at-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.at-stat-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.at-stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+/* ---- Filter Card ---- */
+.at-filter-card {
+    background: var(--bg-card);
+    width: 100%;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+.at-all-filt {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.at-search-input {
+    width: 50%;
+    height: 40px;
+    background: var(--bg-page);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0 1rem;
+    font-size: 0.875rem;
+    color: var(--text-main);
+    transition: all 0.3s ease;
+}
+
+.at-search-input::placeholder {
+    color: var(--text-muted);
+}
+
+.at-search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(53, 158, 255, 0.1);
+}
+
+.at-filters-row {
+    display: flex;
+    justify-content: flex-start;
+    gap: 12px;
+    transition: all 0.3s ease;
+}
+
+/* ---- Table Card ---- */
+.at-table-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.at-table-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.at-table-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.at-table-wrapper {
+    overflow-x: auto;
+}
+
+.at-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.at-table th {
+    padding: 1rem 1.5rem;
+    background-color: var(--bg-card);
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-color);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.at-table td {
+    padding: 1rem 1.5rem;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border-color);
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+}
+
+.at-table tr:hover td {
+    background-color: var(--bg-page);
+}
+
+/* Employee cell */
+.at-employee-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.at-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #d1d5db;
+    flex-shrink: 0;
+}
+
+.at-employee-name { font-weight: 600; color: var(--text-main); }
+.at-employee-id   { font-family: 'monospace', monospace; font-size: 0.8125rem; color: var(--text-secondary); }
+.at-date          { color: var(--text-secondary); }
+.at-time          { color: var(--text-main); font-weight: 500; }
+.at-duration      { color: var(--text-secondary); }
+
+.at-lateness-reason {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.at-dash {
+    color: var(--text-muted);
+}
+
+/* ---- Status Badges ---- */
+.at-status-badge {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.at-status-onTime {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.at-status-late {
+    background-color: #fef9c3;
+    color: #a16207;
+}
+
+.at-status-onLeave {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+}
+
+.at-status-absent {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+/* Dark mode badge adjustments */
+[data-theme='dark'] .at-status-onTime  { background-color: rgba(21, 128, 61, 0.2); }
+[data-theme='dark'] .at-status-late    { background-color: rgba(161, 98, 7, 0.2); }
+[data-theme='dark'] .at-status-onLeave { background-color: rgba(29, 78, 216, 0.2); }
+[data-theme='dark'] .at-status-absent  { background-color: rgba(185, 28, 28, 0.2); }
+
+/* ---- No Results ---- */
+.at-no-results {
+    text-align: center;
+    padding: 2rem !important;
+    color: var(--text-muted);
+}
+
+/* ---- RTL ---- */
+[dir="rtl"] .at-table th,
+[dir="rtl"] .at-table td {
+    text-align: right;
+}
+
+/* ════════════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════════════ */
+
+/* ── Large Tablet (≤1280px) ── */
+@media (max-width: 1280px) {
+    .at-dept-row {
+        gap: 1rem;
+    }
+
+    .at-dept-days-field {
+        min-width: 180px;
+    }
+}
+
+/* ── Tablet (≤1024px) ── */
+@media (max-width: 1024px) {
+    .at-stats-row {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    /* Work-hours: wrap dept rows to 2-column grid */
+    .at-dept-row {
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .at-dept-name {
+        min-width: 100%;
+        margin-bottom: 4px;
+    }
+
+    .at-dept-actions {
+        margin-inline-start: 0;
+        width: 100%;
+        justify-content: flex-end;
+        border-top: 1px dashed var(--border-color);
+        padding-top: 0.5rem;
+        margin-top: 0.25rem;
+    }
+}
+
+/* ── Mobile (≤768px) ── */
+@media (max-width: 768px) {
+    .at-page {
+        padding: 1rem;
+        padding-top: 5rem;
+    }
+
+    .at-header {
+        margin-bottom: 1.25rem;
+    }
+
+    .at-title {
+        font-size: 22px;
+    }
+
+    /* Stats: single column */
+    .at-stats-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    .at-stat-card {
+        padding: 1rem;
+    }
+
+    .at-stat-value {
+        font-size: 1.5rem;
+    }
+
+    /* Work-hours: stack all fields */
+    .at-workhours-toggle {
+        padding: 1rem;
+    }
+
+    .at-workhours-subtitle {
+        display: none;   /* too long on small screens */
+    }
+
+    .at-dept-row {
+        padding: 0.875rem 1rem;
+        gap: 0.625rem;
+    }
+
+    .at-dept-field {
+        flex: 1 1 calc(50% - 0.625rem);
+        min-width: 0;
+    }
+
+    .at-time-input {
+        width: 100%;
+    }
+
+    .at-grace-input {
+        width: 100%;
+    }
+
+    .at-dept-days-field {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+
+    /* Filter card */
+    .at-filter-card {
+        padding: 1rem;
+    }
+
+    .at-search-input {
+        width: 100%;
+    }
+
+    .at-filters-row {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    /* Table: horizontal scroll on mobile */
+    .at-table-card {
+        border-radius: 8px;
+    }
+
+    .at-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .at-table {
+        min-width: 640px;
+    }
+
+    .at-table th,
+    .at-table td {
+        padding: 0.75rem 1rem;
+        font-size: 13px;
+    }
+
+    .at-avatar {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+/* ── Small Mobile (≤480px) ── */
+@media (max-width: 480px) {
+    .at-page {
+        padding: 0.75rem;
+        padding-top: 4.5rem;
+    }
+
+    .at-title {
+        font-size: 18px;
+    }
+
+    .at-stats-row {
+        grid-template-columns: 1fr;
+        gap: 0.625rem;
+    }
+
+    .at-stat-card {
+        padding: 0.875rem;
+    }
+
+    .at-stat-value {
+        font-size: 1.375rem;
+    }
+
+    .at-workhours-card {
+        border-radius: 8px;
+    }
+
+    .at-dept-field {
+        flex: 1 1 100%;
+    }
+
+    .at-table {
+        min-width: 540px;
+    }
+
+    .at-day-pill {
+        min-width: 32px;
+        height: 28px;
+        font-size: 0.6875rem;
+        padding: 0 5px;
+    }
+
+    .at-btn-save,
+    .at-btn-edit,
+    .at-btn-cancel {
+        height: 30px;
+        font-size: 0.75rem;
+        padding: 0 10px;
+    }
+}
+
+/* ── Very small (≤360px) ── */
+@media (max-width: 360px) {
+    .at-page {
+        padding: 0.5rem;
+        padding-top: 4rem;
+    }
+
+    .at-title {
+        font-size: 16px;
+    }
+
+    .at-table {
+        min-width: 480px;
+    }
+}
+
+/* ── RTL adjustments for responsive ── */
+[dir="rtl"] .at-dept-actions {
+    justify-content: flex-start;
+}
+
+[dir="rtl"] .at-workhours-title,
+[dir="rtl"] .at-workhours-subtitle {
+    text-align: right;
+}
+

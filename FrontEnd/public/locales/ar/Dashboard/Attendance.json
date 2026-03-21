@@ -1,0 +1,55 @@
+{
+    "title": "إدارة الحضور",
+    "searchPlaceholder": "البحث عن موظف...",
+    "filters": {
+        "department": "القسم",
+        "status": "تصفية الحالة",
+        "all": "الكل"
+    },
+    "stats": {
+        "presentToday": "الموظفون الحاضرون اليوم",
+        "lateToday": "الموظفون المتأخرون اليوم",
+        "avgHours": "متوسط ساعات العمل",
+        "latenessCount": "إجمالي حالات التأخر"
+    },
+    "workHours": {
+        "sectionTitle": "إعدادات ساعات العمل",
+        "sectionSubtitle": "تحديد ساعات العمل اليومية وفترة السماح لكل قسم",
+        "startTime": "وقت البدء",
+        "endTime": "وقت الانتهاء",
+        "totalHours": "إجمالي الساعات",
+        "gracePeriod": "السماح (د)",
+        "workDays": "أيام العمل",
+        "edit": "تعديل",
+        "save": "حفظ",
+        "cancel": "إلغاء",
+        "saved": "تم الحفظ"
+    },
+    "table": {
+        "title": "جدول الحضور",
+        "employeeName": "اسم الموظف",
+        "employeeId": "رقم الموظف",
+        "date": "التاريخ",
+        "timeIn": "وقت الدخول",
+        "timeOut": "وقت الخروج",
+        "duration": "المدة",
+        "status": "الحالة",
+        "latenessReason": "سبب التأخر",
+        "noResults": "لا توجد سجلات."
+    },
+    "status": {
+        "onTime": "في الوقت",
+        "late": "متأخر",
+        "onLeave": "في إجازة",
+        "absent": "غائب"
+    },
+    "days": {
+        "Mon": "إث",
+        "Tue": "ثل",
+        "Wed": "أر",
+        "Thu": "خم",
+        "Fri": "جم",
+        "Sat": "سب",
+        "Sun": "أح"
+    }
+}

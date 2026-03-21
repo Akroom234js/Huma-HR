@@ -1,0 +1,127 @@
+.dashboard-page {
+    padding: 2rem;
+    color: var(--text-main);
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+header.general{
+    width: 99%;
+}
+.page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.page-content {
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+div.general-info{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
+div.general-info-card{
+    border: 1px solid var(--border-color);
+    width: 23%;
+    min-height: 170px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 7px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+
+}
+div.general-info-card h3.title-card{
+    color: gray;
+    
+    font-size: 15px;
+}
+div.general-info-card p.number{
+    font-weight: bold;
+     font-size: 36px;
+}
+div.general-info-card p.number span{
+      color: gray;
+     font-size: 22px;
+     font-weight: 500;
+}
+div.general-info-card p.color-green{
+    color: #10b981;
+}
+div.general-info-card p.color-gray{
+    color: gray;
+}
+div.general-info-card p.color-red{
+    color: red;
+}
+div.graph{
+    background-color: white;
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    border-radius: 10px;
+}
+@media (max-width:1117px) and (min-width:1025px){
+    div.general-info{
+justify-content: start;
+gap: 5%;
+    }
+  div.general-info-card{
+    border: 1px solid var(--border-color);
+    width: 30%;
+}  
+}
+@media(max-width:1024px){
+        .page-header{
+            flex-direction: row;
+        }
+        header.page-header{
+            margin: 0px auto;
+        }
+}
+@media(max-width:761px){
+
+        header.page-header{
+            margin-top: 27px;
+        }
+}
+@media (max-width:975px){
+    div.general-info{
+justify-content: start;
+gap: 5%;
+    }
+  div.general-info-card{
+    border: 1px solid var(--border-color);
+    width: 30%;
+}  
+}
+@media (max-width:761px){
+    div.general-info{
+justify-content: space-between;
+
+    }
+  div.general-info-card{
+    border: 1px solid var(--border-color);
+    width: 47%;
+}  
+}
+@media (max-width:512px){
+    div.general-info{
+justify-content: center;
+
+    }
+  div.general-info-card{
+    border: 1px solid var(--border-color);
+    width: 97%;
+}  
+}
