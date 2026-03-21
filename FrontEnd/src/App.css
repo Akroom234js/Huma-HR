@@ -4,11 +4,12 @@
 }
 
 .main-content {
-    margin-inline-start: 90px;         /* matches collapsed sidebar width */
+    margin-inline-start: 90px;
+    /* matches collapsed sidebar width */
     width: calc(100% - 90px);
     min-height: 100vh;
     transition: margin-inline-start 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* When sidebar is hovered on desktop, push main content */
@@ -18,11 +19,13 @@
 }
 
 @media (max-width: 1023px) {
+
     /* Sidebar is hidden off-screen — main content takes full width */
     .main-content {
         margin-inline-start: 0 !important;
         width: 100% !important;
-        padding-top: 56px; /* space for the hamburger button */
+        padding-top: 56px;
+        /* space for the hamburger button */
     }
 
     .app-container:has(.sidebar:hover) .main-content {

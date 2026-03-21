@@ -161,6 +161,8 @@ button.translation p,
 .sidebar:hover .nav-item .nav-label {
     opacity: 1;
     width: auto;
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ---- Nav Hover state ---- */
@@ -223,37 +225,41 @@ button.translation:hover {
     display: flex;
     flex-direction: column;
     padding-inline-start: 0;
+    gap: 0;
+    margin-top: 0;
+    overflow: hidden;
+    transition: gap 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                margin-top 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar:hover .sub-menu {
     gap: 2px;
     margin-top: 2px;
-    overflow: hidden;
 }
 
 .sub-nav-item {
     display: flex;
     align-items: center;
-    padding: 0.5rem 0.75rem;
-    padding-inline-start: 72px;   /* lines up with parent text */
+    padding: 0 0.75rem;   /* no vertical padding when collapsed */
+    padding-inline-start: 72px;   
     font-size: 0.8125rem;
     color: var(--text-secondary);
     text-decoration: none;
     border-radius: 12px;
-    transition: all 0.2s ease;
     white-space: nowrap;
     overflow: hidden;
-    height: 40px;
-}
-
-/* only show sub-items text when sidebar is expanded */
-.sub-nav-item {
+    height: 0;
     opacity: 0;
-    max-height: 0;
     pointer-events: none;
-    transition: opacity 0.25s ease, max-height 0.3s ease;
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebar:hover .sub-nav-item {
     opacity: 1;
-    max-height: 40px;
+    height: 40px;
+    padding: 0.5rem 0.75rem;
     pointer-events: auto;
 }
 

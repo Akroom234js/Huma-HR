@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
 import './Sidebar.css';
 import LanSw from '../LanSw'
@@ -8,13 +8,13 @@ import ThemeToggle from '../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
 
 const Sidebar = () => {
-    const [dashboardOpen, setDashboardOpen] = useState(false);
-    const [departmentOpen, setDepartmentOpen] = useState(false);
-    const [employeeOpen, setEmployeeOpen] = useState(false);
-    const [salaryOpen, setSalaryOpen] = useState(false);
+    const location = useLocation();
+    const [dashboardOpen, setDashboardOpen] = useState(location.pathname.startsWith('/dashboard'));
+    const [departmentOpen, setDepartmentOpen] = useState(location.pathname.startsWith('/department'));
+    const [employeeOpen, setEmployeeOpen] = useState(location.pathname.startsWith('/employees'));
+    const [salaryOpen, setSalaryOpen] = useState(location.pathname.startsWith('/salary'));
     const [isOpen, setIsOpen] = useState(false);
     const { t } = useTranslation('Sidebar/Sidebar');
-    const location = useLocation();
 
     // Check if sub-routes are active
     const isDashboardActive = location.pathname.startsWith('/dashboard');
@@ -22,6 +22,14 @@ const Sidebar = () => {
     const isDepartmentActive = location.pathname.startsWith('/department');
     const isSalaryActive = location.pathname.startsWith('/salary');
     const navigate = useNavigate();
+
+    // Sync menu states on location change
+    useEffect(() => {
+        if (isDashboardActive) setDashboardOpen(true);
+        if (isEmployeeActive) setEmployeeOpen(true);
+        if (isDepartmentActive) setDepartmentOpen(true);
+        if (isSalaryActive) setSalaryOpen(true);
+    }, [isDashboardActive, isEmployeeActive, isDepartmentActive, isSalaryActive]);
 
     const handleLogout = async (e) => {
         e.preventDefault();
@@ -73,14 +81,14 @@ const Sidebar = () => {
                                     onClick={() => setDashboardOpen(!dashboardOpen)}
                                 >
                                     <div className="nav-item-content">
-                                        <span className="material-symbols-outlined">dashboard</span>
+                                        <span className="nav-icon material-symbols-outlined">dashboard</span>
                                         <p>{t('Dashboard')}</p>
                                     </div>
                                     <span className={`material-symbols-outlined expand-icon ${dashboardOpen ? 'expanded' : ''}`}>
                                         expand_more
                                     </span>
                                 </button>
-                                {(dashboardOpen || isDashboardActive) && (
+                                {dashboardOpen && (
                                     <div className="sub-menu">
                                         <NavLink to="/dashboard/general" className="sub-nav-item">
                                             {t('General')}
