@@ -8,6 +8,7 @@ import ThemeToggle from '../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
 
 const Sidebar = () => {
+    const [dashboardOpen, setDashboardOpen] = useState(false);
     const [departmentOpen, setDepartmentOpen] = useState(false);
     const [employeeOpen, setEmployeeOpen] = useState(false);
     const [salaryOpen, setSalaryOpen] = useState(false);
@@ -15,6 +16,8 @@ const Sidebar = () => {
     const { t } = useTranslation('Sidebar/Sidebar');
     const location = useLocation();
 
+    // Check if sub-routes are active
+    const isDashboardActive = location.pathname.startsWith('/dashboard');
     const isEmployeeActive = location.pathname.startsWith('/employees');
     const isDepartmentActive = location.pathname.startsWith('/department');
     const isSalaryActive = location.pathname.startsWith('/salary');
@@ -64,12 +67,45 @@ const Sidebar = () => {
 
                         {/* ── Navigation ── */}
                         <nav className="sidebar-nav">
-
-                            {/* Dashboard */}
-                            <NavLink to="/Dashboard" className="nav-item" end>
-                                <span className="nav-icon material-symbols-outlined">dashboard</span>
-                                <p>{t('Dashboard')}</p>
-                            </NavLink>
+                            <div className="nav-section">
+                                <button
+                                    className={`nav-item nav-toggle ${isDashboardActive || dashboardOpen ? 'active' : ''}`}
+                                    onClick={() => setDashboardOpen(!dashboardOpen)}
+                                >
+                                    <div className="nav-item-content">
+                                        <span className="material-symbols-outlined">dashboard</span>
+                                        <p>{t('Dashboard')}</p>
+                                    </div>
+                                    <span className={`material-symbols-outlined expand-icon ${dashboardOpen ? 'expanded' : ''}`}>
+                                        expand_more
+                                    </span>
+                                </button>
+                                {(dashboardOpen || isDashboardActive) && (
+                                    <div className="sub-menu">
+                                        <NavLink to="/dashboard/general" className="sub-nav-item">
+                                            {t('General')}
+                                        </NavLink>
+                                        <NavLink to="/dashboard/employee-reports" className="sub-nav-item">
+                                            {t('Employee-Reports')}
+                                        </NavLink>
+                                        <NavLink to="/dashboard/attendance" className="sub-nav-item">
+                                            {t('Attendance')}
+                                        </NavLink>
+                                        <NavLink to="/dashboard/leaves" className="sub-nav-item">
+                                            {t('Leaves')}
+                                        </NavLink>
+                                        <NavLink to="/dashboard/salaries" className="sub-nav-item">
+                                            {t('Salaries')}
+                                        </NavLink>
+                                        <NavLink to="/dashboard/performance" className="sub-nav-item">
+                                            {t('Overall-Performance')}
+                                        </NavLink>
+                                        <NavLink to="/dashboard/improvement" className="sub-nav-item">
+                                            {t('Improvement-Statistics')}
+                                        </NavLink>
+                                    </div>
+                                )}
+                            </div>
 
                             {/* Employee Management */}
                             <div className="nav-section">

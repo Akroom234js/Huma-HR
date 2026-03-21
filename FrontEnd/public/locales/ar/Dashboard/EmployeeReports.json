@@ -1,0 +1,31 @@
+{
+    "title": "تقارير الموظفين",
+    "searchPlaceholder": "البحث بالاسم أو المعرف...",
+    "filters": {
+        "department": "القسم",
+        "employmentStatus": "حالة التوظيف",
+        "joinDate": "تاريخ الانضمام",
+        "all": "الكل"
+    },
+    "stats": {
+        "totalEmployees": "إجمالي الموظفين",
+        "newHires": "تعيينات جديدة (الفترة)",
+        "turnover": "دوران الموظفين (الفترة)",
+        "stabilityRate": "معدل الاستقرار"
+    },
+    "table": {
+        "title": "تقرير بيانات الموظفين الكامل",
+        "employeeName": "اسم الموظف",
+        "employeeId": "معرف الموظف",
+        "jobTitle": "المسمى الوظيفي",
+        "department": "القسم",
+        "joiningDate": "تاريخ الانضمام",
+        "employmentStatus": "حالة التوظيف",
+        "noResults": "لم يتم العثور على نتائج."
+    },
+    "status": {
+        "active": "نشط",
+        "onLeave": "في إجازة",
+        "terminated": "منتهي الخدمة"
+    }
+}
