@@ -1,0 +1,55 @@
+{
+    "title": "Attendance Management",
+    "searchPlaceholder": "Search for employees...",
+    "filters": {
+        "department": "Department",
+        "status": "Status Filter",
+        "all": "All"
+    },
+    "stats": {
+        "presentToday": "Employees Present Today",
+        "lateToday": "Employees Late Today",
+        "avgHours": "Average Working Hours",
+        "latenessCount": "Total Lateness Count"
+    },
+    "workHours": {
+        "sectionTitle": "Work Hours Settings",
+        "sectionSubtitle": "Configure daily work hours and grace period per department",
+        "startTime": "Start Time",
+        "endTime": "End Time",
+        "totalHours": "Total Hours",
+        "gracePeriod": "Grace (min)",
+        "workDays": "Work Days",
+        "edit": "Edit",
+        "save": "Save",
+        "cancel": "Cancel",
+        "saved": "Saved"
+    },
+    "table": {
+        "title": "Attendance Table",
+        "employeeName": "Employee Name",
+        "employeeId": "Employee ID",
+        "date": "Date",
+        "timeIn": "Time In",
+        "timeOut": "Time Out",
+        "duration": "Duration",
+        "status": "Status",
+        "latenessReason": "Lateness Reason",
+        "noResults": "No records found."
+    },
+    "status": {
+        "onTime": "On Time",
+        "late": "Late",
+        "onLeave": "On Leave",
+        "absent": "Absent"
+    },
+    "days": {
+        "Mon": "Mon",
+        "Tue": "Tue",
+        "Wed": "Wed",
+        "Thu": "Thu",
+        "Fri": "Fri",
+        "Sat": "Sat",
+        "Sun": "Sun"
+    }
+}
