@@ -4,7 +4,6 @@ import './Sidebar.css';
 import LanSw from '../LanSw'
 import apiClient from '../../apiConfig';
 import logo from '../../assets/logo.png';
-
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
 
@@ -16,10 +15,9 @@ const Sidebar = () => {
     const { t } = useTranslation('Sidebar/Sidebar');
     const location = useLocation();
 
-    // Check if sub-routes are active
     const isEmployeeActive = location.pathname.startsWith('/employees');
     const isDepartmentActive = location.pathname.startsWith('/department');
-    const isSalaryActive = location.pathname.startsWith('/salary'); // Placeholder for future use
+    const isSalaryActive = location.pathname.startsWith('/salary');
     const navigate = useNavigate();
 
     const handleLogout = async (e) => {
@@ -37,6 +35,7 @@ const Sidebar = () => {
 
     return (
         <>
+            {/* Mobile Toggle */}
             <button
                 className={`mobile-toggle ${isOpen ? 'active' : ''}`}
                 onClick={() => setIsOpen(!isOpen)}
@@ -52,26 +51,34 @@ const Sidebar = () => {
             <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
                 <div className="sidebar-content">
                     <div className="sidebar-top">
+
+                        {/* ── Logo ── */}
                         <div className="sidebar-header">
-                            <Link to="/home">
+                            <Link to="/">
+                                {/* Original logo — always visible */}
                                 <img src={logo} alt="Huma HR Logo" className="sidebar-logo" />
+                                {/* Site name — appears on expand */}
                                 <h1 className="sidebar-title">Huma</h1>
                             </Link>
                         </div>
-                        {/* ... existing nav ... */}
+
+                        {/* ── Navigation ── */}
                         <nav className="sidebar-nav">
+
+                            {/* Dashboard */}
                             <NavLink to="/Dashboard" className="nav-item" end>
-                                <span className="material-symbols-outlined">dashboard</span>
+                                <span className="nav-icon material-symbols-outlined">dashboard</span>
                                 <p>{t('Dashboard')}</p>
                             </NavLink>
 
+                            {/* Employee Management */}
                             <div className="nav-section">
                                 <button
                                     className={`nav-item nav-toggle ${isEmployeeActive || employeeOpen ? 'active' : ''}`}
                                     onClick={() => setEmployeeOpen(!employeeOpen)}
                                 >
                                     <div className="nav-item-content">
-                                        <span className="material-symbols-outlined">group</span>
+                                        <span className="nav-icon material-symbols-outlined">group</span>
                                         <p>{t('Employee-Management')}</p>
                                     </div>
                                     <span className={`material-symbols-outlined expand-icon ${employeeOpen ? 'expanded' : ''}`}>
@@ -90,13 +97,14 @@ const Sidebar = () => {
                                 )}
                             </div>
 
+                            {/* Department */}
                             <div className="nav-section">
                                 <button
                                     className={`nav-item nav-toggle ${isDepartmentActive || departmentOpen ? 'active' : ''}`}
                                     onClick={() => setDepartmentOpen(!departmentOpen)}
                                 >
                                     <div className="nav-item-content">
-                                        <span className="material-symbols-outlined">corporate_fare</span>
+                                        <span className="nav-icon material-symbols-outlined">corporate_fare</span>
                                         <p>{t('Department')}</p>
                                     </div>
                                     <span className={`material-symbols-outlined expand-icon ${departmentOpen ? 'expanded' : ''}`}>
@@ -118,13 +126,14 @@ const Sidebar = () => {
                                 )}
                             </div>
 
+                            {/* Salary Management */}
                             <div className="nav-section">
                                 <button
                                     className={`nav-item nav-toggle ${isSalaryActive || salaryOpen ? 'active' : ''}`}
                                     onClick={() => setSalaryOpen(!salaryOpen)}
                                 >
                                     <div className="nav-item-content">
-                                        <span className="material-symbols-outlined">payments</span>
+                                        <span className="nav-icon material-symbols-outlined">payments</span>
                                         <p>{t('Salary-Management')}</p>
                                     </div>
                                     <span className={`material-symbols-outlined expand-icon ${salaryOpen ? 'expanded' : ''}`}>
@@ -149,37 +158,44 @@ const Sidebar = () => {
                                 )}
                             </div>
 
+                            {/* Leaves */}
                             <NavLink to="/leaves" className="nav-item">
-                                <span className="material-symbols-outlined">event_busy</span>
+                                <span className="nav-icon material-symbols-outlined">event_busy</span>
                                 <p>{t('Leaves')}</p>
                             </NavLink>
 
+                            {/* Performance */}
                             <NavLink to="/performance" className="nav-item">
-                                <span className="material-symbols-outlined">trending_up</span>
+                                <span className="nav-icon material-symbols-outlined">trending_up</span>
                                 <p>{t('Performance')}</p>
                             </NavLink>
 
+                            {/* Recruitment */}
                             <NavLink to="/recruitment" className="nav-item">
-                                <span className="material-symbols-outlined material-symbols-filled">person_add</span>
+                                <span className="nav-icon material-symbols-outlined">person_add</span>
                                 <p>{t('Recruitment')}</p>
                             </NavLink>
 
+                            {/* Request */}
                             <NavLink to="/request" className="nav-item">
-                                <span className="material-symbols-outlined">task_alt</span>
+                                <span className="nav-icon material-symbols-outlined">task_alt</span>
                                 <p>{t('Request')}</p>
                             </NavLink>
 
+                            {/* Reports */}
                             <NavLink to="/reports" className="nav-item">
-                                <span className="material-symbols-outlined">summarize</span>
+                                <span className="nav-icon material-symbols-outlined">summarize</span>
                                 <p>{t('Reports')}</p>
                             </NavLink>
+
                         </nav>
                     </div>
 
+                    {/* ── Bottom ── */}
                     <div className="sidebar-bottom">
                         <LanSw />
                         <button onClick={handleLogout} className="nav-item logout-button">
-                            <span className="material-symbols-outlined">logout</span>
+                            <span className="nav-icon material-symbols-outlined">logout</span>
                             <p>{t('Logout')}</p>
                         </button>
                     </div>
