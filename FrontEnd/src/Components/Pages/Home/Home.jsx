@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import "./Home.css";
 import Footer from "./Footer";
 import logo from "../../../assets/logo.png";
@@ -153,9 +153,9 @@ export default function Home() {
               <i className={`fa-solid ${isMobileMenuOpen ? 'fa-xmark' : 'fa-bars'}`}></i>
             </button>
             <div className={`nav-links ${isMobileMenuOpen ? 'open' : ''}`}>
-              <Link to="/home">Home</Link>
-              <Link to="/jops">Jops</Link>
-              <Link to="/recruitment">Go to website</Link>
+              <NavLink to="/" end>Home</NavLink>
+              <NavLink to="/jops">Jobs</NavLink>
+              <NavLink to="/recruitment">Go to website</NavLink>
               <ThemeToggle />
               <div className="nav-profile">
                 {user ? (
@@ -192,7 +192,7 @@ export default function Home() {
           <div className="poop2">
             <div className="left-side">
               <span className="icon1">
-                <i className="fa-solid fa-house"></i>
+                <i className="material-icons">badge</i>
               </span>
               <h2>Employee Portal</h2>
               <p>
@@ -201,9 +201,7 @@ export default function Home() {
               </p>
               <hr />
               <div className="icon_bottom">
-                <span>
-                  <i className="fa-solid fa-house"></i>
-                </span>
+                <span className="material-icons text-sm">verified_user</span>
                 <p>Enterprise Grade Security</p>
               </div>
             </div>
@@ -227,7 +225,7 @@ export default function Home() {
                     <label>Password</label>
                     <input
                       type="password"
-                      placeholder="e.g.vEMP-12345"
+                      placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
@@ -336,67 +334,43 @@ export default function Home() {
         </div>
         <div className="con_cart">
           <div>
-            <span>
-              <i
-                className="fa-solid fa-chart-simple"
-                style={{ color: "#1383ed " }}
-              ></i>
+            <span style={{ backgroundColor: "rgba(19, 131, 237, 0.1)" }}>
+              <i className="material-icons" style={{ color: "#1383ed" }}>analytics</i>
             </span>
             <h3>Advanced Analytics</h3>
-            <p>
-              Gain insights into workforce trends with our comprehensive
-              dashboard.
-            </p>
+            <p>Gain insights into workforce trends with our comprehensive dashboard.</p>
           </div>
           <div>
-            <span>
-              {/* <i className="fa-solid fa-house"></i> */}
-              <i
-                className="fa-solid fa-circle-nodes"
-                style={{ color: "#9333ea" }}
-              ></i>
+            <span style={{ backgroundColor: "rgba(147, 51, 234, 0.1)" }}>
+              <i className="material-icons" style={{ color: "#9333ea" }}>hub</i>
             </span>
             <h3>Seamless Integration</h3>
             <p>Connect easily with your favorite tools like Slack and Zoom.</p>
           </div>
           <div>
-            <span>
-              <i
-                className="fa-solid fa-shield-halved"
-                style={{ color: "#0d9448 " }}
-              ></i>
+            <span style={{ backgroundColor: "rgba(13, 148, 136, 0.1)" }}>
+              <i className="material-icons" style={{ color: "#0d9448" }}>security</i>
             </span>
             <h3>Enterprise Security</h3>
             <p>Bank-grade encryption keeps your sensitive data protected.</p>
           </div>
           <div>
-            <span>
-              <i
-                className="fa-solid fa-clock"
-                style={{ color: "#ea580c " }}
-              ></i>
+            <span style={{ backgroundColor: "rgba(234, 88, 12, 0.1)" }}>
+              <i className="material-icons" style={{ color: "#ea580c" }}>schedule</i>
             </span>
             <h3>Time Management</h3>
             <p>Automated attendance tracking and leave management systems.</p>
           </div>
           <div>
-            <span>
-              <i
-                className="fa-solid fa-users"
-                style={{ color: "#db2777 " }}
-              ></i>
+            <span style={{ backgroundColor: "rgba(219, 39, 119, 0.1)" }}>
+              <i className="material-icons" style={{ color: "#db2777" }}>groups</i>
             </span>
             <h3>Team Collaboration</h3>
-            <p>
-              Foster a connected culture with built-in communication channels.
-            </p>
+            <p>Foster a connected culture with built-in communication channels.</p>
           </div>
           <div>
-            <span>
-              <i
-                className="fa-solid fa-brain"
-                style={{ color: "#4f46e5 " }}
-              ></i>
+            <span style={{ backgroundColor: "rgba(79, 70, 229, 0.1)" }}>
+              <i className="material-icons" style={{ color: "#4f46e5" }}>psychology</i>
             </span>
             <h3>AI Recruiting</h3>
             <p>Leverage artificial intelligence to screen candidates faster.</p>

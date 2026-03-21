@@ -1,5 +1,5 @@
 // App.jsx
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './Components/Sidebar/Sidebar'
 import Recruitment from './Components/Pages/Recrutment/Main-page/Recrutment';
 import ScheduleInterview from './Components/Pages/Recrutment/ScheduleInterview/ScheduleInterview';
@@ -32,7 +32,7 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/home" element={<Navigate to="/" replace />} />
         <Route path="/jops" element={<Jops />} />
 
         {/* Dashboard Routes with Sidebar */}
