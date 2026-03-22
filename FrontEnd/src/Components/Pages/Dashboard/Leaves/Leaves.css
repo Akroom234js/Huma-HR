@@ -231,18 +231,14 @@ tr:hover {
 .status-badge.pending { background: #fffbeb; color: #92400e; }
 .status-badge.rejected { background: #fee2e2; color: #b91c1c; }
 
-.action-link {
-    background: none;
-    border: none;
-    color: var(--primary-color);
-    font-weight: 600;
+tr.clickable-row {
     cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: background 0.2s;
+    transition: background-color 0.2s ease;
 }
 
-.action-link:hover { background: rgba(59, 130, 246, 0.1); }
+tr.clickable-row:hover {
+    background-color: var(--bg-page);
+}
 
 /* Reports Grid */
 .leaves-reports-grid {
@@ -401,19 +397,32 @@ tr:hover {
 .leaves-modal-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(7px);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    animation: fadeIn 0.3s ease;
 }
 
 .leaves-modal {
     background: var(--bg-card);
-    width: 500px;
-    border-radius: 12px;
-    padding: 2rem;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    width: 450px;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
 }
 
 .modal-header {

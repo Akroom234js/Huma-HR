@@ -10,7 +10,6 @@ const Leaves = () => {
     const [dept, setDept] = useState("");
     const [leaveType, setLeaveType] = useState("");
     const [status, setStatus] = useState("");
-    const [timePeriod, setTimePeriod] = useState("");
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -128,7 +127,7 @@ const Leaves = () => {
             const count = counts[deptKey] || 0;
             const total = deptHeadcounts[deptKey];
             const percent = Math.round((count / total) * 100);
-            
+
             let impact = "low";
             if (percent > 20) impact = "high";
             else if (percent >= 10) impact = "medium";
@@ -148,11 +147,11 @@ const Leaves = () => {
 
     return (
         <div className="leaves-page">
+            <div className="leaves-theme-toggle-wrapper">
+                <ThemeToggle />
+            </div>
             <header className="page-header">
                 <h1>{t('title')}</h1>
-                <div className="leaves-theme-toggle-wrapper">
-                    <ThemeToggle />
-                </div>
             </header>
 
             {/* Stats Grid */}
@@ -169,33 +168,28 @@ const Leaves = () => {
             <div className="leaves-filters">
                 <div className="search-bar">
                     <span className="material-symbols-outlined">search</span>
-                    <input 
-                        type="text" 
-                        placeholder={t('filters.search')} 
+                    <input
+                        type="text"
+                        placeholder={t('filters.search')}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
                 <div className="filters-row">
-                    <FilterDropdown 
-                        value={dept} 
-                        onChange={setDept} 
-                        options={[{value: "", label: t('filters.department')}, {value: "it", label: "IT"}, {value: "hr", label: "HR"}]}
+                    <FilterDropdown
+                        value={dept}
+                        onChange={setDept}
+                        options={[{ value: "", label: t('filters.department') }, { value: "it", label: "IT" }, { value: "hr", label: "HR" }]}
                     />
-                    <FilterDropdown 
-                        value={leaveType} 
-                        onChange={setLeaveType} 
-                        options={[{value: "", label: t('filters.leave_type')}, {value: "annual", label: "Annual"}, {value: "sick", label: "Sick"}]}
+                    <FilterDropdown
+                        value={leaveType}
+                        onChange={setLeaveType}
+                        options={[{ value: "", label: t('filters.leave_type') }, { value: "annual", label: "Annual" }, { value: "sick", label: "Sick" }]}
                     />
-                    <FilterDropdown 
-                        value={status} 
-                        onChange={setStatus} 
-                        options={[{value: "", label: t('filters.status')}, {value: "approved", label: t('status.approved')}, {value: "pending", label: t('status.pending')}]}
-                    />
-                    <FilterDropdown 
-                        value={timePeriod} 
-                        onChange={setTimePeriod} 
-                        options={[{value: "", label: t('filters.time_period')}, {value: "this_month", label: "This Month"}, {value: "last_month", label: "Last Month"}]}
+                    <FilterDropdown
+                        value={status}
+                        onChange={setStatus}
+                        options={[{ value: "", label: t('filters.status') }, { value: "approved", label: t('status.approved') }, { value: "pending", label: t('status.pending') }]}
                     />
                 </div>
             </div>
@@ -213,12 +207,11 @@ const Leaves = () => {
                                 <th>{t('table.duration')}</th>
                                 <th>{t('table.status')}</th>
                                 <th>{t('table.rem_balance')}</th>
-                                <th>{t('table.actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {leaveRequests.map((req) => (
-                                <tr key={req.id}>
+                                <tr key={req.id} onClick={() => openDetails(req)} className="clickable-row">
                                     <td className="emp-cell">
                                         <img src={req.avatar} alt={req.name} className="emp-avatar" />
                                         <span>{req.name}</span>
@@ -232,11 +225,6 @@ const Leaves = () => {
                                         </span>
                                     </td>
                                     <td>{req.balance}</td>
-                                    <td>
-                                        <button className="action-link" onClick={() => openDetails(req)}>
-                                            {req.status === 'pending' ? t('actions.review') : t('actions.view')}
-                                        </button>
-                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -251,10 +239,10 @@ const Leaves = () => {
                     <div className="chart-placeholder">
                         {/* CSS Pie Chart Mock */}
                         <div className="pie-chart-mock">
-                            <div className="pie-segment annual" style={{"--p":40, "--c":"#3b82f6"}}></div>
-                            <div className="pie-segment sick" style={{"--p":30, "--c":"#f59e0b"}}></div>
-                            <div className="pie-segment emergency" style={{"--p":20, "--c":"#ef4444"}}></div>
-                            <div className="pie-segment other" style={{"--p":10, "--c":"#10b981"}}></div>
+                            <div className="pie-segment annual" style={{ "--p": 40, "--c": "#3b82f6" }}></div>
+                            <div className="pie-segment sick" style={{ "--p": 30, "--c": "#f59e0b" }}></div>
+                            <div className="pie-segment emergency" style={{ "--p": 20, "--c": "#ef4444" }}></div>
+                            <div className="pie-segment other" style={{ "--p": 10, "--c": "#10b981" }}></div>
                         </div>
                         <div className="chart-legend">
                             <div className="legend-item"><span className="dot annual"></span> Annual</div>
@@ -277,8 +265,8 @@ const Leaves = () => {
                                         <span className="impact-percentage">{item.percent}%</span>
                                     </div>
                                     <div className="impact-progress">
-                                        <div 
-                                            className={`impact-progress-bar ${item.impact}`} 
+                                        <div
+                                            className={`impact-progress-bar ${item.impact}`}
                                             style={{ width: `${item.percent}%` }}
                                         ></div>
                                     </div>
@@ -292,10 +280,10 @@ const Leaves = () => {
                     <div className="comparison-section">
                         <h3>{t('reports.comparison')}</h3>
                         <div className="bar-chart-placeholder">
-                            <div className="bar" style={{height: '60%'}}></div>
-                            <div className="bar" style={{height: '80%'}}></div>
-                            <div className="bar" style={{height: '40%'}}></div>
-                            <div className="bar" style={{height: '90%'}}></div>
+                            <div className="bar" style={{ height: '60%' }}></div>
+                            <div className="bar" style={{ height: '80%' }}></div>
+                            <div className="bar" style={{ height: '40%' }}></div>
+                            <div className="bar" style={{ height: '90%' }}></div>
                         </div>
                     </div>
                 </div>
@@ -305,30 +293,14 @@ const Leaves = () => {
             {isModalOpen && selectedRequest && (
                 <div className="leaves-modal-overlay" onClick={() => setIsModalOpen(false)}>
                     <div className="leaves-modal" onClick={e => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h2>Leave Request Details</h2>
-                            <button className="close-btn" onClick={() => setIsModalOpen(false)}>×</button>
-                        </div>
                         <div className="modal-content">
                             <div className="detail-row">
-                                <strong>Employee:</strong> <span>{selectedRequest.name}</span>
-                            </div>
-                            <div className="detail-row">
-                                <strong>Type:</strong> <span>{selectedRequest.type}</span>
-                            </div>
-                            <div className="detail-row">
-                                <strong>Date Range:</strong> <span>{selectedRequest.dates}</span>
-                            </div>
-                            <div className="detail-row">
-                                <strong>Duration:</strong> <span>{selectedRequest.duration} Days</span>
+                                <strong>{t('modal.duration')}:</strong> <span>{selectedRequest.duration} {t('modal.days')}</span>
                             </div>
                             <div className="detail-row reason-row">
-                                <strong>Reason for request:</strong>
+                                <strong>{t('modal.reason_label')}:</strong>
                                 <p>{selectedRequest.reason}</p>
                             </div>
-                        </div>
-                        <div className="modal-footer">
-                            <button className="confirm-btn" onClick={() => setIsModalOpen(false)}>Close</button>
                         </div>
                     </div>
                 </div>
