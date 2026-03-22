@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EmployeeController;
 
 // ── Public Routes ─────────────────────────────────────────────────────────
 Route::prefix('auth')->group(function () {
@@ -20,5 +21,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:hr')->group(function () {
         Route::post('/auth/employees', [AuthController::class, 'register']);
     });
+
+        // HR أو Manager
+    Route::middleware('role:hr,manager')->group(function () {
+        Route::get('/employees',         [EmployeeController::class, 'index']);
+        Route::get('/employees/{id}',    [EmployeeController::class, 'show']);
+        Route::put('/employees/{id}',    [EmployeeController::class, 'update']);
+        Route::delete('/employees/{id}', [EmployeeController::class, 'destroy']);
+    });
+
 
 });
