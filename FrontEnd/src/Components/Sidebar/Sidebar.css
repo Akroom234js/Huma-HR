@@ -228,20 +228,25 @@ button.translation:hover {
     gap: 0;
     margin-top: 0;
     overflow: hidden;
-    transition: gap 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                margin-top 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                margin-top 0.3s ease;
 }
 
-.sidebar:hover .sub-menu {
-    gap: 2px;
-    margin-top: 2px;
+.sub-menu.open {
+    max-height: 500px; /* Safe upper bound for menu items */
+    opacity: 1;
+    margin-top: 4px;
+    gap: 4px;
 }
 
 .sub-nav-item {
     display: flex;
     align-items: center;
-    padding: 0 0.75rem;   /* no vertical padding when collapsed */
-    padding-inline-start: 72px;   
+    padding: 0 12px;
+    padding-inline-start: 70px;
     font-size: 0.8125rem;
     color: var(--text-secondary);
     text-decoration: none;
@@ -251,15 +256,17 @@ button.translation:hover {
     height: 0;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                background 0.2s ease,
+                color 0.2s ease;
 }
 
-.sidebar:hover .sub-nav-item {
+/* Sidebar Hover OR Mobile Open state */
+.sidebar:hover .sub-menu.open .sub-nav-item,
+.sidebar.open .sub-menu.open .sub-nav-item {
     opacity: 1;
     height: 40px;
-    padding: 0.5rem 0.75rem;
     pointer-events: auto;
 }
 
@@ -272,7 +279,6 @@ button.translation:hover {
     background: rgba(19, 131, 237, 0.1);
     color: var(--primary-color);
     font-weight: 600;
-    border-inline-start: 3px solid var(--primary-color);
 }
 
 [data-theme='dark'] .sub-nav-item.active {

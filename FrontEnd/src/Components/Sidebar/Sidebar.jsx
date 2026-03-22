@@ -88,31 +88,29 @@ const Sidebar = () => {
                                         expand_more
                                     </span>
                                 </button>
-                                {dashboardOpen && (
-                                    <div className="sub-menu">
-                                        <NavLink to="/dashboard/general" className="sub-nav-item">
-                                            {t('General')}
-                                        </NavLink>
-                                        <NavLink to="/dashboard/employee-reports" className="sub-nav-item">
-                                            {t('Employee-Reports')}
-                                        </NavLink>
-                                        <NavLink to="/dashboard/attendance" className="sub-nav-item">
-                                            {t('Attendance')}
-                                        </NavLink>
-                                        <NavLink to="/dashboard/leaves" className="sub-nav-item">
-                                            {t('Leaves')}
-                                        </NavLink>
-                                        <NavLink to="/dashboard/salaries" className="sub-nav-item">
-                                            {t('Salaries')}
-                                        </NavLink>
-                                        <NavLink to="/dashboard/performance" className="sub-nav-item">
-                                            {t('Overall-Performance')}
-                                        </NavLink>
-                                        <NavLink to="/dashboard/improvement" className="sub-nav-item">
-                                            {t('Improvement-Statistics')}
-                                        </NavLink>
-                                    </div>
-                                )}
+                                <div className={`sub-menu ${dashboardOpen ? 'open' : ''}`}>
+                                    <NavLink to="/dashboard/general" className="sub-nav-item">
+                                        {t('General')}
+                                    </NavLink>
+                                    <NavLink to="/dashboard/employee-reports" className="sub-nav-item">
+                                        {t('Employee-Reports')}
+                                    </NavLink>
+                                    <NavLink to="/dashboard/attendance" className="sub-nav-item">
+                                        {t('Attendance')}
+                                    </NavLink>
+                                    <NavLink to="/dashboard/leaves" className="sub-nav-item">
+                                        {t('Leaves')}
+                                    </NavLink>
+                                    <NavLink to="/dashboard/salaries" className="sub-nav-item">
+                                        {t('Salaries')}
+                                    </NavLink>
+                                    <NavLink to="/dashboard/performance" className="sub-nav-item">
+                                        {t('Overall-Performance')}
+                                    </NavLink>
+                                    <NavLink to="/dashboard/improvement" className="sub-nav-item">
+                                        {t('Improvement-Statistics')}
+                                    </NavLink>
+                                </div>
                             </div>
 
                             {/* Employee Management */}
@@ -129,16 +127,14 @@ const Sidebar = () => {
                                         expand_more
                                     </span>
                                 </button>
-                                {employeeOpen && (
-                                    <div className="sub-menu">
-                                        <NavLink to="/employees/all" className="sub-nav-item">
-                                            {t('All-Employees')}
-                                        </NavLink>
-                                        <NavLink to="/employees/movement" className="sub-nav-item">
-                                            {t('Employee-Movement')}
-                                        </NavLink>
-                                    </div>
-                                )}
+                                <div className={`sub-menu ${employeeOpen ? 'open' : ''}`}>
+                                    <NavLink to="/employees/all" className="sub-nav-item">
+                                        {t('All-Employees')}
+                                    </NavLink>
+                                    <NavLink to="/employees/movement" className="sub-nav-item">
+                                        {t('Employee-Movement')}
+                                    </NavLink>
+                                </div>
                             </div>
 
                             {/* Department */}
@@ -155,19 +151,17 @@ const Sidebar = () => {
                                         expand_more
                                     </span>
                                 </button>
-                                {departmentOpen && (
-                                    <div className="sub-menu">
-                                        <NavLink to="/department/overview" className="sub-nav-item">
-                                            {t('Department-Overview')}
-                                        </NavLink>
-                                        <NavLink to="/department/org-chart" className="sub-nav-item">
-                                            {t('Organizational-Chart')}
-                                        </NavLink>
-                                        <NavLink to="/department/positions" className="sub-nav-item">
-                                            {t('Positions-Roles')}
-                                        </NavLink>
-                                    </div>
-                                )}
+                                <div className={`sub-menu ${departmentOpen ? 'open' : ''}`}>
+                                    <NavLink to="/department/overview" className="sub-nav-item">
+                                        {t('Department-Overview')}
+                                    </NavLink>
+                                    <NavLink to="/department/org-chart" className="sub-nav-item">
+                                        {t('Organizational-Chart')}
+                                    </NavLink>
+                                    <NavLink to="/department/positions" className="sub-nav-item">
+                                        {t('Positions-Roles')}
+                                    </NavLink>
+                                </div>
                             </div>
 
                             {/* Salary Management */}
@@ -184,22 +178,20 @@ const Sidebar = () => {
                                         expand_more
                                     </span>
                                 </button>
-                                {salaryOpen && (
-                                    <div className="sub-menu">
-                                        <NavLink to="/salary/payroll-overview" className="sub-nav-item">
-                                            {t('Payroll-Overview')}
-                                        </NavLink>
-                                        <NavLink to="/salary/salary-structure" className="sub-nav-item">
-                                            {t('Salary-Structure')}
-                                        </NavLink>
-                                        <NavLink to="/salary/monthly-payroll" className="sub-nav-item">
-                                            {t('Monthly-Payroll')}
-                                        </NavLink>
-                                        <NavLink to="/salary/salary-adjustments" className="sub-nav-item">
-                                            {t('Salary-Adjustments')}
-                                        </NavLink>
-                                    </div>
-                                )}
+                                <div className={`sub-menu ${salaryOpen ? 'open' : ''}`}>
+                                    <NavLink to="/salary/payroll-overview" className="sub-nav-item">
+                                        {t('Payroll-Overview')}
+                                    </NavLink>
+                                    <NavLink to="/salary/salary-structure" className="sub-nav-item">
+                                        {t('Salary-Structure')}
+                                    </NavLink>
+                                    <NavLink to="/salary/monthly-payroll" className="sub-nav-item">
+                                        {t('Monthly-Payroll')}
+                                    </NavLink>
+                                    <NavLink to="/salary/salary-adjustments" className="sub-nav-item">
+                                        {t('Salary-Adjustments')}
+                                    </NavLink>
+                                </div>
                             </div>
 
                             {/* Leaves */}
