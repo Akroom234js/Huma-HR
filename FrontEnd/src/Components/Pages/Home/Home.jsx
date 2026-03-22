@@ -155,7 +155,7 @@ export default function Home() {
             <div className={`nav-links ${isMobileMenuOpen ? 'open' : ''}`}>
               <NavLink to="/" end>Home</NavLink>
               <NavLink to="/jops">Jobs</NavLink>
-              <NavLink to="/recruitment">Go to website</NavLink>
+              <NavLink to="/dashboard/general">Go to website</NavLink>
               <ThemeToggle />
               <div className="nav-profile">
                 {user ? (
