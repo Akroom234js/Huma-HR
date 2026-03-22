@@ -39,7 +39,7 @@ const General = () => {
         <div className="dashboard-page">
             <header className="page-header general">
                 <h1>{t("GeneralDashboard")}</h1>
-                <div className="theme-toggle-wrapper">
+                <div className="general-theme-toggle-wrapper">
                     <ThemeToggle />
                 </div>
             </header>

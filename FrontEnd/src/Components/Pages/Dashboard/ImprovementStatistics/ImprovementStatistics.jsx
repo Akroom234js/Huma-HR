@@ -4,12 +4,14 @@ import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 
 const ImprovementStatistics = () => {
     return (
-        <div className="dashboard-page">
-            <header className="page-header">
-                <h1>Improvement Statistics</h1>
+        <div className="is-page">
+            <div className="is-theme-toggle-wrapper">
                 <ThemeToggle />
+            </div>
+            <header className="is-header">
+                <h1 className="is-title">Improvement Statistics</h1>
             </header>
-            <div className="page-content">
+            <div className="is-content">
                 <p>Track growth and improvement trends across teams.</p>
             </div>
         </div>

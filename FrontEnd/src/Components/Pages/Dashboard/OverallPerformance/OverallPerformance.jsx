@@ -4,12 +4,14 @@ import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 
 const OverallPerformance = () => {
     return (
-        <div className="dashboard-page">
-            <header className="page-header">
-                <h1>Overall Performance</h1>
+        <div className="op-page">
+            <div className="op-theme-toggle-wrapper">
                 <ThemeToggle />
+            </div>
+            <header className="op-header">
+                <h1 className="op-title">Overall Performance</h1>
             </header>
-            <div className="page-content">
+            <div className="op-content">
                 <p>Analyze the overall organization-wide performance metrics.</p>
             </div>
         </div>
