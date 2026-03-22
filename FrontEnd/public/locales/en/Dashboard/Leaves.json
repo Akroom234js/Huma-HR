@@ -10,8 +10,7 @@
     "search": "Search for employees...",
     "department": "Department",
     "leave_type": "Leave Type",
-    "status": "Request Status",
-    "time_period": "Time Period"
+    "status": "Request Status"
   },
   "table": {
     "emp_name": "Employee Name",
@@ -19,8 +18,7 @@
     "date_range": "Start/End Date",
     "duration": "Duration (Days)",
     "status": "Status",
-    "rem_balance": "Remaining Balance",
-    "actions": "Actions"
+    "rem_balance": "Remaining Balance"
   },
   "actions": {
     "view": "View Details",
@@ -40,5 +38,11 @@
     "high": "High Impact",
     "medium": "Medium Impact",
     "low": "Low Impact"
+  },
+  "modal": {
+    "title": "Leave Request Details",
+    "duration": "Duration",
+    "days": "Days",
+    "reason_label": "Reason for request"
   }
 }

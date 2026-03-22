@@ -1,0 +1,36 @@
+{
+  "title": "الأداء العام",
+  "stats": {
+    "avg_score": "متوسط درجة الأداء",
+    "completion_rate": "معدل الإنجاز",
+    "needs_training": "بحاجة لتدريب",
+    "next_review": "المراجعة القادمة"
+  },
+  "filters": {
+    "search": "ابحث عن الموظفين...",
+    "department": "القسم",
+    "status": "الحالة"
+  },
+  "table": {
+    "summary_title": "ملخص الأداء",
+    "employee": "الموظف",
+    "final_score": "الدرجة النهائية",
+    "status": "الحالة",
+    "action": "الإجراء"
+  },
+  "status": {
+    "completed": "مكتمل",
+    "rewarded": "مكافئ",
+    "needs_review": "بحاجة لمراجعة"
+  },
+  "modal": {
+    "details_title": "تفاصيل الأداء",
+    "metrics": {
+      "quality": "جودة العمل",
+      "speed": "السرعة والكفاءة",
+      "teamwork": "العمل الجماعي",
+      "reliability": "الموثوقية"
+    },
+    "close": "إغلاق"
+  }
+}
