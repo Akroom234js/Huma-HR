@@ -70,6 +70,17 @@
     "label-current-salary": "الراتب الحالي",
     "label-new-salary": "مبلغ الراتب الجديد",
     "label-adjustment-reason": "سبب التعديل",
+    "label-adjustment-type": "نوع التعديل",
+    "option-annual-increase": "زيادة سنوية",
+    "option-merit-increase": "زيادة استحقاق",
+    "option-promotion": "ترقية",
+    "option-performance-bonus": "مكافأة أداء",
+    "option-cost-of-living": "غلاء معيشة",
+    "option-other": "أخرى",
+    "label-custom-type-en": "النوع المخصص (بالإنكليزية)",
+    "label-custom-type-ar": "النوع المخصص (العربية)",
+    "placeholder-custom-type-en": "أدخل النوع بالإنكليزية",
+    "placeholder-custom-type-ar": "أدخل النوع بالعربية",
     "placeholder-adjustment-reason": "اشرح سبب هذا التعديل (مثل: المراجعة السنوية، زيادة استحقاق)...",
     "btn-confirm-salary": "تحديث الراتب"
 }

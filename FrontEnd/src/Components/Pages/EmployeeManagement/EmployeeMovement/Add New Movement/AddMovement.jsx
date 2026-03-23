@@ -26,7 +26,10 @@ const AddMovement = ({ onAddMovement }) => {
         effectiveDate: '',
         manager: '',
         newSalary: '',
-        reason: ''
+        reason: '',
+        adjustmentType: '',
+        customTypeEn: '',
+        customTypeAr: ''
     });
 
     const filteredEmployees = mockEmployees.filter(emp =>
@@ -68,6 +71,7 @@ const AddMovement = ({ onAddMovement }) => {
             typeKey: modalStep === 'promotion' ? 'type-promotion' : (modalStep === 'transfer' ? 'type-transfer' : 'type-salary-adjustment'),
             previousValue: modalStep === 'promotion' ? selectedEmployee.position : (modalStep === 'transfer' ? selectedEmployee.location : '$ 72,000 USD'),
             newValue: modalStep === 'promotion' ? formData.newPosition : (modalStep === 'transfer' ? formData.newLocation : `$ ${formData.newSalary} USD`),
+            adjustmentType: formData.adjustmentType === 'option-other' ? { en: formData.customTypeEn, ar: formData.customTypeAr } : formData.adjustmentType,
         };
 
         onAddMovement(newMovement);
@@ -85,7 +89,10 @@ const AddMovement = ({ onAddMovement }) => {
             effectiveDate: '',
             manager: '',
             newSalary: '',
-            reason: ''
+            reason: '',
+            adjustmentType: '',
+            customTypeEn: '',
+            customTypeAr: ''
         });
     };
 
@@ -509,20 +516,66 @@ const AddMovement = ({ onAddMovement }) => {
                                         </div>
                                     </div>
 
-                                    <div className="em-form-group full-width">
-                                        <label className="em-label">{t('label-new-salary')}</label>
-                                        <div className="em-search-container">
-                                            <span className="em-icon-left">$</span>
-                                            <input
-                                                type="number"
-                                                className="em-input-with-icon"
-                                                placeholder="0.00"
-                                                value={formData.newSalary}
-                                                onChange={(e) => setFormData({ ...formData, newSalary: e.target.value })}
-                                            />
-                                            <span className="em-icon-right" style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: '600' }}>USD</span>
+                                    <div className="em-form-row">
+                                        <div className="em-form-group">
+                                            <label className="em-label">{t('label-adjustment-type')}</label>
+                                            <div className="em-select-container">
+                                                <select
+                                                    className="em-select-input"
+                                                    value={formData.adjustmentType}
+                                                    onChange={(e) => setFormData({ ...formData, adjustmentType: e.target.value })}
+                                                >
+                                                    <option value="" disabled>{t('label-adjustment-type')}</option>
+                                                    <option value="option-annual-increase">{t('option-annual-increase')}</option>
+                                                    <option value="option-merit-increase">{t('option-merit-increase')}</option>
+                                                    <option value="option-promotion">{t('option-promotion')}</option>
+                                                    <option value="option-performance-bonus">{t('option-performance-bonus')}</option>
+                                                    <option value="option-cost-of-living">{t('option-cost-of-living')}</option>
+                                                    <option value="option-other">{t('option-other')}</option>
+                                                </select>
+                                                <span className="material-symbols-outlined em-icon-right">expand_more</span>
+                                            </div>
+                                        </div>
+                                        <div className="em-form-group">
+                                            <label className="em-label">{t('label-new-salary')}</label>
+                                            <div className="em-search-container">
+                                                <span className="em-icon-left">$</span>
+                                                <input
+                                                    type="number"
+                                                    className="em-input-with-icon"
+                                                    placeholder="0.00"
+                                                    value={formData.newSalary}
+                                                    onChange={(e) => setFormData({ ...formData, newSalary: e.target.value })}
+                                                />
+                                                <span className="em-icon-right" style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: '600' }}>USD</span>
+                                            </div>
                                         </div>
                                     </div>
+
+                                    {formData.adjustmentType === 'option-other' && (
+                                        <div className="em-form-row">
+                                            <div className="em-form-group">
+                                                <label className="em-label">{t('label-custom-type-en')}</label>
+                                                <input
+                                                    type="text"
+                                                    className="em-input"
+                                                    placeholder={t('placeholder-custom-type-en')}
+                                                    value={formData.customTypeEn}
+                                                    onChange={(e) => setFormData({ ...formData, customTypeEn: e.target.value })}
+                                                />
+                                            </div>
+                                            <div className="em-form-group">
+                                                <label className="em-label">{t('label-custom-type-ar')}</label>
+                                                <input
+                                                    type="text"
+                                                    className="em-input"
+                                                    placeholder={t('placeholder-custom-type-ar')}
+                                                    value={formData.customTypeAr}
+                                                    onChange={(e) => setFormData({ ...formData, customTypeAr: e.target.value })}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
 
                                     <div className="em-form-group full-width">
                                         <label className="em-label">{t('label-adjustment-reason')}</label>

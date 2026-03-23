@@ -70,6 +70,17 @@
     "label-current-salary": "Current Salary",
     "label-new-salary": "New Salary Amount",
     "label-adjustment-reason": "Adjustment Reason",
+    "label-adjustment-type": "Adjustment Type",
+    "option-annual-increase": "Annual Increase",
+    "option-merit-increase": "Merit Increase",
+    "option-promotion": "Promotion",
+    "option-performance-bonus": "Performance Bonus",
+    "option-cost-of-living": "Cost of Living",
+    "option-other": "Other",
+    "label-custom-type-en": "Custom Type (English)",
+    "label-custom-type-ar": "Custom Type (Arabic)",
+    "placeholder-custom-type-en": "Enter type in English",
+    "placeholder-custom-type-ar": "Enter type in Arabic",
     "placeholder-adjustment-reason": "Explain the reason for this salary adjustment (e.g. Annual Review, Merit Increase)...",
     "btn-confirm-salary": "Update Salary"
 }
