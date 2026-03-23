@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\DepartmentController;
 
 // ── Public Routes ─────────────────────────────────────────────────────────
 Route::prefix('auth')->group(function () {
@@ -24,10 +25,17 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // HR أو Manager
     Route::middleware('role:hr,manager')->group(function () {
+          // Dropdown data
+    Route::get('/departments',         [DepartmentController::class, 'index']);
+    Route::get('/employees/positions', [EmployeeController::class, 'positions']);
+    Route::get('/employees/statuses',  [EmployeeController::class, 'statuses']);
+
+
         Route::get('/employees',         [EmployeeController::class, 'index']);
         Route::get('/employees/{id}',    [EmployeeController::class, 'show']);
         Route::put('/employees/{id}',    [EmployeeController::class, 'update']);
         Route::delete('/employees/{id}', [EmployeeController::class, 'destroy']);
+
     });
 
 
