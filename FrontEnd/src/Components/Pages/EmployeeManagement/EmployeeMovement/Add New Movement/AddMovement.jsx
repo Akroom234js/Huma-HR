@@ -68,9 +68,9 @@ const AddMovement = ({ onAddMovement }) => {
             name: selectedEmployee.name,
             id: selectedEmployee.id,
             date: formData.effectiveDate,
-            typeKey: modalStep === 'promotion' ? 'type-promotion' : (modalStep === 'transfer' ? 'type-transfer' : 'type-salary-adjustment'),
-            previousValue: modalStep === 'promotion' ? selectedEmployee.position : (modalStep === 'transfer' ? selectedEmployee.location : '$ 72,000 USD'),
-            newValue: modalStep === 'promotion' ? formData.newPosition : (modalStep === 'transfer' ? formData.newLocation : `$ ${formData.newSalary} USD`),
+            typeKey: modalStep === 'promotion' ? 'type-promotion' : (modalStep === 'transfer' ? 'type-transfer' : (modalStep === 'salary' ? 'type-salary-adjustment' : 'type-department-change')),
+            previousValue: modalStep === 'promotion' || modalStep === 'transfer' ? selectedEmployee.position : (modalStep === 'dept-change' ? selectedEmployee.location : '$ 72,000 USD'),
+            newValue: modalStep === 'promotion' || modalStep === 'transfer' ? formData.newPosition : (modalStep === 'dept-change' ? formData.newLocation : `$ ${formData.newSalary} USD`),
             adjustmentType: formData.adjustmentType === 'option-other' ? { en: formData.customTypeEn, ar: formData.customTypeAr } : formData.adjustmentType,
         };
 
@@ -150,6 +150,19 @@ const AddMovement = ({ onAddMovement }) => {
                                             <span className="em-selection-action">{t('btn-select')}</span>
                                         </button>
 
+                                        <button className="em-selection-btn" onClick={() => setModalStep('dept-change')}>
+                                            <div className="em-selection-content">
+                                                <div className="em-selection-icon-box em-type-dept-bg">
+                                                    <span className="material-symbols-outlined">domain_add</span>
+                                                </div>
+                                                <div className="em-selection-text">
+                                                    <h4>{t('type-department-change')}</h4>
+                                                    <p>{t('type-department-change-desc')}</p>
+                                                </div>
+                                            </div>
+                                            <span className="em-selection-action">{t('btn-select')}</span>
+                                        </button>
+
                                         <button className="em-selection-btn" onClick={() => setModalStep('salary')}>
                                             <div className="em-selection-content">
                                                 <div className="em-selection-icon-box em-type-salary-bg">
@@ -163,18 +176,7 @@ const AddMovement = ({ onAddMovement }) => {
                                             <span className="em-selection-action">{t('btn-select')}</span>
                                         </button>
 
-                                        <button className="em-selection-btn">
-                                            <div className="em-selection-content">
-                                                <div className="em-selection-icon-box em-type-dept-bg">
-                                                    <span className="material-symbols-outlined">domain_add</span>
-                                                </div>
-                                                <div className="em-selection-text">
-                                                    <h4>{t('type-department-change')}</h4>
-                                                    <p>{t('type-department-change-desc')}</p>
-                                                </div>
-                                            </div>
-                                            <span className="em-selection-action">{t('btn-select')}</span>
-                                        </button>
+                                        {/* Removed redundant Dept Change button here as it's added above */}
                                     </div>
                                 </div>
                                 <div className="em-modal-footer-info">
@@ -313,9 +315,7 @@ const AddMovement = ({ onAddMovement }) => {
                                         </button>
                                     </div>
                                 </div>
-                            </div>
-
-                            {/* Step 3: Transfer Form */}
+                            </div>                             {/* Step 3: Transfer Form (Updated) */}
                             <div className="em-modal-step">
                                 <div className="em-modal-header em-modal-header-form">
                                     <div className="em-header-with-icon">
@@ -361,7 +361,7 @@ const AddMovement = ({ onAddMovement }) => {
                                                                     <span className="em-result-name">{emp.name}</span>
                                                                     <span className="em-result-id">{emp.id}</span>
                                                                 </div>
-                                                                <span className="em-result-pos">{emp.location}</span>
+                                                                <span className="em-result-pos">{emp.position}</span>
                                                             </div>
                                                         ))
                                                     ) : (
@@ -374,58 +374,68 @@ const AddMovement = ({ onAddMovement }) => {
 
                                     <div className="em-form-row">
                                         <div className="em-form-group">
-                                            <label className="em-label">{t('label-current-branch')}</label>
+                                            <label className="em-label">{t('label-current-position')}</label>
                                             <div className="em-readonly-input">
-                                                {selectedEmployee ? selectedEmployee.location : '—'}
+                                                {selectedEmployee ? selectedEmployee.position : '—'}
                                             </div>
                                         </div>
                                         <div className="em-form-group">
-                                            <label className="em-label">{t('label-new-branch')}</label>
+                                            <label className="em-label">{t('label-new-position')}</label>
                                             <div className="em-select-container">
                                                 <select
                                                     className="em-select-input"
-                                                    value={formData.newLocation}
-                                                    onChange={(e) => setFormData({ ...formData, newLocation: e.target.value })}
+                                                    value={formData.newPosition}
+                                                    onChange={(e) => setFormData({ ...formData, newPosition: e.target.value })}
                                                 >
-                                                    <option value="" disabled>{t('placeholder-select-location')}</option>
-                                                    <option>Product Designer</option>
-                                                    <option>Marketing Specialist</option>
-                                                    <option>Software Engineer</option>
-                                                    <option>HR Generalist</option>
-                                                    <option>Financial Analyst</option>
-                                                    <option>Operations Manager</option>
+                                                    <option value="" disabled>{t('placeholder-select-new-role')}</option>
+                                                    <option>Senior Product Designer</option>
+                                                    <option>Lead Product Designer</option>
+                                                    <option>Senior Software Engineer</option>
+                                                    <option>Team Lead</option>
                                                 </select>
                                                 <span className="material-symbols-outlined em-icon-right">expand_more</span>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="em-form-group full-width">
-                                        <label className="em-label">{t('label-effective-date')}</label>
-                                        <input
-                                            type="date"
-                                            className="em-date-input"
-                                            value={formData.effectiveDate}
-                                            onChange={(e) => setFormData({ ...formData, effectiveDate: e.target.value })}
-                                        />
+                                    <div className="em-form-row">
+                                        <div className="em-form-group">
+                                            <label className="em-label">{t('label-direct-manager')}</label>
+                                            <div className="em-select-container">
+                                                <span className="material-symbols-outlined em-icon-left">person</span>
+                                                <select
+                                                    className="em-select-input has-icon-left"
+                                                    value={formData.manager}
+                                                    onChange={(e) => setFormData({ ...formData, manager: e.target.value })}
+                                                >
+                                                    <option value="" disabled>{t('placeholder-select-manager')}</option>
+                                                    <option>Admin</option>
+                                                    <option>HR Manager</option>
+                                                    <option>Technical Director</option>
+                                                </select>
+                                                <span className="material-symbols-outlined em-icon-right">expand_more</span>
+                                            </div>
+                                        </div>
+                                        <div className="em-form-group">
+                                            <label className="em-label">{t('label-effective-date')}</label>
+                                            <input
+                                                type="date"
+                                                className="em-date-input"
+                                                value={formData.effectiveDate}
+                                                onChange={(e) => setFormData({ ...formData, effectiveDate: e.target.value })}
+                                            />
+                                        </div>
                                     </div>
 
                                     <div className="em-form-group full-width">
-                                        <label className="em-label">{t('label-direct-manager')}</label>
-                                        <div className="em-select-container">
-                                            <span className="material-symbols-outlined em-icon-left">person</span>
-                                            <select
-                                                className="em-select-input has-icon-left"
-                                                value={formData.manager}
-                                                onChange={(e) => setFormData({ ...formData, manager: e.target.value })}
-                                            >
-                                                <option value="" disabled>{t('placeholder-select-manager')}</option>
-                                                <option>Admin</option>
-                                                <option>HR Manager</option>
-                                                <option>Technical Director</option>
-                                            </select>
-                                            <span className="material-symbols-outlined em-icon-right">expand_more</span>
-                                        </div>
+                                        <label className="em-label">{t('label-adjustment-reason')}</label>
+                                        <textarea
+                                            className="em-textarea"
+                                            rows="3"
+                                            placeholder={t('placeholder-adjustment-reason')}
+                                            value={formData.reason}
+                                            onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
+                                        ></textarea>
                                     </div>
                                 </div>
                                 <div className="em-modal-footer em-form-footer">
@@ -597,6 +607,133 @@ const AddMovement = ({ onAddMovement }) => {
                                         <button className="em-confirm-btn" onClick={handleConfirm}>
                                             <span className="material-symbols-outlined">payments</span>
                                             {t('btn-confirm-salary')}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Step 5: Department Change Form (Was Transfer) */}
+                            <div className="em-modal-step">
+                                <div className="em-modal-header em-modal-header-form">
+                                    <div className="em-header-with-icon">
+                                        <div className="em-selection-icon-box em-type-dept-bg">
+                                            <span className="material-symbols-outlined">domain_add</span>
+                                        </div>
+                                        <div>
+                                            <h2 className="em-modal-title">{t('dept-change-modal-title')}</h2>
+                                            <p className="em-subtitle">{t('dept-change-modal-subtitle')}</p>
+                                        </div>
+                                    </div>
+                                    <button className="em-modal-close" onClick={() => setShowMovementModal(false)}>
+                                        <span className="material-symbols-outlined">close</span>
+                                    </button>
+                                </div>
+                                <div className="em-modal-body em-form-body">
+                                    <div className="em-form-group full-width">
+                                        <label className="em-label">{t('label-select-employee')}</label>
+                                        <div className="em-search-container">
+                                            <span className="material-symbols-outlined em-icon-left">search</span>
+                                            <input
+                                                type="text"
+                                                className="em-input-with-icon"
+                                                placeholder={t('placeholder-search-employee')}
+                                                value={searchQuery}
+                                                onChange={(e) => {
+                                                    setSearchQuery(e.target.value);
+                                                    setShowSearchResults(true);
+                                                    if (selectedEmployee) setSelectedEmployee(null);
+                                                }}
+                                                onFocus={() => setShowSearchResults(true)}
+                                            />
+                                            {showSearchResults && searchQuery && (
+                                                <div className="em-search-results">
+                                                    {filteredEmployees.length > 0 ? (
+                                                        filteredEmployees.map(emp => (
+                                                            <div
+                                                                key={emp.id}
+                                                                className="em-search-result-item"
+                                                                onClick={() => handleEmployeeSelect(emp)}
+                                                            >
+                                                                <div className="em-result-info">
+                                                                    <span className="em-result-name">{emp.name}</span>
+                                                                    <span className="em-result-id">{emp.id}</span>
+                                                                </div>
+                                                                <span className="em-result-pos">{emp.location}</span>
+                                                            </div>
+                                                        ))
+                                                    ) : (
+                                                        <div className="em-no-results">No employees found</div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="em-form-row">
+                                        <div className="em-form-group">
+                                            <label className="em-label">{t('label-current-branch')}</label>
+                                            <div className="em-readonly-input">
+                                                {selectedEmployee ? selectedEmployee.location : '—'}
+                                            </div>
+                                        </div>
+                                        <div className="em-form-group">
+                                            <label className="em-label">{t('label-new-branch')}</label>
+                                            <div className="em-select-container">
+                                                <select
+                                                    className="em-select-input"
+                                                    value={formData.newLocation}
+                                                    onChange={(e) => setFormData({ ...formData, newLocation: e.target.value })}
+                                                >
+                                                    <option value="" disabled>{t('placeholder-select-location')}</option>
+                                                    <option>Product Designer</option>
+                                                    <option>Marketing Specialist</option>
+                                                    <option>Software Engineer</option>
+                                                    <option>HR Generalist</option>
+                                                    <option>Financial Analyst</option>
+                                                    <option>Operations Manager</option>
+                                                </select>
+                                                <span className="material-symbols-outlined em-icon-right">expand_more</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="em-form-group full-width">
+                                        <label className="em-label">{t('label-effective-date')}</label>
+                                        <input
+                                            type="date"
+                                            className="em-date-input"
+                                            value={formData.effectiveDate}
+                                            onChange={(e) => setFormData({ ...formData, effectiveDate: e.target.value })}
+                                        />
+                                    </div>
+
+                                    <div className="em-form-group full-width">
+                                        <label className="em-label">{t('label-direct-manager')}</label>
+                                        <div className="em-select-container">
+                                            <span className="material-symbols-outlined em-icon-left">person</span>
+                                            <select
+                                                className="em-select-input has-icon-left"
+                                                value={formData.manager}
+                                                onChange={(e) => setFormData({ ...formData, manager: e.target.value })}
+                                            >
+                                                <option value="" disabled>{t('placeholder-select-manager')}</option>
+                                                <option>Admin</option>
+                                                <option>HR Manager</option>
+                                                <option>Technical Director</option>
+                                            </select>
+                                            <span className="material-symbols-outlined em-icon-right">expand_more</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="em-modal-footer em-form-footer">
+                                    <button className="em-back-btn" onClick={() => setModalStep('selection')}>
+                                        <span className="material-symbols-outlined">arrow_back</span>
+                                        {t('btn-back')}
+                                    </button>
+                                    <div className="em-footer-actions">
+                                        <button className="em-confirm-btn" onClick={handleConfirm}>
+                                            <span className="material-symbols-outlined">check</span>
+                                            {t('btn-confirm-transfer')}
                                         </button>
                                     </div>
                                 </div>
