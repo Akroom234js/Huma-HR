@@ -1,0 +1,36 @@
+{
+  "title": "Overall Performance",
+  "stats": {
+    "avg_score": "Avg. Performance Score",
+    "completion_rate": "Completion Rate",
+    "needs_training": "Needs Training",
+    "next_review": "Next Review"
+  },
+  "filters": {
+    "search": "Search employees...",
+    "department": "Department",
+    "status": "Status"
+  },
+  "table": {
+    "summary_title": "Performance Summary",
+    "employee": "Employee",
+    "final_score": "Final Score",
+    "status": "Status",
+    "action": "Action"
+  },
+  "status": {
+    "completed": "Completed",
+    "rewarded": "Rewarded",
+    "needs_review": "Needs Review"
+  },
+  "modal": {
+    "details_title": "Performance Details",
+    "metrics": {
+      "quality": "Quality of Work",
+      "speed": "Speed & Efficiency",
+      "teamwork": "Teamwork",
+      "reliability": "Reliability"
+    },
+    "close": "Close"
+  }
+}

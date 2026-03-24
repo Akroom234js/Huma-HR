@@ -4,12 +4,14 @@ import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 
 const Salaries = () => {
     return (
-        <div className="dashboard-page">
-            <header className="page-header">
-                <h1>Salaries Dashboard</h1>
+        <div className="sa-page">
+            <div className="sa-theme-toggle-wrapper">
                 <ThemeToggle />
+            </div>
+            <header className="sa-header">
+                <h1 className="sa-title">Salaries Dashboard</h1>
             </header>
-            <div className="page-content">
+            <div className="sa-content">
                 <p>Overview of payroll and salary distributions.</p>
             </div>
         </div>

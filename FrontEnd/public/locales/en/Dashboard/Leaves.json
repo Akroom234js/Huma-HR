@@ -1,0 +1,48 @@
+{
+  "title": "Leaves Management",
+  "stats": {
+    "pending": "Pending Requests",
+    "annual_balance": "Total Annual Balance",
+    "highest_requester": "Highest Requester",
+    "used_days": "Used Days (Period)"
+  },
+  "filters": {
+    "search": "Search for employees...",
+    "department": "Department",
+    "leave_type": "Leave Type",
+    "status": "Request Status"
+  },
+  "table": {
+    "emp_name": "Employee Name",
+    "leave_type": "Leave Type",
+    "date_range": "Start/End Date",
+    "duration": "Duration (Days)",
+    "status": "Status",
+    "rem_balance": "Remaining Balance"
+  },
+  "actions": {
+    "view": "View Details",
+    "review": "Review"
+  },
+  "status": {
+    "approved": "Approved",
+    "pending": "Pending",
+    "rejected": "Rejected"
+  },
+  "reports": {
+    "distribution": "Leave Distribution by Type",
+    "impactful": "Impactful Leaves",
+    "comparison": "Leave Comparisons (Month-over-Month)"
+  },
+  "impact": {
+    "high": "High Impact",
+    "medium": "Medium Impact",
+    "low": "Low Impact"
+  },
+  "modal": {
+    "title": "Leave Request Details",
+    "duration": "Duration",
+    "days": "Days",
+    "reason_label": "Reason for request"
+  }
+}

@@ -37,11 +37,11 @@ const General = () => {
     const yax = ["0%", "25%", "50%", "75%", "100%"]
     return (
         <div className="dashboard-page">
+            <div className="general-theme-toggle-wrapper">
+                <ThemeToggle />
+            </div>
             <header className="page-header general">
                 <h1>{t("GeneralDashboard")}</h1>
-                <div className="theme-toggle-wrapper">
-                    <ThemeToggle />
-                </div>
             </header>
             <div className='general-info'>
                 <div className='general-info-card'>
