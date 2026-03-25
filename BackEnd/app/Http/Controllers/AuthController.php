@@ -119,8 +119,6 @@ class AuthController extends Controller
                     'id'    => $user->id,
                     'email' => $user->email,
                     'role'  => $user->roles->pluck('name')->first(),
-                    'full_name'       => $user->profile?->full_name,
-                    'profile_picture' => $user->profile?->profile_picture,
                 ],
             ],
             message: 'Login successful.'

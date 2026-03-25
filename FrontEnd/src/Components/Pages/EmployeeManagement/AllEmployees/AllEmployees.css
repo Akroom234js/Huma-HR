@@ -111,11 +111,17 @@ td {
   height: 32px;
   border-radius: 50%;
   background: #d1d5db;
-  background: red;
-  background-image: url("../../../../assets/dd.jpg");
   background-size: cover;
-
+  background-position: center;
   background-repeat: no-repeat;
+  flex-shrink: 0;
+}
+
+.loading-state {
+  padding: 3rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .status {

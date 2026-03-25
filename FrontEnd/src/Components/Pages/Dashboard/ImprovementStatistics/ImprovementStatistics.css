@@ -1,25 +1,198 @@
-.dashboard-page {
+/* --- التنسيقات الأساسية ونظام الثيمات --- */
+.is-page {
     padding: 2rem;
+    background-color: var(--bg-page);
+    min-height: 100vh;
+    transition: all 0.3s ease;
+    position: relative;
     color: var(--text-main);
 }
 
-.page-header {
+.is-theme-toggle-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+}
+
+.is-theme-toggle-wrapper .theme-toggle {
+    background-color: var(--bg-card);
+    border: none;
+    color: var(--text-main);
+    box-shadow: -4px 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 0 0 0 60px;
+    border-top-right-radius: 12px;
+    width: 64px;
+    height: 64px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: center;
+    padding-left: 15px;
+    padding-bottom: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+[dir="rtl"] .is-theme-toggle-wrapper {
+    right: auto;
+    left: 0;
+}
+
+[dir="rtl"] .is-theme-toggle-wrapper .theme-toggle {
+    border-radius: 0 0 60px 0;
+    border-top-left-radius: 12px;
+    padding-left: 0;
+    padding-right: 15px;
+}
+
+.is-header {
+    margin-bottom: 2.5rem;
+}
+
+.is-title {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* --- شبكة البطاقات الإحصائية --- */
+.is-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
     margin-bottom: 2rem;
-    padding-bottom: 1rem;
+}
+
+.is-stat-card {
+    background: var(--bg-card);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    transition: transform 0.3s ease;
+}
+
+.is-stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.is-stat-label {
+    text-transform: uppercase;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.is-stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* --- قسم المخططات البيانية --- */
+.is-charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.is-chart-card {
+    background: var(--bg-card);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.is-chart-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text-main);
+}
+
+.is-chart-container {
+    width: 100%;
+    height: 250px;
+    /* ارتفاع ثابت للمخططات */
+}
+
+/* --- جدول البيانات --- */
+.is-table-wrapper {
+    background: var(--bg-card);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.is-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.is-table th {
+    background: var(--bg-page);
+    padding: 1rem 1.5rem;
+    font-size: 12px;
+    text-transform: uppercase;
+    text-align: left;
+    color: var(--text-secondary);
     border-bottom: 1px solid var(--border-color);
 }
 
-.page-header h1 {
-    font-size: 1.5rem;
+[dir="rtl"] .is-table th {
+    text-align: right;
+}
+
+.is-table td {
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.is-font-bold {
     font-weight: 600;
 }
 
-.page-content {
-    background: var(--bg-secondary);
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+/* --- الأوسمة (Badges) --- */
+.is-index-badge {
+    padding: 0.35rem 1rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.is-badge-success {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.is-badge-warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.is-badge-danger {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* --- التجاوب مع الشاشات --- */
+@media (max-width: 1024px) {
+    .is-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .is-charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .is-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .is-title {
+        font-size: 28px;
+    }
 }

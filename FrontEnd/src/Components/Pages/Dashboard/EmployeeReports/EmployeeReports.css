@@ -20,6 +20,7 @@
     color: var(--text-main);
     box-shadow: -4px 4px 12px rgba(0, 0, 0, 0.08);
     border-radius: 0 0 0 60px;
+    border-top-right-radius: 12px;
     width: 64px;
     height: 64px;
     transition: all 0.3s ease;
@@ -39,6 +40,7 @@
 
 [dir="rtl"] .er-theme-toggle-wrapper .theme-toggle {
     border-radius: 0 0 60px 0;
+    border-top-left-radius: 12px;
     padding-left: 0;
     padding-right: 15px;
     box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.08);

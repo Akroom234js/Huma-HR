@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import "./Home.css";
 import Footer from "./Footer";
 import logo from "../../../assets/logo.png";
@@ -26,9 +26,9 @@ export default function Jops() {
               <i className={`fa-solid ${isMobileMenuOpen ? 'fa-xmark' : 'fa-bars'}`}></i>
             </button>
             <div className={`nav-links ${isMobileMenuOpen ? 'open' : ''}`}>
-              <Link to="/home">Home</Link>
-              <Link to="/jops">Jops</Link>
-              <Link to="/recruitment">Go to website</Link>
+              <NavLink to="/" end>Home</NavLink>
+              <NavLink to="/jops">Jobs</NavLink>
+              <NavLink to="/dashboard/general">Go to website</NavLink>
               <ThemeToggle />
               <div className="nav-profile"> </div>
             </div>
@@ -36,7 +36,7 @@ export default function Jops() {
         </div>
         <div className="intro-box">
           <span className="intro">Grow With Us</span>
-          <h2 className="title">Find Your Dream Job</h2>
+          <h2 className="title">Find Your <span>Dream</span> Job</h2>
           <p className="description">
             Explore exciting opportunities at Huma. We are always looking for
             talented individuals to join our mission of revolutionizing HR.
@@ -50,7 +50,10 @@ export default function Jops() {
               <h2>Open Positions</h2>
               <p>Browse our latest job openings and apply today.</p>
             </div>
-            <input placeholder="   🔍  Search by jop title ..." />
+            <div className="search-box-modern">
+              <span className="material-icons">search</span>
+              <input placeholder="Search by job title..." />
+            </div>
           </div>
           <div className="container_carts">
             <div className="cart1">
@@ -137,17 +140,17 @@ export default function Jops() {
           <div>
             <span>1</span>
             <h3>Submit Application</h3>
-            <p>Click apply on any listing. Upload your CV easily.</p>
+            <p>Click apply on any listing. Upload your CV easily and get instant confirmation.</p>
           </div>
           <div>
             <span>2</span>
             <h3>Review</h3>
-            <p>Our HR team reviews applications daily.</p>
+            <p>Our HR team reviews applications daily to find the perfect fit.</p>
           </div>
           <div>
             <span>3</span>
             <h3>Interview</h3>
-            <p>If your profile matches, we will schedule a call.</p>
+            <p>If your profile matches, we will schedule a call to discuss your career.</p>
           </div>
         </div>
       </div>
