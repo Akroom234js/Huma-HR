@@ -123,3 +123,68 @@ body::before {
 .material-symbols-filled {
   font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
+
+/* Global Glassmorphism for Modals, Overlays, and Dropdowns */
+[class*="modal"],
+[class*="overlay"],
+[class*="backdrop"],
+[class*="dropdown-options"],
+[class*="dropdown-menu"],
+[class*="dropdown-content"],
+[class*="popover"],
+[class*="popup"],
+.sidebar-overlay,
+.at-accordion-wrapper,
+.em-modal,
+.leaves-modal,
+.op-modal,
+.modal-container,
+.modal-overlay,
+.modal-backdrop,
+.AddMovement-modal,
+.salary-adjustment-modal {
+  backdrop-filter: blur(25px) !important;
+  -webkit-backdrop-filter: blur(25px) !important;
+}
+
+/* Ensure container transparency so the blur of the content behind them is visible */
+.modal-container,
+.em-modal,
+.leaves-modal,
+.op-modal,
+.AddMovement-modal,
+.salary-adjustment-modal,
+[class*="modal-content"],
+[class*="dropdown-menu"],
+[class*="popup-content"] {
+  background-color: rgba(255, 255, 255, 0.75) !important;
+}
+
+[data-theme="dark"] .modal-container,
+[data-theme="dark"] .em-modal,
+[data-theme="dark"] .leaves-modal,
+[data-theme="dark"] .op-modal,
+[data-theme="dark"] .AddMovement-modal,
+[data-theme="dark"] .salary-adjustment-modal,
+[data-theme="dark"] [class*="modal-content"],
+[data-theme="dark"] [class*="dropdown-menu"],
+[data-theme="dark"] [class*="popup-content"] {
+  background-color: rgba(15, 23, 42, 0.75) !important;
+}
+
+/* Background darken for full-screen overlays */
+[class*="overlay"],
+[class*="backdrop"],
+.modal-overlay,
+.modal-backdrop,
+.sidebar-overlay {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="dark"] [class*="overlay"],
+[data-theme="dark"] [class*="backdrop"],
+[data-theme="dark"] .modal-overlay,
+[data-theme="dark"] .modal-backdrop,
+[data-theme="dark"] .sidebar-overlay {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
