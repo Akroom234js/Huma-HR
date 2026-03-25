@@ -1,6 +1,5 @@
 .dashboard-page {
     padding: 2rem;
-    background-color: var(--bg-page);
     color: var(--text-main);
     transition: all 0.3s ease;
     min-height: 100vh;
@@ -177,70 +176,10 @@
     font-weight: 600;
 }
 
-/* <<<<<<< HEAD */
-.page-content {
-    background: var(--bg-secondary);
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-div.general-info{
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-}
-div.general-info-card{
-    border: 1px solid var(--border-color);
-    width: 23%;
-    min-height: 170px;
-    background-color: white;
-    border-radius: 10px;
-    padding: 7px;
-    margin-bottom: 20px;
-    margin-top: 20px;
-
-}
-div.general-info-card h3.title-card{
-    color: gray;
-    
-    font-size: 15px;
-}
-div.general-info-card p.number{
-    font-weight: bold;
-     font-size: 36px;
-    
-}
-div.general-info-card p.number span{
-      color: gray;
-     font-size: 22px;
-     font-weight: 500;
-}
-div.general-info-card p.color-green{
-    color: #10b981;
-}
-div.general-info-card p.color-gray{
-    color: gray;
-}
-div.general-info-card p.color-red{
-    color: red;
-}
-div.graph{
-    background-color: white;
-    border: 1px solid var(--border-color);
-    padding: 8px;
-    border-radius: 10px;
-}
-@media (max-width:1117px) and (min-width:1025px){
-    div.general-info{
-justify-content: start;
-gap: 5%;}}
-/* ======= */
 /* Responsive Design */
 @media (max-width: 1200px) {
     .general-info {
         grid-template-columns: repeat(2, 1fr);
-/* >>>>>>> a85db8fa674a0a56ee229c4dfc5842ef64c95b1f */
     }
 }
 
