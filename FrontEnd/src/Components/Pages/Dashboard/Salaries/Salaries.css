@@ -1,12 +1,174 @@
 .sa-page {
     padding: 2rem;
-    background-color: var(--bg-page);
     min-height: 100vh;
     transition: all 0.3s ease;
     position: relative;
     color: var(--text-main);
 }
 
+/* Header */
+.page-header h1.er-title,
+.sa-title {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.sa-header {
+    margin-bottom: 2.5rem;
+}
+
+.sa-content {
+    background: var(--bg-card);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+/* Page Layout */
+div.salaries-page {
+    padding-inline: 2rem;
+}
+
+div.salaries {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+div.salaries-inf {
+    margin-top: 35px;
+    width: 24%;
+    height: 130px;
+    padding: 10px;
+    background-color: var(--bg-card);
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    transition: 0.3s ease;
+}
+
+div.salaries-inf:hover,
+div.view-salary-report:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+div.salaries-inf h3 {
+    color: gray;
+    font-size: 0.8rem;
+}
+
+div.salaries-inf p {
+    font-weight: bold;
+    font-size: 2rem;
+    color: var(--text-main);
+}
+
+/* Payroll Table */
+div.Payroll-Summary-table {
+    padding: 10px;
+    margin: 20px 2rem;
+}
+
+div.Payroll-Summary-table div {
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+div.Payroll-Summary-table div h2 {
+    font-size: 1.3rem;
+}
+
+td.name-emp-salary {
+    width: 20%;
+}
+
+/* Status Badges */
+.bg-green {
+    background-color: #dcfce7;
+    color: #15803d;
+    padding: 5px;
+    border-radius: 15px;
+}
+
+.bg-blue {
+    background-color: #dce7fc;
+    color: #153d80;
+    padding: 5px;
+    border-radius: 15px;
+}
+
+.bg-orange {
+    background-color: #fcdce7;
+    color: #80153d;
+    padding: 5px;
+    border-radius: 15px;
+}
+
+/* Reports */
+div.view-salary-report {
+    width: 24%;
+    margin-top: 20px;
+    padding: 10px;
+    height: 150px;
+    border-radius: 15px;
+    background-color: var(--bg-page);
+    border: 1px solid var(--border-color);
+    transition: 0.3s ease;
+}
+
+div.view-salary-report p {
+    font-size: 0.9rem;
+    color: gray;
+}
+
+div.SalaryReports,
+div.filter-salary-co {
+    border-radius: 15px;
+    padding: 10px;
+    background-color: var(--bg-card);
+    margin-inline: 2rem;
+    border: 1px solid var(--border-color);
+}
+
+div.filter-salary-co {
+    margin-top: 20px;
+}
+
+div.filter-salary {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+div.filters-salary {
+    display: flex;
+    width: 70%;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+/* Export Button */
+button.export {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 500;
+    padding: 0.625rem 1.25rem;
+    border: none;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-family: inherit;
+    transition: 0.2s ease;
+}
+
+/* Theme Toggle */
 .sa-theme-toggle-wrapper {
     position: absolute;
     top: 0;
@@ -23,14 +185,13 @@
     border-top-right-radius: 12px;
     width: 64px;
     height: 64px;
-    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     padding-left: 15px;
     padding-bottom: 15px;
     cursor: pointer;
-    overflow: hidden;
+    transition: 0.3s ease;
 }
 
 [dir="rtl"] .sa-theme-toggle-wrapper {
@@ -51,19 +212,45 @@
     transform: scale(1.05);
 }
 
-.sa-header {
-    margin-bottom: 2.5rem;
+/* Responsive */
+@media (max-width: 1126px) {
+
+    div.salaries-inf,
+    div.view-salary-report {
+        width: 49%;
+    }
 }
 
-.sa-title {
-    font-size: 36px;
-    font-weight: 700;
-    margin: 0;
+@media (max-width: 840px) {
+    div.filter-salary {
+        flex-direction: column;
+    }
+
+    div.filters-salary {
+        width: 100%;
+    }
 }
 
-.sa-content {
-    background: var(--bg-card);
-    padding: 2rem;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
+@media (max-width: 669px) {
+
+    div.filters-salary div,
+    button.export {
+        width: 100%;
+    }
+}
+
+@media (max-width: 590px) {
+
+    div.salaries-inf,
+    div.view-salary-report {
+        width: 100%;
+        margin-top: 15px;
+    }
+
+    div.salaries-page,
+    div.SalaryReports,
+    div.Payroll-Summary-table {
+        margin-inline: 0;
+        padding-inline: 0.5rem;
+    }
 }

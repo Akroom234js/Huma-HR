@@ -1,6 +1,5 @@
 .op-page {
     padding: 2rem;
-    background-color: var(--bg-page);
     min-height: 100vh;
     transition: all 0.3s ease;
     position: relative;
