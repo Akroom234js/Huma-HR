@@ -24,7 +24,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
         // HR أو Manager
-    Route::middleware('role:hr,manager')->group(function () {
+    Route::middleware('role:hr')->group(function () {
           // Dropdown data
     Route::get('/departments',         [DepartmentController::class, 'index']);
     Route::get('/employees/positions', [EmployeeController::class, 'positions']);
