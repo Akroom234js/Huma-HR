@@ -6,7 +6,6 @@
     padding: 2rem;
     height: 100%;
     position: relative;
-    background-color: var(--bg-page);
     transition: background-color 0.3s ease;
 }
 
