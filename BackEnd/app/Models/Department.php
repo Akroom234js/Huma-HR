@@ -19,4 +19,11 @@ class Department extends Model
     {
         return $this->hasMany(JobPosting::class);
     }
+
+    public function employees(): HasMany
+{
+    return $this->hasMany(EmployeeProfile::class);
+}
+
+
 }
