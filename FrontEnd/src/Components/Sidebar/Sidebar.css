@@ -161,8 +161,8 @@ button.translation p,
 .sidebar:hover .nav-item .nav-label {
     opacity: 1;
     width: auto;
-    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
-                width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+        width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ---- Nav Hover state ---- */
@@ -231,12 +231,13 @@ button.translation:hover {
     max-height: 0;
     opacity: 0;
     transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                margin-top 0.3s ease;
+        opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+        margin-top 0.3s ease;
 }
 
 .sub-menu.open {
-    max-height: 500px; /* Safe upper bound for menu items */
+    max-height: 500px;
+    /* Safe upper bound for menu items */
     opacity: 1;
     margin-top: 4px;
     gap: 4px;
@@ -257,9 +258,9 @@ button.translation:hover {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                background 0.2s ease,
-                color 0.2s ease;
+        height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        background 0.2s ease,
+        color 0.2s ease;
 }
 
 /* Sidebar Hover OR Mobile Open state */
@@ -397,7 +398,7 @@ div.translation p {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(128,128,128,0.4);
+    background: rgba(128, 128, 128, 0.4);
     border-radius: 8px;
 }
 
@@ -459,13 +460,22 @@ div.translation p {
         position: fixed;
         inset-block: 0;
         inset-inline-start: 0;
-        width: 260px !important;   /* override hover width */
+        width: 260px !important;
+        /* override hover width */
         transform: translateX(-110%);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 1001;
-        box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
         border-radius: 0;
         overflow-y: auto;
+    }
+
+    /* Blur for dark mode sidebar on mobile to prevent text overlap */
+    [data-theme="dark"] .sidebar {
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        /* background: rgba(15, 23, 42, 0.75); */
+        /* Slight increase in opacity for better readability */
     }
 
     /* Disable hover-expand on mobile */

@@ -1,0 +1,35 @@
+{
+    "SalariesCompensation":"الرواتب & التعويضات",
+    "TotalMonthlyCost":"إجمالي التكلفة الشهرية",
+    "TotalDeductions":"إجمالي الخصومات",
+    "TotalOvertimeCost":"إجمالي تكلفة العمل الإضافي",
+    "NextPayrollDate":"تاريخ دفع الرواتب التالي",
+    "PayrollSummaryTable":"جدول ملخص الرواتب",
+    "EmployeeName":"اسم الموظف",
+    "JobTitle":"اسم الوظيفة",
+    "BasicSalary":"الراتب الأساسي",
+    "TotalAdditions":"إجمالي الإضافي",
+    "NetSalary":"الراتب الصافي",
+    "Status":"الحالة",
+    "SalaryReports": "تقارير الرواتب",
+    "GeneralSalaryReports": "التقرير العام للرواتب",
+    "GeneralSalaryReportsdetials": "نظرة عامة على توزيع الرواتب عبر الأقسام.",
+    "ViewReport": "عرض التقرير",
+    "OvertimeReport": "تقرير الساعات الإضافية",
+    "OvertimeReportdetials": "تفصيل ساعات العمل الإضافية والتكاليف.",
+    "BonusesReport": "تقرير المكافآت",
+    "BonusesReportdetials": "ملخص لجميع المكافآت الممنوحة في فترة محددة.",
+    "EmployeeCostReport": "تقرير تكلفة الموظف",
+    "EmployeeCostReportdetials": "إجمالي تكلفة التوظيف لكل موظف، بما في ذلك المزايا.",
+    "ExportPayrollReport":"تصدير تقرير الرواتب",
+     "filters": {
+        "department": "القسم",
+        "Status": "حالة",
+        "payrollperiod":"فترة الراتب",
+        "Paid":"مدفوع",
+        "Ready":"جاهز",
+        "Pending":"معلق"
+    },
+    "search":"بحث بواسطة الاسم او المعرف..."
+
+}
