@@ -156,4 +156,32 @@ class EmployeeController extends Controller
             'profile_pic'       => $employee->profile_pic_url,
         ];
     }
+
+    // ── GET /api/employees/positions ─────────────────────────────────────────
+    public function positions(): JsonResponse
+    {
+        $positions = EmployeeProfile::select('job_title')
+            ->whereNotNull('job_title')
+            ->distinct()
+            ->pluck('job_title');
+
+        return $this->successResponse(
+            data: $positions,
+            message: 'Positions retrieved successfully.'
+        );
+    }
+
+    // ── GET /api/employees/statuses ──────────────────────────────────────────
+    public function statuses(): JsonResponse
+    {
+        $statuses = EmployeeProfile::select('employment_status')
+            ->whereNotNull('employment_status')
+            ->distinct()
+            ->pluck('employment_status');
+
+        return $this->successResponse(
+            data: $statuses,
+            message: 'Statuses retrieved successfully.'
+        );
+    }
 }
