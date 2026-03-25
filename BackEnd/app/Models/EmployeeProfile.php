@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+
 class EmployeeProfile extends Model
 {
     protected $fillable = [
@@ -17,17 +19,24 @@ class EmployeeProfile extends Model
         'address',
         'emergency_contacts',
         'profile_pic',
-        //'job_title', --- IGNORE ---
-        //'department_id', --- IGNORE ---
+        'job_title',
+        'employment_status',
+        'department_id',
         'manager_id',
         'branch',
         'city',
-         'grade',
-         'start_date',
-         'internal_transfer_date',
-         'resignation_date'
+        'grade',
+        'start_date',
+        'internal_transfer_date',
+        'resignation_date',
     ];
-     // ── Relationships ──────────────────────────────────────────────────────────
+
+    // ── Relationships ─────────────────────────────────────────────────────────
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function department(): BelongsTo
     {
@@ -53,10 +62,30 @@ class EmployeeProfile extends Model
     {
         return $this->hasMany(EmployeeChangeLog::class)->orderByDesc('changed_at');
     }
-     
-    public function user()
+
+    // ── Query Scopes ──────────────────────────────────────────────────────────
+
+    public function scopeSearch(Builder $query, string $value): Builder
     {
-        return $this->belongsTo(User::class);
+        return $query->where(function ($q) use ($value) {
+            $q->where('full_name', 'like', "%{$value}%")
+              ->orWhere('employee_id', 'like', "%{$value}%");
+        });
+    }
+
+    public function scopeStatus(Builder $query, string $value): Builder
+    {
+        return $query->where('employment_status', $value);
+    }
+
+    public function scopeDepartment(Builder $query, int $value): Builder
+    {
+        return $query->where('department_id', $value);
+    }
+
+    public function scopeJobTitle(Builder $query, string $value): Builder
+    {
+        return $query->where('job_title', 'like', "%{$value}%");
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
@@ -71,6 +100,9 @@ class EmployeeProfile extends Model
         ]);
     }
 
+    // ── Accessors ─────────────────────────────────────────────────────────────
+    // الاستخدام: $employee->profile_pic_url
+    // يرجع URL كامل للصورة أو null إذا ما في صورة
     public function getProfilePicUrlAttribute(): ?string
     {
         return $this->profile_pic

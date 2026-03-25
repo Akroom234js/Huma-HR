@@ -31,6 +31,12 @@ return new class extends Migration
                  ->nullable()
                  ->constrained('departments')
                  ->onDelete('set null');
+            $table->enum('employment_status', [
+                'active',
+                'on_leave',
+                'inactive',
+                'terminated'
+            ])->default('active');
             $table->foreignId('manager_id')
                   ->nullable()
                   ->constrained('users')  // ← point to users table instead
