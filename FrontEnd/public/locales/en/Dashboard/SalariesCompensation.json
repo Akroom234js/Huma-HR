@@ -1,0 +1,35 @@
+{
+    "SalariesCompensation":"Salaries & Compensation",
+    "TotalMonthlyCost":"Total Monthly Cost",
+    "TotalDeductions":"Total Deductions",
+    "TotalOvertimeCost":"Total Overtime Cost",
+    "NextPayrollDate":"Next Payroll Date",
+    "PayrollSummaryTable":"Payroll Summary Table",
+    "EmployeeName":"Employee Name",
+    "JobTitle":"Job Title",
+    "BasicSalary":"Basic Salary",
+    "TotalAdditions":"Total Additions",
+    "NetSalary":"Net Salary",
+    "Status":"Status",
+    "SalaryReports":"Salary Reports",
+    "GeneralSalaryReports":"General Salary Report",
+    "GeneralSalaryReportsdetials":"An overview of salary distibution across departments.",
+    "ViewReport":"View Report",
+    "OvertimeReport":"Overtime Report",
+    "OvertimeReportdetials":"Detailed breakdown of overtime hours and costs.",
+    "BonusesReport":"Bonuses Report",
+    "BonusesReportdetials":"Summary of all bonuses awarded in a selected period.",
+    "EmployeeCostReport":"Employee Cost Report",
+    "EmployeeCostReportdetials":"Total cost of employment per employee ,including benefits",
+    "ExportPayrollReport":"Export Payroll Report",
+      "filters": {
+        "department": "Department",
+        "Status": "Status",
+        
+        "payrollperiod":"payroll period",
+        "Paid":"Paid",
+        "Ready":"Ready",
+        "Pending":"Pending"
+    },
+    "search":"search by name or ID..."
+}

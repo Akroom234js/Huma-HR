@@ -3,23 +3,184 @@
     color: var(--text-main);
 }
 
-.page-header {
+.page-header h1.er-title {
+    font-size: 36px;
+    font-weight: 700;
+}
+div.salaries-page{
+    padding-inline-start: 2rem;
+    padding-inline-end: 2rem;
+}
+div.salaries{
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border-color);
+}
+div.salaries-inf{
+  margin-top: 35px;
+  width: 24%;
+  height: 130px;
+  padding: 10px;
+  background-color: var(--bg-card);
+  border-radius: 10px;
+   border: 1px solid var(--border-color);
+}
+div.salaries-inf:hover,div.view-salary-report:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+div.salaries-inf h3{
+    color: gray;
+  
+    font-size: 0.8rem;
+}
+div.salaries-inf p{
+    font-weight: bold;
+    font-size: 2rem;
+        color: var(--text-main);
+}
+div.Payroll-Summary-table{
+     padding: 10px;
+       margin-inline-start: 2rem;
+       margin-top: 20px;
+       margin-bottom: 20px;
+    margin-inline-end: 2rem;
+}
+div.Payroll-Summary-table div h2{
+    font-size: 1.3rem;
+}
+td.name-emp-salary{
+    width: 20%;
+}
+.bg-green{
+    background-color: #dcfce7;
+    color: #15803d;
+    padding: 5px;
+    border-radius: 15px;
+}
+.bg-blue{
+    background-color: #dce7fc;
+    color: #153d80;
+    padding: 5px;
+    border-radius: 15px;
+}
+.bg-orange{
+    background-color: #fcdce7;
+    color: #80153d;
+    padding: 5px;
+    border-radius: 15px;
+}
+div.view-salary-report{
+    width: 24%;
+    margin-top: 20px;
+    padding: 10px;
+    height: 150px;
+    border-radius: 15px;
+      background-color: var(--bg-page);
+    border: 1px solid var(--border-color);
+}
+div.view-salary-report p{
+    font-size: 0.9rem;
+    color: gray;
+}
+div.SalaryReports,div.filter-salary-co{
+      border-radius: 15px;
+      padding: 10px;
+  background-color: var(--bg-card);
+      margin-inline-start: 2rem;
+      margin-inline-end: 2rem;
+    border: 1px solid var(--border-color);
+}
+div.filter-salary-co{
+margin-top: 20px;
+}
+div.filter-salary{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+div.filters-salary{
+    display: flex;
+    width: 70%;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+button.export{
+        background-color: var(--primary-color);
+    color: white;
+    font-weight: 500;
+    padding: 0.625rem 1.25rem;
+    border: none;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+@media(max-width:1126px){
+div.salaries-inf{
+    width: 49%;
+}
+div.view-salary-report{
+    width: 49%;
+}
+    
+}
+@media(max-width:840px){ div.Payroll-Summary-table div {
+    overflow-y: scroll;
+ scrollbar-width: thin;
+  }
+div.filter-salary{
+    flex-direction: column;
+}
+div.filters-salary{
+ width: 100%;
+}
+}
+@media(max-width:669px){
+    div.filters-salary div{
+ width: 100%;
+}
+div.export{
+    width: 100%;
+}
+div.export button{
+      width: 100%;
+      text-align: center;
+      justify-content: center;
+}
+}
+@media(max-width:590px){
+div.salaries-inf{
+    width: 100%;
+}
+div.view-salary-report{
+    width: 99%;
 }
 
-.page-header h1 {
-    font-size: 1.5rem;
-    font-weight: 600;
+div.salaries-page{
+    padding-inline-start: 0rem;
+    padding-inline-end: 0rem;
 }
-
-.page-content {
-    background: var(--bg-secondary);
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+div.SalaryReports{
+    margin-inline-start: 0rem;
+    margin-inline-end: 0rem;
+    padding: 10px;
+     padding-inline-start: 0.5rem;
+    padding-inline-end: 0.5rem;
+}  
+ div.salaries-inf{
+  margin-top: 15px;}   
+  div.Payroll-Summary-table{
+    width: 100%;
+    margin-inline-start: 0rem;
+  }
+  div.Payroll-Summary-table div {
+    overflow-y: scroll;
+  }
 }

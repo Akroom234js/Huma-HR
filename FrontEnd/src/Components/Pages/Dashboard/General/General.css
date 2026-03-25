@@ -50,6 +50,7 @@ div.general-info-card h3.title-card{
 div.general-info-card p.number{
     font-weight: bold;
      font-size: 36px;
+     color: rgba(0, 0, 0, 0.904);
 }
 div.general-info-card p.number span{
       color: gray;
