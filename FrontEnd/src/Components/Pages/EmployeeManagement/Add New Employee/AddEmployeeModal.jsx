@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import "./AddEmployeeModal.css";
 
-const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee }) => {
+const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, departmentOptions }) => {
   useEffect(() => {
     if (editingEmployee) {
       setFormData({
@@ -231,12 +231,11 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee }) => {
                 </div>
                 <div className="input-group">
                   <label>Department</label>
-                  <select name="department" onChange={handleChange} required>
+                  <select name="department" value={formData.department} onChange={handleChange} >
                     <option value="">Select Department</option>
-                    <option value="Engineering">Engineering</option>
-                    <option value="Design">Design</option>
-                    <option value="Marketing">Marketing</option>
-                    <option value="HR">HR</option>
+                    {departmentOptions && departmentOptions.map(dept => (
+                      dept.value && <option key={dept.value} value={dept.value}>{dept.label}</option>
+                    ))}
                   </select>
                 </div>
                 <div className="input-group">
