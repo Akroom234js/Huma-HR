@@ -1,6 +1,7 @@
 .all-employees-page {
   padding: 2rem;
   height: 100%;
+  /* width: 95%; */
 }
 
 .page-header {
@@ -111,11 +112,17 @@ td {
   height: 32px;
   border-radius: 50%;
   background: #d1d5db;
-  background: red;
-  background-image: url("../../../../assets/dd.jpg");
   background-size: cover;
-
+  background-position: center;
   background-repeat: no-repeat;
+  flex-shrink: 0;
+}
+
+.loading-state {
+  padding: 3rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .status {
@@ -192,6 +199,7 @@ td {
 
   .header-info h1 {
     font-size: 22px;
+    /* margin: 0px 20px; */
   }
   .all-filt input {
     width: 100%;

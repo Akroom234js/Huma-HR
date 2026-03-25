@@ -18,7 +18,8 @@ i18n
 			'EmployeeMovement/EmployeeMovement',
 			'SalaryManagement/SalaryStructure',
 			'Dashboard/EmployeeReports',
-			'Dashboard/Attendance'
+			'Dashboard/Attendance',
+			'Dashboard/Leaves'
 		], // أسماء الملفات
 
 		defaultNS: "Home",

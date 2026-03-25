@@ -1,0 +1,48 @@
+{
+  "title": "إدارة الإجازات",
+  "stats": {
+    "pending": "الطلبات المعلقة",
+    "annual_balance": "إجمالي الرصيد السنوي",
+    "highest_requester": "الأكثر طلباً",
+    "used_days": "الأيام المستخدمة (فترة)"
+  },
+  "filters": {
+    "search": "البحث عن الموظفين...",
+    "department": "القسم",
+    "leave_type": "نوع الإجازة",
+    "status": "حالة الطلب"
+  },
+  "table": {
+    "emp_name": "اسم الموظف",
+    "leave_type": "نوع الإجازة",
+    "date_range": "تاريخ البداية/النهاية",
+    "duration": "المدة (أيام)",
+    "status": "الحالة",
+    "rem_balance": "الرصيد المتبقي"
+  },
+  "actions": {
+    "view": "عرض التفاصيل",
+    "review": "مراجعة"
+  },
+  "status": {
+    "approved": "مقبول",
+    "pending": "قيد الانتظار",
+    "rejected": "مرفوض"
+  },
+  "reports": {
+    "distribution": "توزيع الإجازات حسب النوع",
+    "impactful": "الإجازات المؤثرة",
+    "comparison": "مقارنة الإجازات (شهر بشهر)"
+  },
+  "impact": {
+    "high": "تأثير عالي",
+    "medium": "تأثير متوسط",
+    "low": "تأثير منخفض"
+  },
+  "modal": {
+    "title": "تفاصيل طلب الإجازة",
+    "duration": "المدة",
+    "days": "أيام",
+    "reason_label": "سبب الطلب"
+  }
+}
