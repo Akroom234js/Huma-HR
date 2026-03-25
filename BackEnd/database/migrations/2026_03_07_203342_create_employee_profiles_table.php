@@ -39,7 +39,7 @@ return new class extends Migration
             ])->default('active');
             $table->foreignId('manager_id')
                   ->nullable()
-                  ->constrained('users')  // ← point to users table instead
+                  ->constrained('employee_profiles')  
                   ->nullOnDelete();
             $table->string('branch')->nullable();
             $table->string('city')->nullable();

@@ -31,6 +31,13 @@ class EmployeeProfile extends Model
         'resignation_date',
     ];
 
+    protected $casts = [
+        'date_of_birth'          => 'date',
+        'start_date'             => 'date',
+        'internal_transfer_date' => 'date',
+        'resignation_date'       => 'date',
+    ];
+
     // ── Relationships ─────────────────────────────────────────────────────────
 
     public function user(): BelongsTo
@@ -101,8 +108,7 @@ class EmployeeProfile extends Model
     }
 
     // ── Accessors ─────────────────────────────────────────────────────────────
-    // الاستخدام: $employee->profile_pic_url
-    // يرجع URL كامل للصورة أو null إذا ما في صورة
+
     public function getProfilePicUrlAttribute(): ?string
     {
         return $this->profile_pic
