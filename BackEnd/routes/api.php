@@ -1,8 +1,10 @@
 <?php
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\EmployeeMovementController;
 use Illuminate\Support\Facades\Route;
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -26,7 +28,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:hr')->group(function () {
 
         // إنشاء موظف
-        Route::post('/auth/employees',   [AuthController::class, 'register']);
+        Route::post("/auth/employees",   [AuthController::class, "register"]);
+
+        // إضافة حركة موظف يدوياً
+        Route::post("/employee-movements", [EmployeeMovementController::class, "store"]);
 
         // تعديل وحذف الموظفين
         Route::put('/employees/{id}',    [EmployeeController::class, 'update']);
@@ -50,7 +55,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // عرض الموظفين
         Route::get('/employees',           [EmployeeController::class, 'index']);
-        Route::get('/employees/{id}',      [EmployeeController::class, 'show']);
+        Route::get("/employees/{id}",      [EmployeeController::class, "show"]);
+
+        // Employee Movements
+        Route::get("/employee-movements",      [EmployeeMovementController::class, "index"]);
+        Route::get("/employee-movements/types", [EmployeeMovementController::class, "movementTypes"]);
     });
 
     // ── Department Manager — قسمه وفريقه فقط ─────────────────────────────
