@@ -37,9 +37,10 @@ return new class extends Migration
                 'inactive',
                 'terminated'
             ])->default('active');
+            $table->decimal('salary', 10, 2)->nullable();
             $table->foreignId('manager_id')
                   ->nullable()
-                  ->constrained('employee_profiles')  
+                  ->constrained('employee_profiles')
                   ->nullOnDelete();
             $table->string('branch')->nullable();
             $table->string('city')->nullable();
