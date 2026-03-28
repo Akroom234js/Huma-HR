@@ -21,6 +21,7 @@ class EmployeeProfile extends Model
         'profile_pic',
         'job_title',
         'employment_status',
+        'salary',              // ← جديد
         'department_id',
         'manager_id',
         'branch',
@@ -36,6 +37,7 @@ class EmployeeProfile extends Model
         'start_date'             => 'date',
         'internal_transfer_date' => 'date',
         'resignation_date'       => 'date',
+        'salary'                 => 'decimal:2',
     ];
 
     // ── Relationships ─────────────────────────────────────────────────────────
@@ -68,6 +70,16 @@ class EmployeeProfile extends Model
     public function changeLogs(): HasMany
     {
         return $this->hasMany(EmployeeChangeLog::class)->orderByDesc('changed_at');
+    }
+
+    public function movements(): HasMany
+    {
+        return $this->hasMany(EmployeeMovement::class)->orderByDesc('movement_date');
+    }
+
+    public function salaryAdjustments(): HasMany
+    {
+        return $this->hasMany(SalaryAdjustment::class)->orderByDesc('effective_date');
     }
 
     // ── Query Scopes ──────────────────────────────────────────────────────────

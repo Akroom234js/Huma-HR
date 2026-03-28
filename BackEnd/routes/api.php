@@ -1,10 +1,10 @@
 <?php
-namespace App\Http\Controllers;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeMovementController;
+use App\Http\Controllers\SalaryAdjustmentController;
 use Illuminate\Support\Facades\Route;
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -21,54 +21,58 @@ Route::prefix('auth')->group(function () {
 // ══════════════════════════════════════════════════════════════════════════════
 Route::middleware('auth:sanctum')->group(function () {
 
-    // ── أي مستخدم مسجّل دخول ──────────────────────────────────────────────
+    // ── أي مستخدم مسجّل دخول ─────────────────────────────────────────────
     Route::delete('/auth/sessions', [AuthController::class, 'logout']);
 
-    // ── HR فقط — إنشاء + تعديل + حذف ─────────────────────────────────────
+    // ── HR فقط — كل العمليات ─────────────────────────────────────────────
     Route::middleware('role:hr')->group(function () {
 
-        // إنشاء موظف
-        Route::post("/auth/employees",   [AuthController::class, "register"]);
-
-        // إضافة حركة موظف يدوياً
-        Route::post("/employee-movements", [EmployeeMovementController::class, "store"]);
-
-        // تعديل وحذف الموظفين
+        // Employees
+        Route::post('/auth/employees',   [AuthController::class, 'register']);
         Route::put('/employees/{id}',    [EmployeeController::class, 'update']);
         Route::delete('/employees/{id}', [EmployeeController::class, 'destroy']);
 
-        // تعديل وحذف الأقسام
+        // Departments
         Route::post('/departments',        [DepartmentController::class, 'store']);
         Route::put('/departments/{id}',    [DepartmentController::class, 'update']);
         Route::delete('/departments/{id}', [DepartmentController::class, 'destroy']);
-    });
-
-    // ── HR + Boss — عرض فقط ───────────────────────────────────────────────
-    // ⚠️ positions و statuses لازم يكونوا قبل {id}
-    Route::middleware('role:hr,manager')->group(function () {
-
-        // Dropdown data
-        Route::get('/employees/positions', [EmployeeController::class, 'positions']);
-        Route::get('/employees/statuses',  [EmployeeController::class, 'statuses']);
-        Route::get('/departments',         [DepartmentController::class, 'index']);
-        Route::get('/departments/{id}',    [DepartmentController::class, 'show']);
-
-        // عرض الموظفين
-        Route::get('/employees',           [EmployeeController::class, 'index']);
-        Route::get("/employees/{id}",      [EmployeeController::class, "show"]);
 
         // Employee Movements
-        Route::get("/employee-movements",      [EmployeeMovementController::class, "index"]);
-        Route::get("/employee-movements/types", [EmployeeMovementController::class, "movementTypes"]);
+        Route::post('/employee-movements',       [EmployeeMovementController::class, 'store']);
+        Route::delete('/employee-movements/{id}',[EmployeeMovementController::class, 'destroy']);
     });
 
-    // ── Department Manager — قسمه وفريقه فقط ─────────────────────────────
+    // ── HR + Boss — عرض فقط ──────────────────────────────────────────────
+    Route::middleware('role:hr,manager')->group(function () {
+
+        // ⚠️ Static routes لازم يكونوا قبل {id}
+        Route::get('/employees/positions',            [EmployeeController::class,         'positions']);
+        Route::get('/employees/statuses',             [EmployeeController::class,         'statuses']);
+        Route::get('/employee-movements/types',       [EmployeeMovementController::class, 'types']);
+        Route::get('/salary-adjustments/types',       [SalaryAdjustmentController::class, 'types']);
+        Route::get('/departments',                    [DepartmentController::class,        'index']);
+        Route::get('/departments/{id}',               [DepartmentController::class,        'show']);
+
+        // Employees
+        Route::get('/employees',      [EmployeeController::class, 'index']);
+        Route::get('/employees/{id}', [EmployeeController::class, 'show']);
+
+        // Employee Movements
+        Route::get('/employee-movements',      [EmployeeMovementController::class, 'index']);
+        Route::get('/employee-movements/{id}', [EmployeeMovementController::class, 'show']);
+
+        // Salary Adjustments — صفحة التفاصيل
+        Route::get('/salary-adjustments',      [SalaryAdjustmentController::class, 'index']);
+        Route::get('/salary-adjustments/{id}', [SalaryAdjustmentController::class, 'show']);
+    });
+
+    // ── Department Manager — قسمه وفريقه فقط ────────────────────────────
     Route::middleware('role:department_manager')->group(function () {
         Route::get('/my-department',           [DepartmentController::class, 'myDepartment']);
-        Route::get('/my-department/employees', [EmployeeController::class, 'myTeam']);
+        Route::get('/my-department/employees', [EmployeeController::class,   'myTeam']);
     });
 
-    // ── Employee — بياناته الشخصية فقط ───────────────────────────────────
+    // ── Employee — بياناته الشخصية فقط ──────────────────────────────────
     Route::middleware('role:employee')->group(function () {
         Route::get('/my-profile', [EmployeeController::class, 'myProfile']);
     });
