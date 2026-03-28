@@ -7,10 +7,14 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    flex-direction: column;
     padding-bottom: 1rem;
     border-bottom: 1px solid var(--border-color);
 }
-
+.page-header.reports {
+    color: gray;
+    margin-top: 15px;
+}
 .page-header.reports h1 {
     font-size: 32px;
     font-weight: 700;
