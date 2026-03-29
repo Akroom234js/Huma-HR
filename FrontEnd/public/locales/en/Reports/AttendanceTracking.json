@@ -1,4 +1,5 @@
-{"AttendanceTracking":"Attendance & Time Tracking",
+{
+    "AttendanceTracking":"Attendance & Time Tracking",
 "overview":"Overview of daily attendance",
 "present":"Total employee present today:",
 "absent":"Total employee absent today:",

@@ -40,10 +40,10 @@ div.daily-attendance div p span{
     color: gray;
 }
 div.daily-attendance p.green{
-    color: green;
+    color: rgb(32, 189, 32);
 }
 div.daily-attendance p.red{
-    color: red;
+    color: rgb(233, 60, 60);
 }
 @media(max-width:605px){
     div.daily-attendance{

@@ -12,3 +12,59 @@
     padding: 2rem;
     min-height: 400px;
 }
+div.leave-reports-co{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+div.leave-reports{
+    width: 49%;
+       background-color: var(--bg-card);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    padding: 2rem;  
+    margin-bottom: 30px;
+}
+div.daily-attendance p.orangered{
+    color: #f59e0b;
+}
+div.daily-attendance p.blue{
+    color: blue;
+}
+div p.gray{
+    color: gray;
+}
+ div.Approved-inf div.Approved-inf.green{
+    background-color: rgb(32, 189, 32);
+}
+  div.Approved-inf div.Approved-inf.red{
+    background-color: rgb(233, 60, 60);
+}
+  div.Approved-inf div.Approved-inf.orangered{
+    background-color: #f59e0b;
+   
+}
+div.info-mar{
+    margin-bottom: 20px;
+}
+div.inf-mar{
+    margin-top: 50px;
+}
+div.highest-leave-days{
+    border-inline-start: 3px solid var(--border-color);
+  padding-inline-start: 10px;
+  padding-top: 10px;
+}
+div.highest-leave-days div{
+    margin-bottom: 5px;
+}
+div.Approved-inf{
+    height: 12px;
+    border-radius: 20px;
+    margin-top: -30px;
+    background-color: rgba(128, 128, 128, 0.466);
+}
+@media(max-width:800px){
+    div.leave-reports{
+    width: 99%;}
+}
