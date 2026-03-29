@@ -44,15 +44,11 @@ const COLORS = ["#3b82f6", "#60a5fa", "#1d4ed8"];
 const EmployeesReports = () => {
   return (
     <div className="reports-page">
-      <div className="hh">
-        <PageHeader title="Payroll Reports" />
-        <div className="reports-header">
-          <FilterBar />
-        </div>
-        <div className="sm-theme-toggle-wrapper">
-          <ThemeToggle />
-        </div>
-      </div>
+      <PageHeader
+        title="Report & Analytics"
+        Explanation="Company-wide employee status and digitalization insights ."
+      />
+      <ReportsNavbar />
       <div className="con-car">
         <div className="card1">
           <p>Total Employees</p>
@@ -71,7 +67,7 @@ const EmployeesReports = () => {
           <h3>98.8%</h3>
         </div>
       </div>
-      {/* <div className="chaart"></div> */}
+
       <div className="row">
         <div className="card large">
           <h4>Employee Turnover</h4>
@@ -89,7 +85,7 @@ const EmployeesReports = () => {
             </LineChart>
           </ResponsiveContainer>
         </div>
-        {/* </div> */}
+
         <div className="card small">
           <h4>Experience Level</h4>
           <ResponsiveContainer width="100%" height={200}>
@@ -122,9 +118,47 @@ const EmployeesReports = () => {
         </div>
       </div>
 
-      {/* صف نظرة عامة على المواهب وتوزيع الأقدمية */}
+      <div className="diversity-card">
+        <div className="diversity-header">
+          <h4>Diversity Insights</h4>
+          <a href="#" className="view-details-link">
+            View Detailed Diversity
+          </a>
+        </div>
+
+        <div className="diversity-content">
+          <div className="div-item">
+            <div className="icon-wrapper blue-icon">
+              <i className="fas fa-users"></i>
+            </div>
+            <div className="div-text">
+              <p className="label">Gender Ratio</p>
+              <p className="value">60% Male, 40% Female</p>
+            </div>
+          </div>
+          <div className="div-item">
+            <div className="icon-wrapper blue-icon">
+              <i className="fas fa-user-clock"></i>
+            </div>
+            <div className="div-text">
+              <p className="label">Avg. Age</p>
+              <p className="value">32 years</p>
+            </div>
+          </div>
+
+          <div className="div-item">
+            <div className="icon-wrapper blue-icon">
+              <i className="fas fa-globe"></i>
+            </div>
+            <div className="div-text">
+              <p className="label">Cultural Backgrounds</p>
+              <p className="value">15+ Nationalities</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="row">
-        {/* بطاقة Talent Pool Overview */}
         <div className="card large-flex">
           <h4>Talent Pool Overview</h4>
           <div className="talent-content">
@@ -181,8 +215,6 @@ const EmployeesReports = () => {
             </div>
           </div>
         </div>
-
-        {/* بطاقة Employee Tenure Distribution */}
         <div className="card small">
           <h4>Employee Tenure Distribution</h4>
           <ResponsiveContainer width="100%" height={220}>
