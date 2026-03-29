@@ -1,0 +1,42 @@
+.req-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.8125rem;
+}
+
+.req-avatar-wrapper {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: var(--bg-page);
+}
+
+.req-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.req-avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #cbd5e1;
+    color: #475569;
+}
+
+.req-user-name {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.req-user-role {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: 0.125rem 0 0;
+}
