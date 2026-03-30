@@ -1,0 +1,135 @@
+.req-card {
+    background-color: var(--bg-card);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.req-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    background-color: #f8fafc;
+}
+
+[data-theme="dark"] .req-card:hover {
+    background-color: #1e293b;
+}
+
+.req-card-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.req-type-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background-color: var(--bg-page);
+    border-radius: 8px;
+    color: var(--text-main);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid var(--border-color);
+}
+
+.req-type-badge .material-symbols-outlined {
+    font-size: 1.125rem;
+    color: var(--primary-color);
+}
+
+.req-card-details {
+    flex: 3;
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.req-detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.req-detail-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+}
+
+.req-detail-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.inline-icon {
+    font-size: 1rem !important;
+    color: var(--text-secondary);
+}
+
+.text-muted {
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+.req-status-section {
+    flex: 0.5;
+    display: flex;
+    justify-content: center;
+}
+
+.req-actions-section {
+    flex: 1.5;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+@media (max-width: 1200px) {
+    .req-card-main {
+        gap: 1.5rem;
+    }
+    
+    .req-card-details {
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 992px) {
+    .req-card-main {
+        flex-wrap: wrap;
+    }
+    
+    .req-type-badge {
+        order: -1;
+    }
+}
+
+@media (max-width: 768px) {
+    .req-card-main {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.25rem;
+    }
+    
+    .req-card-details {
+        width: 100%;
+        gap: 1.5rem;
+    }
+    
+    .req-actions-section {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
