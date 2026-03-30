@@ -4,10 +4,15 @@ import './CategoryFilter.css';
 const CategoryFilter = ({ activeCategory, onCategoryChange }) => {
     const categories = [
         { id: 'all', label: 'All requests' },
-        { id: 'vacation', label: 'Vacation requests' },
-        { id: 'advance', label: 'Advance requests' },
-        { id: 'compensation', label: 'Compensation requests' },
-        { id: 'data-update', label: 'Data update requests' }
+        { id: 'vacation', label: 'Vacation' },
+        { id: 'advance', label: 'Advance' },
+        { id: 'compensation', label: 'Compensation' },
+        { id: 'data-update', label: 'Data Update' },
+        { id: 'resignation', label: 'Resignation' },
+        { id: 'transfer', label: 'Transfer' },
+        { id: 'promotion', label: 'Promotion' },
+        { id: 'equipment', label: 'Equipment' },
+        { id: 'experience-certificate', label: 'Exp. Certificate' }
     ];
 
     return (
