@@ -1,3 +1,34 @@
+.emp-report-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  position: relative;
+}
+
+.emp-export-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  white-space: nowrap;
+  margin-top: 1rem;
+  transition: background 0.2s, transform 0.2s;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.emp-export-btn:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
 .reports-page {
   padding: 2rem;
   color: var(--text-main);
@@ -16,15 +47,18 @@
 .reports-header {
   width: fit-content;
 }
+
 .hh {
   display: flex;
   justify-content: space-between;
 }
+
 .con-car {
   display: flex;
   justify-content: space-between;
   width: 100%;
 }
+
 .con-car .card1 {
   width: 20%;
   background-color: var(--bg-card);
@@ -35,23 +69,28 @@
   text-align: center;
   padding-top: 15px;
 }
+
 .con-car .card1 p {
   color: var(--text-secondary);
 }
+
 .con-car .card1 h3 {
   color: var(--text-main);
   margin-top: -16px;
 }
+
 .chaart {
   background-color: red;
   display: flex;
   justify-content: center;
 }
+
 .row {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
 }
+
 .large {
   flex: 2 1 400px;
   display: flex;
@@ -72,40 +111,48 @@
   gap: 6px;
   font-size: 14px;
 }
+
 .legend div {
   display: flex;
   justify-content: space-between;
 }
+
 .diversity-grid {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 20px;
 }
+
 .skills {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
+
 .skills span {
   background: #eef3ff;
   padding: 5px 10px;
   border-radius: 6px;
   font-size: 12px;
 }
+
 .row {
   display: flex;
   gap: 20px;
   margin-top: 20px;
 }
+
 .card.large {
   flex: 2;
   color: var(--text-main);
 }
+
 .card.small {
   color: var(--text-main);
   flex: 1;
 }
+
 .large-flex {
   flex: 1.5;
   background: var(--bg-card);
@@ -134,6 +181,7 @@
   width: 200px;
   height: 200px;
 }
+
 .chart-center-text {
   position: absolute;
   top: 50%;
@@ -170,6 +218,7 @@
   background-color: #eff6ff;
   color: #3b82f6;
 }
+
 .grey-light {
   background-color: #f1f5f9;
   color: #64748b;
@@ -220,9 +269,11 @@
 .male-dot {
   background-color: #3b82f6;
 }
+
 .female-dot {
   background-color: #bfdbfe;
 }
+
 /* لالالا */
 .diversity-card {
   background: var(--bg-card);
@@ -319,18 +370,18 @@
   }
 
   .row {
-    flex-direction: column; 
+    flex-direction: column;
   }
 
   .card.large,
   .card.small,
   .large-flex {
     flex: none;
-    width: 100%; 
+    width: 100%;
   }
 
   .talent-content {
-    flex-direction: row; 
+    flex-direction: row;
     justify-content: space-around;
   }
 }
@@ -338,11 +389,11 @@
 
 @media (max-width: 768px) {
   .con-car .card1 {
-    width: 100%; 
+    width: 100%;
   }
 
   .diversity-content {
-    flex-direction: column; 
+    flex-direction: column;
     align-items: flex-start;
     gap: 25px;
   }
@@ -353,7 +404,7 @@
   }
 
   .talent-content {
-    flex-direction: column; 
+    flex-direction: column;
     align-items: center;
     text-align: center;
     gap: 30px;
@@ -371,13 +422,14 @@
     flex-direction: column;
     gap: 15px;
   }
+
   .row {
     flex-direction: column;
     background-color: red;
     width: 100%;
   }
+
   .reports-page {
     width: 100%;
   }
 }
-
