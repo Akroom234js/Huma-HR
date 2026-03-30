@@ -20,52 +20,66 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1.5rem;
+    gap: 2rem;
 }
 
-.req-user-info {
-    flex: 1.2;
-}
-
-.req-details-section {
-    flex: 2;
+.req-type-badge {
     display: flex;
     align-items: center;
-    gap: 1rem;
-}
-
-.req-type-icon {
-    width: 2.25rem;
-    height: 2.25rem;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background-color: var(--bg-page);
     border-radius: 8px;
-    background-color: #f1f5f9;
+    color: var(--text-main);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid var(--border-color);
+}
+
+.req-type-badge .material-symbols-outlined {
+    font-size: 1.125rem;
     color: var(--primary-color);
+}
+
+.req-card-details {
+    flex: 3;
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.req-detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.req-detail-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+}
+
+.req-detail-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-main);
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 0.5rem;
 }
 
-[data-theme="dark"] .req-type-icon {
-    background-color: #334155;
-    color: var(--primary-color);
-}
-
-.req-type-icon .material-symbols-outlined {
-    font-size: 1.25rem;
-}
-
-.req-type-label {
-    font-size: 0.8125rem;
-    font-weight: 700;
-    color: var(--text-main);
-    margin: 0;
-}
-
-.req-date-details {
-    font-size: 0.75rem;
+.inline-icon {
+    font-size: 1rem !important;
     color: var(--text-secondary);
-    margin: 0.125rem 0 0;
-    text-transform: uppercase;
+}
+
+.text-muted {
+    color: var(--text-secondary);
+    font-weight: 400;
 }
 
 .req-status-section {
@@ -75,19 +89,30 @@
 }
 
 .req-actions-section {
-    flex: 2;
+    flex: 1.5;
     display: flex;
     justify-content: flex-end;
-    gap: 0.75rem;
+    gap: 0.5rem;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
+    .req-card-main {
+        gap: 1.5rem;
+    }
+    
+    .req-card-details {
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 992px) {
     .req-card-main {
         flex-wrap: wrap;
     }
     
-    .req-details-section, .req-status-section, .req-actions-section {
-        flex: 1 1 40%;
+    .req-type-badge {
+        order: -1;
     }
 }
 
@@ -98,14 +123,13 @@
         gap: 1.25rem;
     }
     
-    .req-details-section, .req-status-section, .req-actions-section {
+    .req-card-details {
         width: 100%;
-        flex: none;
-        justify-content: flex-start;
+        gap: 1.5rem;
     }
     
     .req-actions-section {
-        flex-direction: row;
+        width: 100%;
         justify-content: space-between;
     }
 }
