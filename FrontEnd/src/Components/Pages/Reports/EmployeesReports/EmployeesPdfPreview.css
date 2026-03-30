@@ -1,0 +1,388 @@
+/* ─────────────────────────────────────────────────
+   PDF Preview Overlay
+───────────────────────────────────────────────── */
+.pdf-preview-overlay {
+  position: fixed;
+  inset: 0;
+  background: #e8ecf0;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Top action bar ── */
+.pdf-preview-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 10px 24px;
+  background: #1e293b;
+  color: #f1f5f9;
+  flex-shrink: 0;
+}
+
+.pdf-preview-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #94a3b8;
+}
+
+.pdf-preview-close {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.pdf-preview-close:hover {
+  background: rgba(255,255,255,0.08);
+  color: white;
+}
+
+.pdf-preview-download-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+.pdf-preview-download-btn:hover:not(:disabled) {
+  background: #2563eb;
+}
+.pdf-preview-download-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Scroll area ── */
+.pdf-preview-scroll {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  padding: 32px 16px 60px;
+}
+
+/* ─────────────────────────────────────────────────
+   A4 White Page  (210 mm = 794px at 96 dpi)
+───────────────────────────────────────────────── */
+.pdf-a4 {
+  background: #fff;
+  width: 794px;
+  min-height: 1123px; /* 297 mm */
+  padding: 40px 48px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  color: #0f172a;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 13px;
+}
+
+/* ── Header inside A4 ── */
+.pdf-report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.pdf-logo-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pdf-logo {
+  width: 46px;
+  height: 46px;
+  background: #fce7f3;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1rem;
+  color: #db2777;
+}
+
+.pdf-report-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.pdf-report-date {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.pdf-divider {
+  border: 0;
+  border-top: 1px solid #e2e8f0;
+  margin: 0 0 18px;
+}
+
+/* ── Section titles ── */
+.pdf-section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #0f172a;
+}
+
+.pdf-summary-text {
+  font-size: 0.82rem;
+  color: #475569;
+  line-height: 1.65;
+  margin-bottom: 20px;
+}
+
+/* ── KPI Cards ── */
+.pdf-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.pdf-kpi-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px 12px;
+  background: #f8fafc;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.pdf-kpi-label {
+  font-size: 0.72rem;
+  color: #64748b;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 6px;
+  letter-spacing: 0.04em;
+}
+
+.pdf-kpi-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+/* ── Charts row (Turnover + Experience) ── */
+.pdf-charts-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+
+.pdf-chart-box {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px;
+  background: #fff;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.pdf-chart-large {
+  flex: 2;
+}
+
+.pdf-chart-small {
+  flex: 1;
+}
+
+.pdf-chart-full {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.pdf-chart-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+
+.pdf-chart-caption {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* ── Legend ── */
+.pdf-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 8px;
+  font-size: 0.78rem;
+}
+
+.pdf-legend-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.pdf-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Demographic ── */
+.pdf-demo-row {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+}
+
+.pdf-demo-chart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.pdf-demo-legend {
+  display: flex;
+  gap: 12px;
+  font-size: 0.78rem;
+  align-items: center;
+}
+
+.pdf-demo-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 10px;
+}
+
+.pdf-diversity-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.82rem;
+}
+
+.pdf-diversity-item strong {
+  color: #64748b;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.pdf-diversity-item span {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.pdf-demo-skills {
+  flex-shrink: 0;
+  max-width: 170px;
+  padding-top: 10px;
+}
+
+.pdf-demo-skills strong {
+  font-size: 0.78rem;
+  color: #64748b;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.pdf-skills-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.pdf-skill-badge {
+  background: #eff6ff;
+  color: #3b82f6;
+  padding: 3px 9px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+/* ── Tenure ── */
+.pdf-tenure-stats {
+  display: flex;
+  gap: 32px;
+  margin-top: 10px;
+  font-size: 0.82rem;
+}
+
+.pdf-stat-label {
+  color: #64748b;
+  font-size: 0.72rem;
+  margin-bottom: 2px;
+}
+
+/* ── Footer ── */
+.pdf-footer {
+  margin-top: auto;
+  padding-top: 24px;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* ─────────────────────────────────────────────────
+   Print overrides (if user hits Print in browser)
+───────────────────────────────────────────────── */
+@media print {
+  @page { size: A4; margin: 0; }
+
+  .pdf-preview-overlay {
+    position: static;
+    background: white;
+    overflow: visible;
+  }
+
+  .pdf-preview-topbar {
+    display: none !important;
+  }
+
+  .pdf-preview-scroll {
+    overflow: visible;
+    padding: 0;
+  }
+
+  .pdf-a4 {
+    box-shadow: none;
+    width: 100%;
+    min-height: auto;
+  }
+}
