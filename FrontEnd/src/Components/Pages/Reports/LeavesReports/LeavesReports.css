@@ -37,9 +37,10 @@ div p.gray{
  div.Approved-inf div.Approved-inf.green{
     background-color: rgb(32, 189, 32);
 }
-  div.Approved-inf div.Approved-inf.red{
+  div.Approved-inf div.Approved-inf.red {
     background-color: rgb(233, 60, 60);
 }
+
   div.Approved-inf div.Approved-inf.orangered{
     background-color: #f59e0b;
    

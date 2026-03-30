@@ -12,3 +12,14 @@
     padding: 2rem;
     min-height: 400px;
 }
+i.red{color: rgb(233, 60, 60);}
+i.green{
+    color: rgb(32, 189, 32);;
+}
+i.blue{
+    color: rgb(37, 145, 172);
+}
+div.daily-attendance p span.score{
+    color: gray;
+    font-size: 12px;
+}
