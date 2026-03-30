@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import PageHeader from "../components/PageHeader/PageHeader";
 import ReportsNavbar from "../components/ReportsNavbar/ReportsNavbar";
 import FilterBar from "../components/FilterBar/FilterBar";
+import EmployeesPdfPreview from "./EmployeesPdfPreview";
 import "./EmployeesReports.css";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
 import {
@@ -42,11 +43,21 @@ const pieData = [
 
 const COLORS = ["#3b82f6", "#60a5fa", "#1d4ed8"];
 const EmployeesReports = () => {
+  const [showPreview, setShowPreview] = useState(false);
+
   return (
+    <>
+    {showPreview && <EmployeesPdfPreview onClose={() => setShowPreview(false)} />}
+
     <div className="reports-page">
       <PageHeader
         title="Report & Analytics"
-        Explanation="Company-wide employee status and digitalization insights ."
+        Explanation="Company-wide employee status and digitalization insights."
+        actions={
+          <button className="emp-export-btn" onClick={() => setShowPreview(true)}>
+            <i className="bi bi-file-earmark-arrow-down" /> Export PDF
+          </button>
+        }
       />
       <ReportsNavbar />
       <div className="con-car">
@@ -239,6 +250,7 @@ const EmployeesReports = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

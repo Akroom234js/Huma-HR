@@ -1,0 +1,12 @@
+.req-main-content {
+    flex: 1;
+    padding: 2.5rem;
+    overflow-y: auto;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .req-main-content {
+        padding: 1.5rem;
+    }
+}

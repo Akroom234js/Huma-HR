@@ -11,10 +11,12 @@
     padding-bottom: 1rem;
     border-bottom: 1px solid var(--border-color);
 }
+
 .page-header.reports {
     color: gray;
     margin-top: 15px;
 }
+
 .page-header.reports h1 {
     font-size: 32px;
     font-weight: 700;
@@ -22,11 +24,18 @@
     color: var(--text-main);
 }
 
-.reports-theme-toggle-wrapper {
+.reports-header-actions {
     position: absolute;
-    top: -2rem;
-    right: -2rem;
+    top: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
     z-index: 100;
+}
+
+.reports-theme-toggle-wrapper {
+    position: relative;
 }
 
 .reports-theme-toggle-wrapper .theme-toggle {
@@ -47,9 +56,10 @@
     overflow: hidden;
 }
 
-[dir="rtl"] .reports-theme-toggle-wrapper {
+[dir="rtl"] .reports-header-actions {
     right: auto;
-    left: -2rem;
+    left: 0;
+    flex-direction: row-reverse;
 }
 
 [dir="rtl"] .reports-theme-toggle-wrapper .theme-toggle {
