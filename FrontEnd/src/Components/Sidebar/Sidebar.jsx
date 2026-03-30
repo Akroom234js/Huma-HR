@@ -207,7 +207,7 @@ const Sidebar = () => {
                             </NavLink>
 
                             {/* Recruitment */}
-                            <NavLink to="/recruitment" className="nav-item">
+                            <NavLink to="/recruitment/make-offer" className="nav-item">
                                 <span className="nav-icon material-symbols-outlined">person_add</span>
                                 <p>{t('Recruitment')}</p>
                             </NavLink>
@@ -219,7 +219,7 @@ const Sidebar = () => {
                             </NavLink>
 
                             {/* Reports */}
-                            <NavLink to="/reports" className="nav-item">
+                            <NavLink to="/reports/payroll" className="nav-item">
                                 <span className="nav-icon material-symbols-outlined">summarize</span>
                                 <p>{t('Reports')}</p>
                             </NavLink>

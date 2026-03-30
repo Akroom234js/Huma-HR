@@ -1,0 +1,14 @@
+.reports-page {
+    padding: 2rem;
+    color: var(--text-main);
+    transition: all 0.3s ease;
+    min-height: 100vh;
+}
+
+.reports-content {
+    background-color: var(--bg-card);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    padding: 2rem;
+    min-height: 400px;
+}
