@@ -50,20 +50,15 @@ const EmployeesReports = () => {
     {showPreview && <EmployeesPdfPreview onClose={() => setShowPreview(false)} />}
 
     <div className="reports-page">
-      <div className="emp-report-header-row">
-        <div style={{ flex: 1 }}>
-          <PageHeader
-            title="Report & Analytics"
-            Explanation="Company-wide employee status and digitalization insights."
-          />
-        </div>
-        <button
-          className="emp-export-btn"
-          onClick={() => setShowPreview(true)}
-        >
-          <i className="bi bi-file-earmark-arrow-down" /> Export PDF
-        </button>
-      </div>
+      <PageHeader
+        title="Report & Analytics"
+        Explanation="Company-wide employee status and digitalization insights."
+        actions={
+          <button className="emp-export-btn" onClick={() => setShowPreview(true)}>
+            <i className="bi bi-file-earmark-arrow-down" /> Export PDF
+          </button>
+        }
+      />
       <ReportsNavbar />
       <div className="con-car">
         <div className="card1">

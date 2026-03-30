@@ -143,7 +143,7 @@ const EmployeesPdfPreview = ({ onClose }) => {
             {/* Turnover */}
             <div className="pdf-chart-box pdf-chart-large">
               <div className="pdf-chart-title">Employee Turnover</div>
-              <LineChart width={360} height={200} data={turnoverData}>
+              <LineChart width={340} height={180} data={turnoverData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" tick={{ fontSize: 10 }} />
                 <YAxis tick={{ fontSize: 10 }} />
@@ -197,7 +197,7 @@ const EmployeesPdfPreview = ({ onClose }) => {
             <div className="pdf-chart-title">Demographic Breakdown</div>
             <div className="pdf-demo-row">
               <div className="pdf-demo-chart">
-                <PieChart width={160} height={140}>
+                <PieChart width={140} height={130}>
                   <Pie
                     data={[
                       { name: "Male", value: 750 },
@@ -254,7 +254,7 @@ const EmployeesPdfPreview = ({ onClose }) => {
           {/* ── Tenure ── */}
           <div className="pdf-chart-box pdf-chart-full" style={{ pageBreakInside: "avoid" }}>
             <div className="pdf-chart-title">Employee Tenure Distribution</div>
-            <BarChart width={520} height={180} data={tenureData}>
+            <BarChart width={500} height={180} data={tenureData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="range" tick={{ fontSize: 10 }} />
               <YAxis tick={{ fontSize: 10 }} />
