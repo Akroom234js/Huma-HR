@@ -41,6 +41,7 @@ import PerformanceReports from './Components/Pages/Reports/PerformanceReports/Pe
 import LeavesReports from './Components/Pages/Reports/LeavesReports/LeavesReports';
 import AttendanceTracking from './Components/Pages/Reports/AttendanceTracking/AttendanceTracking';
 import EmployeesReports from './Components/Pages/Reports/EmployeesReports/EmployeesReports';
+import Requests from './Components/Pages/Requests/Requests';
 
 function App() {
   return (
@@ -163,6 +164,20 @@ function App() {
                   <Route path="leaves" element={<LeavesReports />} />
                   <Route path="attendance" element={<AttendanceTracking />} />
                   <Route path="employees" element={<EmployeesReports />} />
+                </Routes>
+              </main>
+            </div>
+          }
+        />
+        <Route
+          path="/request/*"
+          element={
+            <div className="app-container">
+              <Sidebar />
+              <main className="main-content">
+                <Routes>
+                  <Route path="/" element={<Requests />} />
+                  <Route path=":category" element={<Requests />} />
                 </Routes>
               </main>
             </div>
