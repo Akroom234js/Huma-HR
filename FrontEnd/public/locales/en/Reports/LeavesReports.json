@@ -1,0 +1,23 @@
+{
+    "LeavesReports":"Leaves Reports",
+    "Detailed":"Detailed textual reporting for employee leaves.",
+    "leaveactivity":"Overview of leave activity (Current period)",
+    "submitted":"Total leave requests submitted:",
+    "approved":"Total leave requests approved:",
+    "rejected":"Total leave requests rejected:",
+    "pending":"Total leave requests pending:",
+"Breakdown":"Leave type Breakdown (Current period)",
+"Sick":"Sick leave: ",
+"Annual":"Annual leave: ",
+"Unpaid":"Unpaid leave: ",
+"Other":"Other leave types",
+  "key":"Key leave indicators",
+    "Average":"Average leave duration:",
+    "rate":"Leave approvel rate:",
+    "Employees":"Employees with highest leave days",
+    "days":"days",
+    "leavestatus":"Leave requests by status",
+    "Approved":"Approved",
+    "Pending":"Pending",
+    "Rejected":"Rejected"
+}

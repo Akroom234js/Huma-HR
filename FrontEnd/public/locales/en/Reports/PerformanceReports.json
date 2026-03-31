@@ -1,0 +1,9 @@
+{
+    "PerformanceReports":"Performance Reports",
+   "Detailed":"Detailed performance metrics and employee evaluation status.",
+    "performance":"Overview of performance (Current period)",
+    "Average":"Average performance score:",
+    "rate":"Evaluation completion rate:",
+    "Employees":"Employees identified for training:",
+    "pips":"Employees on pips:"
+}
