@@ -44,7 +44,7 @@ const PayrollReports = () => {
 
             <div className="reports-container">
                 {/* شبكة الكروت العلوية */}
-                <div className="stats-grid">
+                <div className="stats-grid-payroll-report">
                     <SummaryCard title="Overview of Payroll Costs (Current Period)" metrics={overviewData} />
                     <SummaryCard title="Key Cost Indicators" metrics={indicatorData} />
                 </div>
