@@ -1,14 +1,10 @@
 /* الحاوية الرئيسية للصفحة */
 .reports-page {
     padding: 2rem;
-    background-color: var(--bg-page);
+    background-color: transparent;
     min-height: 100vh;
     transition: all 0.3s ease;
     /* حسب إرشادات Huma-HR */
-}
-
-.reports-page * {
-    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 
