@@ -1,14 +1,178 @@
+/* الحاوية الرئيسية للصفحة */
 .reports-page {
     padding: 2rem;
-    color: var(--text-main);
-    transition: all 0.3s ease;
+    background-color: var(--bg-page);
     min-height: 100vh;
+    transition: all 0.3s ease;
+    /* حسب إرشادات Huma-HR */
 }
 
-.reports-content {
+.reports-page * {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+
+.reports-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 1.5rem;
+}
+
+/* شبكة كروت الإحصائيات (القسم العلوي) */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+@media (max-width: 992px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* تنسيق الكرت العام (SummaryCard) */
+.report-card {
     background-color: var(--bg-card);
-    border-radius: 12px;
     border: 1px solid var(--border-color);
-    padding: 2rem;
-    min-height: 400px;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.report-card:hover {
+    transform: translateY(-4px);
+    /* الرفع عند التحويم حسب الإرشادات */
+    box-shadow: var(--shadow-md);
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 1.5rem;
+}
+
+/* تنسيق الأسطر داخل الكروت (MetricRow) */
+.metrics-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.metric-row:last-child {
+    border-bottom: none;
+}
+
+.metric-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.metric-info i {
+    width: 20px;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.metric-value {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-main);
+}
+
+/* لون مؤشر النمو */
+.trend-up {
+    color: var(--emerald-500);
+}
+
+/* قسم توزيع الأقسام (القسم السفلي) */
+.breakdown-section {
+    margin-top: 1rem;
+}
+
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text-main);
+}
+
+.department-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .department-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* تنسيق كرت القسم (DepartmentCard) */
+.dept-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.dept-card:hover {
+    background-color: var(--bg-page);
+    /* تأثير التحويم المذكور في الجداول */
+    transform: translateY(-2px);
+}
+
+.dept-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dept-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-main);
+}
+
+.dept-header p {
+    margin: 4px 0 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.dept-values {
+    text-align: right;
+}
+
+.dept-total {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.dept-total strong {
+    color: var(--text-main);
+    font-size: 1rem;
+}
+
+.dept-avg {
+    margin: 4px 0 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
 }
