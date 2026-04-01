@@ -15,6 +15,7 @@
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
 }
 
 .req-cat-btn:hover {
@@ -26,6 +27,27 @@
     background-color: var(--primary-color);
     color: #ffffff;
     box-shadow: 0 4px 6px -1px rgba(53, 158, 255, 0.3);
+}
+
+@media (max-width: 768px) {
+    .req-category-filter {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+    
+    .req-category-filter::-webkit-scrollbar {
+        display: none; /* Chrome, Safari and Opera */
+    }
+    
+    .req-cat-btn {
+        flex-shrink: 0;
+        padding: 0.5rem 1rem;
+        font-size: 0.8125rem;
+    }
 }
 
 [data-theme="dark"] .req-cat-btn {
