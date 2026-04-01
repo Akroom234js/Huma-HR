@@ -15,6 +15,7 @@
     cursor: pointer;
     position: relative;
     transition: color 0.2s;
+    white-space: nowrap;
 }
 
 .req-tab-btn:hover {
@@ -41,5 +42,15 @@
         gap: 1.25rem;
         overflow-x: auto;
         padding-bottom: 0.25rem;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    
+    .req-tab-switcher::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .req-tab-btn {
+        flex-shrink: 0;
     }
 }
