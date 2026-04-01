@@ -1,0 +1,25 @@
+.reports-navbar {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1rem 0;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.reports-navbar a {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 500;
+    padding: 0.5rem 0;
+    transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+}
+
+.reports-navbar a:hover {
+    color: var(--primary-color);
+}
+
+.reports-navbar a.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}

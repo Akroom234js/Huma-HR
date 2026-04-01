@@ -35,6 +35,14 @@ import SalariesDashboard from './Components/Pages/Dashboard/Salaries/Salaries';
 import OverallPerformance from './Components/Pages/Dashboard/OverallPerformance/OverallPerformance';
 import ImprovementStatistics from './Components/Pages/Dashboard/ImprovementStatistics/ImprovementStatistics';
 
+// Reports Components
+import PayrollReports from './Components/Pages/Reports/PayrollReports/PayrollReports';
+import PerformanceReports from './Components/Pages/Reports/PerformanceReports/PerformanceReports';
+import LeavesReports from './Components/Pages/Reports/LeavesReports/LeavesReports';
+import AttendanceTracking from './Components/Pages/Reports/AttendanceTracking/AttendanceTracking';
+import EmployeesReports from './Components/Pages/Reports/EmployeesReports/EmployeesReports';
+import Requests from './Components/Pages/Requests/Requests';
+
 function App() {
   return (
     <BrowserRouter>
@@ -130,22 +138,53 @@ function App() {
           }
         />
 
-          <Route
+        <Route
           path="/leaves/*"
           element={
             <div className="app-container">
               <Sidebar />
               <main className="main-content">
                 <Routes>
-                  <Route path="/" element={<LeavesManagement/>}/>
-                 
+                  <Route path="/" element={<LeavesManagement />} />
+
+                </Routes>
+              </main>
+            </div>
+          }
+        />
+        <Route
+          path="/reports/*"
+          element={
+            <div className="app-container">
+              <Sidebar />
+              <main className="main-content">
+                <Routes>
+                  <Route path="payroll" element={<PayrollReports />} />
+                  <Route path="performance" element={<PerformanceReports />} />
+                  <Route path="leaves" element={<LeavesReports />} />
+                  <Route path="attendance" element={<AttendanceTracking />} />
+                  <Route path="employees" element={<EmployeesReports />} />
+                </Routes>
+              </main>
+            </div>
+          }
+        />
+        <Route
+          path="/request/*"
+          element={
+            <div className="app-container">
+              <Sidebar />
+              <main className="main-content">
+                <Routes>
+                  <Route path="/" element={<Requests />} />
+                  <Route path=":category" element={<Requests />} />
                 </Routes>
               </main>
             </div>
           }
         />
       </Routes>
- 
+
     </BrowserRouter>
   );
 }

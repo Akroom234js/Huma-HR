@@ -1,0 +1,12 @@
+.req-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+@media (max-width: 768px) {
+    .req-stats-grid {
+        grid-template-columns: 1fr;
+    }
+}

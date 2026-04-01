@@ -1,0 +1,55 @@
+.reports-page {
+  padding: 2rem;
+  color: var(--text-main);
+  transition: all 0.3s ease;
+  min-height: 100vh;
+}
+
+.reports-content {
+  background-color: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  padding: 2rem;
+  min-height: 400px;
+}
+div.vorview-daily-attendance{
+    background-color: var(--bg-card);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    padding: 2rem;  
+    margin-bottom: 30px;
+}
+div.vorview-daily-attendance h5{
+    margin-bottom: 30px;
+}
+div.daily-attendance{
+    display: flex;
+    justify-content: space-between;
+     border-bottom: 1px solid var(--border-color);
+     margin-bottom: 20px;
+}
+div.daily-attendance-border{
+    border: none;
+}
+div.daily-attendance div{
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+}
+div.daily-attendance div p span{
+    color: gray;
+}
+div.daily-attendance p.green{
+    color: rgb(32, 189, 32);
+}
+div.daily-attendance p.red{
+    color: rgb(233, 60, 60);
+}
+@media(max-width:605px){
+    div.daily-attendance{
+        flex-direction: column;
+    }
+     div.daily-attendance div{
+        align-items: start;
+    }
+}
