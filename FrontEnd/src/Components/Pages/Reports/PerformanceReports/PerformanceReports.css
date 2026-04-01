@@ -13,13 +13,55 @@
     min-height: 400px;
 }
 i.red{color: rgb(233, 60, 60);}
+i.orangered{color: orangered;}
 i.green{
     color: rgb(32, 189, 32);;
 }
 i.blue{
     color: rgb(37, 145, 172);
 }
+i.gray{
+    color: gray;
+}
 div.daily-attendance p span.score{
     color: gray;
     font-size: 12px;
+}
+div.daily-attendance.wi p{
+    width: 32%;
+    text-align: center;
+}
+div.daily-attendance p.st{
+ 
+    text-align: start;
+}
+div.daily-attendance p.en{
+ 
+    text-align: end;
+}
+div.bar-color{
+    height: 100px;
+    background-color: aqua;
+}
+div.daily-attendance div.daily-attendance-fl{
+    display: flex;
+    justify-content: space-between;
+   flex-direction: row;
+
+}
+div.daily-attendance-card-co{
+    flex-direction: column;
+}
+div.leave-reports-card-inf{
+    display: none;
+}
+div.char-mar{
+    margin-top: 110px;
+}
+@media(max-width:800px){
+   div.leave-reports-card-inf{
+  display: block;}
+  div.leave-reports-table-inf{
+    display: none;
+  }
 }
