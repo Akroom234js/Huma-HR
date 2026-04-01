@@ -1,7 +1,7 @@
 .req-page {
     display: flex;
     min-height: 100vh;
-    background-color: var(--bg-page);
+    background: transparent;
     color: var(--text-main);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }

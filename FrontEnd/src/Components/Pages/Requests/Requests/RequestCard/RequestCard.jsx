@@ -158,15 +158,17 @@ const RequestCard = ({ request }) => {
                 </div>
 
                 {renderRequestDetails()}
+                
+                <div className="req-card-footer">
+                    <div className="req-status-section">
+                        <StatusBadge status={status} />
+                    </div>
 
-                <div className="req-status-section">
-                    <StatusBadge status={status} />
-                </div>
-
-                <div className="req-actions-section">
-                    <Button variant="outline" size="sm">Details</Button>
-                    <Button variant="danger" size="sm">Reject</Button>
-                    <Button variant="primary" size="sm">Approve</Button>
+                    <div className="req-actions-section">
+                        <Button variant="outline" size="sm">Details</Button>
+                        <Button variant="danger" size="sm">Reject</Button>
+                        <Button variant="primary" size="sm">Approve</Button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,25 +1,58 @@
+/* التعديل ليتناسب مع Tabs.css */
 .reports-navbar {
     display: flex;
     gap: 1.5rem;
-    padding: 1rem 0;
-    margin-bottom: 2rem;
+    /* نفس gap الموجود في .tabs-wrapper */
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    margin-bottom: 1.4rem;
+    /* متطابق مع .tabs-container */
     border-bottom: 1px solid var(--border-color);
+    /* متطابق مع .tabs-container */
+}
+
+/* إخفاء شريط التمرير */
+.reports-navbar::-webkit-scrollbar {
+    display: none;
 }
 
 .reports-navbar a {
     text-decoration: none;
+    /* متطابق مع a في Tabs.css */
+    padding-bottom: 0.75rem;
+    /* نفس padding وسم .tab */
+    border: none;
+    border-bottom: 2px solid transparent;
+    /* نفس border-bottom وسم .tab */
+    background: none;
     color: var(--text-secondary);
     font-weight: 500;
-    padding: 0.5rem 0;
-    transition: all 0.3s ease;
-    border-bottom: 2px solid transparent;
+    font-size: 0.875rem;
+    /* نفس حجم خط .tab */
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    /* نفس سرعة الـ transition */
 }
 
 .reports-navbar a:hover {
-    color: var(--primary-color);
+    color: var(--text-main);
+    /* متطابق مع .tab:hover */
 }
 
 .reports-navbar a.active {
-    color: var(--primary-color);
     border-bottom-color: var(--primary-color);
+    /* متطابق مع .tab-active */
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* دعم التجاوب حسب Tabs.css */
+@media (min-width: 768px) {
+    .reports-navbar {
+        gap: 2rem;
+        /* نفس التوسعة الموجودة في ميديا كويري Tabs.css */
+    }
 }
