@@ -94,7 +94,7 @@ const PositionsRoles = () => {
             <div className='add-role'>
                 <AddRole/>
             </div>
-            <header className="page-header">
+            <header className="page-header Positions-hed">
                 <h2>{t('Positions')}</h2>
                 <ThemeToggle/>
             </header>

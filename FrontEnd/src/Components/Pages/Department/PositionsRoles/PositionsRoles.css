@@ -147,6 +147,12 @@ div.row-table-co-mobile{
     display: none;
 }
 /* ============================ */
+@media(max-width:1023px){
+    header.Positions-hed{
+      text-align: start;
+      flex-direction: row;
+    }
+}
 @media (max-width: 767px) {
 div.page-container{
     margin-top: 50px;
