@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PageHeader from '../components/PageHeader/PageHeader';
 import ReportsNavbar from '../components/ReportsNavbar/ReportsNavbar';
 import FilterBar from '../components/FilterBar/FilterBar';
+import ReportPdfPreview from "../components/ReportPdfPreview/ReportPdfPreview";
 import './PerformanceReports.css';
 import {
   BarChart,
@@ -15,8 +16,11 @@ import {
 } from "recharts";
 
 import { useTranslation } from 'react-i18next';
+
 const PerformanceReports = () => {
   const { t } = useTranslation("Reports/PerformanceReports")
+  const [showPreview, setShowPreview] = useState(false);
+
   const data = [
     { range: "1.0-2.0", value: 4 },
     { range: "2.0-3.0", value: 12 },
@@ -28,23 +32,89 @@ const PerformanceReports = () => {
   }));
   const colors = ["#ff6b6b", "#f7b500", "#4a90e2", "#2ecc71"];
   const colorsa = ["rgba(255, 107, 107, 0.37)", "rgba(247, 181, 0, 0.37)", "rgba(74, 145, 226, 0.37)", "rgba(46, 204, 112, 0.37)"];
-//   const months = [t("January"), t("February"), t("March"), t("April"), t("May"), t("June"), t("July"), t("August"), t("September"), t("October"), t("November"), t("December")]
-//  const currentDate = new Date();
-//   const currentMonthIndex = currentDate.getMonth(); // 0-11
-//   const currentMonth = months[currentMonthIndex];
-//   const lastMonthIndex = (currentMonthIndex - 1 + 12) % 12; // لضمان عدم الخروج عن النطاق
-//   const lastMonth = months[lastMonthIndex];
-//   console.log(lastMonth)
-//   console.log(currentMonth)
+
+  const reportConfig = {
+    title: t("PerformanceReports"),
+    summary: "This report provides a comprehensive analysis of employee performance metrics. It covers average performance scores, evaluation completion rates, and a detailed breakdown of performance across different departments.",
+    kpis: [
+      { label: t("Average"), value: "4.2 / 5.0" },
+      { label: t("rate"), value: "94%" },
+      { label: t("achievement"), value: "88%" },
+      { label: t("competency"), value: "3.9" },
+    ],
+    sections: [
+        {
+            title: t("distribution"),
+            content: (
+                <BarChart width={650} height={250} data={data} barGap={-90}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="range" axisLine={false} tickLine={false} />
+                    <YAxis axisLine={false} tickLine={false} />
+                    <Tooltip cursor={{ fill: "transparent" }} />
+                    <Bar dataKey="bg" barSize={60} radius={[8, 8, 0, 0]}>
+                        {data.map((entry, index) => (
+                            <Cell key={`bg-${index}`} fill={colorsa[index % colors.length]} />
+                        ))}
+                    </Bar>
+                    <Bar dataKey="value" barSize={60} radius={[8, 8, 0, 0]}>
+                        {data.map((entry, index) => (
+                            <Cell key={`value-${index}`} fill={colors[index % colors.length]} />
+                        ))}
+                    </Bar>
+                </BarChart>
+            )
+        },
+        {
+            title: t("breakdown"),
+            content: (
+                <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
+                    <thead>
+                        <tr style={{ textAlign: 'left', borderBottom: '2px solid #f1f5f9' }}>
+                            <th style={{ padding: '12px 8px', color: '#64748b', fontSize: '12px' }}>{t("department")}</th>
+                            <th style={{ padding: '12px 8px', color: '#64748b', fontSize: '12px' }}>{t("AVG")}</th>
+                            <th style={{ padding: '12px 8px', color: '#64748b', fontSize: '12px' }}>{t("completed")}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {[
+                            { dept: t("Engineering"), avg: "4.5", comp: "98%", color: '#22c55e' },
+                            { dept: t("Marketing"), avg: "4.1", comp: "90%", color: '#0f172a' },
+                            { dept: t("Product"), avg: "4.3", comp: "100%", color: '#22c55e' },
+                            { dept: t("Sales"), avg: "3.8", comp: "82%", color: '#f59e0b' },
+                            { dept: t("Human"), avg: "4.2", comp: "100%", color: '#ef4444' }
+                        ].map((row, i) => (
+                            <tr key={i} style={{ borderBottom: '1px solid #f8fafc' }}>
+                                <td style={{ padding: '12px 8px', fontWeight: '600' }}>{row.dept}</td>
+                                <td style={{ padding: '12px 8px' }}>{row.avg}</td>
+                                <td style={{ padding: '12px 8px', color: row.color, fontWeight: '700' }}>{row.comp}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )
+        }
+    ],
+    filename: "Performance_Report.pdf"
+  };
+
   return (
+    <>
+    <ReportPdfPreview 
+        show={showPreview} 
+        onClose={() => setShowPreview(false)} 
+        {...reportConfig}
+    />
+
     <div className="reports-page">
-      <PageHeader title={t("PerformanceReports")} Explanation={t("Detailed")} />
-      {/* <div>
-        <select className='per-filter'>
-          <option>{t("currentMonth")} ({currentMonth})</option>
-          <option>{t("lastMonth")} ({lastMonth})</option>
-        </select>
-      </div> */}
+      <PageHeader 
+        title={t("PerformanceReports")} 
+        Explanation={t("Detailed")}
+        actions={
+            <button className="emp-export-btn" onClick={() => setShowPreview(true)}>
+                <i className="bi bi-file-earmark-arrow-down" /> Export PDF
+            </button>
+        }
+      />
       <ReportsNavbar />
       <div className='leave-reports-co'>
         <div className='leave-reports'>
@@ -249,6 +319,7 @@ const PerformanceReports = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
