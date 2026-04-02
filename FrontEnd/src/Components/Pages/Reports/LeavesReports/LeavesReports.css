@@ -28,6 +28,13 @@ div.leave-reports{
 div.daily-attendance p.orangered{
     color: #f59e0b;
 }
+
+div.leave-reports:hover {
+    transform: translateY(-4px);
+    /* الرفع عند التحويم حسب الإرشادات */
+    box-shadow: var(--shadow-md);
+}
+
 div.daily-attendance p.blue{
     color: blue;
 }

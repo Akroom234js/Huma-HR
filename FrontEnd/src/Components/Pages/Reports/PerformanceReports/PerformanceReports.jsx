@@ -28,10 +28,23 @@ const PerformanceReports = () => {
   }));
   const colors = ["#ff6b6b", "#f7b500", "#4a90e2", "#2ecc71"];
   const colorsa = ["rgba(255, 107, 107, 0.37)", "rgba(247, 181, 0, 0.37)", "rgba(74, 145, 226, 0.37)", "rgba(46, 204, 112, 0.37)"];
-
+//   const months = [t("January"), t("February"), t("March"), t("April"), t("May"), t("June"), t("July"), t("August"), t("September"), t("October"), t("November"), t("December")]
+//  const currentDate = new Date();
+//   const currentMonthIndex = currentDate.getMonth(); // 0-11
+//   const currentMonth = months[currentMonthIndex];
+//   const lastMonthIndex = (currentMonthIndex - 1 + 12) % 12; // لضمان عدم الخروج عن النطاق
+//   const lastMonth = months[lastMonthIndex];
+//   console.log(lastMonth)
+//   console.log(currentMonth)
   return (
     <div className="reports-page">
       <PageHeader title={t("PerformanceReports")} Explanation={t("Detailed")} />
+      {/* <div>
+        <select className='per-filter'>
+          <option>{t("currentMonth")} ({currentMonth})</option>
+          <option>{t("lastMonth")} ({lastMonth})</option>
+        </select>
+      </div> */}
       <ReportsNavbar />
       <div className='leave-reports-co'>
         <div className='leave-reports'>
