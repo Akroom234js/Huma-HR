@@ -86,10 +86,12 @@ table.table{
     width: 100%;
 }
 header.header{
-    background-color: rgb(226, 223, 223);
+    background-color: rgb(226, 223, 223) !important;
     padding: 0px 10px;
     justify-content: space-between;
     display: flex;
+    height: 40px;
+    margin-bottom: 10px;
  
 }
 header.header th{
@@ -104,26 +106,40 @@ header.header th{
 }
 div.row-table-co p,div.row-table-co div{
     width: 17%;
-
+align-items: start;
      display: flex;
     justify-content: center;
     overflow: hidden;
     text-overflow:ellipsis;
-}
-th.h-position,p.row-table1{
-    width: 20%;
-  
-}
-th.h-role,p.row-table3{
-    width: 30%;
-  
+    white-space: nowrap;
 }
 
+th.h-position,p.row-table1,p.row-table3{
+    width: 20% !important;
+  
+}
+p.row-table3,p.row-table1{
+     justify-content: start !important;
+     display: block !important;
+}
+th.h-role,p.row-table3{
+    width: 28% !important;
+    height: 25px;
+  
+  
+}
+header.inf-head th{
+      background-color: rgb(226, 223, 223) !important;  
+}
 div.row-table-co{
     display: flex;
     width: 100%;
       justify-content: space-between;  
        padding: 5px 10px;
+       align-items: center;
+}
+p.row-table1{
+    justify-content: start !important;
 }
 i.icon-search{
     position: absolute;
@@ -146,12 +162,20 @@ div.button-actions{
 div.row-table-co-mobile{
     display: none;
 }
+div.row-table-co:hover {
+    background-color: var(--bg-page);
+}
 /* ============================ */
 @media(max-width:1023px){
     header.Positions-hed{
       text-align: start;
       flex-direction: row;
     }
+}
+@media(max-width:850px){
+p.row-table3,p.row-table1{
+ width: fit-content !important;
+}
 }
 @media (max-width: 767px) {
 div.page-container{
