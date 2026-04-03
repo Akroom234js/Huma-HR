@@ -1,5 +1,3 @@
-// import React from 'react';
-
 const MetricRow = ({ icon, label, value, color, isTrend }) => (
     <div className="metric-row">
         <div className="metric-info">
