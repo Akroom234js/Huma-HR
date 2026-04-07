@@ -9,27 +9,46 @@ import { useTranslation } from 'react-i18next';
 
 const Sidebar = () => {
     const location = useLocation();
-    const [dashboardOpen, setDashboardOpen] = useState(location.pathname.startsWith('/dashboard'));
-    const [departmentOpen, setDepartmentOpen] = useState(location.pathname.startsWith('/department'));
-    const [employeeOpen, setEmployeeOpen] = useState(location.pathname.startsWith('/employees'));
-    const [salaryOpen, setSalaryOpen] = useState(location.pathname.startsWith('/salary'));
-    const [isOpen, setIsOpen] = useState(false);
+    const navigate = useNavigate();
     const { t } = useTranslation('Sidebar/Sidebar');
+    const [isOpen, setIsOpen] = useState(false);
+    
+    // Single state for accordion behavior
+    const [openMenu, setOpenMenu] = useState(() => {
+        if (location.pathname.startsWith('/dashboard')) return 'dashboard';
+        if (location.pathname.startsWith('/employees')) return 'employee';
+        if (location.pathname.startsWith('/department')) return 'department';
+        if (location.pathname.startsWith('/salary')) return 'salary';
+        return null;
+    });
 
     // Check if sub-routes are active
     const isDashboardActive = location.pathname.startsWith('/dashboard');
     const isEmployeeActive = location.pathname.startsWith('/employees');
     const isDepartmentActive = location.pathname.startsWith('/department');
     const isSalaryActive = location.pathname.startsWith('/salary');
-    const navigate = useNavigate();
 
     // Sync menu states on location change
     useEffect(() => {
-        if (isDashboardActive) setDashboardOpen(true);
-        if (isEmployeeActive) setEmployeeOpen(true);
-        if (isDepartmentActive) setDepartmentOpen(true);
-        if (isSalaryActive) setSalaryOpen(true);
-    }, [isDashboardActive, isEmployeeActive, isDepartmentActive, isSalaryActive]);
+        if (isDashboardActive) setOpenMenu('dashboard');
+        else if (isEmployeeActive) setOpenMenu('employee');
+        else if (isDepartmentActive) setOpenMenu('department');
+        else if (isSalaryActive) setOpenMenu('salary');
+        else setOpenMenu(null);
+    }, [location.pathname]);
+
+    const handleSectionToggle = (menu, firstLink) => {
+        // If it's already open, just toggle it (optional, but requested to navigate)
+        // The user said: "يؤشر مباشرة على اول رابط فرعي فيها"
+        if (firstLink) {
+            navigate(firstLink);
+        }
+        
+        setOpenMenu(prev => (prev === menu ? null : menu));
+        
+        // Close mobile sidebar on navigation if needed (optional)
+        // setIsOpen(false); 
+    };
 
     const handleLogout = async (e) => {
         e.preventDefault();
@@ -66,29 +85,28 @@ const Sidebar = () => {
                         {/* ── Logo ── */}
                         <div className="sidebar-header">
                             <Link to="/">
-                                {/* Original logo — always visible */}
                                 <img src={logo} alt="Huma HR Logo" className="sidebar-logo" />
-                                {/* Site name — appears on expand */}
                                 <h1 className="sidebar-title">Huma</h1>
                             </Link>
                         </div>
 
                         {/* ── Navigation ── */}
                         <nav className="sidebar-nav">
+                            {/* Dashboard */}
                             <div className="nav-section">
                                 <button
-                                    className={`nav-item nav-toggle ${isDashboardActive || dashboardOpen ? 'active' : ''}`}
-                                    onClick={() => setDashboardOpen(!dashboardOpen)}
+                                    className={`nav-item nav-toggle ${isDashboardActive ? 'active' : ''}`}
+                                    onClick={() => handleSectionToggle('dashboard', '/dashboard/general')}
                                 >
                                     <div className="nav-item-content">
                                         <span className="nav-icon material-symbols-outlined">dashboard</span>
                                         <p>{t('Dashboard')}</p>
                                     </div>
-                                    <span className={`material-symbols-outlined expand-icon ${dashboardOpen ? 'expanded' : ''}`}>
+                                    <span className={`material-symbols-outlined expand-icon ${openMenu === 'dashboard' ? 'expanded' : ''}`}>
                                         expand_more
                                     </span>
                                 </button>
-                                <div className={`sub-menu ${dashboardOpen ? 'open' : ''}`}>
+                                <div className={`sub-menu ${openMenu === 'dashboard' ? 'open' : ''}`}>
                                     <NavLink to="/dashboard/general" className="sub-nav-item">
                                         {t('General')}
                                     </NavLink>
@@ -116,18 +134,18 @@ const Sidebar = () => {
                             {/* Employee Management */}
                             <div className="nav-section">
                                 <button
-                                    className={`nav-item nav-toggle ${isEmployeeActive || employeeOpen ? 'active' : ''}`}
-                                    onClick={() => setEmployeeOpen(!employeeOpen)}
+                                    className={`nav-item nav-toggle ${isEmployeeActive ? 'active' : ''}`}
+                                    onClick={() => handleSectionToggle('employee', '/employees/all')}
                                 >
                                     <div className="nav-item-content">
                                         <span className="nav-icon material-symbols-outlined">group</span>
                                         <p>{t('Employee-Management')}</p>
                                     </div>
-                                    <span className={`material-symbols-outlined expand-icon ${employeeOpen ? 'expanded' : ''}`}>
+                                    <span className={`material-symbols-outlined expand-icon ${openMenu === 'employee' ? 'expanded' : ''}`}>
                                         expand_more
                                     </span>
                                 </button>
-                                <div className={`sub-menu ${employeeOpen ? 'open' : ''}`}>
+                                <div className={`sub-menu ${openMenu === 'employee' ? 'open' : ''}`}>
                                     <NavLink to="/employees/all" className="sub-nav-item">
                                         {t('All-Employees')}
                                     </NavLink>
@@ -140,18 +158,18 @@ const Sidebar = () => {
                             {/* Department */}
                             <div className="nav-section">
                                 <button
-                                    className={`nav-item nav-toggle ${isDepartmentActive || departmentOpen ? 'active' : ''}`}
-                                    onClick={() => setDepartmentOpen(!departmentOpen)}
+                                    className={`nav-item nav-toggle ${isDepartmentActive ? 'active' : ''}`}
+                                    onClick={() => handleSectionToggle('department', '/department/overview')}
                                 >
                                     <div className="nav-item-content">
                                         <span className="nav-icon material-symbols-outlined">corporate_fare</span>
                                         <p>{t('Department')}</p>
                                     </div>
-                                    <span className={`material-symbols-outlined expand-icon ${departmentOpen ? 'expanded' : ''}`}>
+                                    <span className={`material-symbols-outlined expand-icon ${openMenu === 'department' ? 'expanded' : ''}`}>
                                         expand_more
                                     </span>
                                 </button>
-                                <div className={`sub-menu ${departmentOpen ? 'open' : ''}`}>
+                                <div className={`sub-menu ${openMenu === 'department' ? 'open' : ''}`}>
                                     <NavLink to="/department/overview" className="sub-nav-item">
                                         {t('Department-Overview')}
                                     </NavLink>
@@ -167,18 +185,18 @@ const Sidebar = () => {
                             {/* Salary Management */}
                             <div className="nav-section">
                                 <button
-                                    className={`nav-item nav-toggle ${isSalaryActive || salaryOpen ? 'active' : ''}`}
-                                    onClick={() => setSalaryOpen(!salaryOpen)}
+                                    className={`nav-item nav-toggle ${isSalaryActive ? 'active' : ''}`}
+                                    onClick={() => handleSectionToggle('salary', '/salary/payroll-overview')}
                                 >
                                     <div className="nav-item-content">
                                         <span className="nav-icon material-symbols-outlined">payments</span>
                                         <p>{t('Salary-Management')}</p>
                                     </div>
-                                    <span className={`material-symbols-outlined expand-icon ${salaryOpen ? 'expanded' : ''}`}>
+                                    <span className={`material-symbols-outlined expand-icon ${openMenu === 'salary' ? 'expanded' : ''}`}>
                                         expand_more
                                     </span>
                                 </button>
-                                <div className={`sub-menu ${salaryOpen ? 'open' : ''}`}>
+                                <div className={`sub-menu ${openMenu === 'salary' ? 'open' : ''}`}>
                                     <NavLink to="/salary/payroll-overview" className="sub-nav-item">
                                         {t('Payroll-Overview')}
                                     </NavLink>
