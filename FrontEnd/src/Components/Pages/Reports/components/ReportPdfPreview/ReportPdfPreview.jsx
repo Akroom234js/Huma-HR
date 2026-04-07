@@ -4,21 +4,12 @@ import html2pdf from "html2pdf.js";
 
 /**
  * Generic Report PDF Preview component
- * 
- * @param {boolean} show - Whether the preview modal is shown
- * @param {function} onClose - Function to close the modal
- * @param {string} title - The report title (e.g., Performance Report)
- * @param {string} date - The date to display (defaults to today)
- * @param {string} summary - Brief summary of the report
- * @param {Array} kpis - Array of { label, value } for the top row
- * @param {Array} sections - Array of { title, content } for the main sections
- * @param {string} filename - The name of the downloaded PDF file
  */
-const ReportPdfPreview = ({ 
-  show, 
-  onClose, 
-  title = "HR Report", 
-  date, 
+const ReportPdfPreview = ({
+  show,
+  onClose,
+  title = "HR Report",
+  date,
   summary = "This report provides key human resources metrics and insights.",
   kpis = [],
   sections = [],
@@ -35,14 +26,13 @@ const ReportPdfPreview = ({
     year: "numeric",
   });
 
-  // Calculate scaling for responsiveness
   useEffect(() => {
     if (!show) return;
 
     const updateScale = () => {
       if (!previewScrollRef.current) return;
-      const containerWidth = previewScrollRef.current.clientWidth - 40; // 40px padding
-      const a4Width = 794; // Fixed A4 pixel width at 96dpi
+      const containerWidth = previewScrollRef.current.clientWidth - 40;
+      const a4Width = 794;
 
       if (containerWidth < a4Width) {
         setScale(containerWidth / a4Width);
@@ -59,15 +49,14 @@ const ReportPdfPreview = ({
   const handleDownload = () => {
     setLoading(true);
     const el = a4Ref.current;
-    
-    // Create a temporary clone for PDF generation to ensure perfect A4 sizing
+
     const opt = {
       margin: 0,
       filename: filename,
       image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { 
-        scale: 2, 
-        useCORS: true, 
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
         logging: false,
         letterRendering: true
       },
@@ -90,102 +79,100 @@ const ReportPdfPreview = ({
 
   return (
     <div className="report-pdf-overlay">
-      {/* ── Top Action Bar ── */}
+      {/* ── Top Action Bar (Updated for Mobile) ── */}
       <div className="report-pdf-topbar">
         <div className="topbar-left">
           <button className="topbar-btn close-btn" onClick={onClose} title="Back">
-            <i className="bi bi-chevron-left" /> Back to Dashboard
+            <i className="bi bi-chevron-left" />
+            <span className="btn-text">Back</span>
           </button>
         </div>
+
         <div className="topbar-center">
-            <i className="bi bi-file-earmark-pdf" style={{marginRight: '8px', color: '#60a5fa'}} />
-            {title} Preview
+          <i className="bi bi-file-earmark-pdf" />
+          <span className="topbar-title">{title}</span>
         </div>
+
         <div className="topbar-right">
-          <button className="topbar-btn print-btn" onClick={() => window.print()}>
-            <i className="bi bi-printer" /> Print
+          <button className="topbar-btn print-btn" onClick={() => window.print()} title="Print">
+            <i className="bi bi-printer" />
+            <span className="btn-text">Print</span>
           </button>
           <button
             className="topbar-btn download-btn"
             onClick={handleDownload}
             disabled={loading}
+            title="Download PDF"
           >
             {loading ? (
-              <>
-                <i className="bi bi-hourglass-split spin" /> Generating…
-              </>
+              <i className="bi bi-hourglass-split spin" />
             ) : (
               <>
-                <i className="bi bi-cloud-download" /> Download PDF
+                <i className="bi bi-cloud-download" />
+                <span className="btn-text">Download</span>
               </>
             )}
           </button>
         </div>
       </div>
 
-      {/* ── Scroll Area for Preview ── */}
       <div className="report-pdf-scroll" ref={previewScrollRef}>
-        <div 
-            className="report-pdf-wrapper" 
-            style={{ 
-                transform: `scale(${scale})`, 
-                transformOrigin: 'top center',
-                marginBottom: `${(scale - 1) * 1123}px` // Adjust for scale offset
-            }}
+        <div
+          className="report-pdf-wrapper"
+          style={{
+            transform: `scale(${scale})`,
+            transformOrigin: 'top center',
+            marginBottom: `${(scale - 1) * 1123}px`
+          }}
         >
           <div className="report-a4" ref={a4Ref}>
-            {/* ── Report Header ── */}
             <div className="report-header-inner">
-               <div className="logo-section">
-                  <div className="report-logo">
-                    <i className="bi bi-building" />
-                  </div>
-                  <div className="report-titles">
-                    <h1 className="report-main-title">{title}</h1>
-                    <p className="report-subtitle">HR Management Dashboard</p>
-                  </div>
-               </div>
-               <div className="date-section">
-                  <span className="date-label">REPORT DATE</span>
-                  <p className="date-value">{today}</p>
-               </div>
+              <div className="logo-section">
+                <div className="report-logo">
+                  <i className="bi bi-building" />
+                </div>
+                <div className="report-titles">
+                  <h1 className="report-main-title">{title}</h1>
+                  <p className="report-subtitle">HR Management Dashboard</p>
+                </div>
+              </div>
+              <div className="date-section">
+                <span className="date-label">REPORT DATE</span>
+                <p className="date-value">{today}</p>
+              </div>
             </div>
 
             <div className="report-header-gradient" />
 
-            {/* ── Summary ── */}
             <div className="report-summary-box">
               <h2 className="report-section-header">
-                  <i className="bi bi-info-circle-fill" /> OVERVIEW
+                <i className="bi bi-info-circle-fill" /> OVERVIEW
               </h2>
               <p className="report-summary-content">{summary}</p>
             </div>
 
-            {/* ── KPI Grid ── */}
             {kpis.length > 0 && (
-                <div className="report-kpi-grid">
-                  {kpis.map((kpi, idx) => (
-                    <div className="report-kpi-item" key={idx}>
-                      <span className="kpi-label">{kpi.label}</span>
-                      <p className="kpi-value">{kpi.value}</p>
-                    </div>
-                  ))}
-                </div>
+              <div className="report-kpi-grid">
+                {kpis.map((kpi, idx) => (
+                  <div className="report-kpi-item" key={idx}>
+                    <span className="kpi-label">{kpi.label}</span>
+                    <p className="kpi-value">{kpi.value}</p>
+                  </div>
+                ))}
+              </div>
             )}
 
-            {/* ── Dynamic Sections ── */}
             <div className="report-sections-container">
-                {sections.map((section, index) => (
-                    <div className="report-section" key={index} style={{ pageBreakInside: 'avoid' }}>
-                        {section.title && <h3 className="section-title">{section.title}</h3>}
-                        <div className="section-content">
-                            {section.content}
-                        </div>
-                    </div>
-                ))}
+              {sections.map((section, index) => (
+                <div className="report-section" key={index} style={{ pageBreakInside: 'avoid' }}>
+                  {section.title && <h3 className="section-title">{section.title}</h3>}
+                  <div className="section-content">
+                    {section.content}
+                  </div>
+                </div>
+              ))}
             </div>
 
-            {/* ── Footer ── */}
             <div className="report-footer-inner">
               <div className="footer-copyright">© {new Date().getFullYear()} Acme Corp. All rights reserved.</div>
               <div className="footer-tags">

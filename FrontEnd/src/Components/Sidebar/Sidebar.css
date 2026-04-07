@@ -5,6 +5,29 @@
    - Active item: magic curve cutout using ::before and ::after
    ===================================================================== */
 
+:root {
+    --sidebar-shadow-ltr: 2px 0 12px rgba(0, 0, 0, 0.08);
+    --sidebar-shadow-rtl: -2px 0 12px rgba(0, 0, 0, 0.08);
+    --sidebar-shadow-mobile-ltr: 4px 0 20px rgba(0, 0, 0, 0.15);
+    --sidebar-shadow-mobile-rtl: -4px 0 20px rgba(0, 0, 0, 0.15);
+    --curve-shadow-x-ltr: 8px;
+    --curve-shadow-x-rtl: -8px;
+}
+
+body {
+    --sidebar-shadow: var(--sidebar-shadow-ltr);
+    --sidebar-shadow-mobile: var(--sidebar-shadow-mobile-ltr);
+    --curve-shadow-x: var(--curve-shadow-x-ltr);
+    --mobile-transform-hide: translateX(-110%);
+}
+
+body[dir="rtl"] {
+    --sidebar-shadow: var(--sidebar-shadow-rtl);
+    --sidebar-shadow-mobile: var(--sidebar-shadow-mobile-rtl);
+    --curve-shadow-x: var(--curve-shadow-x-rtl);
+    --mobile-transform-hide: translateX(110%);
+}
+
 /* ---- Sidebar Shell ---- */
 .sidebar {
     position: fixed;
@@ -20,7 +43,7 @@
     overflow-y: auto;
     transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 100;
-    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--sidebar-shadow);
     scrollbar-width: none;
 }
 
@@ -70,11 +93,6 @@
     object-fit: contain;
     flex-shrink: 0;
     border-radius: 8px;
-}
-
-/* sidebar-logo-icon no longer used */
-.sidebar-logo-icon {
-    display: none;
 }
 
 .sidebar-title {
@@ -370,12 +388,12 @@ div.translation p {
     content: '';
     position: absolute;
     top: -16px;
-    right: 0;
+    inset-inline-end: 0;
     width: 20px;
     height: 20px;
     background: transparent;
     border-radius: 50%;
-    box-shadow: 8px 8px 0 4px var(--primary-light);
+    box-shadow: var(--curve-shadow-x) 8px 0 4px var(--primary-light);
     pointer-events: none;
 }
 
@@ -383,12 +401,12 @@ div.translation p {
     content: '';
     position: absolute;
     bottom: -16px;
-    right: 0;
+    inset-inline-end: 0;
     width: 20px;
     height: 20px;
     background: transparent;
     border-radius: 50%;
-    box-shadow: 8px -8px 0 4px var(--primary-light);
+    box-shadow: var(--curve-shadow-x) -8px 0 4px var(--primary-light);
     pointer-events: none;
 }
 
@@ -417,10 +435,6 @@ div.translation p {
     box-shadow: var(--shadow-sm);
     color: var(--text-main);
     transition: inset-inline-start 0.3s ease;
-}
-
-.mobile-toggle.active {
-    inset-inline-start: 270px;
 }
 
 /* ---- Sidebar Overlay ---- */
@@ -455,17 +469,16 @@ div.translation p {
         backdrop-filter: blur(2px);
     }
 
-    /* Sidebar: hidden off-screen left by default */
+    /* Sidebar: hidden off-screen by default */
     .sidebar {
         position: fixed;
         inset-block: 0;
         inset-inline-start: 0;
         width: 260px !important;
-        /* override hover width */
-        transform: translateX(-110%);
+        transform: var(--mobile-transform-hide);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 1001;
-        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+        box-shadow: var(--sidebar-shadow-mobile);
         border-radius: 0;
         overflow-y: auto;
     }
@@ -474,8 +487,6 @@ div.translation p {
     [data-theme="dark"] .sidebar {
         backdrop-filter: blur(25px);
         -webkit-backdrop-filter: blur(25px);
-        /* background: rgba(15, 23, 42, 0.75); */
-        /* Slight increase in opacity for better readability */
     }
 
     /* Disable hover-expand on mobile */
@@ -483,19 +494,8 @@ div.translation p {
         width: 260px !important;
     }
 
-    /* RTL: slide from right */
-    body[dir="rtl"] .sidebar {
-        inset-inline-start: auto;
-        inset-inline-end: 0;
-        transform: translateX(110%);
-    }
-
-    /* Open state */
+    /* Opening state (same for RTL/LTR due to transform direction) */
     .sidebar.open {
-        transform: translateX(0);
-    }
-
-    body[dir="rtl"] .sidebar.open {
         transform: translateX(0);
     }
 
@@ -530,11 +530,6 @@ div.translation p {
     /* Hamburger moves when sidebar opens */
     .mobile-toggle.active {
         inset-inline-start: 266px;
-    }
-
-    body[dir="rtl"] .mobile-toggle.active {
-        inset-inline-start: auto;
-        inset-inline-end: 266px;
     }
 }
 
