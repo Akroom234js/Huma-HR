@@ -1,0 +1,31 @@
+{
+    "title": "Payroll & Cost Reports",
+    "subtitle": "Detailed analysis of salary distribution, cost breakdowns, and financial indicators.",
+    "export_pdf": "Export PDF",
+    "sections": {
+        "overview_title": "Overview of Payroll Costs (Current Period)",
+        "indicators_title": "Key Cost Indicators",
+        "breakdown_title": "Cost Breakdown by Department"
+    },
+    "metrics": {
+        "total_monthly_salary": "Total Monthly Salary Cost",
+        "avg_salary_per_emp": "Average Salary per Employee",
+        "total_overtime": "Total Overtime Cost",
+        "total_deductions": "Total Deductions Applied",
+        "payroll_revenue_ratio": "Payroll-to-Revenue Ratio",
+        "benefit_cost": "Benefit Cost per Employee",
+        "new_hires_cost": "Cost of New Hires (Period)",
+        "yoy_growth": "YoY Payroll Cost Growth"
+    },
+    "labels": {
+        "headcount": "Headcount",
+        "total": "Total",
+        "avg": "Avg",
+        "department": "Department",
+        "total_payroll": "Total Payroll",
+        "avg_salary": "Avg. Salary"
+    },
+    "report_config": {
+        "summary": "Detailed analysis of salary distribution, cost breakdowns, and financial indicators for the current period. This report highlights the organization's fiscal health regarding human resources expenditures."
+    }
+}

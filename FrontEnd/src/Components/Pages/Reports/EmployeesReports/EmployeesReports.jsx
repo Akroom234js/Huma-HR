@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import PageHeader from "../components/PageHeader/PageHeader";
 import ReportsNavbar from "../components/ReportsNavbar/ReportsNavbar";
 import FilterBar from "../components/FilterBar/FilterBar";
-import EmployeesPdfPreview from "./EmployeesPdfPreview";
+import ReportPdfPreview from "../components/ReportPdfPreview/ReportPdfPreview";
 import "./EmployeesReports.css";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
 import {
@@ -20,6 +20,7 @@ import {
   BarChart,
   Bar,
 } from "recharts";
+
 const turnoverData = [
   { name: "Jan", hires: 20, left: 5 },
   { name: "Feb", hires: 30, left: 8 },
@@ -42,12 +43,89 @@ const pieData = [
 ];
 
 const COLORS = ["#3b82f6", "#60a5fa", "#1d4ed8"];
+
 const EmployeesReports = () => {
   const [showPreview, setShowPreview] = useState(false);
 
+  // Configuration for PDF Export
+  const reportConfig = {
+    title: "Employee Reports & Analytics",
+    summary: "This report provides a comprehensive overview of key human resources metrics. The data highlights a steady increase in new hires, employee experience distribution, and demographic breakdown across the organization.",
+    kpis: [
+      { label: "Total Employees", value: "1,250" },
+      { label: "New Hires", value: "52" },
+      { label: "Employees Left", value: "15" },
+      { label: "Stability Rate", value: "98.8%" },
+    ],
+    sections: [
+      {
+        title: "Employee Turnover",
+        content: (
+          <LineChart width={650} height={250} data={turnoverData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey="hires" stroke="#3b82f6" strokeWidth={2} />
+            <Line type="monotone" dataKey="left" stroke="#ef4444" strokeWidth={2} />
+          </LineChart>
+        )
+      },
+      {
+        title: "Experience Level Distribution",
+        content: (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
+            <PieChart width={250} height={200}>
+              <Pie
+                data={pieData}
+                cx="50%"
+                cy="50%"
+                innerRadius={50}
+                outerRadius={80}
+                dataKey="value"
+              >
+                {pieData.map((entry, index) => (
+                  <Cell key={index} fill={COLORS[index]} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+            <div className="pdf-legend-custom" style={{ fontSize: '14px' }}>
+                {pieData.map((d, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                        <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: COLORS[i] }}></span>
+                        <span>{d.name}</span>
+                        <span style={{ fontWeight: 'bold' }}>{d.value}%</span>
+                    </div>
+                ))}
+            </div>
+          </div>
+        )
+      },
+      {
+        title: "Employee Tenure Distribution",
+        content: (
+          <BarChart width={650} height={250} data={tenureData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="range" />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="value" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+          </BarChart>
+        )
+      }
+    ],
+    filename: "Employee_Analytics_Report.pdf"
+  };
+
   return (
     <>
-    {showPreview && <EmployeesPdfPreview onClose={() => setShowPreview(false)} />}
+    <ReportPdfPreview 
+        show={showPreview} 
+        onClose={() => setShowPreview(false)} 
+        {...reportConfig}
+    />
 
     <div className="reports-page">
       <PageHeader

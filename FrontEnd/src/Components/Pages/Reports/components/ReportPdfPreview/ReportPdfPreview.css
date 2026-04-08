@@ -1,0 +1,337 @@
+/* ─────────────────────────────────────────────────
+   Report PDF Preview Overlay & Topbar Fixes
+───────────────────────────────────────────────── */
+:root {
+    --report-primary: #3b82f6;
+    --report-secondary: #64748b;
+    --report-bg: #e2e8f0;
+    --report-text: #0f172a;
+    --report-card-bg: #f8fafc;
+}
+
+.report-pdf-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--report-bg);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Updated Topbar for Responsiveness ── */
+.report-pdf-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: #1e293b;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    min-height: 60px;
+    gap: 10px;
+}
+
+.topbar-center {
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+    overflow: hidden;
+    flex: 1;
+    justify-content: center;
+}
+
+.topbar-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.topbar-center i {
+    color: #60a5fa;
+    flex-shrink: 0;
+}
+
+.topbar-left,
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.topbar-btn {
+    appearance: none;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.topbar-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.download-btn {
+    background: var(--report-primary);
+    color: white;
+}
+
+.download-btn:hover:not(:disabled) {
+    background: #2563eb;
+    transform: translateY(-1px);
+}
+
+.download-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ── Mobile & Tablet Responsiveness ── */
+@media (max-width: 768px) {
+    .report-pdf-topbar {
+        padding: 8px 12px;
+    }
+
+    .topbar-title {
+        max-width: 120px;
+    }
+
+    .btn-text {
+        display: none;
+        /* Hide text on medium screens */
+    }
+
+    .topbar-btn {
+        padding: 10px;
+        font-size: 1.1rem;
+        /* Make icons larger for touch */
+    }
+}
+
+@media (max-width: 480px) {
+    .topbar-center {
+        display: none;
+        /* Hide title entirely on very small screens to prevent overlap */
+    }
+
+    .report-pdf-topbar {
+        justify-content: space-between;
+    }
+}
+
+/* ── Preview Area ── */
+.report-pdf-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    padding: 20px 10px;
+    scroll-behavior: smooth;
+}
+
+.report-pdf-wrapper {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── A4 Page ── */
+.report-a4 {
+    background: white;
+    width: 794px;
+    min-height: 1123px;
+    padding: 40px 50px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    color: var(--report-text);
+    font-family: 'Inter', sans-serif;
+    position: relative;
+}
+
+/* ── Internal Elements Spacing ── */
+.report-header-inner {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.report-logo {
+    width: 48px;
+    height: 48px;
+    background: #eff6ff;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--report-primary);
+}
+
+.report-main-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.report-subtitle {
+    font-size: 0.85rem;
+    color: var(--report-secondary);
+    margin: 2px 0 0;
+}
+
+.date-section {
+    text-align: right;
+}
+
+.date-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--report-secondary);
+}
+
+.date-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.report-header-gradient {
+    height: 3px;
+    background: linear-gradient(to right, var(--report-primary), #bfdbfe);
+    border-radius: 2px;
+    margin-bottom: 25px;
+}
+
+.report-summary-box {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #e2e8f0;
+}
+
+.report-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.report-kpi-item {
+    background: white;
+    border: 1px solid #f1f5f9;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.kpi-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--report-secondary);
+    display: block;
+}
+
+.kpi-value {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin: 4px 0 0;
+}
+
+.report-section {
+    border: 1px solid #f1f5f9;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+
+.report-footer-inner {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px dashed #cbd5e1;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--report-secondary);
+}
+
+/* ── Print ── */
+@media print {
+    @page {
+        size: A4;
+        margin: 0;
+    }
+
+    .report-pdf-overlay {
+        position: static;
+        background: white;
+    }
+
+    .report-pdf-topbar {
+        display: none !important;
+    }
+
+    .report-pdf-scroll {
+        padding: 0;
+        overflow: visible;
+    }
+
+    .report-pdf-wrapper {
+        transform: none !important;
+        margin-bottom: 0 !important;
+    }
+
+    .report-a4 {
+        box-shadow: none;
+        width: 100%;
+    }
+}

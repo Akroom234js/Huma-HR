@@ -1,75 +1,118 @@
 .reports-page-header-container {
     position: relative;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
 }
 
-.page-header.reports {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-direction: column;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.page-header.reports {
-    color: gray;
-    margin-top: 15px;
-}
-
-.page-header.reports h1 {
-    font-size: 32px;
-    font-weight: 700;
-    margin: 0;
-    color: var(--text-main);
-}
-
-.reports-header-actions {
-    position: absolute;
+/* Theme Toggle - Fixed in screen corner as requested */
+.reports-screen-corner-toggle {
+    position: fixed;
     top: 0;
     right: 0;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    z-index: 100;
+    z-index: 9999;
+    pointer-events: none; /* Let clicks pass through empty space */
 }
 
-.reports-theme-toggle-wrapper {
-    position: relative;
+.reports-screen-corner-toggle > * {
+    pointer-events: auto; /* Re-enable clicks for the button itself */
 }
 
-.reports-theme-toggle-wrapper .theme-toggle {
+.reports-screen-corner-toggle .theme-toggle {
     background-color: var(--bg-card);
     border: none;
     color: var(--text-main);
-    box-shadow: -4px 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: -4px 4px 15px rgba(0, 0, 0, 0.1);
     border-radius: 0 0 0 60px;
-    width: 64px;
-    height: 64px;
-    transition: all 0.3s ease;
+    width: 70px;
+    height: 70px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-left: 15px;
-    padding-bottom: 15px;
+    padding-left: 18px;
+    padding-bottom: 18px;
     cursor: pointer;
     overflow: hidden;
 }
 
-[dir="rtl"] .reports-header-actions {
+[dir="rtl"] .reports-screen-corner-toggle {
     right: auto;
     left: 0;
-    flex-direction: row-reverse;
 }
 
-[dir="rtl"] .reports-theme-toggle-wrapper .theme-toggle {
+[dir="rtl"] .reports-screen-corner-toggle .theme-toggle {
     border-radius: 0 0 60px 0;
     padding-left: 0;
-    padding-right: 15px;
-    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.08);
+    padding-right: 18px;
+    box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-.reports-theme-toggle-wrapper .theme-toggle:hover {
+.reports-screen-corner-toggle .theme-toggle:hover {
     background-color: var(--bg-page);
     transform: scale(1.05);
+    box-shadow: -6px 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Header Content Layout */
+.reports-header-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1.5rem;
+}
+
+.page-header.reports {
+    flex: 1;
+    min-width: 250px;
+}
+
+.page-header.reports h1 {
+    font-size: 32px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--text-main);
+    letter-spacing: -0.5px;
+}
+
+.page-header.reports p {
+    color: #64748b;
+    margin: 8px 0 0;
+    font-size: 0.95rem;
+    max-width: 600px;
+}
+
+/* Actions Section (Export Button) */
+.reports-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+/* Responsive Overrides */
+@media (max-width: 768px) {
+    .reports-header-top-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+
+    .reports-header-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .page-header.reports h1 {
+        font-size: 26px;
+    }
+
+    /* Make toggle a bit smaller on very small screens if needed */
+    .reports-screen-corner-toggle .theme-toggle {
+        width: 60px;
+        height: 60px;
+        padding-left: 15px;
+        padding-bottom: 15px;
+    }
 }

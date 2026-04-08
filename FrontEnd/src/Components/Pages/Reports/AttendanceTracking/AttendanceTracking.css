@@ -19,6 +19,10 @@ div.vorview-daily-attendance{
     padding: 2rem;  
     margin-bottom: 30px;
 }
+div.vorview-daily-attendance:hover{
+    transform: translateY(-4px);
+     box-shadow: var(--shadow-md);
+}
 div.vorview-daily-attendance h5{
     margin-bottom: 30px;
 }
