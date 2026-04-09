@@ -1,18 +1,22 @@
-// import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-const DepartmentCard = ({ name, headcount, total, avg }) => (
-    <div className="dept-card">
-        <div className="dept-header">
-            <div>
-                <h4>{name}</h4>
-                <p>Headcount: {headcount}</p>
-            </div>
-            <div className="dept-values">
-                <p className="dept-total">Total: <strong>{total}</strong></p>
-                <p className="dept-avg">Avg: {avg}</p>
+const DepartmentCard = ({ name, headcount, total, avg }) => {
+    const { t } = useTranslation('Reports/PayrollReports');
+
+    return (
+        <div className="dept-card">
+            <div className="dept-header">
+                <div>
+                    <h4>{name}</h4>
+                    <p>{t('labels.headcount')}: {headcount}</p>
+                </div>
+                <div className="dept-values">
+                    <p className="dept-total">{t('labels.total')}: <strong>{total}</strong></p>
+                    <p className="dept-avg">{t('labels.avg')}: {avg}</p>
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 export default DepartmentCard;
