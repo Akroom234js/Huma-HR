@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import './Attendance.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
-import FilterDropdown from '../../Recrutment/FilterDropdown/FilterDropdown';
+import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 import { useTranslation } from 'react-i18next';
 
 /* ─── Static attendance data ─── */

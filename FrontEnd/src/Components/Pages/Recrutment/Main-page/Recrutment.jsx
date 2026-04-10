@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Header from '../Header/Header';
 import Tabs from '../Tabs/Tabs';
-import FilterDropdown from '../FilterDropdown/FilterDropdown';
+import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 import CandidateCard from '../CandidateCard/CandidateCard';
 import './Recrutment.css';
 import JobCard from '../JobCard/JobCard';

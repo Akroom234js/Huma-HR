@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import './EmployeeReports.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
-import FilterDropdown from '../../Recrutment/FilterDropdown/FilterDropdown';
+import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 
 const EmployeeReports = () => {
     const { t } = useTranslation('Dashboard/EmployeeReports');
