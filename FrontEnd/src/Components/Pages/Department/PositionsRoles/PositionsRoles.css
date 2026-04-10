@@ -24,7 +24,7 @@ header.page-header h1 {
 }
 
 div.page-container div.adddepartment {
-    display: none;
+    display: flex; /* Changed from none */
 }
 
 div.page-container div.add-role {
