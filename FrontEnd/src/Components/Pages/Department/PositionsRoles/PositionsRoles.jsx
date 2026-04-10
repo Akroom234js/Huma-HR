@@ -1,22 +1,50 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import '../PositionsRoles/PositionsRoles.css';
 import AddDepartment from '../AddDepartment/AddDepartment';
 import AddRole from '../AddRole/AddRole'
-import FilterDropdown from '../../Recrutment/FilterDropdown/FilterDropdown';
+import FilterDropdown from "../../../FilterDropdown/FilterDropdown";
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
+import apiClient from '../../../../apiConfig';
+
 const PositionsRoles = () => {
     const { t } = useTranslation('Department/PositionRoles')
     const [selectedDepartment, setSelectedDepartment] = useState('');
     const [isAddDepartmentOpen, setIsAddDepartmentOpen] = useState(false);
-    const departmentOptions = [
-        { value: '', label: t('all') },
-        { value: 'engineering', label: 'Engineering' },
-        { value: 'design', label: 'Design' },
-        { value: 'product', label: 'Product Management' },
-        { value: 'marketing', label: 'Marketing' },
-    ];
+    const [isAddRoleOpen, setIsAddRoleOpen] = useState(false);
+    const [positions, setPositions] = useState([]);
+    const [departmentOptions, setDepartmentOptions] = useState([{ value: '', label: t('all') }]);
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const fetchPositions = useCallback(async () => {
+        try {
+            const params = {};
+            if (searchQuery) params.search = searchQuery;
+            if (selectedDepartment) params.department_id = selectedDepartment;
+
+            const res = await apiClient.get('/positions', { params });
+            setPositions(res.data?.data?.positions || []);
+        } catch (error) {
+            console.error("Failed to fetch positions", error);
+        }
+    }, [searchQuery, selectedDepartment]);
+
+    const fetchDepartments = async () => {
+        try {
+            const res = await apiClient.get('/departments');
+            setDepartmentOptions([
+                { value: '', label: t('all') },
+                ...(res.data?.data?.map(d => ({ value: d.id, label: d.name })) || [])
+            ]);
+        } catch (error) {
+            console.error("Failed to fetch departments", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchPositions();
+        fetchDepartments();
+    }, [fetchPositions]);
 
     const addDeparment = () => {
         setIsAddDepartmentOpen(true);
@@ -27,76 +55,86 @@ const PositionsRoles = () => {
         setIsAddDepartmentOpen(false);
         document.body.style.overflow = 'auto';
     }
-    const addRole = (e) => {
-        const add = document.querySelector('.add-role')
-        add.style.display = 'none'
-        if (add) {
-            console.log('fff')
-            document.body.style.overflow = 'hidden'
-            add.style.display = 'block'
+
+    const addRole = () => {
+        setIsAddRoleOpen(true);
+        document.body.style.overflow = 'hidden';
+    }
+
+    const closeAddRole = () => {
+        setIsAddRoleOpen(false);
+        document.body.style.overflow = 'auto';
+    }
+
+    const handleDeletePosition = async (id) => {
+        if (window.confirm("Are you sure you want to delete this position?")) {
+            try {
+                await apiClient.delete(`/positions/${id}`);
+                fetchPositions();
+            } catch (error) {
+                alert(error.response?.data?.message || "Failed to delete position");
+            }
         }
     }
-    const inf = [{ title: "Senior frontend engineer", department: "Engineering", opeenings: "2", role: "Develops and maintains user-facing features..." }, { title: "Product designer", department: "Design", opeenings: "1", role: "Creates user-centered designs by understanding..." }, { title: "Digital marketing specialist", department: "Marketing", opeenings: "0", role: "Manages online marketing campaings across vari..." }, { title: "Hr generalist", department: "Human resources", opeenings: "1", role: "Assists with daily functions of the HR department..." }]
-    const table = []
-    for (let i = 0; i < 4; i++) {
-        <div>
-            {
-                table.push(
-                    <div className='row-table-co'>
-                        <p className='row-table1'>{inf[i].title}</p>
-                        <p>{inf[i].department}</p>
-                        <p>{inf[i].opeenings}</p>
-                        <p className='row-table3'>{inf[i].role}</p>
-                        <div className='button-actions'>
-                            <button><i className='bi bi-pen'></i></button>
-                            <button><i className='bi bi-trash'></i></button>
-                            <button><i className='bi bi-eye-fill'></i></button>
-                        </div>
-                    </div>
-                )
-            }
+
+    const table = positions.map((pos) => (
+        <div className='row-table-co' key={pos.id}>
+            <p className='row-table1'>{pos.title}</p>
+            <p>{pos.department?.name || 'N/A'}</p>
+            <p>{pos.openings || 0}</p>
+            <p className='row-table3'>{pos.description}</p>
+            <div className='button-actions'>
+                <button><i className='bi bi-pen'></i></button>
+                <button onClick={() => handleDeletePosition(pos.id)}><i className='bi bi-trash'></i></button>
+                <button><i className='bi bi-eye-fill'></i></button>
+            </div>
         </div>
-    }
-    const tablemobile = []
-    for (let i = 0; i < 3; i++) {
-        <div>
-            {
-                tablemobile.push(
-                    <div className='row-table-co-mobile'>
-                        <div>
-                            <p>{t('position')} : </p>
-                            <p className='row-table1'> {inf[i].title}</p>
-                        </div>
-                        <div>  <p>{t('name')} : </p>
-                            <p>{inf[i].department}</p></div>
-                        <div>
-                            <p>{t('opening')} : </p>
-                            <p> {inf[i].opeenings}</p>
-                        </div>
-                        <div>
-                            <p>{t('Role')} : </p>
-                            <p className='row-table3'> {inf[i].role}</p>
-                        </div>
-                        <div className='button-actions'>
-                            <button><i className='bi bi-pen'></i></button>
-                            <button><i className='bi bi-trash'></i></button>
-                            <button><i className='bi bi-eye-fill'></i></button>
-                        </div>
-                    </div>
-                )
-            }
+    ));
+
+    const tablemobile = positions.slice(0, 3).map((pos) => (
+        <div className='row-table-co-mobile' key={pos.id}>
+            <div>
+                <p>{t('position')} : </p>
+                <p className='row-table1'> {pos.title}</p>
+            </div>
+            <div>  
+                <p>{t('name')} : </p>
+                <p>{pos.department?.name || 'N/A'}</p>
+            </div>
+            <div>
+                <p>{t('opening')} : </p>
+                <p> {pos.openings || 0}</p>
+            </div>
+            <div>
+                <p>{t('Role')} : </p>
+                <p className='row-table3'> {pos.description}</p>
+            </div>
+            <div className='button-actions'>
+                <button><i className='bi bi-pen'></i></button>
+                <button onClick={() => handleDeletePosition(pos.id)}><i className='bi bi-trash'></i></button>
+                <button><i className='bi bi-eye-fill'></i></button>
+            </div>
         </div>
-    }
+    ));
+
     return (
         <div className="page-container">
             {isAddDepartmentOpen && (
                 <div className='adddepartment'>
-                    <AddDepartment onClose={closeAddDepartment} />
+                    <AddDepartment 
+                        onClose={closeAddDepartment} 
+                        onSuccess={() => { fetchDepartments(); fetchPositions(); }} 
+                    />
                 </div>
             )}
-            <div className='add-role'>
-                <AddRole />
-            </div>
+            {isAddRoleOpen && (
+                <div className='add-role'>
+                    <AddRole 
+                        onClose={closeAddRole} 
+                        onSuccess={fetchPositions} 
+                    />
+                </div>
+            )}
             <header className="page-header Positions-hed">
                 <h2>{t('Positions')}</h2>
                 <ThemeToggle />
@@ -104,41 +142,46 @@ const PositionsRoles = () => {
             <div className='adddep'>
                 <div>
                     <p className='add'>{t('add')}</p>
-                    <p className='create'>{t('create')}</p></div>
-                <button onClick={(e) => { addDeparment(e) }}><i className='bi bi-plus'></i> {t('adddep')}</button>
+                    <p className='create'>{t('create')}</p>
+                </div>
+                <button onClick={addDeparment}><i className='bi bi-plus'></i> {t('adddep')}</button>
             </div>
             <div className='addrole'>
                 <div className='header'>
                     <div className='search-filter'>
-                        {/* <i className='bi bi-search icon-search'></i> */}
-                        <input type='search' placeholder={t('search')} />
+                        <input 
+                            type='search' 
+                            placeholder={t('search')} 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
                         <FilterDropdown
                             value={selectedDepartment}
                             onChange={setSelectedDepartment}
                             options={departmentOptions}
+                            placeholder="All Departments"
                         />
                     </div>
                     <div className='addroleco'>
-                        <button className='addrole' onClick={(e) => { addRole(e) }}><i className='bi bi-plus'></i> {t('addrole')}</button>
+                        <button className='addrole' onClick={addRole}><i className='bi bi-plus'></i> {t('addrole')}</button>
                     </div>
                 </div>
                 <div>
-                    <table className='table'>
+                    <div className='table'>
                         <header className='header inf-head'>
-                            <th className='h-position'>{t('position')}</th>
-                            <th>{t('name')}</th>
-                            <th>{t('opening')}</th>
-                            <th className='h-role'>{t('Role')}</th>
-                            <th>{t('action')}</th>
+                            <div className='h-position'>{t('position')}</div>
+                            <div>{t('name')}</div>
+                            <div>{t('opening')}</div>
+                            <div className='h-role'>{t('Role')}</div>
+                            <div>{t('action')}</div>
                         </header>
                         {table}
-                    </table>
+                    </div>
                     <div>
                         {tablemobile}
                     </div>
                 </div>
             </div>
-
         </div>
     );
 };
