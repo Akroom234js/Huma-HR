@@ -21,6 +21,7 @@ class EmployeeProfile extends Model
         'profile_pic',
         'job_title',
         'employment_status',
+        'salary',              // ← جديد
         'department_id',
         'manager_id',
         'branch',
@@ -29,6 +30,14 @@ class EmployeeProfile extends Model
         'start_date',
         'internal_transfer_date',
         'resignation_date',
+    ];
+
+    protected $casts = [
+        'date_of_birth'          => 'date',
+        'start_date'             => 'date',
+        'internal_transfer_date' => 'date',
+        'resignation_date'       => 'date',
+        'salary'                 => 'decimal:2',
     ];
 
     // ── Relationships ─────────────────────────────────────────────────────────
@@ -61,6 +70,16 @@ class EmployeeProfile extends Model
     public function changeLogs(): HasMany
     {
         return $this->hasMany(EmployeeChangeLog::class)->orderByDesc('changed_at');
+    }
+
+    public function movements(): HasMany
+    {
+        return $this->hasMany(EmployeeMovement::class)->orderByDesc('movement_date');
+    }
+
+    public function salaryAdjustments(): HasMany
+    {
+        return $this->hasMany(SalaryAdjustment::class)->orderByDesc('effective_date');
     }
 
     // ── Query Scopes ──────────────────────────────────────────────────────────
@@ -101,8 +120,7 @@ class EmployeeProfile extends Model
     }
 
     // ── Accessors ─────────────────────────────────────────────────────────────
-    // الاستخدام: $employee->profile_pic_url
-    // يرجع URL كامل للصورة أو null إذا ما في صورة
+
     public function getProfilePicUrlAttribute(): ?string
     {
         return $this->profile_pic

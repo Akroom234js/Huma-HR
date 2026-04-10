@@ -31,6 +31,9 @@ class RegisterEmployeeRequest extends FormRequest
             'profile_pic'           => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
 
             // ── Job Information ────────────────────────────────────────────
+            'job_title'             => 'nullable|string|max:255',
+            'employment_status'     => 'nullable|in:active,on_leave,inactive,terminated',
+            'department_id'         => 'nullable|exists:departments,id',
             'manager_id'            => 'nullable|exists:users,id',
             'branch'                => 'nullable|string|max:255',
             'city'                  => 'nullable|string|max:255',
@@ -55,6 +58,7 @@ class RegisterEmployeeRequest extends FormRequest
             'employee_id.unique'                      => 'This Employee ID is already taken.',
             'start_date.before_or_equal'              => 'Start date cannot be in the future.',
             'department_id.exists'                    => 'Selected department does not exist.',
+            'employment_status.in'                    => 'Invalid employment status.',
             'manager_id.exists'                       => 'Selected manager does not exist.',
             'profile_pic.image'                       => 'Profile picture must be an image.',
             'profile_pic.max'                         => 'Profile picture cannot exceed 2MB.',

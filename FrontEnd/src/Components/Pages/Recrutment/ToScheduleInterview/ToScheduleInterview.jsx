@@ -3,7 +3,7 @@ import '../Main-page/Recrutment'
 import Header from '../Header/Header';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import Tabs from '../Tabs/Tabs';
-import FilterDropdown from '../FilterDropdown/FilterDropdown';
+import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 // import CandidateCard from '../CandidateCard/CandidateCard';
 import CandidateCardToScheduleInterview from '../CandidateCardScheduleInterview/CandidateCardToScheduleInterview';
 import CreateJobModal from '../CreateJobModal/CreateJobModal';

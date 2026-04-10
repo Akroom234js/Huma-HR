@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './EmployeeMovement.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
-import FilterDropdown from '../../Recrutment/FilterDropdown/FilterDropdown';
+import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 import { useTranslation } from 'react-i18next';
 import AddMovement from './Add New Movement/AddMovement';
 

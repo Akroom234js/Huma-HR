@@ -3,7 +3,7 @@ import './Salaries.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import FilterDropdown from '../../Recrutment/FilterDropdown/FilterDropdown';
+import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 
 const Salaries = () => {
     const { t } = useTranslation('Dashboard/SalariesCompensation');
