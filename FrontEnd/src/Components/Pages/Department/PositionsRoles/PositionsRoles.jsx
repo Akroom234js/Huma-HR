@@ -9,6 +9,7 @@ import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 const PositionsRoles = () => {
     const { t } = useTranslation('Department/PositionRoles')
     const [selectedDepartment, setSelectedDepartment] = useState('');
+    const [isAddDepartmentOpen, setIsAddDepartmentOpen] = useState(false);
     const departmentOptions = [
         { value: '', label: t('all') },
         { value: 'engineering', label: 'Engineering' },
@@ -17,14 +18,14 @@ const PositionsRoles = () => {
         { value: 'marketing', label: 'Marketing' },
     ];
 
-    const addDeparment = (e) => {
-        const add = document.querySelector('.adddepartment')
-        add.style.display = 'none'
-        if (add) {
-            console.log('fff')
-            document.body.style.overflow = 'hidden'
-            add.style.display = 'block'
-        }
+    const addDeparment = () => {
+        setIsAddDepartmentOpen(true);
+        document.body.style.overflow = 'hidden';
+    }
+    
+    const closeAddDepartment = () => {
+        setIsAddDepartmentOpen(false);
+        document.body.style.overflow = 'auto';
     }
     const addRole = (e) => {
         const add = document.querySelector('.add-role')
@@ -88,9 +89,11 @@ const PositionsRoles = () => {
     }
     return (
         <div className="page-container">
-            <div className='adddepartment'>
-                <AddDepartment />
-            </div>
+            {isAddDepartmentOpen && (
+                <div className='adddepartment'>
+                    <AddDepartment onClose={closeAddDepartment} />
+                </div>
+            )}
             <div className='add-role'>
                 <AddRole />
             </div>
