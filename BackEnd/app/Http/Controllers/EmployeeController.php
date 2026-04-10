@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateEmployeeRequest;
+use App\Http\Resources\EmployeeResource;
 use App\Models\EmployeeProfile;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -16,6 +17,7 @@ class EmployeeController extends Controller
     use ApiResponse;
 
     // ── GET /api/employees ───────────────────────────────────────────────────
+    // Middleware: auth:sanctum + role:hr,manager
     public function index(Request $request): JsonResponse
     {
         $employees = EmployeeProfile::with(['user', 'department'])
@@ -29,7 +31,7 @@ class EmployeeController extends Controller
                 fn($q) => $q->status($request->status)
             )
             ->when($request->filled('department_id'),
-                fn($q) => $q->department($request->department_id)
+                fn($q) => $q->department((int) $request->department_id)
             )
             ->when($request->filled('job_title'),
                 fn($q) => $q->jobTitle($request->job_title)
@@ -38,7 +40,7 @@ class EmployeeController extends Controller
 
         return $this->successResponse(
             data: [
-                'employees'  => $employees->map(fn($emp) => $this->formatEmployee($emp)),
+                'employees'  => EmployeeResource::collection($employees)->resolve(),
                 'pagination' => [
                     'total'        => $employees->total(),
                     'per_page'     => $employees->perPage(),
@@ -50,7 +52,36 @@ class EmployeeController extends Controller
         );
     }
 
+    // ── GET /api/employees/positions ─────────────────────────────────────────
+    // Middleware: auth:sanctum + role:hr,manager
+    // ⚠️ لازم يكون قبل {id} في الـ Routes
+    public function positions(): JsonResponse
+    {
+        $positions = EmployeeProfile::select('job_title')
+            ->whereNotNull('job_title')
+            ->distinct()
+            ->orderBy('job_title')
+            ->pluck('job_title');
+
+        return $this->successResponse(
+            data: $positions,
+            message: 'Positions retrieved successfully.'
+        );
+    }
+
+    // ── GET /api/employees/statuses ──────────────────────────────────────────
+    // Middleware: auth:sanctum + role:hr,manager
+    // ⚠️ لازم يكون قبل {id} في الـ Routes
+    public function statuses(): JsonResponse
+    {
+        return $this->successResponse(
+            data: ['active', 'on_leave', 'inactive', 'terminated'],
+            message: 'Statuses retrieved successfully.'
+        );
+    }
+
     // ── GET /api/employees/{id} ──────────────────────────────────────────────
+    // Middleware: auth:sanctum + role:hr,manager
     public function show(int $id): JsonResponse
     {
         $employee = EmployeeProfile::with(['user', 'department', 'manager'])->find($id);
@@ -63,12 +94,13 @@ class EmployeeController extends Controller
         }
 
         return $this->successResponse(
-            data: $this->formatEmployee($employee),
+            data: new EmployeeResource($employee),
             message: 'Employee retrieved successfully.'
         );
     }
 
     // ── PUT /api/employees/{id} ──────────────────────────────────────────────
+    // Middleware: auth:sanctum + role:hr
     public function update(UpdateEmployeeRequest $request, int $id): JsonResponse
     {
         $employee = EmployeeProfile::find($id);
@@ -82,9 +114,7 @@ class EmployeeController extends Controller
 
         $employee = DB::transaction(function () use ($request, $employee) {
 
-            // رفع صورة جديدة إذا أُرسلت
             if ($request->hasFile('profile_pic')) {
-                // حذف الصورة القديمة أولاً
                 if ($employee->profile_pic) {
                     Storage::disk('public')->delete($employee->profile_pic);
                 }
@@ -104,12 +134,13 @@ class EmployeeController extends Controller
         });
 
         return $this->successResponse(
-            data: $this->formatEmployee($employee->fresh(['user', 'department'])),
+            data: new EmployeeResource($employee->fresh(['user', 'department', 'manager'])),
             message: 'Employee updated successfully.'
         );
     }
 
     // ── DELETE /api/employees/{id} ───────────────────────────────────────────
+    // Middleware: auth:sanctum + role:hr
     public function destroy(int $id): JsonResponse
     {
         $employee = EmployeeProfile::find($id);
@@ -121,67 +152,14 @@ class EmployeeController extends Controller
             );
         }
 
-        // حذف الصورة من الـ storage
         if ($employee->profile_pic) {
             Storage::disk('public')->delete($employee->profile_pic);
         }
 
-        // حذف الـ user — cascade يحذف الـ profile تلقائياً
         $employee->user->delete();
 
         return $this->successResponse(
             message: 'Employee deleted successfully.'
-        );
-    }
-
-    // ── Helper: تنسيق بيانات الموظف ─────────────────────────────────────────
-    private function formatEmployee(EmployeeProfile $employee): array
-    {
-        return [
-            'id'                => $employee->id,
-            'user_id'           => $employee->user_id,
-            'employee_id'       => $employee->employee_id,
-            'full_name'         => $employee->full_name,
-            'email'             => $employee->user?->email,
-            'job_title'         => $employee->job_title,
-            'employment_status' => $employee->employment_status,
-            'department'        => $employee->department?->name ?? null,
-            'department_id'     => $employee->department_id ?? null,
-            'phone_number'      => $employee->phone_number,
-            'branch'            => $employee->branch,
-            'city'              => $employee->city,
-            'grade'             => $employee->grade,
-            'start_date'        => $employee->start_date,
-            // ← Accessor من الـ Model بدل ما نعيد حساب الـ URL هنا
-            'profile_pic'       => $employee->profile_pic_url,
-        ];
-    }
-
-    // ── GET /api/employees/positions ─────────────────────────────────────────
-    public function positions(): JsonResponse
-    {
-        $positions = EmployeeProfile::select('job_title')
-            ->whereNotNull('job_title')
-            ->distinct()
-            ->pluck('job_title');
-
-        return $this->successResponse(
-            data: $positions,
-            message: 'Positions retrieved successfully.'
-        );
-    }
-
-    // ── GET /api/employees/statuses ──────────────────────────────────────────
-    public function statuses(): JsonResponse
-    {
-        $statuses = EmployeeProfile::select('employment_status')
-            ->whereNotNull('employment_status')
-            ->distinct()
-            ->pluck('employment_status');
-
-        return $this->successResponse(
-            data: $statuses,
-            message: 'Statuses retrieved successfully.'
         );
     }
 }

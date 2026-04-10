@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import Header from '../Header/Header';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import Tabs from '../Tabs/Tabs';
-import FilterDropdown from '../FilterDropdown/FilterDropdown';
+import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 import JobCard from '../JobCard/JobCard';
 import CreateJobModal from '../CreateJobModal/CreateJobModal';
 import '../Main-page/Recrutment.css';
