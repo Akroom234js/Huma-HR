@@ -1,0 +1,50 @@
+services:
+  # 1. خدمة الويب لتطبيق Laravel
+  - type: web
+    name: my-laravel-app
+    env: docker
+    plan: free # يمكنكِ تغييره لاحقاً
+    region: frankfurt # اختاري المنطقة الأقرب لكِ
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        fromService:
+          type: pserv
+          name: mysql-db
+          property: host
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_DATABASE
+        value: laravel_db
+      - key: DB_USERNAME
+        value: laravel_user
+      - key: DB_PASSWORD
+        fromService:
+          type: pserv
+          name: mysql-db
+          property: password
+
+  # 2. خدمة قاعدة البيانات MySQL (كخدمة خاصة)
+  - type: pserv
+    name: mysql-db
+    env: docker
+    dockerfilePath: Dockerfile.mysql
+    region: frankfurt
+    disk:
+      name: mysql-data
+      mountPath: /var/lib/mysql
+      sizeGB: 1 # كافٍ جداً للبداية
+    envVars:
+      - key: MYSQL_ROOT_PASSWORD
+        generateValue: true
+      - key: MYSQL_DATABASE
+        value: laravel_db
+      - key: MYSQL_USER
+        value: laravel_user
+      - key: MYSQL_PASSWORD
+        generateValue: true
