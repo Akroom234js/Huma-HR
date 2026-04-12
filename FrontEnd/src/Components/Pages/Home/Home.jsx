@@ -242,6 +242,18 @@ export default function Home() {
                       {loading ? "Signing In..." : "Sign In to Dashboard"}
                     </button>
 
+                    <button 
+                      className="ptn-login" 
+                      style={{ marginTop: '10px', backgroundColor: 'var(--text-secondary)', opacity: 0.8 }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        localStorage.setItem("user", JSON.stringify({ role: "employee", name: "Test Employee" }));
+                        window.location.href = "/portal/dashboard";
+                      }}
+                    >
+                      Login as Employee (Dev Only)
+                    </button>
+
                   </div>
                 </div>
 

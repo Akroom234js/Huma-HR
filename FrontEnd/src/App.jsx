@@ -43,6 +43,13 @@ import AttendanceTracking from './Components/Pages/Reports/AttendanceTracking/At
 import EmployeesReports from './Components/Pages/Reports/EmployeesReports/EmployeesReports';
 import Requests from './Components/Pages/Requests/Requests';
 
+// Employee Portal Components
+import EmpLayout from './Components/Pages/EmployeePortal/Layout/EmpLayout';
+import EmployeeDashboard from './Components/Pages/EmployeePortal/Dashboard/EmployeeDashboard';
+import EmployeeProfile from './Components/Pages/EmployeePortal/Profile/EmployeeProfile';
+import MyRequests from './Components/Pages/EmployeePortal/MyRequests/MyRequests';
+
+
 function App() {
   return (
     <BrowserRouter>
@@ -183,6 +190,21 @@ function App() {
             </div>
           }
         />
+
+        {/* Employee Portal Routes */}
+        <Route path="/portal" element={<EmpLayout />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<EmployeeDashboard />} />
+          <Route path="profile" element={<EmployeeProfile />} />
+          <Route path="my-requests" element={<MyRequests />} />
+          <Route path="my-requests/:subpage" element={<MyRequests />} />
+          {/* Placeholders for other employee pages */}
+          <Route path="payroll" element={<div style={{padding: '2rem'}}><h1>My Payroll</h1><p>Coming Soon...</p></div>} />
+          <Route path="performance" element={<div style={{padding: '2rem'}}><h1>My Performance</h1><p>Coming Soon...</p></div>} />
+          <Route path="rewards" element={<div style={{padding: '2rem'}}><h1>Rewards & Bonuses</h1><p>Coming Soon...</p></div>} />
+          <Route path="chat" element={<div style={{padding: '2rem'}}><h1>Chat & Notifications</h1><p>Coming Soon...</p></div>} />
+        </Route>
+
       </Routes>
 
     </BrowserRouter>
