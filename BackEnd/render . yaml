@@ -24,6 +24,7 @@ services:
       - key: DB_USERNAME
         value: laravel_user
       - key: DB_PASSWORD
+        value: password123
         fromService:
           type: pserv
           name: mysql-db
@@ -47,4 +48,5 @@ services:
       - key: MYSQL_USER
         value: laravel_user
       - key: MYSQL_PASSWORD
+        value: password123
         generateValue: true
