@@ -1,14 +1,14 @@
 // import React from 'react';
 import "./AllEmployees.css";
-import FilterDropdown from "../../Recrutment/FilterDropdown/FilterDropdown";
+import FilterDropdown from "../../../FilterDropdown/FilterDropdown";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
-// import { useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { useState, useEffect, useCallback } from "react";
 import AddEmployeeModal from "../Add New Employee/AddEmployeeModal";
 import apiClient from "../../../../apiConfig";
 
 const AllEmployees = () => {
-  // const { t } = useTranslation("Sidebar/Sidebar");
+  const { t } = useTranslation("Sidebar/Sidebar");
   const [selectedDepartment1, setSelectedDepartment1] = useState("");
   const [EmpStatus, setEmpStatus] = useState("");
   const [EmpPosition, setEmpPosition] = useState("");
@@ -25,7 +25,7 @@ const AllEmployees = () => {
       const [deptRes, statsRes, posRes] = await Promise.all([
         apiClient.get('/departments'),
         apiClient.get('/employees/statuses'),
-        apiClient.get('/employees/positions')
+        apiClient.get('/positions') // Updated from /employees/positions
       ]);
 
       setDepartmentOptions([
@@ -40,7 +40,7 @@ const AllEmployees = () => {
 
       setPositionOptions([
         { value: "", label: "Position" },
-        ...(posRes.data?.data?.map(p => ({ value: p, label: p })) || [])
+        ...(posRes.data?.data?.positions?.map(p => ({ value: p.title, label: p.title })) || [])
       ]);
     } catch (error) {
       console.error("Failed to fetch filters", error);
@@ -90,7 +90,7 @@ const AllEmployees = () => {
       employeeId: employee.employee_id,
       name: employee.full_name,
       job: employee.job_title,
-      department: employee.department_id,
+      department: employee.department?.id || employee.department,
       status: employee.employment_status,
       dob: employee.date_of_birth,
       phone: employee.phone_number,
@@ -223,7 +223,7 @@ const AllEmployees = () => {
                 </td>
 
                 <td>{e.employee_id}</td>
-                <td>{e.department}</td>
+                <td>{e.department?.name || e.department}</td>
                 <td>{e.job_title}</td>
 
                 <td>
