@@ -1,34 +1,35 @@
-# استخدام نسخة PHP 8.2 المناسبة لـ Laravel
+# استخدام نسخة PHP مناسبة لـ Laravel
 FROM php:8.2-fpm-alpine
 
-# تثبيت الإضافات الضرورية لـ Laravel و MySQL
+# تحديد مسار العمل
+WORKDIR /var/www/html
+
+# تثبيت الإضافات اللازمة لـ PHP و MySQL و Nginx
 RUN apk add --no-cache \
     nginx \
     libpng-dev \
-    libxml2-dev \
+    libzip-dev \
     zip \
     unzip \
     git \
-    curl
-
-RUN docker-php-ext-install pdo_mysql bcmath gd
+    && docker-php-ext-install pdo pdo_mysql gd zip
 
 # تثبيت Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# نسخ ملفات المشروع إلى الحاوية
-WORKDIR /var/www/html
+# نسخ ملفات المشروع
 COPY . .
 
-# تثبيت التبعيات (Dependencies)
+# تثبيت مكتبات Laravel
 RUN composer install --no-dev --optimize-autoloader
 
-# إعدادات الصلاحيات لمجلدات Laravel
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-
-# نسخ إعدادات Nginx التي أنشأناها في الخطوة الأولى
+# إعداد Nginx
 COPY docker/nginx/default.conf /etc/nginx/http.d/default.conf
 
-# تشغيل التطبيق (PHP + Nginx)
+# إعطاء الصلاحيات لمجلدات التخزين والكاش
+RUN chown -R www-data:www-data storage bootstrap/cache
+
 EXPOSE 80
-CMD php-fpm -D && nginx -g "daemon off;"
+
+# تشغيل السيرفر
+CMD ["sh", "-c", "php artisan config:cache && php artisan route:cache && nginx && php-fpm"]

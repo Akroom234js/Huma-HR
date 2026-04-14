@@ -1,10 +1,12 @@
 services:
-  # 1. خدمة الويب لتطبيق Laravel
+  # خدمة الويب لتطبيق Laravel (الباك إند فقط)
   - type: web
-    name: my-laravel-app
+    name: huma-hr-backend
     env: docker
     plan: free
-    region: frankfurt
+    region: frankfurt # يمكنك تغييرها لـ ohio لتكون أقرب لـ TiDB إذا أردت
+    dockerContext: BackEnd
+    dockerfilePath: Dockerfile
     envVars:
       - key: APP_ENV
         value: production
@@ -13,35 +15,14 @@ services:
       - key: DB_CONNECTION
         value: mysql
       - key: DB_HOST
-        fromService:
-          type: pserv
-          name: mysql-db
-          property: host
+        sync: false # سنقوم بإدخال الرابط يدوياً في Render
       - key: DB_PORT
-        value: "3306"
+        value: "4000" # منفذ TiDB الافتراضي هو 4000
       - key: DB_DATABASE
-        value: laravel_db
+        value: test
       - key: DB_USERNAME
-        value: laravel_user
+        sync: false # سنقوم بإدخاله يدوياً في Render
       - key: DB_PASSWORD
-        value: mysecretpassword123
-
-  # 2. خدمة قاعدة البيانات MySQL (كخدمة خاصة)
-  - type: pserv
-    name: mysql-db
-    env: docker
-    dockerfilePath: Dockerfile.mysql
-    region: frankfurt
-    disk:
-      name: mysql-data
-      mountPath: /var/lib/mysql
-      sizeGB: 1
-    envVars:
-      - key: MYSQL_ROOT_PASSWORD
-        value: rootpassword123
-      - key: MYSQL_DATABASE
-        value: laravel_db
-      - key: MYSQL_USER
-        value: laravel_user
-      - key: MYSQL_PASSWORD
-        value: mysecretpassword123
+        sync: false # سنقوم بإدخاله يدوياً في Render
+      - key: APP_KEY
+        sync: false # مفتاح التطبيق الخاص بك
