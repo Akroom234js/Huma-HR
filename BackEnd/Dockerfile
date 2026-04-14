@@ -32,4 +32,4 @@ RUN chown -R www-data:www-data storage bootstrap/cache
 EXPOSE 80
 
 # تشغيل السيرفر
-CMD ["sh", "-c", "php artisan config:cache && php artisan route:cache && nginx && php-fpm"]
+CMD ["sh", "-c", "php artisan migrate --force && php artisan db:seed --force && php artisan config:cache && php artisan route:cache && nginx && php-fpm"]
