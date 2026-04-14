@@ -1,10 +1,6 @@
-# استخدام نسخة PHP مناسبة لـ Laravel
 FROM php:8.2-fpm-alpine
 
-# تحديد مسار العمل
-WORKDIR /var/www/html
-
-# تثبيت الإضافات اللازمة لـ PHP و MySQL و Nginx
+# تثبيت الإضافات الضرورية
 RUN apk add --no-cache \
     nginx \
     libpng-dev \
@@ -17,19 +13,24 @@ RUN apk add --no-cache \
 # تثبيت Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+WORKDIR /var/www/html
+
 # نسخ ملفات المشروع
 COPY . .
 
-# تثبيت مكتبات Laravel
+# تثبيت المكتبات
 RUN composer install --no-dev --optimize-autoloader
 
-# إعداد Nginx
+# إعداد Nginx (تأكد من وجود ملف default.conf في مساره)
 COPY docker/nginx/default.conf /etc/nginx/http.d/default.conf
 
-# إعطاء الصلاحيات لمجلدات التخزين والكاش
+# إعطاء صلاحيات التنفيذ لملف الـ entrypoint
+RUN chmod +x entrypoint.sh
+
+# الصلاحيات لمجلدات Laravel
 RUN chown -R www-data:www-data storage bootstrap/cache
 
 EXPOSE 80
 
-# تشغيل السيرفر
-CMD ["sh", "-c", "php artisan migrate --force && php artisan db:seed --force && php artisan config:cache && php artisan route:cache && nginx && php-fpm"]
+# استخدام ملف الـ entrypoint للتشغيل
+ENTRYPOINT ["./entrypoint.sh"]
