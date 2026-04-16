@@ -22,7 +22,10 @@
   white-space: nowrap;
   margin-top: 0;
   align-self: center;
-  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  transition:
+    background 0.2s,
+    transform 0.2s,
+    box-shadow 0.2s;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
   animation: fadeInSlideDown 0.6s ease-out forwards;
 }
@@ -399,7 +402,6 @@
     justify-content: space-around;
   }
 }
-
 
 @media (max-width: 768px) {
   .con-car .card1 {
