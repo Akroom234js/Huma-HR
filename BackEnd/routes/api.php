@@ -5,6 +5,8 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeMovementController;
 use App\Http\Controllers\SalaryAdjustmentController;
+use App\Http\Controllers\EmployeeRequestController;
+use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PositionController;
 use Illuminate\Support\Facades\Route;
 
