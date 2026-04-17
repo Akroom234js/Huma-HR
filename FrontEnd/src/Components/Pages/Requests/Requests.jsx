@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './Requests.css';
 import MainContent from './Layout/MainContent/MainContent';
@@ -9,146 +9,74 @@ import TabSwitcher from './Navigation/TabSwitcher/TabSwitcher';
 import CategoryFilter from './Navigation/CategoryFilter/CategoryFilter';
 import RequestList from './Requests/RequestList/RequestList';
 import Pagination from './UI/Pagination/Pagination';
+import apiClient from '../../../apiConfig';
 
-// Enhanced Mock data for all 10 request types
-const requestsData = [
-    {
-        id: 1,
-        employee: { name: 'Sarah Miller', role: 'Senior Product Designer', avatar: null },
-        type: 'vacation',
-        requestType: { icon: 'event', label: 'Annual Leave' },
-        status: 'Pending',
-        data: {
-            leaveType: 'Annual',
-            range: 'OCT 12 - OCT 16',
-            totalDays: 4,
-            remainingBalance: 12
-        }
-    },
-    {
-        id: 2,
-        employee: { name: 'Marcus Chen', role: 'Backend Engineer', avatar: null },
-        type: 'advance',
-        requestType: { icon: 'payments', label: 'Advance Request' },
-        status: 'Approved',
-        data: {
-            amount: '$2,500.00',
-            installments: 5,
-            reason: 'Home renovation deposit'
-        }
-    },
-    {
-        id: 3,
-        employee: { name: 'Elena Rodriguez', role: 'HR Specialist', avatar: null },
-        type: 'equipment',
-        requestType: { icon: 'inventory_2', label: 'Equipment Request' },
-        status: 'Rejected',
-        data: {
-            deviceType: 'Laptop',
-            specs: 'MacBook Pro 16" M3 Max',
-            reason: 'Performance issues with current device'
-        }
-    },
-    {
-        id: 4,
-        employee: { name: 'David Kim', role: 'Data Analyst', avatar: null },
-        type: 'vacation',
-        requestType: { icon: 'medical_services', label: 'Sick Leave' },
-        status: 'Pending',
-        data: {
-            leaveType: 'Sick',
-            range: 'OCT 05 - OCT 07',
-            totalDays: 2,
-            remainingBalance: 4
-        }
-    },
-    {
-        id: 5,
-        employee: { name: 'Aisha Hassan', role: 'UX Researcher', avatar: null },
-        type: 'compensation',
-        requestType: { icon: 'receipt_long', label: 'Compensation' },
-        status: 'Pending',
-        data: {
-            amount: '$450.00',
-            date: '2024-03-20',
-            category: 'Travel'
-        }
-    },
-    {
-        id: 6,
-        employee: { name: 'Tom Wilson', role: 'Sales Lead', avatar: null },
-        type: 'data-update',
-        requestType: { icon: 'edit_note', label: 'Data Update' },
-        status: 'Approved',
-        data: {
-            field: 'Address',
-            before: '123 Oak St, NY',
-            after: '456 Pine St, NJ'
-        }
-    },
-    {
-        id: 7,
-        employee: { name: 'Julia Roberts', role: 'Security Engineer', avatar: null },
-        type: 'resignation',
-        requestType: { icon: 'exit_to_app', label: 'Resignation' },
-        status: 'Pending',
-        data: {
-            lastWorkingDay: '2024-05-15',
-            keywords: 'Career growth, personal projects'
-        }
-    },
-    {
-        id: 8,
-        employee: { name: 'Kevin Hart', role: 'Fullstack Dev', avatar: null },
-        type: 'transfer',
-        requestType: { icon: 'sync_alt', label: 'Transfer' },
-        status: 'Pending',
-        data: {
-            currentDept: 'Engineering',
-            newDept: 'Product',
-            newTitle: 'Product Engineer'
-        }
-    },
-    {
-        id: 9,
-        employee: { name: 'Emma Stone', role: 'Junior Marketing', avatar: null },
-        type: 'promotion',
-        requestType: { icon: 'trending_up', label: 'Promotion' },
-        status: 'Pending',
-        data: {
-            currentTitle: 'Junior Marketing Associate',
-            proposedTitle: 'Marketing Specialist',
-            salaryIncrease: '15%'
-        }
-    },
-    {
-        id: 10,
-        employee: { name: 'Ryan Gosling', role: 'Lead Designer', avatar: null },
-        type: 'experience-certificate',
-        requestType: { icon: 'card_membership', label: 'Exp. Certificate' },
-        status: 'Approved',
-        data: {
-            purpose: 'Bank Loan Application'
-        }
-    }
-];
+const TYPE_CONFIG = {
+    'vacation': { icon: 'event', label: 'Annual Leave' },
+    'advance': { icon: 'payments', label: 'Advance Request' },
+    'equipment': { icon: 'inventory_2', label: 'Equipment Request' },
+    'compensation': { icon: 'receipt_long', label: 'Compensation' },
+    'data-update': { icon: 'edit_note', label: 'Data Update' },
+    'resignation': { icon: 'exit_to_app', label: 'Resignation' },
+    'transfer': { icon: 'sync_alt', label: 'Transfer' },
+    'promotion': { icon: 'trending_up', label: 'Promotion' },
+    'experience-certificate': { icon: 'card_membership', label: 'Exp. Certificate' }
+};
 
 const Requests = () => {
     const { category = 'all' } = useParams();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('all');
+    const [requests, setRequests] = useState([]);
+    const [stats, setStats] = useState({ pending: 0, approved: 0, rejected: 0 });
+    const [isLoading, setIsLoading] = useState(true);
+    const [pagination, setPagination] = useState({ total: 0, current: 0 });
+
+    const fetchRequests = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const params = {
+                type: category,
+                status: activeTab,
+                per_page: 10
+            };
+            const res = await apiClient.get('/requests', { params });
+            const rawRequests = res.data?.data?.requests || [];
+            
+            // Map backend data to frontend structure
+            const mapped = rawRequests.map(req => ({
+                id: req.id,
+                employee: { 
+                    name: req.employee_profile?.full_name || '—', 
+                    role: req.employee_profile?.job_title || '—', 
+                    avatar: req.employee_profile?.profile_pic_url 
+                },
+                type: req.type,
+                requestType: TYPE_CONFIG[req.type] || { icon: 'help', label: req.type },
+                status: req.status.charAt(0).toUpperCase() + req.status.slice(1),
+                data: req.details || {}
+            }));
+
+            setRequests(mapped);
+            setStats(res.data?.data?.stats || { pending: 0, approved: 0, rejected: 0 });
+            setPagination({
+                total: res.data?.data?.pagination?.total || 0,
+                current: mapped.length
+            });
+        } catch (error) {
+            console.error("Failed to fetch requests", error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [category, activeTab]);
+
+    useEffect(() => {
+        fetchRequests();
+    }, [fetchRequests]);
 
     const handleCategoryChange = (newCategory) => {
         navigate(`/request/${newCategory === 'all' ? '' : newCategory}`);
     };
-
-    const filteredRequests = useMemo(() => {
-        return requestsData.filter(req => {
-            const matchesStatus = activeTab === 'all' || req.status.toLowerCase() === activeTab;
-            const matchesCategory = category === 'all' || req.type === category;
-            return matchesStatus && matchesCategory;
-        });
-    }, [activeTab, category]);
 
     return (
         <div className="req-page">
@@ -162,13 +90,13 @@ const Requests = () => {
                     <StatCard 
                         icon="assignment_late" 
                         label="Total Pending" 
-                        value="12" 
-                        trend="+3 this week" 
+                        value={stats.pending} 
+                        trend={stats.pending > 0 ? `Needs attention` : "Clear"} 
                     />
                     <StatCard 
                         icon="verified" 
                         label="Total Approved" 
-                        value="156" 
+                        value={stats.approved} 
                     />
                 </StatsContainer>
 
@@ -182,9 +110,13 @@ const Requests = () => {
                     onCategoryChange={handleCategoryChange} 
                 />
 
-                <RequestList requests={filteredRequests} />
+                {isLoading ? (
+                    <div className="req-loading">Loading requests...</div>
+                ) : (
+                    <RequestList requests={requests} />
+                )}
 
-                <Pagination totalRequests={requestsData.length} currentCount={filteredRequests.length} />
+                <Pagination totalRequests={pagination.total} currentCount={pagination.current} />
             </MainContent>
         </div>
     );
