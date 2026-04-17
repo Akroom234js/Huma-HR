@@ -10,7 +10,7 @@ class EmployeeChangeLog extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'user_id',
+        'employee_profile_id',
         'field_changed',
         'changed_by',
         'previous_value',
@@ -25,8 +25,8 @@ class EmployeeChangeLog extends Model
         ];
     }
 
-    public function user(): BelongsTo
-{
-    return $this->belongsTo(User::class);
-}
+    public function employeeProfile(): BelongsTo
+    {
+        return $this->belongsTo(EmployeeProfile::class);
+    }
 }
