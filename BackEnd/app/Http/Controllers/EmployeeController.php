@@ -127,7 +127,7 @@ class EmployeeController extends Controller
                 'phone_number', 'address', 'emergency_contacts', 'manager_id',
                 'branch', 'city', 'grade', 'job_title', 'employment_status',
                 'department_id', 'start_date', 'internal_transfer_date',
-                'resignation_date',
+                'resignation_date', 'salary',
             ]));
 
             return $employee;

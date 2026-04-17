@@ -95,28 +95,27 @@ const EmpSidebar = () => {
                             </NavLink>
 
                             {/* My Requests (Accordion) */}
-                            <div className="nav-section">
-                                <button
-                                    className={`nav-item nav-toggle ${isRequestsActive ? 'active' : ''}`}
-                                    onClick={() => handleSectionToggle('requests', '/portal/my-requests/leaves')}
-                                >
-                                    <div className="nav-item-content">
-                                        <span className="nav-icon material-symbols-outlined">task_alt</span>
-                                        <p>{t('My-Requests') || 'My Requests'}</p>
-                                    </div>
-                                    <span className={`material-symbols-outlined expand-icon ${openMenu === 'requests' ? 'expanded' : ''}`}>
-                                        expand_more
-                                    </span>
-                                </button>
-                                <div className={`sub-menu ${openMenu === 'requests' ? 'open' : ''}`}>
-                                    <NavLink to="/portal/my-requests/leaves" className="sub-nav-item">
-                                        {t('My-Leaves') || 'My Leaves'}
-                                    </NavLink>
-                                    <NavLink to="/portal/my-requests/attendance" className="sub-nav-item">
-                                        {t('My-Attendance') || 'My Attendance'}
-                                    </NavLink>
+                            {/* رابط الإجازات المنفصل */}
+                            <NavLink
+                                to="/portal/my-requests/leaves"
+                                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                            >
+                                <div className="nav-item-content">
+                                    <span className="nav-icon material-symbols-outlined">event_available</span>
+                                    <p>{t('My-Leaves') || 'My Leaves'}</p>
                                 </div>
-                            </div>
+                            </NavLink>
+
+                            {/* رابط الحضور المنفصل */}
+                            <NavLink
+                                to="/portal/my-requests/attendance"
+                                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                            >
+                                <div className="nav-item-content">
+                                    <span className="nav-icon material-symbols-outlined">fingerprint</span>
+                                    <p>{t('My-Attendance') || 'My Attendance'}</p>
+                                </div>
+                            </NavLink>
 
                             {/* Payroll */}
                             <NavLink to="/portal/payroll" className="nav-item">

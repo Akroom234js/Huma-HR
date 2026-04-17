@@ -56,6 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/employees/statuses',            [EmployeeController::class,         'statuses']);
         Route::get('/employee-movements/types',      [EmployeeMovementController::class, 'types']);
         Route::get('/salary-adjustments/types',      [SalaryAdjustmentController::class, 'types']);
+        Route::get('/departments/stats',             [DepartmentController::class,        'stats']);
         Route::get('/departments',                   [DepartmentController::class,        'index']);
         Route::get('/departments/{id}',              [DepartmentController::class,        'show']);
 
@@ -74,6 +75,15 @@ Route::middleware('auth:sanctum')->group(function () {
         // Positions
         Route::get('/positions',      [PositionController::class, 'index']);
         Route::get('/positions/{id}', [PositionController::class, 'show']);
+
+        // Requests
+        Route::get('/requests',               [EmployeeRequestController::class, 'index']);
+        Route::patch('/requests/{id}/status', [EmployeeRequestController::class, 'updateStatus']);
+
+        // Payroll
+        Route::get('/payroll',          [PayrollController::class, 'index']);
+        Route::patch('/payroll/{id}/pay', [PayrollController::class, 'pay']);
+        Route::post('/payroll/pay-all',  [PayrollController::class, 'payAll']);
     });
     // ── Department Manager — قسمه وفريقه فقط ────────────────────────────
     Route::middleware('role:department_manager')->group(function () {

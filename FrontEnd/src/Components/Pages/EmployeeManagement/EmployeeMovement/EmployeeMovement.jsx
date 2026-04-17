@@ -4,63 +4,7 @@ import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 import { useTranslation } from 'react-i18next';
 import AddMovement from './Add New Movement/AddMovement';
-
-const movementData = [
-    {
-        name: 'Olivia Rhye',
-        id: 'EMP001',
-        date: '2024-07-26',
-        typeKey: 'type-promotion',
-        previousValue: 'Product Designer',
-        newValue: 'Senior Product Designer',
-        changedBy: 'Admin',
-    },
-    {
-        name: 'Phoenix Baker',
-        id: 'EMP002',
-        date: '2024-07-20',
-        typeKey: 'type-transfer',
-        previousValue: 'Marketing Team',
-        newValue: 'Sales Team',
-        changedBy: 'HR Manager',
-    },
-    {
-        name: 'Lana Steiner',
-        id: 'EMP003',
-        date: '2024-07-15',
-        typeKey: 'type-salary-adjustment',
-        previousValue: '$72,000',
-        newValue: '$78,000',
-        changedBy: 'Finance Dept',
-    },
-    {
-        name: 'Demi Wilkinson',
-        id: 'EMP004',
-        date: '2024-07-01',
-        typeKey: 'type-department-change',
-        previousValue: 'Engineering',
-        newValue: 'Research & Development',
-        changedBy: 'Admin',
-    },
-    {
-        name: 'Candice Wu',
-        id: 'EMP005',
-        date: '2024-06-25',
-        typeKey: 'type-promotion',
-        previousValue: 'Junior Developer',
-        newValue: 'Software Engineer',
-        changedBy: 'Admin',
-    },
-    {
-        name: 'Natali Craig',
-        id: 'EMP006',
-        date: '2024-06-10',
-        typeKey: 'type-salary-adjustment',
-        previousValue: '$90,000',
-        newValue: '$95,000',
-        changedBy: 'HR Manager',
-    },
-];
+import apiClient from '../../../../apiConfig';
 
 const policyItems = [
     {
@@ -86,9 +30,45 @@ const EmployeeMovement = () => {
     const [typeFilter, setTypeFilter] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     // State for movements list
-    const [movements, setMovements] = useState(movementData);
+    const [movements, setMovements] = useState([]);
+
+    const fetchMovements = React.useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const params = {};
+            if (searchQuery) params.search = searchQuery;
+            if (typeFilter) params.type = typeFilter.replace('type-', '');
+            if (startDate) params.date_from = startDate;
+            if (endDate) params.date_to = endDate;
+
+            const res = await apiClient.get('/employee-movements', { params });
+            const data = res.data?.data?.movements || [];
+
+            // Map backend data to frontend structure
+            const mappedMovements = data.map(m => ({
+                name: m.employee?.full_name || '—',
+                id: m.employee?.employee_id || '—',
+                date: m.movement_date,
+                typeKey: `type-${m.movement_type}`,
+                previousValue: m.previous_value,
+                newValue: m.new_value,
+                changedBy: m.created_by?.email || 'System',
+            }));
+
+            setMovements(mappedMovements);
+        } catch (error) {
+            console.error("Failed to fetch movements", error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [searchQuery, typeFilter, startDate, endDate]);
+
+    React.useEffect(() => {
+        fetchMovements();
+    }, [fetchMovements]);
 
     const movementTypeOptions = [
         { value: '', label: t('filter-movement-type') },
@@ -98,26 +78,11 @@ const EmployeeMovement = () => {
         { value: 'type-salary-adjustment', label: t('filter-salary-adjustment') },
     ];
 
-    const handleAddMovement = (newMovement) => {
-        setMovements(prev => [
-            {
-                ...newMovement,
-                date: newMovement.date || new Date().toISOString().split('T')[0],
-                changedBy: 'Admin' // Simulation
-            },
-            ...prev
-        ]);
+    const handleAddMovement = () => {
+        fetchMovements(); // Refresh list after adding
     };
 
-    const filteredData = movements.filter((item) => {
-        const matchesSearch = item.name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase());
-        const matchesType = typeFilter ? item.typeKey === typeFilter : true;
-        const matchesStart = startDate ? item.date >= startDate : true;
-        const matchesEnd = endDate ? item.date <= endDate : true;
-        return matchesSearch && matchesType && matchesStart && matchesEnd;
-    });
+    const filteredData = movements; // Filtering is now handled by the backend
 
     return (
         <div className="em-page">

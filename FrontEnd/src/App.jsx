@@ -45,9 +45,14 @@ import Requests from './Components/Pages/Requests/Requests';
 
 // Employee Portal Components
 import EmpLayout from './Components/Pages/EmployeePortal/Layout/EmpLayout';
-import EmployeeDashboard from './Components/Pages/EmployeePortal/Dashboard/EmployeeDashboard';
-import EmployeeProfile from './Components/Pages/EmployeePortal/Profile/EmployeeProfile';
-import MyRequests from './Components/Pages/EmployeePortal/MyRequests/MyRequests';
+import Dashboard from './Components/Pages/EmployeePortal/Dashboard/Dashboard';
+import Profile from './Components/Pages/EmployeePortal/Profile/Profile';
+import Leaves from './Components/Pages/EmployeePortal/MyRequests/Leaves';
+import MyAttendance from './Components/Pages/EmployeePortal/MyRequests/Attendance';
+import Payroll from './Components/Pages/EmployeePortal/Payroll/Payroll';
+import Performance from './Components/Pages/EmployeePortal/Performance/Performance';
+import Rewards from './Components/Pages/EmployeePortal/Rewards/Rewards';
+import Chat from './Components/Pages/EmployeePortal/Chat/Chat';
 
 
 function App() {
@@ -194,15 +199,14 @@ function App() {
         {/* Employee Portal Routes */}
         <Route path="/portal" element={<EmpLayout />}>
           <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<EmployeeDashboard />} />
-          <Route path="profile" element={<EmployeeProfile />} />
-          <Route path="my-requests" element={<MyRequests />} />
-          <Route path="my-requests/:subpage" element={<MyRequests />} />
-          {/* Placeholders for other employee pages */}
-          <Route path="payroll" element={<div style={{padding: '2rem'}}><h1>My Payroll</h1><p>Coming Soon...</p></div>} />
-          <Route path="performance" element={<div style={{padding: '2rem'}}><h1>My Performance</h1><p>Coming Soon...</p></div>} />
-          <Route path="rewards" element={<div style={{padding: '2rem'}}><h1>Rewards & Bonuses</h1><p>Coming Soon...</p></div>} />
-          <Route path="chat" element={<div style={{padding: '2rem'}}><h1>Chat & Notifications</h1><p>Coming Soon...</p></div>} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="my-requests/leaves" element={<Leaves />} />
+          <Route path="my-requests/attendance" element={<MyAttendance />} />
+          <Route path="payroll" element={<Payroll />} />
+          <Route path="performance" element={<Performance />} />
+          <Route path="rewards" element={<Rewards />} />
+          <Route path="chat" element={<Chat />} />
         </Route>
 
       </Routes>

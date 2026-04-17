@@ -33,7 +33,7 @@ class UpdateEmployeeRequest extends FormRequest
             'job_title'              => 'sometimes|string|max:255',
             'employment_status'      => 'sometimes|in:active,on_leave,inactive,terminated',
             'department_id'          => 'sometimes|nullable|exists:departments,id',
-            'manager_id'             => 'sometimes|nullable|exists:users,id',
+            'manager_id'             => 'sometimes|nullable|exists:employee_profiles,id',
             'branch'                 => 'sometimes|string|max:255',
             'city'                   => 'sometimes|string|max:255',
             'grade'                  => 'sometimes|string|max:255',
@@ -42,6 +42,7 @@ class UpdateEmployeeRequest extends FormRequest
             'start_date'             => 'sometimes|date',
             'internal_transfer_date' => 'sometimes|date',
             'resignation_date'       => 'sometimes|date',
+            'salary'                 => 'sometimes|numeric|min:0',
         ];
     }
 

@@ -65,6 +65,7 @@ class AuthController extends Controller
                 'city'                   => $request->city,
                 'grade'                  => $request->grade,
                 'start_date'             => $request->start_date,
+                'salary'                 => $request->salary,
                 'internal_transfer_date' => $request->internal_transfer_date,
                 'resignation_date'       => $request->resignation_date,
             ]);

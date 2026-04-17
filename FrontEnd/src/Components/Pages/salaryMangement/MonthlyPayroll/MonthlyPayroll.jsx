@@ -1,88 +1,115 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import './MonthlyPayroll.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
-
-const initialData = [
-    {
-        id: 1, name: "John Doe", dept: "Engineering", month: "April 2024", basic: "$5,000.00", ot: "5 hrs",
-        dedTypes: [],
-        dedAmounts: [], final: "$4,500.00",
-        abs: "$0.00 (0 days)", date: "- -", ded: ["None"], reason: "-", by: "System", status: "Unpaid"
-    },
-    {
-        id: 2, name: "Jane Smith", dept: "Product", month: "April 2024", basic: "$6,200.00", ot: "0 hrs",
-        dedTypes: [{ label: "Unexcused Absence", class: "tag-unexcused" }, { label: "Lateness", class: "tag-lateness" }],
-        dedAmounts: [{ val: "$400.00", muted: false }, { val: "$50.00", muted: true }],
-        final: "$4,760.00",
-        abs: "$400.00 (2 days)", date: "2024-04-25", ded: ["Unexcused Absence: $400", "Lateness: $50"], reason: "2 days absence", by: "System", status: "Unpaid"
-    },
-    {
-        id: 3, name: "Peter Jones", dept: "Design", month: "April 2024", basic: "$4,500.00", ot: "10 hrs",
-        dedTypes: [{ label: "Policy Violation", class: "tag-policy" }],
-        dedAmounts: [{ val: "$75.00", muted: false }],
-        final: "$4,370.00",
-        abs: "$0.00 (0 days)", date: "2024-04-25", ded: ["Policy Violation: $75"], reason: "Policy Violation", by: "System", status: "Paid"
-    },
-    {
-        id: 4, name: "Mary Williams", dept: "Engineering", month: "March 2024", basic: "$7,000.00", ot: "2 hrs",
-        dedTypes: [],
-        dedAmounts: [], final: "$5,925.00",
-        abs: "$0.00 (0 days)", date: "- -", ded: ["None"], reason: "-", by: "System", status: "Paid"
-    },
-    {
-        id: 5, name: "David Brown", dept: "Product", month: "March 2024", basic: "$3,800.00", ot: "0 hrs",
-        dedTypes: [{ label: "Unexcused Absence", class: "tag-unexcused" }, { label: "Lateness", class: "tag-lateness" }],
-        dedAmounts: [{ val: "$126.67", muted: false }, { val: "$25.00", muted: true }],
-        final: "$3,188.33",
-        abs: "$126.67 (1 day)", date: "2024-03-25", ded: ["Unexcused Absence: $126.67", "Lateness: $25"], reason: "1 day absence", by: "System", status: "Paid"
-    }
-];
+import apiClient from "../../../../apiConfig";
 
 const MonthlyPayroll = () => {
     const { t } = useTranslation('SalaryManagement/MonthlyPayroll');
     const [details, setDetails] = useState([]);
-    
-    // Dataset State
-    const [payrollData, setPayrollData] = useState(initialData);
+    const [payrollData, setPayrollData] = useState([]);
+    const [departments, setDepartments] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     // Filter states
     const [searchQuery, setSearchQuery] = useState("");
-    const [selectedDept, setSelectedDept] = useState("All Departments");
-    const [selectedMonth, setSelectedMonth] = useState("April 2024");
+    const [selectedDeptId, setSelectedDeptId] = useState("all");
+    const [selectedMonth, setSelectedMonth] = useState("");
 
-    const filteredData = payrollData.filter(row => {
-        const matchesSearch = row.name.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesDept = selectedDept === "All Departments" || row.dept === selectedDept;
-        const matchesMonth = row.month === selectedMonth;
-        return matchesSearch && matchesDept && matchesMonth;
-    });
+    // Generate months list
+    const monthsList = [];
+    const now = new Date();
+    for (let i = 0; i < 6; i++) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        monthsList.push(d.toLocaleString('en-US', { month: 'long', year: 'numeric' }));
+    }
+
+    useEffect(() => {
+        if (!selectedMonth) setSelectedMonth(monthsList[0]);
+    }, [monthsList]);
+
+    const fetchDepartments = async () => {
+        try {
+            const res = await apiClient.get('/departments');
+            setDepartments(res.data?.data || []);
+        } catch (error) {
+            console.error("Failed to fetch departments", error);
+        }
+    };
+
+    const fetchPayroll = useCallback(async () => {
+        if (!selectedMonth) return;
+        setIsLoading(true);
+        try {
+            const params = {
+                month: selectedMonth,
+                department_id: selectedDeptId === 'all' ? undefined : selectedDeptId,
+                search: searchQuery || undefined
+            };
+            const res = await apiClient.get('/payroll', { params });
+            const data = (res.data?.data || []).map(row => ({
+                id: row.id,
+                name: row.employee_profile?.full_name || '—',
+                basic: `$${Number(row.basic_salary).toLocaleString()}`,
+                ot: `${row.overtime_hours} hrs`,
+                dedTypes: (row.deductions || []).map(d => ({ label: d.label, class: d.class || 'tag-policy' })),
+                dedAmounts: (row.deductions || []).map(d => ({ val: `$${Number(d.amount).toLocaleString()}`, muted: false })),
+                final: `$${Number(row.final_net_salary).toLocaleString()}`,
+                status: row.status === 'paid' ? 'Paid' : 'Unpaid',
+                // Extra details for modal
+                abs: row.extra_details?.absence_text || '$0.00 (0 days)',
+                date: row.extra_details?.deduction_date || '- -',
+                dedLines: (row.deductions || []).map(d => `${d.label}: $${d.amount}`),
+                reason: row.extra_details?.reason || '-',
+                by: row.paid_by?.name || 'System'
+            }));
+            setPayrollData(data);
+        } catch (error) {
+            console.error("Failed to fetch payroll data", error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [selectedMonth, selectedDeptId, searchQuery]);
+
+    useEffect(() => {
+        fetchDepartments();
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchPayroll();
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [fetchPayroll]);
 
     // Payment Logic
-    const handlePayEmployee = (id) => {
-        setPayrollData(prevData => prevData.map(emp => 
-            emp.id === id ? { ...emp, status: "Paid" } : emp
-        ));
+    const handlePayEmployee = async (id) => {
+        try {
+            await apiClient.patch(`/payroll/${id}/pay`);
+            fetchPayroll();
+        } catch (error) {
+            console.error("Payment failed", error);
+        }
     };
 
-    const handlePayAll = () => {
-        setPayrollData(prevData => prevData.map(emp => {
-            // Only pay the ones exactly currently visible in the filter
-            const isVisible = filteredData.some(fEmp => fEmp.id === emp.id);
-            if (isVisible && emp.status === "Unpaid") {
-                return { ...emp, status: "Paid" };
-            }
-            return emp;
-        }));
+    const handlePayAll = async () => {
+        const unpaidIds = payrollData.filter(emp => emp.status === "Unpaid").map(emp => emp.id);
+        if (unpaidIds.length === 0) return;
+        try {
+            await apiClient.post(`/payroll/pay-all`, { ids: unpaidIds });
+            fetchPayroll();
+        } catch (error) {
+            console.error("Bulk payment failed", error);
+        }
     };
 
-    const moredetails = (e, abs, ded, date, reason, by) => {
+    const moredetails = (e, abs, dedLines, date, reason, by) => {
         const vis = document.querySelector(".details")
-        const zind=document.querySelector(".mobile-toggle")
-        if(zind) zind.style.zIndex="-1"
-        if(vis) vis.style.display = "block"
+        const zind = document.querySelector(".mobile-toggle")
+        if (zind) zind.style.zIndex = "-1"
+        if (vis) vis.style.display = "block"
         document.body.style.overflow = 'hidden'
-        
+
         const newDetails = (
             <div className='details-content-wrapper'>
                 <div className='details-body'>
@@ -92,7 +119,7 @@ const MonthlyPayroll = () => {
                     </div>
                     <div className='infocardsalary'>
                         <p>{t('Deductions', 'Deductions')}:</p>
-                        <div>{ded.map((d, i) => <div key={i}>{d}</div>)}</div>
+                        <div>{dedLines.length > 0 ? dedLines.map((d, i) => <div key={i}>{d}</div>) : 'None'}</div>
                     </div>
                     <div className='infocardsalary'>
                         <p>{t('deductiondate', 'Deduction Date')}:</p>
@@ -116,9 +143,9 @@ const MonthlyPayroll = () => {
     const hidden = (e) => {
         const hid = document.querySelector(".details")
         if (hid) hid.style.display = "none"
-        document.body.style.overflow='auto'
-        const zind=document.querySelector(".mobile-toggle")
-        if (zind) zind.style.zIndex="10"
+        document.body.style.overflow = 'auto'
+        const zind = document.querySelector(".mobile-toggle")
+        if (zind) zind.style.zIndex = "10"
     }
 
     return (
@@ -144,38 +171,38 @@ const MonthlyPayroll = () => {
 
             <div className='monthlypayrollco'>
                 <div className="searchFilterco pay-all-container">
-                    <div style={{display: "flex", gap: "10px", flexWrap: "wrap", flex: 1}}>
+                    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", flex: 1 }}>
                         <div className="searchFilter">
                             <i className="bi bi-search search-icon-input"></i>
-                            <input 
-                                className="Searchemployee" 
-                                placeholder={t("Searchemployee", "Search employee...")} 
-                                type="text" 
+                            <input
+                                className="Searchemployee"
+                                placeholder={t("Searchemployee", "Search employee...")}
+                                type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
-                        <select 
+                        <select
                             className="AllDepartments"
-                            value={selectedDept}
-                            onChange={(e) => setSelectedDept(e.target.value)}
+                            value={selectedDeptId}
+                            onChange={(e) => setSelectedDeptId(e.target.value)}
                         >
-                            <option>All Departments</option>
-                            <option>Engineering</option>
-                            <option>Product</option>
-                            <option>Design</option>
+                            <option value="all">All Departments</option>
+                            {departments.map(dept => (
+                                <option key={dept.id} value={dept.id}>{dept.name}</option>
+                            ))}
                         </select>
-                        <select 
+                        <select
                             className="dateselect"
                             value={selectedMonth}
                             onChange={(e) => setSelectedMonth(e.target.value)}
                         >
-                            <option>April 2024</option>
-                            <option>March 2024</option>
-                            <option>February 2024</option>
+                            {monthsList.map(m => (
+                                <option key={m} value={m}>{m}</option>
+                            ))}
                         </select>
                     </div>
-                    {filteredData.some(emp => emp.status === "Unpaid") && (
+                    {payrollData.some(emp => emp.status === "Unpaid") && (
                         <button className="pay-all-btn" onClick={handlePayAll}>
                             <i className="bi bi-check2-all"></i> {t('PayAll', 'Pay All Unpaid')}
                         </button>
@@ -196,9 +223,11 @@ const MonthlyPayroll = () => {
                             </tr>
                         </thead>
                         <tbody className='salaryinfo'>
-                            {filteredData.length > 0 ? filteredData.map((row, idx) => (
+                            {isLoading ? (
+                                <tr><td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>Loading...</td></tr>
+                            ) : payrollData.length > 0 ? payrollData.map((row, idx) => (
                                 <tr key={idx} className="">
-                                    <td className="" style={{fontWeight: '500'}}>{row.name}</td>
+                                    <td className="" style={{ fontWeight: '500' }}>{row.name}</td>
                                     <td className="">{row.basic}</td>
                                     <td className="">{row.ot}</td>
                                     <td className="">
@@ -209,7 +238,7 @@ const MonthlyPayroll = () => {
                                                 ))}
                                             </div>
                                         ) : (
-                                            <span style={{color: 'var(--text-muted)'}}>None</span>
+                                            <span style={{ color: 'var(--text-muted)' }}>None</span>
                                         )}
                                     </td>
                                     <td className="">
@@ -233,14 +262,14 @@ const MonthlyPayroll = () => {
                                                 {t('Pay', 'Pay')}
                                             </button>
                                         )}
-                                        <button className="moredetails" onClick={(e) => { moredetails(e, row.abs, row.ded, row.date, row.reason, row.by) }}>
+                                        <button className="moredetails" onClick={(e) => { moredetails(e, row.abs, row.dedLines, row.date, row.reason, row.by) }}>
                                             {t('more', 'More Details')}
                                         </button>
                                     </td>
                                 </tr>
                             )) : (
                                 <tr>
-                                    <td colSpan="7" style={{textAlign: 'center', padding: '20px', color: 'var(--text-muted)'}}>
+                                    <td colSpan="7" style={{ textAlign: 'center', padding: '20px', color: 'var(--text-muted)' }}>
                                         No data found
                                     </td>
                                 </tr>
@@ -250,11 +279,11 @@ const MonthlyPayroll = () => {
                 </div>
 
                 <div className='salaryinfocard'>
-                    {filteredData.length > 0 ? filteredData.map((row, idx) => (
+                    {payrollData.length > 0 ? payrollData.map((row, idx) => (
                         <div key={idx} className="infocard">
                             <div className='infocardsalary'>
                                 <p className="" >{t('name')}: </p>
-                                <p className="" style={{fontWeight:'bold'}}>{row.name}</p>
+                                <p className="" style={{ fontWeight: 'bold' }}>{row.name}</p>
                             </div>
                             <div className='infocardsalary'>
                                 <p className="" >{t('BasicSalary')}: </p>
@@ -267,18 +296,18 @@ const MonthlyPayroll = () => {
                             <div className='infocardsalary'>
                                 <p className="" >{t('DeductionType', 'Deduction Type')}: </p>
                                 <div className="">
-                                    {row.dedTypes.length > 0 ? row.dedTypes.map((type, i) => <div key={i} style={{fontSize:'12px'}} >{type.label}</div>) : "None"}
+                                    {row.dedTypes.length > 0 ? row.dedTypes.map((type, i) => <div key={i} style={{ fontSize: '12px' }} >{type.label}</div>) : "None"}
                                 </div>
                             </div>
                             <div className='infocardsalary'>
                                 <p className="" >{t('DeductionAmount')}: </p>
                                 <p className="">
-                                    {row.dedAmounts.length > 0 ? row.dedAmounts.map((amt, i) => <span key={i} style={{marginInlineEnd:'5px'}}>{amt.val}</span>) : "$0.00"}
+                                    {row.dedAmounts.length > 0 ? row.dedAmounts.map((amt, i) => <span key={i} style={{ marginInlineEnd: '5px' }}>{amt.val}</span>) : "$0.00"}
                                 </p>
                             </div>
                             <div className='infocardsalary'>
                                 <p className="" >{t('FinalNetSalary')}: </p>
-                                <p className="" style={{fontWeight:'bold'}}>{row.final}</p>
+                                <p className="" style={{ fontWeight: 'bold' }}>{row.final}</p>
                             </div>
                             <div className='infocardsalary'>
                                 <p className="" >{t('Status', 'Status')}: </p>
@@ -286,19 +315,19 @@ const MonthlyPayroll = () => {
                                     {t(row.status, row.status)}
                                 </div>
                             </div>
-                            <div style={{display:'flex', justifyContent:'space-between', marginTop:'15px'}}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '15px' }}>
                                 {row.status === "Unpaid" ? (
                                     <button className="pay-btn" onClick={() => handlePayEmployee(row.id)}>
                                         {t('Pay', 'Pay')}
                                     </button>
                                 ) : <div></div>}
-                               <button className="moredetails" onClick={(e) => { moredetails(e, row.abs, row.ded, row.date, row.reason, row.by) }}>
-                                  {t('more', 'More Details')}
-                               </button>
+                                <button className="moredetails" onClick={(e) => { moredetails(e, row.abs, row.dedLines, row.date, row.reason, row.by) }}>
+                                    {t('more', 'More Details')}
+                                </button>
                             </div>
                         </div>
                     )) : (
-                        <div style={{textAlign: 'center', padding: '20px', color: 'var(--text-muted)'}}>
+                        <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text-muted)' }}>
                             No data found
                         </div>
                     )}

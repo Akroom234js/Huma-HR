@@ -28,13 +28,13 @@ class StoreEmployeeMovementRequest extends FormRequest
         if ($type === 'promotion') {
             $rules['new_position']  = 'required|string|max:255';
             $rules['effective_date']= 'required|date';
-            $rules['manager_id']    = 'nullable|exists:users,id';
+            $rules['manager_id']    = 'nullable|exists:employee_profiles,id';
         }
 
         // ── Transfer ───────────────────────────────────────────────────────
         if ($type === 'transfer') {
             $rules['new_position']       = 'required|string|max:255';
-            $rules['manager_id']         = 'nullable|exists:users,id';
+            $rules['manager_id']         = 'nullable|exists:employee_profiles,id';
             $rules['effective_date']     = 'required|date';
             $rules['adjustment_reason']  = 'nullable|string';
         }
@@ -44,7 +44,7 @@ class StoreEmployeeMovementRequest extends FormRequest
             $rules['new_department_id']  = 'required|exists:departments,id';
             $rules['effective_date']     = 'required|date';
             // manager_id هنا من مدراء القسم الجديد فقط — التحقق في الـ Controller
-            $rules['manager_id']         = 'required|exists:users,id';
+            $rules['manager_id']         = 'required|exists:employee_profiles,id';
         }
 
         // ── Salary Adjustment ──────────────────────────────────────────────

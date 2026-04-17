@@ -177,7 +177,7 @@ class EmployeeMovementController extends Controller
     private function handleDepartmentChange(StoreEmployeeMovementRequest $request, EmployeeProfile $employee): EmployeeMovement
     {
         // التحقق إن الـ manager_id ينتمي لمدراء القسم الجديد
-        $managerBelongsToDept = EmployeeProfile::where('user_id', $request->manager_id)
+        $managerBelongsToDept = EmployeeProfile::where('id', $request->manager_id)
             ->where('department_id', $request->new_department_id)
             ->whereHas('user', fn($q) => $q->whereHas('roles', fn($r) =>
                 $r->where('name', 'department_manager')
