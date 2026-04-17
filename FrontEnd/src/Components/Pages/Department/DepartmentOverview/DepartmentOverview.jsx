@@ -1,6 +1,7 @@
+import React, { useState, useEffect } from 'react';
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
 import "./DepartmentOverview.css";
-// import React from "react";
+import apiClient from "../../../../apiConfig";
 import {
   BarChart,
   Bar,
@@ -13,23 +14,40 @@ import {
   Cell,
 } from "recharts";
 
-const employeeData = [
-  { name: "Eng", value: 92 },
-  { name: "Prod", value: 65 },
-  { name: "Mktg", value: 38 },
-  { name: "Design", value: 15 },
-  { name: "HR", value: 28 },
-  { name: "Sales", value: 22 },
-  { name: "Legal", value: 16 },
-];
-
-const budgetData = [
-  { name: "Engineering", value: 45 },
-  { name: "Product", value: 25 },
-  { name: "Other", value: 30 },
-];
+const COLORS = ["#2563eb", "#60a5fa", "#3b82f6", "#93c5fd", "#bfdbfe", "#dbeafe"];
 
 const DepartmentOverview = () => {
+  const [stats, setStats] = useState({
+    distribution: [],
+    budget: [],
+    tableData: []
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await apiClient.get('/departments/stats');
+        setStats(res.data?.data || { distribution: [], budget: [], tableData: [] });
+      } catch (error) {
+        console.error("Failed to fetch department stats", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  const totalDepts = stats.tableData.length;
+  const totalEmployees = stats.distribution.reduce((acc, curr) => acc + curr.value, 0);
+  const avgEmployees = totalDepts > 0 ? (totalEmployees / totalDepts).toFixed(1) : 0;
+
+  const highestHeadcountItem = stats.distribution.length > 0
+    ? [...stats.distribution].sort((a, b) => b.value - a.value)[0]
+    : { name: '—', value: 0 };
+
+  const totalBudget = stats.budget.reduce((acc, curr) => acc + (curr.budget || 0), 0);
+
   return (
     <div className="page-container">
       <div className="page-title">
@@ -41,19 +59,19 @@ const DepartmentOverview = () => {
       <div className="container-subcard">
         <div className="subcart1">
           <h6>Total Departments</h6>
-          <h2>12</h2>
+          <h2>{totalDepts}</h2>
         </div>
         <div className="subcart1">
           <h6>Avg. Employees / Dept.</h6>
-          <h2>21.5</h2>
+          <h2>{avgEmployees}</h2>
         </div>
         <div className="subcart1">
           <h6>Highest Headcount</h6>
-          <h2>Engineering (42)</h2>
+          <h2>{highestHeadcountItem.name} ({highestHeadcountItem.value})</h2>
         </div>
         <div className="subcart1">
-          <h6>Lowest Turnover</h6>
-          <h2>Design (2%)</h2>
+          <h6>Total Staff Budget</h6>
+          <h2>${totalBudget.toLocaleString()}</h2>
         </div>
       </div>
       <div className="chart1">
@@ -61,9 +79,8 @@ const DepartmentOverview = () => {
           <div className="card">
             <h6>Employee Distribution by Department</h6>
             <ResponsiveContainer width="100%" height={"100%"}>
-              <BarChart data={employeeData}>
+              <BarChart data={stats.distribution}>
                 <XAxis dataKey="name" />
-
                 <YAxis hide axisLine={false} tickLine={false} />
                 <Tooltip />
                 <Bar dataKey="value" fill="#3b82f6" radius={[8, 8, 0, 0]} />
@@ -76,35 +93,34 @@ const DepartmentOverview = () => {
             <ResponsiveContainer width="100%" height={"100%"}>
               <PieChart>
                 <Pie
-                  data={budgetData}
-                  dataKey="value"
+                  data={stats.budget}
+                  dataKey="budget"
                   innerRadius={60}
                   outerRadius={90}
                 >
-                  {budgetData.map((_, i) => (
-                    <Cell key={i} fill={["#2563eb", "#60a5fa", "#cbd5e1"][i]} />
+                  {stats.budget.map((_, i) => (
+                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
                   ))}
                 </Pie>
+                <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
               </PieChart>
             </ResponsiveContainer>
             <div className="custom-legend">
-              {budgetData.map((item, i) => (
+              {stats.budget.slice(0, 5).map((item, i) => (
                 <div key={i} className="legend-item">
                   <div className="legend-left">
                     <span
                       className="legend-color"
                       style={{
-                        backgroundColor: ["#2563eb", "#60a5fa", "#cbd5e1"][i],
+                        backgroundColor: COLORS[i % COLORS.length],
                       }}
                     ></span>
                     {item.name}
                   </div>
-                  <span>{item.value}%</span>
+                  <span>{totalBudget > 0 ? (((item.budget || 0) / totalBudget) * 100).toFixed(1) : 0}%</span>
                 </div>
               ))}
             </div>
-
-            <span className="center-text">70%</span>
           </div>
         </div>
       </div>
@@ -120,41 +136,20 @@ const DepartmentOverview = () => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Engineering</td>
-              <td>Candice Wu</td>
-              <td>42</td>
-              <td>5</td>
-              <td>$5,200,000</td>
-            </tr>
-            <tr>
-              <td>Design</td>
-              <td>Phoenix Baker</td>
-              <td>15</td>
-              <td>2</td>
-              <td>$1,800,000</td>
-            </tr>
-            <tr>
-              <td>Product</td>
-              <td>Lana Steiner</td>
-              <td>23</td>
-              <td>3</td>
-              <td>$2,500,000</td>
-            </tr>
-            <tr>
-              <td>Marketing</td>
-              <td>Natali Craig</td>
-              <td>18</td>
-              <td>1</td>
-              <td>$2,100,000</td>
-            </tr>
-            <tr>
-              <td>Human Resources</td>
-              <td>Olivia Rhye</td>
-              <td>8</td>
-              <td>0</td>
-              <td>$950,000</td>
-            </tr>
+            {stats.tableData.map((dept, idx) => (
+              <tr key={idx}>
+                <td>{dept.name}</td>
+                <td>{dept.head}</td>
+                <td>{dept.count}</td>
+                <td>{dept.openPositions}</td>
+                <td>{dept.budget}</td>
+              </tr>
+            ))}
+            {stats.tableData.length === 0 && !isLoading && (
+              <tr>
+                <td colSpan="5" style={{ textAlign: 'center', padding: '2rem' }}>No data found</td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
