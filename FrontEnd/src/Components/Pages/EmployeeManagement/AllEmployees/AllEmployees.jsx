@@ -1,4 +1,4 @@
-// import React from 'react';
+// AllEmployees.jsx
 import "./AllEmployees.css";
 import FilterDropdown from "../../../FilterDropdown/FilterDropdown";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
@@ -25,7 +25,7 @@ const AllEmployees = () => {
       const [deptRes, statsRes, posRes] = await Promise.all([
         apiClient.get('/departments'),
         apiClient.get('/employees/statuses'),
-        apiClient.get('/positions') // Updated from /employees/positions
+        apiClient.get('/positions')
       ]);
 
       setDepartmentOptions([
@@ -83,24 +83,33 @@ const AllEmployees = () => {
     }
   }
 
-  function handleOpenEdit(employee) {
-    setEditingEmployee({
-      ...employee,
-      id: employee.id,
-      employeeId: employee.employee_id,
-      name: employee.full_name,
-      job: employee.job_title,
-      department: employee.department?.id || employee.department,
-      status: employee.employment_status,
-      dob: employee.date_of_birth,
-      phone: employee.phone_number,
-      address: employee.address,
-      emergencyContact: employee.emergency_contacts,
-      jobTitle: employee.job_title,
-      joiningDate: employee.start_date,
-      basicSalary: employee.basic_salary,
-    });
-    setIsModalOpen(true);
+  async function handleOpenEdit(employee) {
+    try {
+      const res = await apiClient.get(`/employees/${employee.id}`);
+      const e = res.data?.data?.employee || res.data?.data || employee;
+
+      setEditingEmployee({
+        id: e.id,
+        employeeId: e.employee_id,
+        fullName: e.full_name,
+        email: e.email,
+        jobTitle: e.job_title,
+        department: e.department?.id || e.department_id,
+        dob: e.date_of_birth,
+        phone: e.phone_number,
+        address: e.address,
+        emergencyContact: e.emergency_contacts,
+        joiningDate: e.start_date,
+        // التعديل هنا: قراءة 'salary' من الباك إند ووضعه في 'basicSalary' للواجهة
+        basicSalary: e.salary,
+        directManager: e.manager_id,
+        profilePicUrl: e.profile_pic,
+      });
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error("Failed to fetch employee details", error);
+      alert("Error loading employee data");
+    }
   }
 
   async function handleSaveEmployee(data) {
@@ -110,9 +119,12 @@ const AllEmployees = () => {
       if (data.email) formData.append("email", data.email);
       if (data.password) {
         formData.append("password", data.password);
-        formData.append("password_confirmation", data.password); // Backend requires password_confirmation
+        formData.append("password_confirmation", data.password);
       }
-      if (data.idNumber) formData.append("employee_id", data.idNumber);
+
+      // هنا نستخدم employeeId الذي يرسله المودال ليُخزن في employee_id
+      if (data.employeeId) formData.append("employee_id", data.employeeId);
+
       if (data.phone) formData.append("phone_number", data.phone);
       if (data.dob) formData.append("date_of_birth", data.dob);
       if (data.address) formData.append("address", data.address);
@@ -121,14 +133,15 @@ const AllEmployees = () => {
       if (data.department) formData.append("department_id", data.department);
       if (data.joiningDate) formData.append("start_date", data.joiningDate);
       if (data.profilePicture) formData.append("profile_pic", data.profilePicture);
-      
-      // manager_id expects an integer user ID. If the frontend only has a string search input, we should only append it if it's a valid ID to prevent validation crashes.
-      if (data.directManager && !isNaN(data.directManager)) {
-          formData.append("manager_id", data.directManager);
-      }
-      if (data.basicSalary) formData.append("basic_salary", data.basicSalary);
 
-      formData.append("employment_status", "active"); // default
+      if (data.directManager && !isNaN(data.directManager)) {
+        formData.append("manager_id", data.directManager);
+      }
+
+      // التعديل هنا: إرسال القيمة باسم 'salary' لتطابق الموديل في Laravel
+      if (data.basicSalary) formData.append("salary", data.basicSalary);
+
+      formData.append("employment_status", "active");
 
       if (editingEmployee) {
         formData.append("_method", "PUT");
@@ -146,13 +159,14 @@ const AllEmployees = () => {
     } catch (error) {
       console.error("Failed to save employee", error);
       if (error.response?.data?.errors) {
-         const errorMsgs = Object.values(error.response.data.errors).flat().join('\n');
-         alert("Validation Error:\n" + errorMsgs);
+        const errorMsgs = Object.values(error.response.data.errors).flat().join('\n');
+        alert("Validation Error:\n" + errorMsgs);
       } else {
-         alert("Error saving employee.");
+        alert("Error saving employee.");
       }
     }
   }
+
   return (
     <div className="all-employees-page">
       <header className="page-header">
@@ -211,7 +225,6 @@ const AllEmployees = () => {
               <th>ACTIONS</th>
             </tr>
           </thead>
-
           <tbody>
             {employees.map((e) => (
               <tr key={e.id}>
@@ -221,25 +234,19 @@ const AllEmployees = () => {
                   </div>
                   {e.full_name}
                 </td>
-
                 <td>{e.employee_id}</td>
                 <td>{e.department?.name || e.department}</td>
                 <td>{e.job_title}</td>
-
                 <td>
-                  <span
-                    className={`status ${e.employment_status?.toLowerCase() === "active" ? "active" : "leave"}`}
-                  >
+                  <span className={`status ${e.employment_status?.toLowerCase() === "active" ? "active" : "leave"}`}>
                     {e.employment_status || "Active"}
                   </span>
                 </td>
-
                 <td className="actions">
                   <button onClick={() => handleDeleteEmployee(e.id)}>
                     <span className="material-symbols-outlined">delete</span>
                   </button>
                   <button onClick={() => handleOpenEdit(e)}>
-                    {" "}
                     <span className="material-symbols-outlined">edit</span>
                   </button>
                 </td>

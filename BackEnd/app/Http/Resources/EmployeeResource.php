@@ -33,6 +33,8 @@ class EmployeeResource extends JsonResource
             'start_date'        => $this->start_date?->format('Y-m-d'),
             'date_of_birth'     => $this->date_of_birth?->format('Y-m-d'),
             'marital_status'    => $this->marital_status,
+            'salary'            => $this->salary,
+            'manager_id'        => $this->manager_id,
             'profile_pic'       => $this->profile_pic_url,
         ];
     }

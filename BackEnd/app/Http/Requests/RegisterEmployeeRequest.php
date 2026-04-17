@@ -34,13 +34,14 @@ class RegisterEmployeeRequest extends FormRequest
             'job_title'             => 'nullable|string|max:255',
             'employment_status'     => 'nullable|in:active,on_leave,inactive,terminated',
             'department_id'         => 'nullable|exists:departments,id',
-            'manager_id'            => 'nullable|exists:users,id',
+            'manager_id'            => 'nullable|exists:employee_profiles,id',
             'branch'                => 'nullable|string|max:255',
             'city'                  => 'nullable|string|max:255',
             'grade'                 => 'nullable|string|max:255',
 
             // ── Dates ──────────────────────────────────────────────────────
             'start_date'            => 'nullable|date',
+            'salary'                => 'nullable|numeric|min:0',
             'internal_transfer_date'=> 'nullable|date',
             'resignation_date'      => 'nullable|date',
         ];
