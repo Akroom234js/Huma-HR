@@ -1,15 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './AddMovement.css';
 import { useTranslation } from 'react-i18next';
-
-const mockEmployees = [
-    { id: 'EMP001', name: 'Olivia Rhye', position: 'Product Designer', department: 'Design Team', location: 'New York HQ - Sales Dept' },
-    { id: 'EMP002', name: 'Phoenix Baker', position: 'Marketing Manager', department: 'Marketing Team', location: 'London Office' },
-    { id: 'EMP003', name: 'Lana Steiner', position: 'Software Engineer', department: 'Engineering', location: 'Berlin Branch' },
-    { id: 'EMP004', name: 'Demi Wilkinson', position: 'Researcher', department: 'R&D', location: 'San Francisco Tech Center' },
-    { id: 'EMP005', name: 'Candice Wu', position: 'Junior Developer', department: 'Engineering', location: 'Dubai Hub' },
-    { id: 'EMP006', name: 'Natali Craig', position: 'Hr Coordinator', department: 'HR Team', location: 'Paris HQ' },
-];
+import apiClient from '../../../../../apiConfig';
 
 const AddMovement = ({ onAddMovement }) => {
     const { t } = useTranslation('EmployeeMovement/EmployeeMovement');
@@ -20,6 +12,12 @@ const AddMovement = ({ onAddMovement }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [showSearchResults, setShowSearchResults] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [employees, setEmployees] = useState([]);
+    const [departmentOptions, setDepartmentOptions] = useState([]);
+    const [adjustmentTypes, setAdjustmentTypes] = useState([]);
+    const [managers, setManagers] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+
     const [formData, setFormData] = useState({
         newPosition: '',
         newLocation: '',
@@ -29,54 +27,106 @@ const AddMovement = ({ onAddMovement }) => {
         reason: '',
         adjustmentType: '',
         customTypeEn: '',
-        customTypeAr: ''
+        customTypeAr: '',
+        newDepartmentId: ''
     });
 
-    const filteredEmployees = mockEmployees.filter(emp =>
-        emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        emp.id.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const fetchEmployees = useCallback(async (query) => {
+        if (!query) return;
+        try {
+            const res = await apiClient.get('/employees', { params: { search: query } });
+            setEmployees(res.data?.data?.employees || []);
+        } catch (error) {
+            console.error("Failed to fetch employees", error);
+        }
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (searchQuery && !selectedEmployee) {
+                fetchEmployees(searchQuery);
+            }
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [searchQuery, selectedEmployee, fetchEmployees]);
+
+    const fetchFilters = async () => {
+        try {
+            const [deptRes, adjRes, empRes] = await Promise.all([
+                apiClient.get('/departments'),
+                apiClient.get('/salary-adjustments/types'),
+                apiClient.get('/employees') // For managers
+            ]);
+            setDepartmentOptions(deptRes.data?.data || []);
+            setAdjustmentTypes(adjRes.data?.data || []);
+            setManagers(empRes.data?.data?.employees || []);
+        } catch (error) {
+            console.error("Failed to fetch filters", error);
+        }
+    };
+
+    useEffect(() => {
+        if (showMovementModal) {
+            fetchFilters();
+        }
+    }, [showMovementModal]);
 
     const handleEmployeeSelect = (emp) => {
         setSelectedEmployee(emp);
-        setSearchQuery(emp.name);
+        setSearchQuery(emp.full_name);
         setShowSearchResults(false);
+        // Pre-fill effective date if needed
+        setFormData(prev => ({ ...prev, effectiveDate: new Date().toISOString().split('T')[0] }));
     };
 
-    const handleConfirm = () => {
+    const handleConfirm = async () => {
         if (!selectedEmployee || !formData.effectiveDate) {
             alert('Please fill in all required fields');
             return;
         }
 
-        if (modalStep === 'promotion' && !formData.newPosition) {
-            alert('Please select a new position');
-            return;
+        setIsLoading(true);
+        try {
+            const payload = {
+                employee_profile_id: selectedEmployee.id,
+                movement_date: formData.effectiveDate,
+                effective_date: formData.effectiveDate,
+                notes: formData.reason || '',
+            };
+
+            if (modalStep === 'promotion') {
+                payload.movement_type = 'promotion';
+                payload.new_position = formData.newPosition;
+                payload.manager_id = formData.manager;
+            } else if (modalStep === 'transfer') {
+                payload.movement_type = 'transfer';
+                payload.new_position = formData.newPosition;
+                payload.manager_id = formData.manager;
+                payload.adjustment_reason = formData.reason;
+            } else if (modalStep === 'dept-change') {
+                payload.movement_type = 'department_change';
+                payload.new_department_id = formData.newDepartmentId;
+                payload.manager_id = formData.manager;
+            } else if (modalStep === 'salary') {
+                payload.movement_type = 'salary_adjustment';
+                payload.new_salary = formData.newSalary;
+                payload.adjustment_type_id = formData.adjustmentType;
+                payload.custom_type_name = formData.adjustmentType === 'other' ? formData.customTypeEn : null;
+                payload.adjustment_reason = formData.reason;
+            }
+
+            await apiClient.post('/employee-movements', payload);
+            alert('Movement recorded successfully!');
+            onAddMovement(); // Refresh the list in parent
+            setShowMovementModal(false);
+            resetForm();
+        } catch (error) {
+            console.error("Failed to save movement", error);
+            const errorMsg = error.response?.data?.message || 'Error saving movement';
+            alert(errorMsg);
+        } finally {
+            setIsLoading(false);
         }
-
-        if (modalStep === 'transfer' && !formData.newLocation) {
-            alert('Please select a new location');
-            return;
-        }
-
-        if (modalStep === 'salary' && !formData.newSalary) {
-            alert('Please enter a new salary amount');
-            return;
-        }
-
-        const newMovement = {
-            name: selectedEmployee.name,
-            id: selectedEmployee.id,
-            date: formData.effectiveDate,
-            typeKey: modalStep === 'promotion' ? 'type-promotion' : (modalStep === 'transfer' ? 'type-transfer' : (modalStep === 'salary' ? 'type-salary-adjustment' : 'type-department-change')),
-            previousValue: modalStep === 'promotion' || modalStep === 'transfer' ? selectedEmployee.position : (modalStep === 'dept-change' ? selectedEmployee.location : '$ 72,000 USD'),
-            newValue: modalStep === 'promotion' || modalStep === 'transfer' ? formData.newPosition : (modalStep === 'dept-change' ? formData.newLocation : `$ ${formData.newSalary} USD`),
-            adjustmentType: formData.adjustmentType === 'option-other' ? { en: formData.customTypeEn, ar: formData.customTypeAr } : formData.adjustmentType,
-        };
-
-        onAddMovement(newMovement);
-        setShowMovementModal(false);
-        resetForm();
     };
 
     const resetForm = () => {
@@ -92,7 +142,8 @@ const AddMovement = ({ onAddMovement }) => {
             reason: '',
             adjustmentType: '',
             customTypeEn: '',
-            customTypeAr: ''
+            customTypeAr: '',
+            newDepartmentId: ''
         });
     };
 
@@ -219,18 +270,18 @@ const AddMovement = ({ onAddMovement }) => {
                                             />
                                             {showSearchResults && searchQuery && (
                                                 <div className="em-search-results">
-                                                    {filteredEmployees.length > 0 ? (
-                                                        filteredEmployees.map(emp => (
+                                                    {employees.length > 0 ? (
+                                                        employees.map(emp => (
                                                             <div
                                                                 key={emp.id}
                                                                 className="em-search-result-item"
                                                                 onClick={() => handleEmployeeSelect(emp)}
                                                             >
                                                                 <div className="em-result-info">
-                                                                    <span className="em-result-name">{emp.name}</span>
-                                                                    <span className="em-result-id">{emp.id}</span>
+                                                                    <span className="em-result-name">{emp.full_name}</span>
+                                                                    <span className="em-result-id">{emp.employee_id}</span>
                                                                 </div>
-                                                                <span className="em-result-pos">{emp.position}</span>
+                                                                <span className="em-result-pos">{emp.job_title}</span>
                                                             </div>
                                                         ))
                                                     ) : (
@@ -271,7 +322,7 @@ const AddMovement = ({ onAddMovement }) => {
                                         <div className="em-form-group">
                                             <label className="em-label">{t('label-department')}</label>
                                             <div className="em-readonly-input">
-                                                {selectedEmployee ? selectedEmployee.department : '—'}
+                                                {selectedEmployee ? selectedEmployee.department?.name : '—'}
                                             </div>
                                         </div>
                                         <div className="em-form-group">
@@ -295,9 +346,9 @@ const AddMovement = ({ onAddMovement }) => {
                                                 onChange={(e) => setFormData({ ...formData, manager: e.target.value })}
                                             >
                                                 <option value="" disabled>{t('placeholder-select-manager')}</option>
-                                                <option>Admin</option>
-                                                <option>HR Manager</option>
-                                                <option>Technical Director</option>
+                                                {managers.map(m => (
+                                                    <option key={m.id} value={m.id}>{m.full_name}</option>
+                                                ))}
                                             </select>
                                             <span className="material-symbols-outlined em-icon-right">expand_more</span>
                                         </div>
@@ -350,18 +401,18 @@ const AddMovement = ({ onAddMovement }) => {
                                             />
                                             {showSearchResults && searchQuery && (
                                                 <div className="em-search-results">
-                                                    {filteredEmployees.length > 0 ? (
-                                                        filteredEmployees.map(emp => (
+                                                    {employees.length > 0 ? (
+                                                        employees.map(emp => (
                                                             <div
                                                                 key={emp.id}
                                                                 className="em-search-result-item"
                                                                 onClick={() => handleEmployeeSelect(emp)}
                                                             >
                                                                 <div className="em-result-info">
-                                                                    <span className="em-result-name">{emp.name}</span>
-                                                                    <span className="em-result-id">{emp.id}</span>
+                                                                    <span className="em-result-name">{emp.full_name}</span>
+                                                                    <span className="em-result-id">{emp.employee_id}</span>
                                                                 </div>
-                                                                <span className="em-result-pos">{emp.position}</span>
+                                                                <span className="em-result-pos">{emp.job_title}</span>
                                                             </div>
                                                         ))
                                                     ) : (
@@ -376,7 +427,7 @@ const AddMovement = ({ onAddMovement }) => {
                                         <div className="em-form-group">
                                             <label className="em-label">{t('label-current-position')}</label>
                                             <div className="em-readonly-input">
-                                                {selectedEmployee ? selectedEmployee.position : '—'}
+                                                {selectedEmployee ? selectedEmployee.job_title : '—'}
                                             </div>
                                         </div>
                                         <div className="em-form-group">
@@ -409,9 +460,9 @@ const AddMovement = ({ onAddMovement }) => {
                                                     onChange={(e) => setFormData({ ...formData, manager: e.target.value })}
                                                 >
                                                     <option value="" disabled>{t('placeholder-select-manager')}</option>
-                                                    <option>Admin</option>
-                                                    <option>HR Manager</option>
-                                                    <option>Technical Director</option>
+                                                    {managers.map(m => (
+                                                        <option key={m.id} value={m.id}>{m.full_name}</option>
+                                                    ))}
                                                 </select>
                                                 <span className="material-symbols-outlined em-icon-right">expand_more</span>
                                             </div>
@@ -486,18 +537,18 @@ const AddMovement = ({ onAddMovement }) => {
                                             />
                                             {showSearchResults && searchQuery && (
                                                 <div className="em-search-results">
-                                                    {filteredEmployees.length > 0 ? (
-                                                        filteredEmployees.map(emp => (
+                                                    {employees.length > 0 ? (
+                                                        employees.map(emp => (
                                                             <div
                                                                 key={emp.id}
                                                                 className="em-search-result-item"
                                                                 onClick={() => handleEmployeeSelect(emp)}
                                                             >
                                                                 <div className="em-result-info">
-                                                                    <span className="em-result-name">{emp.name}</span>
-                                                                    <span className="em-result-id">{emp.id}</span>
+                                                                    <span className="em-result-name">{emp.full_name}</span>
+                                                                    <span className="em-result-id">{emp.employee_id}</span>
                                                                 </div>
-                                                                <span className="em-result-pos">{emp.position}</span>
+                                                                <span className="em-result-pos">{emp.job_title}</span>
                                                             </div>
                                                         ))
                                                     ) : (
@@ -647,18 +698,18 @@ const AddMovement = ({ onAddMovement }) => {
                                             />
                                             {showSearchResults && searchQuery && (
                                                 <div className="em-search-results">
-                                                    {filteredEmployees.length > 0 ? (
-                                                        filteredEmployees.map(emp => (
+                                                    {employees.length > 0 ? (
+                                                        employees.map(emp => (
                                                             <div
                                                                 key={emp.id}
                                                                 className="em-search-result-item"
                                                                 onClick={() => handleEmployeeSelect(emp)}
                                                             >
                                                                 <div className="em-result-info">
-                                                                    <span className="em-result-name">{emp.name}</span>
-                                                                    <span className="em-result-id">{emp.id}</span>
+                                                                    <span className="em-result-name">{emp.full_name}</span>
+                                                                    <span className="em-result-id">{emp.employee_id}</span>
                                                                 </div>
-                                                                <span className="em-result-pos">{emp.location}</span>
+                                                                <span className="em-result-pos">{emp.department?.name || 'No Dept'}</span>
                                                             </div>
                                                         ))
                                                     ) : (
@@ -673,7 +724,7 @@ const AddMovement = ({ onAddMovement }) => {
                                         <div className="em-form-group">
                                             <label className="em-label">{t('label-current-branch')}</label>
                                             <div className="em-readonly-input">
-                                                {selectedEmployee ? selectedEmployee.location : '—'}
+                                                {selectedEmployee ? selectedEmployee.department?.name : '—'}
                                             </div>
                                         </div>
                                         <div className="em-form-group">
@@ -681,16 +732,13 @@ const AddMovement = ({ onAddMovement }) => {
                                             <div className="em-select-container">
                                                 <select
                                                     className="em-select-input"
-                                                    value={formData.newLocation}
-                                                    onChange={(e) => setFormData({ ...formData, newLocation: e.target.value })}
+                                                    value={formData.newDepartmentId}
+                                                    onChange={(e) => setFormData({ ...formData, newDepartmentId: e.target.value })}
                                                 >
                                                     <option value="" disabled>{t('placeholder-select-location')}</option>
-                                                    <option>Product Designer</option>
-                                                    <option>Marketing Specialist</option>
-                                                    <option>Software Engineer</option>
-                                                    <option>HR Generalist</option>
-                                                    <option>Financial Analyst</option>
-                                                    <option>Operations Manager</option>
+                                                    {departmentOptions.map(d => (
+                                                        <option key={d.id} value={d.id}>{d.name}</option>
+                                                    ))}
                                                 </select>
                                                 <span className="material-symbols-outlined em-icon-right">expand_more</span>
                                             </div>
@@ -717,9 +765,9 @@ const AddMovement = ({ onAddMovement }) => {
                                                 onChange={(e) => setFormData({ ...formData, manager: e.target.value })}
                                             >
                                                 <option value="" disabled>{t('placeholder-select-manager')}</option>
-                                                <option>Admin</option>
-                                                <option>HR Manager</option>
-                                                <option>Technical Director</option>
+                                                {managers.map(m => (
+                                                    <option key={m.id} value={m.id}>{m.full_name}</option>
+                                                ))}
                                             </select>
                                             <span className="material-symbols-outlined em-icon-right">expand_more</span>
                                         </div>
