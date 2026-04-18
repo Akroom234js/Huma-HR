@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './EmployeeMovement.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
@@ -28,31 +28,34 @@ const EmployeeMovement = () => {
     const { t, i18n } = useTranslation('EmployeeMovement/EmployeeMovement');
     const [searchQuery, setSearchQuery] = useState('');
     const [typeFilter, setTypeFilter] = useState('');
+    const [departmentFilter, setDepartmentFilter] = useState('');
+    const [positionFilter, setPositionFilter] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-
-    // State for movements list
+    const [departmentOptions, setDepartmentOptions] = useState([]);
+    const [positionOptions, setPositionOptions] = useState([]);
     const [movements, setMovements] = useState([]);
 
-    const fetchMovements = React.useCallback(async () => {
+    const fetchMovements = useCallback(async () => {
         setIsLoading(true);
         try {
             const params = {};
             if (searchQuery) params.search = searchQuery;
-            if (typeFilter) params.type = typeFilter.replace('type-', '');
+            if (typeFilter) params.type = typeFilter.replace('type-', '').replace(/-/g, '_');
+            if (departmentFilter) params.department_id = departmentFilter;
+            if (positionFilter) params.position = positionFilter;
             if (startDate) params.date_from = startDate;
             if (endDate) params.date_to = endDate;
 
             const res = await apiClient.get('/employee-movements', { params });
             const data = res.data?.data?.movements || [];
 
-            // Map backend data to frontend structure
             const mappedMovements = data.map(m => ({
                 name: m.employee?.full_name || '—',
                 id: m.employee?.employee_id || '—',
                 date: m.movement_date,
-                typeKey: `type-${m.movement_type}`,
+                typeKey: `type-${m.movement_type.replace(/_/g, '-')}`,
                 previousValue: m.previous_value,
                 newValue: m.new_value,
                 changedBy: m.created_by?.email || 'System',
@@ -64,11 +67,37 @@ const EmployeeMovement = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [searchQuery, typeFilter, startDate, endDate]);
+    }, [searchQuery, typeFilter, departmentFilter, positionFilter, startDate, endDate]);
 
-    React.useEffect(() => {
+    // التعديل الجذري هنا لفك الارتباط وضمان ظهور الفلاتر
+    const fetchFilters = useCallback(async () => {
+        // جلب الأقسام بشكل منفصل
+        apiClient.get('/departments')
+            .then(res => {
+                const depts = res.data?.data || [];
+                setDepartmentOptions([
+                    { value: '', label: t('filter-department') || 'Department' },
+                    ...depts.map(d => ({ value: d.id, label: d.name }))
+                ]);
+            })
+            .catch(err => console.error("Failed to fetch departments", err));
+
+        // جلب المناصب بشكل منفصل
+        apiClient.get('/positions', { params: { per_page: 50 } })
+            .then(res => {
+                const positions = res.data?.data?.positions || [];
+                setPositionOptions([
+                    { value: '', label: t('filter-position') || 'Position' },
+                    ...positions.map(p => ({ value: p.title, label: p.title }))
+                ]);
+            })
+            .catch(err => console.error("Failed to fetch positions", err));
+    }, [t]);
+
+    useEffect(() => {
         fetchMovements();
-    }, [fetchMovements]);
+        fetchFilters();
+    }, [fetchMovements, fetchFilters]);
 
     const movementTypeOptions = [
         { value: '', label: t('filter-movement-type') },
@@ -79,10 +108,8 @@ const EmployeeMovement = () => {
     ];
 
     const handleAddMovement = () => {
-        fetchMovements(); // Refresh list after adding
+        fetchMovements();
     };
-
-    const filteredData = movements; // Filtering is now handled by the backend
 
     return (
         <div className="em-page">
@@ -97,17 +124,12 @@ const EmployeeMovement = () => {
                 <div className="em-header-actions">
                     <AddMovement onAddMovement={handleAddMovement} />
                 </div>
-
             </header>
 
-            {/* Filters & Table Card */}
             <div className="em-table-card">
-                {/* Filters */}
                 <div className="em-filters">
                     <div className="em-filter-item em-search-wrapper">
-                        <span className="material-symbols-outlined em-search-icon">
-                            search
-                        </span>
+                        <span className="material-symbols-outlined em-search-icon">search</span>
                         <input
                             type="text"
                             className="em-input em-search-input"
@@ -123,6 +145,7 @@ const EmployeeMovement = () => {
                             options={movementTypeOptions}
                         />
                     </div>
+
                     <div className="em-filter-item">
                         <input
                             type="date"
@@ -141,7 +164,6 @@ const EmployeeMovement = () => {
                     </div>
                 </div>
 
-                {/* Table */}
                 <div className="em-table-wrapper">
                     <table className="em-table">
                         <thead>
@@ -149,26 +171,20 @@ const EmployeeMovement = () => {
                                 <th>
                                     <div className="em-th-content">
                                         {t('th-employee-name')}
-                                        <span className="material-symbols-outlined em-sort-icon">
-                                            unfold_more
-                                        </span>
+                                        <span className="material-symbols-outlined em-sort-icon">unfold_more</span>
                                     </div>
                                 </th>
                                 <th>{t('th-employee-id')}</th>
                                 <th>
                                     <div className="em-th-content">
                                         {t('th-date')}
-                                        <span className="material-symbols-outlined em-sort-icon">
-                                            unfold_more
-                                        </span>
+                                        <span className="material-symbols-outlined em-sort-icon">unfold_more</span>
                                     </div>
                                 </th>
                                 <th>
                                     <div className="em-th-content">
                                         {t('th-movement-type')}
-                                        <span className="material-symbols-outlined em-sort-icon">
-                                            unfold_more
-                                        </span>
+                                        <span className="material-symbols-outlined em-sort-icon">unfold_more</span>
                                     </div>
                                 </th>
                                 <th>{t('th-previous-value')}</th>
@@ -177,7 +193,7 @@ const EmployeeMovement = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredData.map((item, index) => (
+                            {movements.map((item, index) => (
                                 <tr key={index}>
                                     <td className="em-name-cell">{item.name}</td>
                                     <td>{item.id}</td>
@@ -192,7 +208,7 @@ const EmployeeMovement = () => {
                                     <td>{item.changedBy}</td>
                                 </tr>
                             ))}
-                            {filteredData.length === 0 && (
+                            {movements.length === 0 && (
                                 <tr>
                                     <td colSpan="7" className="em-no-data">
                                         {t('no-data')}
@@ -204,12 +220,9 @@ const EmployeeMovement = () => {
                 </div>
             </div>
 
-            {/* Policy Section */}
             <div className="em-policy-section">
                 <div className="em-policy-header">
-                    <span className="material-symbols-outlined em-policy-header-icon">
-                        gavel
-                    </span>
+                    <span className="material-symbols-outlined em-policy-header-icon">gavel</span>
                     <div>
                         <h2 className="em-policy-title">{t('policy-title')}</h2>
                         <p className="em-policy-subtitle">{t('policy-subtitle')}</p>
@@ -219,9 +232,7 @@ const EmployeeMovement = () => {
                     {policyItems.map((item, index) => (
                         <div className="em-policy-card" key={index}>
                             <div className="em-policy-card-icon-wrap">
-                                <span className="material-symbols-outlined">
-                                    {item.icon}
-                                </span>
+                                <span className="material-symbols-outlined">{item.icon}</span>
                             </div>
                             <h3 className="em-policy-card-title">{t(item.titleKey)}</h3>
                             <p className="em-policy-card-desc">{t(item.descKey)}</p>
@@ -229,7 +240,6 @@ const EmployeeMovement = () => {
                     ))}
                 </div>
             </div>
-
         </div>
     );
 };
