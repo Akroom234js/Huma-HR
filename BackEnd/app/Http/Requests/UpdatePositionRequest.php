@@ -19,6 +19,8 @@ class UpdatePositionRequest extends FormRequest
             'title'         => 'sometimes|string|max:255',
             'department_id' => 'sometimes|nullable|exists:departments,id',
             'description'   => 'sometimes|nullable|string',
+            'requirements'  => 'sometimes|nullable|string',
+            'reporting_to'  => 'sometimes|nullable|string',
         ];
     }
 
