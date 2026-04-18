@@ -13,18 +13,23 @@ export default function AddRole({ onClose, onSuccess }) {
     const [skills, setSkills] = useState('')
     const [reportingTo, setReportingTo] = useState('')
     const [departments, setDepartments] = useState([])
+    const [positions, setPositions] = useState([])
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        const fetchDepartments = async () => {
+        const fetchData = async () => {
             try {
-                const res = await apiClient.get('/departments');
-                setDepartments(res.data?.data || []);
+                const [deptRes, posRes] = await Promise.all([
+                    apiClient.get('/departments'),
+                    apiClient.get('/positions', { params: { per_page: 50 } })
+                ]);
+                setDepartments(deptRes.data?.data || []);
+                setPositions(posRes.data?.data?.positions || []);
             } catch (error) {
-                console.error("Failed to fetch departments", error);
+                console.error("Failed to fetch data", error);
             }
         };
-        fetchDepartments();
+        fetchData();
     }, []);
 
     const handleSubmit = async () => {
@@ -38,8 +43,8 @@ export default function AddRole({ onClose, onSuccess }) {
                 title,
                 department_id: departmentId,
                 description,
-                requirements: skills, // Backend often calls them requirements
-                reporting_to: reportingTo || null // Optional if model supports it
+                requirements: skills,
+                reporting_to: reportingTo || null
             };
             await apiClient.post('/positions', payload);
             if (onSuccess) onSuccess();
@@ -112,9 +117,9 @@ export default function AddRole({ onClose, onSuccess }) {
                         <p className='head'>{t('reporting')}</p>
                         <select value={reportingTo} onChange={(e) => setReportingTo(e.target.value)}>
                             <option value="">{t('select_position') || 'Select Position'}</option>
-                            {/* In a real app, you might fetch existing positions here too */}
-                            <option value="manager">Manager</option>
-                            <option value="senior">Senior</option>
+                            {positions.map(pos => (
+                                <option key={pos.id} value={pos.title}>{pos.title}</option>
+                            ))}
                         </select>
                     </div>
                 </div>

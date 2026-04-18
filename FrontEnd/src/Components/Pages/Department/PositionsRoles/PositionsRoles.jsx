@@ -46,11 +46,11 @@ const PositionsRoles = () => {
         fetchDepartments();
     }, [fetchPositions]);
 
-    const addDeparment = () => {
+    const addDepartment = () => {
         setIsAddDepartmentOpen(true);
         document.body.style.overflow = 'hidden';
     }
-    
+
     const closeAddDepartment = () => {
         setIsAddDepartmentOpen(false);
         document.body.style.overflow = 'auto';
@@ -97,7 +97,7 @@ const PositionsRoles = () => {
                 <p>{t('position')} : </p>
                 <p className='row-table1'> {pos.title}</p>
             </div>
-            <div>  
+            <div>
                 <p>{t('name')} : </p>
                 <p>{pos.department?.name || 'N/A'}</p>
             </div>
@@ -121,17 +121,20 @@ const PositionsRoles = () => {
         <div className="page-container">
             {isAddDepartmentOpen && (
                 <div className='adddepartment'>
-                    <AddDepartment 
-                        onClose={closeAddDepartment} 
-                        onSuccess={() => { fetchDepartments(); fetchPositions(); }} 
+                    <AddDepartment
+                        onClose={closeAddDepartment}
+                        onSuccess={() => { fetchDepartments(); fetchPositions(); }}
                     />
                 </div>
             )}
             {isAddRoleOpen && (
                 <div className='add-role'>
-                    <AddRole 
-                        onClose={closeAddRole} 
-                        onSuccess={fetchPositions} 
+                    <AddRole
+                        onClose={closeAddRole}
+                        onSuccess={() => {
+                            fetchPositions();
+                            closeAddRole();
+                        }}
                     />
                 </div>
             )}
@@ -144,14 +147,14 @@ const PositionsRoles = () => {
                     <p className='add'>{t('add')}</p>
                     <p className='create'>{t('create')}</p>
                 </div>
-                <button onClick={addDeparment}><i className='bi bi-plus'></i> {t('adddep')}</button>
+                <button onClick={addDepartment}><i className='bi bi-plus'></i> {t('adddep')}</button>
             </div>
             <div className='addrole'>
                 <div className='header'>
                     <div className='search-filter'>
-                        <input 
-                            type='search' 
-                            placeholder={t('search')} 
+                        <input
+                            type='search'
+                            placeholder={t('search')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
