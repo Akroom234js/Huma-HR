@@ -114,31 +114,30 @@ class DepartmentController extends Controller
         return $this->successResponse(null, 'Department deleted successfully.');
     }
 
-    // GET /api/departments/stats
     public function stats(): JsonResponse
     {
         $departments = Department::withCount('employees')
             ->with(['employees' => function($query) {
-                $query->select('department_id', 'basic_salary');
+                $query->select('department_id', 'salary');
             }])
             ->get();
 
         $distribution = $departments->map(fn($d) => [
-            'name' => $d.name,
-            'value' => $d.employees_count
+            'name' => $d->name,
+            'value' => $d->employees_count
         ]);
 
         $budget = $departments->map(fn($d) => [
-            'name' => $d.name,
-            'budget' => $d.employees->sum('basic_salary')
+            'name' => $d->name,
+            'budget' => (float) $d->employees->sum('salary')
         ]);
 
         $tableData = $departments->map(fn($d) => [
-            'name' => $d.name,
-            'head' => '—', // Placeholder since head_id doesn't exist yet
-            'count' => $d.employees_count,
-            'openPositions' => $d.jobPostings()->where('status', 'published')->count(),
-            'budget' => '$' . number_format($d.employees->sum('basic_salary'))
+            'name' => $d->name,
+            'head' => '—', // Placeholder
+            'count' => $d->employees_count,
+            'openPositions' => $d->jobPostings ? $d->jobPostings()->where('status', 'published')->count() : 0,
+            'budget' => '$' . number_format($d->employees->sum('salary'))
         ]);
 
         return $this->successResponse(

@@ -24,11 +24,13 @@ header.page-header h1 {
 }
 
 div.page-container div.adddepartment {
-    display: flex; /* Changed from none */
+    display: flex;
+    /* Changed from none */
 }
 
 div.page-container div.add-role {
-    display: none;
+    display: flex;
+    /* Changed to flex to work with React state */
 }
 
 /* Control Center Shell (Filters & Actions) */

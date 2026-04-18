@@ -50,21 +50,21 @@ const AddMovement = ({ onAddMovement }) => {
         return () => clearTimeout(timer);
     }, [searchQuery, selectedEmployee, fetchEmployees]);
 
-    const fetchFilters = async () => {
-        try {
-            const [deptRes, adjRes, empRes] = await Promise.all([
-                apiClient.get('/departments'),
-                apiClient.get('/salary-adjustments/types'),
-                apiClient.get('/employees') // For managers
-            ]);
-            setDepartmentOptions(deptRes.data?.data || []);
-            setAdjustmentTypes(adjRes.data?.data || []);
-            setManagers(empRes.data?.data?.employees || []);
-        } catch (error) {
-            console.error("Failed to fetch filters", error);
-        }
-    };
+    // استبدل دالة fetchFilters (من السطر 53 إلى 65) بهذا الكود:
+    const fetchFilters = useCallback(async () => {
+        // جلب كل فلتر على حدة لضمان عدم توقف الواجهة
+        apiClient.get('/departments')
+            .then(res => setDepartmentOptions(res.data?.data || []))
+            .catch(err => console.error("Error fetching departments:", err));
 
+        apiClient.get('/salary-adjustments/types')
+            .then(res => setAdjustmentTypes(res.data?.data || []))
+            .catch(err => console.error("Error fetching adjustment types:", err));
+
+        apiClient.get('/employees/managers')
+            .then(res => setManagers(res.data?.data || []))
+            .catch(err => console.error("Error fetching managers:", err));
+    }, []);
     useEffect(() => {
         if (showMovementModal) {
             fetchFilters();
@@ -110,8 +110,9 @@ const AddMovement = ({ onAddMovement }) => {
             } else if (modalStep === 'salary') {
                 payload.movement_type = 'salary_adjustment';
                 payload.new_salary = formData.newSalary;
-                payload.adjustment_type_id = formData.adjustmentType;
-                payload.custom_type_name = formData.adjustmentType === 'other' ? formData.customTypeEn : null;
+                // إذا كانت القيمة "other" نرسل null للـ id، وإلا نرسل الـ id المختار
+                payload.adjustment_type_id = formData.adjustmentType === 'option-other' ? null : formData.adjustmentType;
+                payload.custom_type_name = formData.adjustmentType === 'option-other' ? formData.customTypeEn : null;
                 payload.adjustment_reason = formData.reason;
             }
 
@@ -563,7 +564,7 @@ const AddMovement = ({ onAddMovement }) => {
                                         <div className="em-form-group">
                                             <label className="em-label">{t('label-current-salary')}</label>
                                             <div className="em-readonly-input">
-                                                $ 72,000 USD
+                                                {selectedEmployee?.salary ? `$ ${selectedEmployee.salary} USD` : '—'}
                                             </div>
                                         </div>
                                         <div className="em-form-group">
@@ -587,11 +588,11 @@ const AddMovement = ({ onAddMovement }) => {
                                                     onChange={(e) => setFormData({ ...formData, adjustmentType: e.target.value })}
                                                 >
                                                     <option value="" disabled>{t('label-adjustment-type')}</option>
-                                                    <option value="option-annual-increase">{t('option-annual-increase')}</option>
-                                                    <option value="option-merit-increase">{t('option-merit-increase')}</option>
-                                                    <option value="option-promotion">{t('option-promotion')}</option>
-                                                    <option value="option-performance-bonus">{t('option-performance-bonus')}</option>
-                                                    <option value="option-cost-of-living">{t('option-cost-of-living')}</option>
+                                                    {adjustmentTypes.map(adj => (
+                                                        <option key={adj.id} value={adj.id}>
+                                                            {adj.name_ar || adj.name}
+                                                        </option>
+                                                    ))}
                                                     <option value="option-other">{t('option-other')}</option>
                                                 </select>
                                                 <span className="material-symbols-outlined em-icon-right">expand_more</span>

@@ -13,6 +13,8 @@ class Position extends Model
         'title',
         'department_id',
         'description',
+        'requirements',
+        'reporting_to',
     ];
 
     // ── Relationships ─────────────────────────────────────────────────────────

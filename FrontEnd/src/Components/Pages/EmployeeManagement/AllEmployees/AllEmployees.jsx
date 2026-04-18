@@ -21,32 +21,36 @@ const AllEmployees = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const fetchFilters = async () => {
-    try {
-      const [deptRes, statsRes, posRes] = await Promise.all([
-        apiClient.get('/departments'),
-        apiClient.get('/employees/statuses'),
-        apiClient.get('/positions')
-      ]);
+    // 1. جلب الأقسام
+    apiClient.get('/departments')
+      .then(res => {
+        setDepartmentOptions([
+          { value: "", label: "Department" },
+          ...(res.data?.data?.map(d => ({ value: d.id, label: d.name })) || [])
+        ]);
+      })
+      .catch(err => console.error("Failed to fetch departments", err));
 
-      setDepartmentOptions([
-        { value: "", label: "Department" },
-        ...(deptRes.data?.data?.map(d => ({ value: d.id, label: d.name })) || [])
-      ]);
+    // 2. جلب الحالات (Statuses)
+    apiClient.get('/employees/statuses')
+      .then(res => {
+        setStatusOptions([
+          { value: "", label: "Status" },
+          ...(res.data?.map(s => ({ value: s, label: s })) || [])
+        ]);
+      })
+      .catch(err => console.error("Failed to fetch statuses", err));
 
-      setStatusOptions([
-        { value: "", label: "Status" },
-        ...(statsRes.data?.data?.map(s => ({ value: s, label: s })) || [])
-      ]);
-
-      setPositionOptions([
-        { value: "", label: "Position" },
-        ...(posRes.data?.data?.positions?.map(p => ({ value: p.title, label: p.title })) || [])
-      ]);
-    } catch (error) {
-      console.error("Failed to fetch filters", error);
-    }
+    // 3. جلب المناصب (Positions)
+    apiClient.get('/positions')
+      .then(res => {
+        setPositionOptions([
+          { value: "", label: "Position" },
+          ...(res.data?.data?.positions?.map(p => ({ value: p.title, label: p.title })) || [])
+        ]);
+      })
+      .catch(err => console.error("Failed to fetch positions", err));
   };
-
   const fetchEmployees = useCallback(async () => {
     try {
       const params = {};

@@ -19,6 +19,8 @@ class StorePositionRequest extends FormRequest
             'title'         => 'required|string|max:255',
             'department_id' => 'nullable|exists:departments,id',
             'description'   => 'nullable|string',
+            'requirements'  => 'nullable|string',
+            'reporting_to'  => 'nullable|string',
         ];
     }
 
