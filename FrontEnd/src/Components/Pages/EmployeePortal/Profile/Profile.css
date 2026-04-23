@@ -1,12 +1,106 @@
 .portal-page-container {
-    padding: 2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 50vh;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
 }
 
 .portal-page-container h1 {
-    font-size: 2rem;
-    color: var(--text-color, #333);
+  font-size: 2rem;
+  color: var(--text-color, #333);
+}
+.profile-page {
+  padding: 2rem;
+  background: var(--bg-page);
+  min-height: 100vh;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 1.5rem;
+}
+.profile-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 1.5rem;
+  text-align: center;
+  border: 1px solid var(--border-color);
+}
+.profile-card .avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  margin: 0 auto 1rem;
+}
+
+.profile-card h3 {
+  margin: 0;
+}
+
+.profile-card .role {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.profile-card .department {
+  font-size: 12px;
+  color: #16a34a;
+  margin-bottom: 1rem;
+}
+
+.primary-btn,
+.secondary-btn {
+  width: 100%;
+  padding: 8px;
+  border-radius: 12px;
+  border: none;
+  margin-top: 0.5rem;
+  cursor: pointer;
+}
+
+.primary-btn {
+  background: #2563eb;
+  color: white;
+}
+.primary-btn:hover {
+  background: #467beb;
+}
+
+.secondary-btn {
+  background: var(--bg-page);
+  color: var(--text-secondary);
+}
+.secondary-btn:hover {
+  background: rgb(119, 118, 118);
+  color: var(--text-main);
+}
+
+.info-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.info-card h2 {
+  margin-bottom: 1rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.info-grid label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.info-grid p {
+  margin: 0;
+  font-weight: 500;
 }
