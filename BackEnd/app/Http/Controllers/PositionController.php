@@ -20,7 +20,7 @@ class PositionController extends Controller
     public function index(Request $request): JsonResponse
     {
         $positions = Position::with('department')
-            ->withCount('jobPostings as openings')
+            // ->withCount('jobPostings as openings')
             ->when($request->filled('search'),
                 fn($q) => $q->search($request->search)
             )

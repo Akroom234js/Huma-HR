@@ -2,12 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class JobPosting extends Model
 {
-    //
+    // السماح بإضافة البيانات لهذه الحقول
+    protected $fillable = ['position_id', 'title', 'description', 'status', 'department_id'];
+
+    // تعريف العلاقة العكسية
+    public function position(): BelongsTo
+    {
+        return $this->belongsTo(Position::class);
+    }
 }

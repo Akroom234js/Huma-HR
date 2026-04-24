@@ -26,10 +26,9 @@ class Position extends Model
 
     // عدد الشواغر المفتوحة من job_postings
     public function jobPostings(): HasMany
-    {
-        return $this->hasMany(JobPosting::class);
-    }
-
+{
+    return $this->hasMany(JobPosting::class, 'position_id');
+}
     // ── Query Scopes ──────────────────────────────────────────────────────────
 
     public function scopeSearch(Builder $query, string $value): Builder
