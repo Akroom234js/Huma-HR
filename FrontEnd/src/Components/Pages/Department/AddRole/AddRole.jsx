@@ -15,23 +15,31 @@ export default function AddRole({ onClose, onSuccess }) {
     const [departments, setDepartments] = useState([])
     const [positions, setPositions] = useState([])
     const [loading, setLoading] = useState(false)
+    // AddRole.jsx
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchDepartments = async () => {
             try {
-                const [deptRes, posRes] = await Promise.all([
-                    apiClient.get('/departments'),
-                    apiClient.get('/positions', { params: { per_page: 50 } })
-                ]);
-                setDepartments(deptRes.data?.data || []);
-                setPositions(posRes.data?.data?.positions || []);
+                const res = await apiClient.get('/departments');
+                setDepartments(res.data?.data || res.data || []);
             } catch (error) {
-                console.error("Failed to fetch data", error);
+                console.error("Departments request failed:", error);
             }
         };
-        fetchData();
-    }, []);
 
+        const fetchPositions = async () => {
+            try {
+                const res = await apiClient.get('/positions', { params: { per_page: 50 } });
+                setPositions(res.data?.data?.positions || res.data?.positions || []);
+            } catch (error) {
+                // حتى لو فشل هذا الطلب (500)، لن تتوقف الأقسام عن الظهور
+                console.error("Positions request failed (500):", error);
+            }
+        };
+
+        fetchDepartments();
+        fetchPositions();
+    }, []);
     const handleSubmit = async () => {
         if (!title || !departmentId) {
             alert("Please fill in Position and Department");
@@ -67,10 +75,10 @@ export default function AddRole({ onClose, onSuccess }) {
                     <div className='name-head'>
                         <div>
                             <p className='name'>{t('position')}</p>
-                            <input 
-                                value={title} 
-                                onChange={(e) => setTitle(e.target.value)} 
-                                placeholder={t('e.gtitle')} 
+                            <input
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                placeholder={t('e.gtitle')}
                             />
                         </div>
                         <div>
@@ -88,29 +96,29 @@ export default function AddRole({ onClose, onSuccess }) {
                     <div className='select-emp-role'>
                         <div className='number'>
                             <p>{t('number')}</p>
-                            <input 
+                            <input
                                 type="number"
                                 value={openings}
                                 onChange={(e) => setOpenings(e.target.value)}
-                                placeholder={t('e.g')} 
+                                placeholder={t('e.g')}
                             />
                         </div>
                     </div>
                     <div className='role'>
                         <p>{t('Role')}</p>
-                        <textarea 
+                        <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            placeholder={t('enter')} 
+                            placeholder={t('enter')}
                         />
                     </div>
                     <div className='skill'>
                         <p>{t('skill')}</p>
-                        <input 
-                            className='skill' 
+                        <input
+                            className='skill'
                             value={skills}
                             onChange={(e) => setSkills(e.target.value)}
-                            placeholder={t('addskill')} 
+                            placeholder={t('addskill')}
                         />
                     </div>
                     <div className='reporting'>
