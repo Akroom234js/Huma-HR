@@ -2,7 +2,7 @@ div.addleaves-co{
     display: none;
     border: 2px solid var(--border-color);
     border-radius: 10px;
-     background-color: var(--bg-card);
+     background-color: var(--bg-page);
     width: 40%;
     height: 90vh;
     margin: 2% auto;
