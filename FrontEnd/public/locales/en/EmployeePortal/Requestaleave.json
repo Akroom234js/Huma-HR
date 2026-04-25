@@ -1,0 +1,12 @@
+{
+    "Requestaleave":"Request a leave",
+    "type":"Type leave",
+ "Dates":"Date Start",
+  "duration":"Number of days",
+  "reason":"Reason for request",
+  "placeholder":"Enter your reason",
+  "click":"Click to upload",
+  "attah":"Attach medical document (optional)",
+  "cancel":"cancel",
+  "confirm":"confirm"
+}
