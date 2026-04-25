@@ -1,6 +1,8 @@
+import ThemeToggle from '../../../ThemeToggle/ThemeToggle'
 import AddLeaves from '../AddLeaves/AddLeaves'
 import '../LeavesManagement/LeavesManagement.css'
 import { useTranslation } from 'react-i18next'
+
 export default function LeavesManagement(){
     const {t}=useTranslation('Leaves/LeavesManagement')
     const type=['Vacation',"Sick","Personal","Bereavement","Parental"]
@@ -65,6 +67,7 @@ export default function LeavesManagement(){
                                     <p className="leavesManagement">{t("LeavesManagement")} </p>
                                     <p className="Track">{t('track')}</p>
                                 </div>
+                                <ThemeToggle/>
                                 <button className='add' onClick={(e)=>{addnewtype(e)}}><i className='bi bi-plus'></i>{t('add')}</button>
                             </header>
          <div className="leaves-table">

@@ -1,0 +1,47 @@
+{
+    "title":"My Leaves",
+  "stats": {
+    "sick": "Sick Leave",
+    "Annual": "Annual Leave"
+   
+  },
+  "Days":"Days",
+  "Requestaleave":"Request a leave",
+  "filters": {
+    "search": "Search for employees...",
+    "department": "Department",
+    "leave_type": "Leave Type",
+    "status": "Request Status"
+  },
+  "Type":{
+"Annual":"Annual",
+"Sick":"Sick"
+  }
+,
+  "status": {
+    "approved": "Approved",
+    "pending": "Pending",
+    "rejected": "Rejected"
+  },
+  "log":"Request Log",
+  "statusleave":"Request status",
+  "TypeLeave":"Type Leave",
+  "Dates":"Date Start",
+  "Datee":"Date End",
+  "duration":"Duration",
+  "Details":"Details",
+  "MoreDetails":"More of Details",
+  "Discounts":"Discounts",
+    "Vacation":"Vacation Leave:",
+    "Vacation1":" Accrued annually for rest and recreation.",
+    "Sick":"Sick Leave:",
+    "Sick1":" For personal illness or injury, or to care for a sick family member.",
+    "Personal":"Personal Leave:",
+    "Personal1":" For personal matters that require absence from work.",
+    "Bereavement":"Bereavement Leave:",
+    "Bereavement1":" Provided in the unfortunate event of a death in the immediate family.",
+    "Parental":"Parental Leave:",
+    "Parental1":" For new parents, including maternity, paternity, and adoption leave.",
+    "Types":"Types of Leaves",
+    "PolicyOverview":"Leave Policy Overview"
+}
