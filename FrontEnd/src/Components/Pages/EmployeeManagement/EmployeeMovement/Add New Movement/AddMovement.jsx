@@ -7,7 +7,7 @@ const AddMovement = ({ onAddMovement }) => {
     const { t } = useTranslation('EmployeeMovement/EmployeeMovement');
     const [showMovementModal, setShowMovementModal] = useState(false);
     const [modalStep, setModalStep] = useState('selection'); // 'selection', 'promotion', or 'transfer'
-
+    const [positionsList, setPositionsList] = useState([]);
     // Form and Search State
     const [searchQuery, setSearchQuery] = useState('');
     const [showSearchResults, setShowSearchResults] = useState(false);
@@ -30,7 +30,26 @@ const AddMovement = ({ onAddMovement }) => {
         customTypeAr: '',
         newDepartmentId: ''
     });
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [posRes, empRes] = await Promise.all([
+                    apiClient.get('/positions', { params: { per_page: 100 } }),
+                    apiClient.get('/employees', { params: { per_page: 100 } })
+                ]);
 
+                // التأكد من الوصول للمسار الصحيح للبيانات بناءً على الـ Resource الخاص بك
+                setPositionsList(posRes.data?.data?.positions || posRes.data?.data || []);
+                setManagers(empRes.data?.data?.employees || empRes.data?.data || []);
+            } catch (error) {
+                console.error("Error fetching movement data:", error);
+            }
+        };
+
+        if (showMovementModal) {
+            fetchData();
+        }
+    }, [showMovementModal]); // سيتم الجلب فقط عند فتح الم
     const fetchEmployees = useCallback(async (query) => {
         if (!query) return;
         try {
@@ -308,11 +327,10 @@ const AddMovement = ({ onAddMovement }) => {
                                                     value={formData.newPosition}
                                                     onChange={(e) => setFormData({ ...formData, newPosition: e.target.value })}
                                                 >
-                                                    <option value="" disabled>{t('placeholder-select-new-role')}</option>
-                                                    <option>Senior Product Designer</option>
-                                                    <option>Lead Product Designer</option>
-                                                    <option>Senior Software Engineer</option>
-                                                    <option>Team Lead</option>
+                                                    <option value="">{t('select_position')}</option>
+                                                    {positionsList.map(pos => (
+                                                        <option key={pos.id} value={pos.title}>{pos.title}</option>
+                                                    ))}
                                                 </select>
                                                 <span className="material-symbols-outlined em-icon-right">expand_more</span>
                                             </div>
@@ -346,7 +364,7 @@ const AddMovement = ({ onAddMovement }) => {
                                                 value={formData.manager}
                                                 onChange={(e) => setFormData({ ...formData, manager: e.target.value })}
                                             >
-                                                <option value="" disabled>{t('placeholder-select-manager')}</option>
+                                                <option value="">{t('select_manager')}</option>
                                                 {managers.map(m => (
                                                     <option key={m.id} value={m.id}>{m.full_name}</option>
                                                 ))}
@@ -439,11 +457,10 @@ const AddMovement = ({ onAddMovement }) => {
                                                     value={formData.newPosition}
                                                     onChange={(e) => setFormData({ ...formData, newPosition: e.target.value })}
                                                 >
-                                                    <option value="" disabled>{t('placeholder-select-new-role')}</option>
-                                                    <option>Senior Product Designer</option>
-                                                    <option>Lead Product Designer</option>
-                                                    <option>Senior Software Engineer</option>
-                                                    <option>Team Lead</option>
+                                                    <option value="">{t('select_position')}</option>
+                                                    {positionsList.map(pos => (
+                                                        <option key={pos.id} value={pos.title}>{pos.title}</option>
+                                                    ))}
                                                 </select>
                                                 <span className="material-symbols-outlined em-icon-right">expand_more</span>
                                             </div>

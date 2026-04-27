@@ -1,37 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Salaries.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
+import axios from 'axios';
 
 const Salaries = () => {
     const { t } = useTranslation('Dashboard/SalariesCompensation');
 
     const [deptFilter, setDeptFilter] = useState('');
     const [statFilter, setStatFilter] = useState('');
-    const [payroll, setPayrollFilter] = useState('');
+    const [payrollFilter, setPayrollFilter] = useState('');
+    const [payrollData, setPayrollData] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchPayroll();
+    }, [deptFilter, statFilter, payrollFilter]);
+
+    const fetchPayroll = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get('/api/payroll', {
+                params: {
+                    department_id: deptFilter,
+                    status: statFilter,
+                    month: payrollFilter
+                }
+            });
+            setPayrollData(response.data.data || []);
+        } catch (error) {
+            console.error('Error fetching payroll:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const departmentOptions = [
         { value: '', label: t('filters.department') },
-        { value: 'Engineering', label: t('Engineering') },
-        { value: 'Design', label: t('Design') },
-        { value: 'Product', label: t('Product Management') },
-        { value: 'Marketing', label: t('Marketing') },
+        { value: '1', label: t('Engineering') },
+        { value: '2', label: t('Design') },
     ];
 
     const statusOptions = [
         { value: '', label: t('filters.Status') },
-        { value: 'Paid', label: t('filters.Paid') },
-        { value: 'Ready', label: t('filters.Ready') },
-        { value: 'Pending', label: t('filters.Pending') },
+        { value: 'paid', label: t('filters.Paid') },
+        { value: 'unpaid', label: t('filters.Pending') },
     ];
 
     const payrollperiodOptions = [
         { value: '', label: t('filters.payrollperiod') },
-        { value: '1', label: '1' },
-        { value: '2', label: '2' },
-        { value: '3', label: '3' },
+        { value: '4', label: 'April' },
+        { value: '5', label: 'May' },
     ];
 
     return (
@@ -49,15 +70,15 @@ const Salaries = () => {
                 <div className="salaries">
                     <div className="salaries-inf">
                         <h3>{t('TotalMonthlyCost')}</h3>
-                        <p>$125,430</p>
+                        <p>${payrollData.reduce((acc, row) => acc + parseFloat(row.final_net_salary), 0).toLocaleString()}</p>
                     </div>
                     <div className="salaries-inf">
                         <h3>{t('TotalDeductions')}</h3>
-                        <p>$12,870</p>
+                        <p>${payrollData.reduce((acc, row) => acc + (row.deductions?.reduce((dacc, d) => dacc + parseFloat(d.amount), 0) || 0), 0).toLocaleString()}</p>
                     </div>
                     <div className="salaries-inf">
                         <h3>{t('TotalOvertimeCost')}</h3>
-                        <p>$5,600</p>
+                        <p>${payrollData.reduce((acc, row) => acc + parseFloat(row.overtime_amount), 0).toLocaleString()}</p>
                     </div>
                     <div className="salaries-inf">
                         <h3>{t('NextPayrollDate')}</h3>
@@ -93,7 +114,7 @@ const Salaries = () => {
                         />
 
                         <FilterDropdown
-                            value={payroll}
+                            value={payrollFilter}
                             onChange={setPayrollFilter}
                             options={payrollperiodOptions}
                             placeholder={t('filters.payrollperiod')}
@@ -129,73 +150,35 @@ const Salaries = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {[
-                                {
-                                    name: 'Olivia Rhye',
-                                    title: 'Product Designer',
-                                    additions: '$250',
-                                    deductions: '$330',
-                                    basic: '$5,500',
-                                    net: '$5,600',
-                                    status: 'Paid',
-                                    color: 'green',
-                                    img: 'https://i.pravatar.cc/150?u=1',
-                                },
-                                {
-                                    name: 'Phoenix Baker',
-                                    title: 'Product Designer',
-                                    additions: '$250',
-                                    deductions: '$330',
-                                    basic: '$6,200',
-                                    net: '$6,380',
-                                    status: 'Ready',
-                                    color: 'blue',
-                                    img: 'https://i.pravatar.cc/150?u=2',
-                                },
-                                {
-                                    name: 'Lana Steiner',
-                                    title: 'Product Designer',
-                                    additions: '$250',
-                                    deductions: '$330',
-                                    basic: '$7,000',
-                                    net: '$6,550',
-                                    status: 'Paid',
-                                    color: 'green',
-                                    img: 'https://i.pravatar.cc/150?u=3',
-                                },
-                                {
-                                    name: 'Candice Wu',
-                                    title: 'Product Designer',
-                                    additions: '$250',
-                                    deductions: '$330',
-                                    basic: '$6,800',
-                                    net: '$7,190',
-                                    status: 'Pending',
-                                    color: 'orange',
-                                    img: 'https://i.pravatar.cc/150?u=4',
-                                },
-                            ].map((row, i) => (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan="7" className="text-center py-4">{t('Loading')}</td>
+                                </tr>
+                            ) : payrollData.map((row, i) => {
+                                const totalDeductions = row.deductions?.reduce((acc, d) => acc + parseFloat(d.amount), 0) || 0;
+                                return (
                                 <tr key={i}>
                                     <td className="name-emp-salary">
                                         <img
-                                            src={row.img}
-                                            alt={row.name}
+                                            src={row.user?.employee_profile?.profile_pic || 'https://i.pravatar.cc/150'}
+                                            alt={row.user?.name}
                                             className="er-avatar"
                                         />{' '}
-                                        {row.name}
+                                        {row.user?.name}
                                     </td>
-                                    <td>{row.title}</td>
-                                    <td>{row.basic}</td>
-                                    <td>{row.additions}</td>
-                                    <td>{row.deductions}</td>
-                                    <td>{row.net}</td>
+                                    <td>{row.user?.employee_profile?.job_title}</td>
+                                    <td>${row.basic_salary}</td>
+                                    <td>${row.overtime_amount}</td>
+                                    <td>${totalDeductions}</td>
+                                    <td>${row.final_net_salary}</td>
                                     <td>
-                                        <span className={`bg-${row.color}`}>
-                                            {row.status}
+                                        <span className={`bg-${row.status === 'paid' ? 'green' : 'orange'}`}>
+                                            {t(row.status)}
                                         </span>
                                     </td>
                                 </tr>
-                            ))}
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>

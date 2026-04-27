@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\SalaryAdjustmentResource;
-use App\Models\AdjustmentType;
 use App\Models\SalaryAdjustment;
+use App\Models\AdjustmentType;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,29 +13,32 @@ class SalaryAdjustmentController extends Controller
 {
     use ApiResponse;
 
+    // ── GET /api/salary-adjustments/types ────────────────────────────────────
+    public function types(): JsonResponse
+    {
+        $types = AdjustmentType::all();
+        return $this->successResponse($types, 'Adjustment types retrieved successfully.');
+    }
+
     // ── GET /api/salary-adjustments ──────────────────────────────────────────
     // صفحة Salary Adjustments History التفصيلية
     // Middleware: auth:sanctum + role:hr,manager
     public function index(Request $request): JsonResponse
     {
         $adjustments = SalaryAdjustment::with([
-            'employeeProfile',
+            'employeeProfile.user',
+            'creator.profile',
             'adjustmentType',
-            'createdBy.profile',
         ])
         ->when($request->filled('search'), fn($q) =>
-            $q->whereHas('employeeProfile', fn($eq) =>
-                $eq->where('full_name', 'like', "%{$request->search}%")
-                   ->orWhere('employee_id', 'like', "%{$request->search}%")
+            $q->whereHas('employeeProfile', fn($ep) =>
+                $ep->where('full_name', 'like', "%{$request->search}%")
             )
         )
         ->when($request->filled('type'), fn($q) =>
-            // تصفية بالنوع — يشمل custom أيضاً
-            $request->type === 'other'
-                ? $q->whereNotNull('custom_type_name')
-                : $q->whereHas('adjustmentType', fn($aq) =>
-                    $aq->where('name', $request->type)
-                  )
+            $q->whereHas('adjustmentType', fn($at) =>
+                $at->where('name', $request->type)
+            )
         )
         ->orderByDesc('effective_date')
         ->paginate($request->get('per_page', 15));
@@ -47,7 +49,7 @@ class SalaryAdjustmentController extends Controller
         return $this->successResponse(
             data: [
                 'stats'       => $stats,
-                'adjustments' => SalaryAdjustmentResource::collection($adjustments)->resolve(),
+                'adjustments' => $adjustments->items(),
                 'pagination'  => [
                     'total'        => $adjustments->total(),
                     'per_page'     => $adjustments->perPage(),
@@ -63,9 +65,9 @@ class SalaryAdjustmentController extends Controller
     public function show(int $id): JsonResponse
     {
         $adjustment = SalaryAdjustment::with([
-            'employeeProfile',
+            'employeeProfile.user',
+            'creator.profile',
             'adjustmentType',
-            'createdBy.profile',
         ])->find($id);
 
         if (! $adjustment) {
@@ -76,24 +78,8 @@ class SalaryAdjustmentController extends Controller
         }
 
         return $this->successResponse(
-            data: new SalaryAdjustmentResource($adjustment),
+            data: $adjustment,
             message: 'Salary adjustment retrieved successfully.'
-        );
-    }
-
-    // ── GET /api/salary-adjustments/types ────────────────────────────────────
-    // يرجع أنواع التعديلات للـ dropdown
-    public function types(): JsonResponse
-    {
-        $types = AdjustmentType::all()->map(fn($type) => [
-            'id'       => $type->id,
-            'name'     => $type->name,
-            'is_other' => $type->is_other,
-        ]);
-
-        return $this->successResponse(
-            data: $types,
-            message: 'Adjustment types retrieved successfully.'
         );
     }
 
@@ -110,16 +96,16 @@ class SalaryAdjustmentController extends Controller
         $vsLastYear = $totalLastYear > 0
             ? round((($totalThisYear - $totalLastYear) / $totalLastYear) * 100, 1)
             : 0;
-            // متوسط نسبة الزيادة
-        $avgPercent = SalaryAdjustment::whereYear('effective_date', $currentYear)
-            ->whereColumn('new_salary', '>', 'current_salary')
-            ->selectRaw('AVG(((new_salary - current_salary) / current_salary) * 100) as avg_percent')
+            
+        // متوسط نسبة الزيادة
+        $avgIncrease = SalaryAdjustment::whereYear('effective_date', $currentYear)
+            ->selectRaw('AVG((new_salary - current_salary) / current_salary * 100) as avg_percent')
             ->value('avg_percent');
 
         return [
             'total_adjustments_ytd' => $totalThisYear,
             'vs_last_year'          => ($vsLastYear >= 0 ? '+' : '') . $vsLastYear . '%',
-            'avg_adjustment_percent'=> round($avgPercent ?? 0, 1) . '%',
+            'avg_adjustment_percent'=> round($avgIncrease ?? 0, 1) . '%',
         ];
     }
 }

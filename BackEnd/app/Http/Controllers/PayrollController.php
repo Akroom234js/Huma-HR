@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MonthlyPayroll;
+use App\Models\PayrollRecord;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,18 +15,21 @@ class PayrollController extends Controller
     // GET /api/payroll
     public function index(Request $request): JsonResponse
     {
-        $payroll = MonthlyPayroll::with(['employeeProfile.department'])
+        $payroll = PayrollRecord::with(['user.employeeProfile.department', 'deductions'])
             ->when($request->filled('month'), function ($q) use ($request) {
-                return $q->where('month', $request->month);
+                return $q->where('payroll_month', $request->month);
+            })
+            ->when($request->filled('year'), function ($q) use ($request) {
+                return $q->where('payroll_year', $request->year);
             })
             ->when($request->filled('department_id'), function ($q) use ($request) {
-                return $q->whereHas('employeeProfile', function ($sq) use ($request) {
+                return $q->whereHas('user.employeeProfile', function ($sq) use ($request) {
                     $sq->where('department_id', $request->department_id);
                 });
             })
             ->when($request->filled('search'), function ($q) use ($request) {
-                return $q->whereHas('employeeProfile', function ($sq) use ($request) {
-                    $sq->where('full_name', 'like', "%{$request->search}%");
+                return $q->whereHas('user', function ($sq) use ($request) {
+                    $sq->where('name', 'like', "%{$request->search}%");
                 });
             })
             ->get();
@@ -37,7 +40,7 @@ class PayrollController extends Controller
     // PATCH /api/payroll/{id}/pay
     public function pay(int $id): JsonResponse
     {
-        $payroll = MonthlyPayroll::find($id);
+        $payroll = PayrollRecord::find($id);
         if (!$payroll) {
             return $this->errorResponse('Payroll record not found.', 404);
         }
@@ -48,8 +51,8 @@ class PayrollController extends Controller
 
         $payroll->update([
             'status'  => 'paid',
-            'paid_at' => now(),
-            'paid_by' => Auth::id(),
+            'paid_date' => now(),
+            'processed_by_id' => Auth::id(),
         ]);
 
         return $this->successResponse($payroll, 'Payroll marked as paid.');
@@ -60,12 +63,12 @@ class PayrollController extends Controller
     {
         $ids = $request->input('ids', []);
         
-        $updated = MonthlyPayroll::whereIn('id', $ids)
+        $updated = PayrollRecord::whereIn('id', $ids)
             ->where('status', 'unpaid')
             ->update([
                 'status'  => 'paid',
-                'paid_at' => now(),
-                'paid_by' => Auth::id(),
+                'paid_date' => now(),
+                'processed_by_id' => Auth::id(),
             ]);
 
         return $this->successResponse(['updated_count' => $updated], 'Selected payroll records marked as paid.');

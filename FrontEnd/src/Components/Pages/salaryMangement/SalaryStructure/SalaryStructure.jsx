@@ -1,24 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './SalaryStructure.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
+import axios from 'axios';
 
 const SalaryStructure = () => {
     const { t } = useTranslation('SalaryManagement/SalaryStructure');
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [salaryData, setSalaryData] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const salaryData = [
-        { lvl: "Junior", pos: "Software Engineer I", min: "3000", max: "4500" },
-        { lvl: "Mid-Level", pos: "Software Engineer II", min: "4500", max: "6500" },
-        { lvl: "Senior", pos: "Senior Software Engineer", min: "6500", max: "9000" },
-        { lvl: "Lead", pos: "Lead Software Engineer", min: "8500", max: "12000" },
-        { lvl: "Principal", pos: "Principal Engineer", min: "11000", max: "15000" },
-    ];
+    useEffect(() => {
+        fetchSalaryStructures();
+    }, []);
+
+    const fetchSalaryStructures = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get('/api/salary-structures');
+            // Assuming API returns data in the diagram format: job_level, job_title, min_salary, max_salary
+            setSalaryData(response.data.data || []);
+        } catch (error) {
+            console.error('Error fetching salary structures:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const filteredData = salaryData.filter(item => 
-        item.pos.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        item.lvl.toLowerCase().includes(searchTerm.toLowerCase())
+        (item.job_title && item.job_title.toLowerCase().includes(searchTerm.toLowerCase())) || 
+        (item.job_level && item.job_level.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     return (
@@ -65,16 +77,20 @@ const SalaryStructure = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredData.map((row, idx) => (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan="5" className="text-center py-4">{t('table.loading', 'Loading...')}</td>
+                                </tr>
+                            ) : filteredData.map((row, idx) => (
                                 <tr key={idx}>
-                                    <td className="font-medium">{row.lvl}</td>
-                                    <td>{row.pos}</td>
-                                    <td className="text-right">${row.min}</td>
-                                    <td className="text-right">${row.max}</td>
-                                    <td className="text-center">${row.min} - ${row.max}</td>
+                                    <td className="font-medium">{row.job_level}</td>
+                                    <td>{row.job_title}</td>
+                                    <td className="text-right">${row.min_salary}</td>
+                                    <td className="text-right">${row.max_salary}</td>
+                                    <td className="text-center">${row.min_salary} - ${row.max_salary}</td>
                                 </tr>
                             ))}
-                            {filteredData.length === 0 && (
+                            {!loading && filteredData.length === 0 && (
                                 <tr>
                                     <td colSpan="5" className="sm-no-data">{t('table.noResults')}</td>
                                 </tr>

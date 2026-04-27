@@ -18,6 +18,7 @@ const AllEmployees = () => {
   const [departmentOptions, setDepartmentOptions] = useState([{ value: "", label: "Department" }]);
   const [StatusOptions, setStatusOptions] = useState([{ value: "", label: "Status" }]);
   const [positionOptions, setPositionOptions] = useState([{ value: "", label: "Position" }]);
+  const [managerOptions, setManagerOptions] = useState([{ value: "", label: "Direct Supervisor" }]);
   const [searchQuery, setSearchQuery] = useState("");
 
   const fetchFilters = async () => {
@@ -36,20 +37,30 @@ const AllEmployees = () => {
       .then(res => {
         setStatusOptions([
           { value: "", label: "Status" },
-          ...(res.data?.map(s => ({ value: s, label: s })) || [])
+          ...(res.data?.data?.map(s => ({ value: s, label: s })) || [])
         ]);
       })
       .catch(err => console.error("Failed to fetch statuses", err));
 
     // 3. جلب المناصب (Positions)
-    apiClient.get('/positions')
+    apiClient.get('/employees/positions')
       .then(res => {
         setPositionOptions([
           { value: "", label: "Position" },
-          ...(res.data?.data?.positions?.map(p => ({ value: p.title, label: p.title })) || [])
+          ...(res.data?.data?.map(p => ({ value: p, label: p })) || [])
         ]);
       })
       .catch(err => console.error("Failed to fetch positions", err));
+
+    // 4. جلب المديرين (Managers)
+    apiClient.get('/employees/managers')
+      .then(res => {
+        setManagerOptions([
+          { value: "", label: "Direct Supervisor" },
+          ...(res.data?.data?.map(m => ({ value: m.id, label: m.full_name })) || [])
+        ]);
+      })
+      .catch(err => console.error("Failed to fetch managers", err));
   };
   const fetchEmployees = useCallback(async () => {
     try {
@@ -268,6 +279,8 @@ const AllEmployees = () => {
         onSave={handleSaveEmployee}
         editingEmployee={editingEmployee}
         departmentOptions={departmentOptions}
+        positionOptions={positionOptions}
+        managerOptions={managerOptions}
       />
     </div>
   );

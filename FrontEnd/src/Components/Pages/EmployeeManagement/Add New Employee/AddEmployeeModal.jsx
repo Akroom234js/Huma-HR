@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./AddEmployeeModal.css";
 
-const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, departmentOptions }) => {
+const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, departmentOptions, positionOptions, managerOptions }) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -229,14 +229,21 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
                 </div>
                 <div className="input-group">
                   <label>Job Title</label>
-                  <input
-                    type="text"
+                  <select
                     name="jobTitle"
-                    placeholder="e.g. Senior Product Designer"
                     value={formData.jobTitle}
                     required
                     onChange={handleChange}
-                  />
+                  >
+                    <option value="">Select Position</option>
+                    {positionOptions && positionOptions.map(pos => (
+                      pos.value && (
+                        <option key={pos.value} value={pos.value}>
+                          {pos.label}
+                        </option>
+                      )
+                    ))}
+                  </select>
                 </div>
                 <div className="input-group">
                   <label>Department</label>
@@ -257,16 +264,20 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
                 </div>
                 <div className="input-group">
                   <label>Direct Supervisor</label>
-                  <div className="input-with-icon">
-                    <span className="material-symbols-outlined">search</span>
-                    <input
-                      type="text"
-                      name="directManager"
-                      placeholder="Search Supervisor..."
-                      value={formData.directManager}
-                      onChange={handleChange}
-                    />
-                  </div>
+                  <select
+                    name="directManager"
+                    value={formData.directManager}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select Supervisor</option>
+                    {managerOptions && managerOptions.map(m => (
+                      m.value && (
+                        <option key={m.value} value={m.value}>
+                          {m.label}
+                        </option>
+                      )
+                    ))}
+                  </select>
                 </div>
                 <div className="input-group">
                   <label>Employee ID</label>
