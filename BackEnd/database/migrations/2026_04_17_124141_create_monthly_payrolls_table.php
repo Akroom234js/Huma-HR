@@ -11,22 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('monthly_payrolls', function (Blueprint $table) {
+        Schema::create('payroll_records', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employee_profile_id')->constrained('employee_profiles')->onDelete('cascade');
-            $table->string('month'); // e.g., "April 2024"
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('processed_by_id')->nullable()->constrained('users');
+            $table->integer('payroll_month');
+            $table->integer('payroll_year');
             $table->decimal('basic_salary', 15, 2);
             $table->decimal('overtime_hours', 8, 2)->default(0);
             $table->decimal('overtime_amount', 15, 2)->default(0);
-            $table->json('deductions')->nullable(); // [{label, amount, class}]
             $table->decimal('final_net_salary', 15, 2);
             $table->enum('status', ['paid', 'unpaid'])->default('unpaid');
-            $table->timestamp('paid_at')->nullable();
-            $table->foreignId('paid_by')->nullable()->constrained('users');
-            $table->json('extra_details')->nullable(); // absence, reasons, etc.
+            $table->date('paid_date')->nullable();
             $table->timestamps();
             
-            $table->unique(['employee_profile_id', 'month']);
+            $table->unique(['user_id', 'payroll_month', 'payroll_year']);
         });
     }
 
@@ -35,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('monthly_payrolls');
+        Schema::dropIfExists('payroll_records');
     }
 };
