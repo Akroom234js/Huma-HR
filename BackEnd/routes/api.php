@@ -8,6 +8,7 @@ use App\Http\Controllers\SalaryAdjustmentController;
 use App\Http\Controllers\EmployeeRequestController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PositionController;
+use App\Http\Controllers\SalaryStructureController;
 use Illuminate\Support\Facades\Route;
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -48,6 +49,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/positions',        [PositionController::class, 'store']);
         Route::put('/positions/{id}',    [PositionController::class, 'update']);
         Route::delete('/positions/{id}', [PositionController::class, 'destroy']);
+
+        // Salary Structures CRUD
+        Route::post('/salary-structures',        [SalaryStructureController::class, 'store']);
+        Route::put('/salary-structures/{id}',    [SalaryStructureController::class, 'update']);
+        Route::delete('/salary-structures/{id}', [SalaryStructureController::class, 'destroy']);
     });
 
     // ── HR + Boss — عرض فقط ──────────────────────────────────────────────
@@ -56,6 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // ⚠️ Static routes لازم قبل {id}
         Route::get('/employees/positions',           [EmployeeController::class,         'positions']);
         Route::get('/employees/statuses',            [EmployeeController::class,         'statuses']);
+        Route::get('/employees/managers',            [EmployeeController::class,         'managers']);
         Route::get('/employee-movements/types',      [EmployeeMovementController::class, 'types']);
         Route::get('/salary-adjustments/types',      [SalaryAdjustmentController::class, 'types']);
         Route::get('/departments/stats',             [DepartmentController::class,        'stats']);
@@ -73,6 +80,9 @@ Route::middleware('auth:sanctum')->group(function () {
         // Salary Adjustments
         Route::get('/salary-adjustments',      [SalaryAdjustmentController::class, 'index']);
         Route::get('/salary-adjustments/{id}', [SalaryAdjustmentController::class, 'show']);
+
+        // Salary Structures
+        Route::get('/salary-structures',      [SalaryStructureController::class, 'index']);
 
         // Positions
         Route::get('/positions',      [PositionController::class, 'index']);

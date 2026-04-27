@@ -1,75 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import './SalaryAdjustments.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
-
-const initialData = [
-    {
-        id: 1,
-        name: "John Doe",
-        role: "Engineering Lead",
-        initials: "JD",
-        initialsBg: "rgba(59, 130, 246, 0.15)",
-        initialsColor: "#3b82f6",
-        oldSalary: "$85,000",
-        newSalary: "$92,500",
-        type: "Promotion",
-        typeClass: "tag-promotion",
-        date: "Sep 15, 2023",
-        by: "Sarah Smith",
-        change: "+8.8%",
-        reason: "Promoted to Engineering Lead after excellent performance in Q2. Demonstrated strong leadership skills and successfully delivered the core project phase."
-    },
-    {
-        id: 2,
-        name: "Alice Cooper",
-        role: "Product Designer",
-        initials: "AC",
-        initialsBg: "rgba(168, 85, 247, 0.15)",
-        initialsColor: "#a855f7",
-        oldSalary: "$62,000",
-        newSalary: "$65,100",
-        type: "Merit",
-        typeClass: "tag-merit",
-        date: "Sep 12, 2023",
-        by: "Mike Johnson",
-        change: "+5.0%",
-        reason: "Annual merit increase based on exceeding KPI targets and contributing heavily to the new design system."
-    },
-    {
-        id: 3,
-        name: "Robert Wilson",
-        role: "Marketing Specialist",
-        initials: "RW",
-        initialsBg: "rgba(249, 115, 22, 0.15)",
-        initialsColor: "#f97316",
-        oldSalary: "$45,000",
-        newSalary: "$46,350",
-        type: "Cost of Living",
-        typeClass: "tag-col",
-        date: "Sep 01, 2023",
-        by: "System Auto",
-        change: "+3.0%",
-        reason: "Company-wide 3% cost of living adjustment applied automatically by system policy for all eligible employees."
-    }
-];
+import apiClient from '../../../../apiConfig';
 
 const SalaryAdjustments = () => {
     const { t } = useTranslation('SalaryManagement/SalaryAdjustments');
     
+    // States for data
+    const [adjustmentsData, setAdjustmentsData] = useState([]);
+    const [stats, setStats] = useState({
+        total_adjustments_ytd: 0,
+        vs_last_year: '0%',
+        avg_adjustment_percent: '0%'
+    });
+    const [loading, setLoading] = useState(true);
+
     // States for filtering
     const [searchQuery, setSearchQuery] = useState("");
     const [filterType, setFilterType] = useState("All");
+
+    useEffect(() => {
+        fetchAdjustments();
+    }, []);
+
+    const fetchAdjustments = async () => {
+        try {
+            setLoading(true);
+            const response = await apiClient.get('/salary-adjustments');
+            const data = response.data.data;
+            setAdjustmentsData(data.adjustments || []);
+            setStats(data.stats || {});
+        } catch (error) {
+            console.error('Error fetching salary adjustments:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     // States for Modal
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedReason, setSelectedReason] = useState("");
 
     // Filter Logic
-    const filteredData = initialData.filter(row => {
-        const matchesSearch = row.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                              row.role.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesType = filterType === "All" || row.type === filterType;
+    const filteredData = adjustmentsData.filter(row => {
+        const name = row.employee_profile?.full_name || "";
+        const title = row.employee_profile?.job_title || "";
+        const typeName = row.adjustment_type?.name || "";
+
+        const matchesSearch = name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                              title.toLowerCase().includes(searchQuery.toLowerCase());
+        
+        const matchesType = filterType === "All" || typeName === filterType;
+        
         return matchesSearch && matchesType;
     });
 
@@ -117,9 +100,9 @@ const SalaryAdjustments = () => {
                         </div>
                         {t('TotalAdjustments', 'Total Adjustments')} <span className="ytd-badge">YTD</span>
                     </div>
-                    <h2 className="stat-card-value">124</h2>
+                    <h2 className="stat-card-value">{stats.total_adjustments_ytd}</h2>
                     <div className="stat-card-subtext">
-                        <i className="bi bi-arrow-up-right"></i> +12% vs last year
+                        <i className="bi bi-arrow-up-right"></i> {stats.vs_last_year} vs last year
                     </div>
                 </div>
 
@@ -130,7 +113,7 @@ const SalaryAdjustments = () => {
                         </div>
                         {t('AvgAdjustment', 'Avg. Adjustment %')}
                     </div>
-                    <h2 className="stat-card-value">5.8%</h2>
+                    <h2 className="stat-card-value">{stats.avg_adjustment_percent}</h2>
                     {/* No subtext for average adjustment in design */}
                 </div>
             </div>
@@ -155,8 +138,9 @@ const SalaryAdjustments = () => {
                     >
                         <option value="All">{t('FilterAll', 'All Types')}</option>
                         <option value="Promotion">{t('Promotion', 'Promotion')}</option>
-                        <option value="Merit">{t('Merit', 'Merit')}</option>
+                        <option value="Merit Increase">{t('Merit', 'Merit Increase')}</option>
                         <option value="Cost of Living">{t('CostOfLiving', 'Cost of Living')}</option>
+                        <option value="Annual Review">{t('AnnualReview', 'Annual Review')}</option>
                     </select>
                 </div>
 
@@ -175,36 +159,50 @@ const SalaryAdjustments = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredData.length > 0 ? filteredData.map(row => (
-                                <tr key={row.id}>
-                                    <td>
-                                        <div className="adj-user-cell">
-                                            <div className="adj-user-avatar" style={{backgroundColor: row.initialsBg, color: row.initialsColor}}>
-                                                {row.initials}
-                                            </div>
-                                            <div className="adj-user-details">
-                                                <span className="adj-user-name">{row.name}</span>
-                                                <span className="adj-user-role">{row.role}</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="adj-old-salary">{row.oldSalary}</td>
-                                    <td className="adj-new-salary">{row.newSalary}</td>
-                                    <td>
-                                        <span className={`adj-type-badge ${row.typeClass}`}>
-                                            {t(row.type, row.type)}
-                                        </span>
-                                    </td>
-                                    <td>{row.date}</td>
-                                    <td>{row.by}</td>
-                                    <td className="adj-change-positive">{row.change}</td>
-                                    <td>
-                                        <button className="btn-view-reason" onClick={() => openModal(row.reason)}>
-                                            {t('View', 'عرض')} {/* View text instead of Icon */}
-                                        </button>
-                                    </td>
-                                </tr>
-                            )) : (
+                             {loading ? (
+                                 <tr>
+                                     <td colSpan="8" style={{textAlign: 'center', padding: '30px'}}>{t('Loading', 'Loading...')}</td>
+                                 </tr>
+                             ) : filteredData.length > 0 ? filteredData.map(row => {
+                                 const initials = row.employee_profile?.full_name?.split(' ').map(n => n[0]).join('').toUpperCase() || '??';
+                                 const changePercent = row.current_salary > 0 
+                                     ? (((row.new_salary - row.current_salary) / row.current_salary) * 100).toFixed(1)
+                                     : 0;
+                                 const typeLabel = row.custom_type_name || row.adjustment_type?.name || 'Adjustment';
+
+                                 return (
+                                 <tr key={row.id}>
+                                     <td>
+                                         <div className="adj-user-cell">
+                                             <div className="adj-user-avatar" style={{backgroundColor: 'rgba(59, 130, 246, 0.15)', color: '#3b82f6'}}>
+                                                 {initials}
+                                             </div>
+                                             <div className="adj-user-details">
+                                                 <span className="adj-user-name">{row.employee_profile?.full_name}</span>
+                                                 <span className="adj-user-role">{row.employee_profile?.job_title}</span>
+                                             </div>
+                                         </div>
+                                     </td>
+                                     <td className="adj-old-salary">${row.current_salary}</td>
+                                     <td className="adj-new-salary">${row.new_salary}</td>
+                                     <td>
+                                         <span className={`adj-type-badge tag-${(row.adjustment_type?.name || 'other').toLowerCase().replace(/ /g, '-')}`}>
+                                             {typeLabel}
+                                         </span>
+                                     </td>
+                                     <td>{new Date(row.effective_date).toLocaleDateString()}</td>
+                                     <td>{row.creator?.name || 'System'}</td>
+                                     <td className={parseFloat(changePercent) >= 0 ? "adj-change-positive" : "adj-change-negative"}>
+                                         {parseFloat(changePercent) >= 0 ? '+' : ''}{changePercent}%
+                                     </td>
+                                     <td>
+                                         <button className="btn-view-reason" onClick={() => openModal(row.adjustment_reason)}>
+                                             {t('View', 'عرض')}
+                                         </button>
+                                     </td>
+                                 </tr>
+                                 );
+                             }) : (
                                 <tr>
                                     <td colSpan="8" style={{textAlign: 'center', padding: '30px', color: 'var(--text-muted)'}}>
                                         {t('NoData', 'No matching records found')}

@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\User;
+use App\Models\EmployeeProfile;
+use App\Models\EmployeeMovement;
+use App\Models\AdjustmentType;
 
 class SalaryAdjustment extends Model
 {
@@ -20,9 +24,9 @@ class SalaryAdjustment extends Model
     ];
 
     protected $casts = [
-        'effective_date'  => 'date',
-        'current_salary'  => 'decimal:2',
-        'new_salary'      => 'decimal:2',
+        'effective_date'   => 'date',
+        'current_salary'   => 'decimal:2',
+        'new_salary'       => 'decimal:2',
     ];
 
     // ── Relationships ─────────────────────────────────────────────────────────
@@ -32,31 +36,18 @@ class SalaryAdjustment extends Model
         return $this->belongsTo(EmployeeProfile::class);
     }
 
-    public function employeeMovement(): BelongsTo
+    public function movement(): BelongsTo
     {
-        return $this->belongsTo(EmployeeMovement::class);
+        return $this->belongsTo(EmployeeMovement::class, 'employee_movement_id');
     }
 
     public function adjustmentType(): BelongsTo
     {
-        return $this->belongsTo(AdjustmentType::class);
+        return $this->belongsTo(AdjustmentType::class, 'adjustment_type_id');
     }
 
-    public function createdBy(): BelongsTo
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
-    }
-
-    // ── Accessor: display_type ─────────────────────────────────────────────────
-    // يرجع اسم النوع جاهز للفرونت بدون if/else
-    // إذا custom → يرجع custom_type_name
-    // إذا معروف → يرجع اسمه من adjustment_types
-    public function getDisplayTypeAttribute(): string
-    {
-        if ($this->custom_type_name) {
-            return $this->custom_type_name;
-        }
-
-        return $this->adjustmentType?->name ?? 'Unknown';
     }
 }

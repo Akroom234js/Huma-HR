@@ -33,12 +33,13 @@ class User extends Authenticatable
             'last_login_at'          => 'datetime',
         ];
     }
-     public function profile()
+    public function profile()
     {
         return $this->hasOne(EmployeeProfile::class);
     }
 
-
-
+    public function employeeProfile()
+    {
+        return $this->hasOne(EmployeeProfile::class);
+    }
 }
-
