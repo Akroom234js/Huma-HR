@@ -57,14 +57,19 @@ class EmployeeController extends Controller
     // ⚠️ لازم يكون قبل {id} في الـ Routes
     public function positions(): JsonResponse
     {
-        $positions = EmployeeProfile::select('job_title')
+        $profileTitles = EmployeeProfile::select('job_title')
             ->whereNotNull('job_title')
             ->distinct()
-            ->orderBy('job_title')
-            ->pluck('job_title');
+            ->pluck('job_title')
+            ->toArray();
+
+        $definedTitles = \App\Models\Position::pluck('title')->toArray();
+
+        $allPositions = array_unique(array_merge($profileTitles, $definedTitles));
+        sort($allPositions);
 
         return $this->successResponse(
-            data: $positions,
+            data: array_values($allPositions),
             message: 'Positions retrieved successfully.'
         );
     }
@@ -77,6 +82,21 @@ class EmployeeController extends Controller
         return $this->successResponse(
             data: ['active', 'on_leave', 'inactive', 'terminated'],
             message: 'Statuses retrieved successfully.'
+        );
+    }
+
+    // ── GET /api/employees/managers ──────────────────────────────────────────
+    public function managers(): JsonResponse
+    {
+        $managers = EmployeeProfile::whereHas('user', fn($q) =>
+            $q->whereHas('roles', fn($r) =>
+                $r->whereIn('name', ['manager', 'department_manager', 'hr'])
+            )
+        )->get(['id', 'full_name', 'job_title']);
+
+        return $this->successResponse(
+            data: $managers,
+            message: 'Managers retrieved successfully.'
         );
     }
 
