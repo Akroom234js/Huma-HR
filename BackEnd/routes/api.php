@@ -93,6 +93,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/requests/{id}/status', [EmployeeRequestController::class, 'updateStatus']);
 
         // Payroll
+        Route::get('/payroll/overview', [PayrollController::class, 'overview']);
         Route::get('/payroll',          [PayrollController::class, 'index']);
         Route::patch('/payroll/{id}/pay', [PayrollController::class, 'pay']);
         Route::post('/payroll/pay-all',  [PayrollController::class, 'payAll']);
