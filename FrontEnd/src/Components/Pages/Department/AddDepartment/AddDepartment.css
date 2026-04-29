@@ -27,11 +27,7 @@ main,
     transform: none !important;
 }
 
-/* منع مشاكل السكرول */
-html,
-body {
-    height: 100%;
-}
+
 
 body.modal-open {
     overflow: hidden;
