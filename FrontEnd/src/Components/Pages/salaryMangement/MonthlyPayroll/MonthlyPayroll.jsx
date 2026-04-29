@@ -49,19 +49,19 @@ const MonthlyPayroll = () => {
             const res = await apiClient.get('/payroll', { params });
             const data = (res.data?.data || []).map(row => ({
                 id: row.id,
-                name: row.employee_profile?.full_name || '—',
+                name: row.user?.employee_profile?.full_name || '—',
                 basic: `$${Number(row.basic_salary).toLocaleString()}`,
                 ot: `${row.overtime_hours} hrs`,
-                dedTypes: (row.deductions || []).map(d => ({ label: d.label, class: d.class || 'tag-policy' })),
+                dedTypes: (row.deductions || []).map(d => ({ label: d.deduction_type || 'Deduction', class: 'tag-policy' })),
                 dedAmounts: (row.deductions || []).map(d => ({ val: `$${Number(d.amount).toLocaleString()}`, muted: false })),
                 final: `$${Number(row.final_net_salary).toLocaleString()}`,
                 status: row.status === 'paid' ? 'Paid' : 'Unpaid',
                 // Extra details for modal
-                abs: row.extra_details?.absence_text || '$0.00 (0 days)',
-                date: row.extra_details?.deduction_date || '- -',
-                dedLines: (row.deductions || []).map(d => `${d.label}: $${d.amount}`),
-                reason: row.extra_details?.reason || '-',
-                by: row.paid_by?.name || 'System'
+                abs: `$0.00 (${row.deductions?.reduce((acc, d) => acc + (d.absence_days || 0), 0) || 0} days)`,
+                date: row.deductions?.[0]?.applied_date || row.updated_at?.split('T')[0] || '- -',
+                dedLines: (row.deductions || []).map(d => `${d.deduction_type}: $${d.amount}`),
+                reason: row.deductions?.[0]?.reason || '-',
+                by: row.processor?.profile?.full_name || 'System'
             }));
             setPayrollData(data);
         } catch (error) {
