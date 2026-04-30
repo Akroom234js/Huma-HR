@@ -15,12 +15,32 @@ class PayrollController extends Controller
     // GET /api/payroll
     public function index(Request $request): JsonResponse
     {
-        $payroll = PayrollRecord::with(['user.employeeProfile.department', 'deductions', 'processor'])
-            ->when($request->filled('month'), function ($q) use ($request) {
-                return $q->where('payroll_month', $request->month);
+        $month = $request->month;
+        $year = $request->year;
+
+        if ($month && !is_numeric($month)) {
+            $monthYear = explode(' ', $month);
+            $monthName = $monthYear[0];
+            $year = $monthYear[1] ?? now()->year;
+
+            $monthMap = [
+                'January' => 1, 'February' => 2, 'March' => 3, 'April' => 4,
+                'May' => 5, 'June' => 6, 'July' => 7, 'August' => 8,
+                'September' => 9, 'October' => 10, 'November' => 11, 'December' => 12
+            ];
+            $month = $monthMap[$monthName] ?? null;
+        }
+
+        $payroll = PayrollRecord::with([
+                'user.employeeProfile.department', 
+                'deductions', 
+                'processor.employeeProfile'
+            ])
+            ->when($month, function ($q) use ($month) {
+                return $q->where('payroll_month', $month);
             })
-            ->when($request->filled('year'), function ($q) use ($request) {
-                return $q->where('payroll_year', $request->year);
+            ->when($year, function ($q) use ($year) {
+                return $q->where('payroll_year', $year);
             })
             ->when($request->filled('department_id'), function ($q) use ($request) {
                 return $q->whereHas('user.employeeProfile', function ($sq) use ($request) {
@@ -28,8 +48,8 @@ class PayrollController extends Controller
                 });
             })
             ->when($request->filled('search'), function ($q) use ($request) {
-                return $q->whereHas('user', function ($sq) use ($request) {
-                    $sq->where('name', 'like', "%{$request->search}%");
+                return $q->whereHas('user.employeeProfile', function ($sq) use ($request) {
+                    $sq->where('full_name', 'like', "%{$request->search}%");
                 });
             })
             ->get();
@@ -92,10 +112,11 @@ class PayrollController extends Controller
                 return $record->user?->employeeProfile?->department?->name ?? 'Other';
             })
             ->map(function ($group, $deptName) {
+                $total = $group->sum('final_net_salary');
                 return [
                     'name' => $deptName,
-                    'totalPayroll' => $group->sum('final_net_salary'),
-                    'averageSalary' => $group->avg('final_net_salary'),
+                    'totalPayroll' => $total,
+                    'averageSalary' => $group->count() > 0 ? $total / $group->count() : 0,
                     'employees' => $group->count(),
                 ];
             })
@@ -117,5 +138,94 @@ class PayrollController extends Controller
             'avgSalary' => $avgSalary,
             'departmentDistribution' => $departmentDistribution
         ], 'Payroll overview retrieved successfully.');
+    }
+
+    // POST /api/payroll/initialize
+    public function initialize(Request $request): JsonResponse
+    {
+        $request->validate([
+            'month' => 'required|string', // e.g. "April 2026"
+        ]);
+
+        $monthYear = explode(' ', $request->month);
+        $monthName = $monthYear[0];
+        $year = $monthYear[1] ?? now()->year;
+
+        // Map month name to integer
+        $monthMap = [
+            'January' => 1, 'February' => 2, 'March' => 3, 'April' => 4,
+            'May' => 5, 'June' => 6, 'July' => 7, 'August' => 8,
+            'September' => 9, 'October' => 10, 'November' => 11, 'December' => 12
+        ];
+
+        $monthInt = $monthMap[$monthName] ?? now()->month;
+
+        $activeEmployees = \App\Models\EmployeeProfile::where('employment_status', 'active')->get();
+        $createdCount = 0;
+
+        foreach ($activeEmployees as $profile) {
+            $exists = PayrollRecord::where('user_id', $profile->user_id)
+                ->where('payroll_month', $monthInt)
+                ->where('payroll_year', $year)
+                ->exists();
+
+            if (!$exists) {
+                $payroll = PayrollRecord::create([
+                    'user_id' => $profile->user_id,
+                    'payroll_month' => $monthInt,
+                    'payroll_year' => $year,
+                    'basic_salary' => $profile->salary ?? 0,
+                    'allowances_amount' => $profile->allowances ?? 0,
+                    'final_net_salary' => ($profile->salary ?? 0) + ($profile->allowances ?? 0),
+                    'status' => 'unpaid',
+                ]);
+
+                // Auto-apply Tax if present
+                if ($profile->tax_percent > 0) {
+                    $taxAmount = ($profile->salary * $profile->tax_percent) / 100;
+                    PayrollDeduction::create([
+                        'payroll_record_id' => $payroll->id,
+                        'deduction_type' => 'tax',
+                        'amount' => $taxAmount,
+                        'reason' => "Automatic Tax ({$profile->tax_percent}%)",
+                        'applied_by' => 'System',
+                        'applied_date' => now(),
+                    ]);
+                }
+
+                // Auto-apply Insurance if present
+                if ($profile->insurance_amount > 0) {
+                    PayrollDeduction::create([
+                        'payroll_record_id' => $payroll->id,
+                        'deduction_type' => 'insurance',
+                        'amount' => $profile->insurance_amount,
+                        'reason' => "Automatic Insurance",
+                        'applied_by' => 'System',
+                        'applied_date' => now(),
+                    ]);
+                }
+
+                // Update final net salary after auto-deductions
+                $payroll->final_net_salary = $payroll->basic_salary + $payroll->allowances_amount + $payroll->overtime_amount - $payroll->deductions()->sum('amount');
+                $payroll->save();
+
+                $createdCount++;
+            }
+        }
+
+        return $this->successResponse(['created_count' => $createdCount], "Payroll initialized for $createdCount employees.");
+    }
+
+    // GET /api/employee/payroll
+    public function employeeHistory(): JsonResponse
+    {
+        $userId = Auth::id();
+        $history = PayrollRecord::with(['deductions'])
+            ->where('user_id', $userId)
+            ->orderBy('payroll_year', 'desc')
+            ->orderBy('payroll_month', 'desc')
+            ->get();
+
+        return $this->successResponse($history, 'Payroll history retrieved successfully.');
     }
 }

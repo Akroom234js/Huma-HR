@@ -56,6 +56,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/salary-structures/{id}', [SalaryStructureController::class, 'destroy']);
     });
 
+    // ── Employee Portal ──────────────────────────────────────────────
+    Route::get('/employee/payroll', [PayrollController::class, 'employeeHistory']);
+
     // ── HR + Boss — عرض فقط ──────────────────────────────────────────────
     Route::middleware('role:hr|manager')->group(function () {
 
@@ -82,6 +85,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/salary-adjustments/{id}', [SalaryAdjustmentController::class, 'show']);
 
         // Salary Structures
+        Route::get('/salary-structures/employees', [SalaryStructureController::class, 'employees']);
+        Route::patch('/salary-structures/employees/{id}', [SalaryStructureController::class, 'updateEmployeeSalary']);
         Route::get('/salary-structures',      [SalaryStructureController::class, 'index']);
 
         // Positions
@@ -94,9 +99,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Payroll
         Route::get('/payroll/overview', [PayrollController::class, 'overview']);
+        Route::post('/payroll/initialize', [PayrollController::class, 'initialize']);
         Route::get('/payroll',          [PayrollController::class, 'index']);
         Route::patch('/payroll/{id}/pay', [PayrollController::class, 'pay']);
         Route::post('/payroll/pay-all',  [PayrollController::class, 'payAll']);
+
+        // Deductions
+        Route::get('/deductions', [App\Http\Controllers\DeductionController::class, 'index']);
+        Route::post('/deductions', [App\Http\Controllers\DeductionController::class, 'store']);
     });
     // ── Department Manager — قسمه وفريقه فقط ────────────────────────────
     Route::middleware('role:department_manager')->group(function () {

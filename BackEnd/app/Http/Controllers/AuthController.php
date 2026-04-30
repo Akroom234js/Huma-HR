@@ -47,6 +47,12 @@ class AuthController extends Controller
             ]);
 
             // ── 3. إنشاء البروفايل بكل المعلومات ─────────────────────────
+            // Fetch default salary settings from position if not provided
+            $position = \App\Models\Position::find($request->position_id);
+            $defaultSalary = $position->min_salary ?? 0;
+            $defaultTax = $position->tax_percent ?? 0;
+            $defaultInsurance = $position->insurance_amount ?? 0;
+
             EmployeeProfile::create([
                 'user_id'                => $user->id,
                 'full_name'              => $request->full_name,
@@ -57,7 +63,7 @@ class AuthController extends Controller
                 'address'                => $request->address,
                 'emergency_contacts'     => $request->emergency_contacts,
                 'profile_pic'            => $profilePicPath,
-                'job_title'              => $request->job_title,
+                'job_title'              => $position->title ?? $request->job_title,
                 'employment_status'      => $request->employment_status ?? 'active',
                 'department_id'          => $request->department_id,
                 'manager_id'             => $request->manager_id,
@@ -65,7 +71,9 @@ class AuthController extends Controller
                 'city'                   => $request->city,
                 'grade'                  => $request->grade,
                 'start_date'             => $request->start_date,
-                'salary'                 => $request->salary,
+                'salary'                 => $request->salary ?? $defaultSalary,
+                'tax_percent'            => $request->tax_percent ?? $defaultTax,
+                'insurance_amount'       => $request->insurance_amount ?? $defaultInsurance,
                 'internal_transfer_date' => $request->internal_transfer_date,
                 'resignation_date'       => $request->resignation_date,
             ]);
