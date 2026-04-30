@@ -10,6 +10,24 @@ const MonthlyPayroll = () => {
     const [payrollData, setPayrollData] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isInitializing, setIsInitializing] = useState(false);
+
+    const handleInitializePayroll = async () => {
+        if (!selectedMonth) return;
+        try {
+            setIsInitializing(true);
+            const res = await apiClient.post('/payroll/initialize', {
+                month: selectedMonth
+            });
+            alert(res.data.message);
+            fetchPayroll();
+        } catch (error) {
+            console.error("Initialization failed", error);
+            alert("Failed to initialize payroll.");
+        } finally {
+            setIsInitializing(false);
+        }
+    };
 
     // Filter states
     const [searchQuery, setSearchQuery] = useState("");
@@ -50,18 +68,24 @@ const MonthlyPayroll = () => {
             const data = (res.data?.data || []).map(row => ({
                 id: row.id,
                 name: row.user?.employee_profile?.full_name || '—',
+                department: row.user?.employee_profile?.department?.name || '—',
+                jobTitle: row.user?.employee_profile?.job_title || '—',
                 basic: `$${Number(row.basic_salary).toLocaleString()}`,
+                allowances: `$${Number(row.allowances_amount || 0).toLocaleString()}`,
+                bonuses: `$${Number(row.bonuses_amount || 0).toLocaleString()}`,
                 ot: `${row.overtime_hours} hrs`,
                 dedTypes: (row.deductions || []).map(d => ({ label: d.deduction_type || 'Deduction', class: 'tag-policy' })),
                 dedAmounts: (row.deductions || []).map(d => ({ val: `$${Number(d.amount).toLocaleString()}`, muted: false })),
                 final: `$${Number(row.final_net_salary).toLocaleString()}`,
                 status: row.status === 'paid' ? 'Paid' : 'Unpaid',
                 // Extra details for modal
-                abs: `$0.00 (${row.deductions?.reduce((acc, d) => acc + (d.absence_days || 0), 0) || 0} days)`,
+                allowanceVal: `$${Number(row.allowances_amount || 0).toLocaleString()}`,
+                bonusVal: `$${Number(row.bonuses_amount || 0).toLocaleString()}`,
+                abs: `$${row.deductions?.filter(d => d.deduction_type === 'absence').reduce((acc, d) => acc + Number(d.amount), 0).toLocaleString()} (${row.deductions?.reduce((acc, d) => acc + (d.absence_days || 0), 0) || 0} days)`,
                 date: row.deductions?.[0]?.applied_date || row.updated_at?.split('T')[0] || '- -',
-                dedLines: (row.deductions || []).map(d => `${d.deduction_type}: $${d.amount}`),
+                dedLines: (row.deductions || []).map(d => `${d.deduction_type}: $${d.amount} ${d.reason ? `(${d.reason})` : ''}`),
                 reason: row.deductions?.[0]?.reason || '-',
-                by: row.processor?.profile?.full_name || 'System'
+                by: row.processor?.employee_profile?.full_name || row.processor?.profile?.full_name || 'System'
             }));
             setPayrollData(data);
         } catch (error) {
@@ -103,7 +127,7 @@ const MonthlyPayroll = () => {
         }
     };
 
-    const moredetails = (e, abs, dedLines, date, reason, by) => {
+    const moredetails = (e, abs, dedLines, date, reason, by, allowances, bonuses) => {
         const vis = document.querySelector(".details")
         const zind = document.querySelector(".mobile-toggle")
         if (zind) zind.style.zIndex = "-1"
@@ -113,24 +137,32 @@ const MonthlyPayroll = () => {
         const newDetails = (
             <div className='details-content-wrapper'>
                 <div className='details-body'>
-                    <div className='infocardsalary'>
-                        <p>{t('AbsenceDeducted', 'Absence Deducted')}:</p>
+                    <div className='infocardsalary' style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>
+                        <p style={{ fontWeight: 'bold' }}>{t('Allowances', 'Allowances')}:</p>
+                        <p>{allowances}</p>
+                    </div>
+                    <div className='infocardsalary' style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>
+                        <p style={{ fontWeight: 'bold' }}>{t('Bonuses', 'Bonuses')}:</p>
+                        <p>{bonuses}</p>
+                    </div>
+                    <div className='infocardsalary' style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>
+                        <p style={{ fontWeight: 'bold' }}>{t('AbsenceDeducted', 'Absence Deducted')}:</p>
                         <p>{abs}</p>
                     </div>
-                    <div className='infocardsalary'>
-                        <p>{t('Deductions', 'Deductions')}:</p>
-                        <div>{dedLines.length > 0 ? dedLines.map((d, i) => <div key={i}>{d}</div>) : 'None'}</div>
+                    <div className='infocardsalary' style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>
+                        <p style={{ fontWeight: 'bold' }}>{t('Deductions', 'All Deductions')}:</p>
+                        <div style={{ textAlign: 'right' }}>
+                            {dedLines.length > 0 ? dedLines.map((d, i) => (
+                                <div key={i} style={{ marginBottom: '4px', fontSize: '13px', color: 'var(--text-secondary)' }}>• {d}</div>
+                            )) : <span style={{ color: 'var(--text-muted)' }}>None</span>}
+                        </div>
                     </div>
                     <div className='infocardsalary'>
-                        <p>{t('deductiondate', 'Deduction Date')}:</p>
+                        <p style={{ fontWeight: 'bold' }}>{t('deductiondate', 'Last Applied Date')}:</p>
                         <p>{date}</p>
                     </div>
                     <div className='infocardsalary'>
-                        <p>{t('reason', 'Reason')}:</p>
-                        <p>{reason}</p>
-                    </div>
-                    <div className='infocardsalary'>
-                        <p>{t('Applied', 'Applied By')}:</p>
+                        <p style={{ fontWeight: 'bold' }}>{t('Applied', 'Processed By')}:</p>
                         <p>{by}</p>
                     </div>
                 </div>
@@ -202,11 +234,34 @@ const MonthlyPayroll = () => {
                             ))}
                         </select>
                     </div>
-                    {payrollData.some(emp => emp.status === "Unpaid") && (
-                        <button className="pay-all-btn" onClick={handlePayAll}>
-                            <i className="bi bi-check2-all"></i> {t('PayAll', 'Pay All Unpaid')}
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <button 
+                            className="initialize-payroll-btn" 
+                            onClick={handleInitializePayroll} 
+                            disabled={isInitializing}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                padding: '8px 16px',
+                                borderRadius: '12px',
+                                border: '1px solid var(--border-color)',
+                                backgroundColor: 'var(--bg-card)',
+                                color: 'var(--text-primary)',
+                                cursor: 'pointer',
+                                transition: 'all 0.3s ease'
+                            }}
+                        >
+                            <i className={`bi bi-arrow-repeat ${isInitializing ? 'spin' : ''}`}></i>
+                            {t('InitializePayroll', 'Generate Monthly Payroll')}
                         </button>
-                    )}
+
+                        {payrollData.some(emp => emp.status === "Unpaid") && (
+                            <button className="pay-all-btn" onClick={handlePayAll}>
+                                <i className="bi bi-check2-all"></i> {t('PayAll', 'Pay All Unpaid')}
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 <div className="tablesalary">
@@ -214,7 +269,11 @@ const MonthlyPayroll = () => {
                         <thead className="">
                             <tr>
                                 <th className="" >{t('name', 'EMPLOYEE NAME')}</th>
+                                <th className="" >{t('Department', 'DEPARTMENT')}</th>
+                                <th className="" >{t('JobTitle', 'JOB TITLE')}</th>
                                 <th className="" >{t('BasicSalary', 'BASIC SALARY')}</th>
+                                <th className="" >{t('Allowances', 'ALLOWANCES')}</th>
+                                <th className="" >{t('Bonuses', 'BONUSES')}</th>
                                 <th className="" >{t('Overtime', 'OVERTIME HOURS')}</th>
                                 <th className="" >{t('DeductionType', 'DEDUCTION TYPE')}</th>
                                 <th className="" >{t('DeductionAmount', 'DEDUCTION AMOUNT')}</th>
@@ -224,11 +283,15 @@ const MonthlyPayroll = () => {
                         </thead>
                         <tbody className='salaryinfo'>
                             {isLoading ? (
-                                <tr><td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>Loading...</td></tr>
+                                <tr><td colSpan="11" style={{ textAlign: 'center', padding: '20px' }}>Loading...</td></tr>
                             ) : payrollData.length > 0 ? payrollData.map((row, idx) => (
                                 <tr key={idx} className="">
                                     <td className="" style={{ fontWeight: '500' }}>{row.name}</td>
+                                    <td className="">{row.department}</td>
+                                    <td className="">{row.jobTitle}</td>
                                     <td className="">{row.basic}</td>
+                                    <td className="text-success">{row.allowances}</td>
+                                    <td className="text-success">{row.bonuses}</td>
                                     <td className="">{row.ot}</td>
                                     <td className="">
                                         {row.dedTypes.length > 0 ? (
@@ -262,15 +325,18 @@ const MonthlyPayroll = () => {
                                                 {t('Pay', 'Pay')}
                                             </button>
                                         )}
-                                        <button className="moredetails" onClick={(e) => { moredetails(e, row.abs, row.dedLines, row.date, row.reason, row.by) }}>
+                                        <button className="moredetails" onClick={(e) => { moredetails(e, row.abs, row.dedLines, row.date, row.reason, row.by, row.allowanceVal, row.bonusVal) }}>
                                             {t('more', 'More Details')}
                                         </button>
                                     </td>
                                 </tr>
                             )) : (
                                 <tr>
-                                    <td colSpan="7" style={{ textAlign: 'center', padding: '20px', color: 'var(--text-muted)' }}>
-                                        No data found
+                                    <td colSpan="11" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                                            <i className="bi bi-inbox" style={{ fontSize: '2rem' }}></i>
+                                            <p>{t('NoData', 'No payroll records found for the selected criteria.')}</p>
+                                        </div>
                                     </td>
                                 </tr>
                             )}
@@ -284,6 +350,14 @@ const MonthlyPayroll = () => {
                             <div className='infocardsalary'>
                                 <p className="" >{t('name')}: </p>
                                 <p className="" style={{ fontWeight: 'bold' }}>{row.name}</p>
+                            </div>
+                            <div className='infocardsalary'>
+                                <p className="" >{t('Department', 'Department')}: </p>
+                                <p className="">{row.department}</p>
+                            </div>
+                            <div className='infocardsalary'>
+                                <p className="" >{t('JobTitle', 'Job Title')}: </p>
+                                <p className="">{row.jobTitle}</p>
                             </div>
                             <div className='infocardsalary'>
                                 <p className="" >{t('BasicSalary')}: </p>
@@ -321,7 +395,7 @@ const MonthlyPayroll = () => {
                                         {t('Pay', 'Pay')}
                                     </button>
                                 ) : <div></div>}
-                                <button className="moredetails" onClick={(e) => { moredetails(e, row.abs, row.dedLines, row.date, row.reason, row.by) }}>
+                                <button className="moredetails" onClick={(e) => { moredetails(e, row.abs, row.dedLines, row.date, row.reason, row.by, row.allowanceVal, row.bonusVal) }}>
                                     {t('more', 'More Details')}
                                 </button>
                             </div>

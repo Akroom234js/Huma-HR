@@ -1,6 +1,53 @@
 /* Using the same styles as PayrollOverview for common layout */
 @import '../PayrollOverview/PayrollOverview.css';
 
+.sm-header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-edit-salary {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-edit-salary:hover {
+    background-color: var(--bg-page);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.sm-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sm-tab-btn {
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-secondary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sm-tab-btn.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
 .sm-header {
     display: flex;
     justify-content: space-between;
