@@ -21,7 +21,10 @@ class EmployeeProfile extends Model
         'profile_pic',
         'job_title',
         'employment_status',
-        'salary',              // ← جديد
+        'salary',
+        'allowances',
+        'tax_percent',
+        'insurance_amount',
         'department_id',
         'manager_id',
         'branch',
@@ -38,6 +41,9 @@ class EmployeeProfile extends Model
         'internal_transfer_date' => 'date',
         'resignation_date'       => 'date',
         'salary'                 => 'decimal:2',
+        'allowances'             => 'decimal:2',
+        'tax_percent'            => 'decimal:2',
+        'insurance_amount'       => 'decimal:2',
     ];
 
     // ── Relationships ─────────────────────────────────────────────────────────
