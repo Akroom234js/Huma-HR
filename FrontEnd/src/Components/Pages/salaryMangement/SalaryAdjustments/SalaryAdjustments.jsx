@@ -191,7 +191,7 @@ const SalaryAdjustments = () => {
                                          </span>
                                      </td>
                                      <td>{new Date(row.effective_date).toLocaleDateString()}</td>
-                                     <td>{row.creator?.name || 'System'}</td>
+                                     <td>{row.creator?.profile?.full_name || 'System'}</td>
                                      <td className={parseFloat(changePercent) >= 0 ? "adj-change-positive" : "adj-change-negative"}>
                                          {parseFloat(changePercent) >= 0 ? '+' : ''}{changePercent}%
                                      </td>

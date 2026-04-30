@@ -15,7 +15,7 @@ class PayrollController extends Controller
     // GET /api/payroll
     public function index(Request $request): JsonResponse
     {
-        $payroll = PayrollRecord::with(['user.employeeProfile.department', 'deductions'])
+        $payroll = PayrollRecord::with(['user.employeeProfile.department', 'deductions', 'processor'])
             ->when($request->filled('month'), function ($q) use ($request) {
                 return $q->where('payroll_month', $request->month);
             })
@@ -72,5 +72,50 @@ class PayrollController extends Controller
             ]);
 
         return $this->successResponse(['updated_count' => $updated], 'Selected payroll records marked as paid.');
+    }
+
+    // GET /api/payroll/overview
+    public function overview(): JsonResponse
+    {
+        $totalMonthlyPayroll = PayrollRecord::where('status', 'paid')
+            ->sum('final_net_salary');
+
+        $totalEmployeesPaid = PayrollRecord::where('status', 'paid')->count();
+        $totalEmployees = PayrollRecord::count();
+
+        $avgSalary = $totalEmployeesPaid > 0 ? $totalMonthlyPayroll / $totalEmployeesPaid : 0;
+
+        $departmentDistribution = \App\Models\PayrollRecord::where('status', 'paid')
+            ->with('user.employeeProfile.department')
+            ->get()
+            ->groupBy(function ($record) {
+                return $record->user?->employeeProfile?->department?->name ?? 'Other';
+            })
+            ->map(function ($group, $deptName) {
+                return [
+                    'name' => $deptName,
+                    'totalPayroll' => $group->sum('final_net_salary'),
+                    'averageSalary' => $group->avg('final_net_salary'),
+                    'employees' => $group->count(),
+                ];
+            })
+            ->values();
+
+        // Calculate percentages
+        $grandTotal = $departmentDistribution->sum('totalPayroll');
+        $departmentDistribution = $departmentDistribution->map(function ($item) use ($grandTotal) {
+            $item['ofTotal'] = $grandTotal > 0 ? round(($item['totalPayroll'] / $grandTotal) * 100, 1) . '%' : '0%';
+            // Convert to format required for chart
+            $item['value'] = $grandTotal > 0 ? round(($item['totalPayroll'] / $grandTotal) * 100, 1) : 0;
+            return $item;
+        });
+
+        return $this->successResponse([
+            'totalMonthlyPayroll' => $totalMonthlyPayroll,
+            'totalEmployeesPaid' => $totalEmployeesPaid,
+            'totalEmployees' => $totalEmployees,
+            'avgSalary' => $avgSalary,
+            'departmentDistribution' => $departmentDistribution
+        ], 'Payroll overview retrieved successfully.');
     }
 }

@@ -1,5 +1,6 @@
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import apiClient from "../../../../apiConfig";
 import "./PayrollOverview.css";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { useTranslation } from "react-i18next";
@@ -9,11 +10,32 @@ const COLORS = ["#2563eb", "#3b82f6", "#60a5fa", "#cbd5e1"];
 const PayrollOverview = () => {
   const { t } = useTranslation('SalaryManagement/PayrollOverview');
 
-  const data = [
-    { name: t('Engineering'), value: 45 },
-    { name: t('Product'), value: 30 },
-    { name: t('Design'), value: 15 },
-    { name: t('Other'), value: 10 },
+  const [overviewData, setOverviewData] = useState({
+    totalMonthlyPayroll: 0,
+    totalEmployeesPaid: 0,
+    totalEmployees: 0,
+    avgSalary: 0,
+    departmentDistribution: []
+  });
+
+  useEffect(() => {
+    fetchOverview();
+  }, []);
+
+  const fetchOverview = async () => {
+    try {
+      const response = await apiClient.get('/payroll/overview');
+      setOverviewData(response.data.data);
+    } catch (error) {
+      console.error('Error fetching payroll overview:', error);
+    }
+  };
+
+  const data = overviewData.departmentDistribution.length > 0 ? overviewData.departmentDistribution : [
+    { name: t('Engineering'), value: 0 },
+    { name: t('Product'), value: 0 },
+    { name: t('Design'), value: 0 },
+    { name: t('Other'), value: 0 },
   ];
 
   return (
@@ -27,17 +49,17 @@ const PayrollOverview = () => {
       <div className="con_divs">
         <div>
           <p>{t('TotalMonthlyCompanyPayroll')}</p>
-          <h3>$450,320</h3>
+          <h3>${Number(overviewData.totalMonthlyPayroll).toLocaleString()}</h3>
         </div>
 
         <div>
           <p>{t('EmployeesPaid')}</p>
-          <h3>258 / 258</h3>
+          <h3>{overviewData.totalEmployeesPaid} / {overviewData.totalEmployees}</h3>
         </div>
 
         <div>
           <p>{t('AvgSalaryEmployee')}</p>
-          <h3>$1,745</h3>
+          <h3>${Number(overviewData.avgSalary).toLocaleString()}</h3>
         </div>
       </div>
       <div className="all_chart">
@@ -89,45 +111,20 @@ const PayrollOverview = () => {
           </thead>
 
           <tbody>
-            <tr>
-              <td>{t('Engineering')}</td>
-              <td>$202,644</td>
-              <td>$4,824</td>
-              <td>42</td>
-              <td>45%</td>
-            </tr>
-
-            <tr>
-              <td>{t('Product')}</td>
-              <td>$135,096</td>
-              <td>$5,873</td>
-              <td>23</td>
-              <td>30%</td>
-            </tr>
-
-            <tr>
-              <td>{t('Design')}</td>
-              <td>$67,548</td>
-              <td>$4,503</td>
-              <td>15</td>
-              <td>15%</td>
-            </tr>
-
-            <tr>
-              <td>{t('Marketing')}</td>
-              <td>$22,516</td>
-              <td>$1,250</td>
-              <td>18</td>
-              <td>5%</td>
-            </tr>
-
-            <tr>
-              <td>{t('OtherDepartments')}</td>
-              <td>$22,516</td>
-              <td>$750</td>
-              <td>30</td>
-              <td>5%</td>
-            </tr>
+            {overviewData.departmentDistribution.map((dept, index) => (
+              <tr key={index}>
+                <td>{dept.name}</td>
+                <td>${Number(dept.totalPayroll).toLocaleString()}</td>
+                <td>${Number(dept.averageSalary).toLocaleString(undefined, {maximumFractionDigits: 0})}</td>
+                <td>{dept.employees}</td>
+                <td>{dept.ofTotal}</td>
+              </tr>
+            ))}
+            {overviewData.departmentDistribution.length === 0 && (
+              <tr>
+                <td colSpan="5" style={{textAlign: 'center'}}>{t('NoData', 'No data available')}</td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

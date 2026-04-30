@@ -188,3 +188,36 @@ body::before {
 [data-theme="dark"] .sidebar-overlay {
   background-color: rgba(0, 0, 0, 0.6) !important;
 }
+
+/* ===== GLOBAL THEME INTEGRATION ===== 
+   Remove solid background from all page wrappers so that the body's gradient and glow 
+   can shine through, seamlessly integrating the sidebar with the rest of the interfaces.
+*/
+.page-container,
+.All_page,
+.org-chart-wrapper,
+.home-container,
+.sm-page,
+.sm-page-container,
+.em-page-container,
+.portal-page-container-leaves,
+div.attachments,
+div.interview,
+.main-content > * {
+    background-color: transparent !important;
+}
+
+/* Also ensure that the sidebar itself has the glassmorphism blur applied on desktop */
+.sidebar {
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+}
+
+/* Make sidebar completely integrated in dark mode (no separating line, shadow, or blur boundary) */
+[data-theme="dark"] .sidebar {
+    box-shadow: none !important;
+    border: none !important;
+    background-color: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
