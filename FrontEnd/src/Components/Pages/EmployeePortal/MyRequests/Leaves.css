@@ -2,10 +2,7 @@
     padding: 2rem;
     min-height: 50vh;
 }
-html,
-body {
-    height: 0%;
-}
+
 
 div.leaves-emp-header{
     display: flex;
