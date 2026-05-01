@@ -4,16 +4,31 @@ namespace App\Services;
 
 use Smalot\PdfParser\Parser as PdfParser;
 use PhpOffice\PhpWord\IOFactory;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ResumeParsingService
 {
+    // ✅ Stop Words عربي وإنجليزي — كلمات بلا معنى نحذفها
+    private array $stopWords = [
+        // إنجليزي
+        'the', 'and', 'for', 'with', 'that', 'this', 'will', 'are',
+        'have', 'has', 'was', 'been', 'from', 'they', 'them', 'their',
+        'what', 'which', 'who', 'whom', 'when', 'where', 'why', 'how',
+        'all', 'each', 'both', 'few', 'more', 'most', 'other', 'some',
+        'such', 'than', 'too', 'very', 'can', 'just', 'should', 'would',
+        // عربي
+        'من', 'في', 'على', 'مع', 'أو', 'و', 'هو', 'هي', 'هم',
+        'إلى', 'عن', 'عند', 'كل', 'بعد', 'قبل', 'حتى', 'لكن',
+        'يجب', 'يتم', 'يكون', 'تكون', 'كان', 'كانت', 'ذلك', 'هذا',
+    ];
+
     /**
      * استخراج النص من ملف السيرة الذاتية
      */
     public function extractTextFromResume(string $resumePath): string
     {
-        $fullPath = Storage::disk('public')->path($resumePath);
+        $fullPath  = Storage::disk('public')->path($resumePath);
         $extension = pathinfo($resumePath, PATHINFO_EXTENSION);
 
         if ($extension === 'pdf') {
@@ -26,28 +41,28 @@ class ResumeParsingService
     }
 
     /**
-     * استخراج النص من ملف PDF
+     * استخراج النص من PDF
      */
     private function extractFromPdf(string $filePath): string
     {
         try {
             $parser = new PdfParser();
-            $pdf = $parser->parseFile($filePath);
-            $text = $pdf->getText();
-            return $this->cleanText($text);
+            $pdf    = $parser->parseFile($filePath);
+            return $this->cleanText($pdf->getText());
         } catch (\Exception $e) {
+            Log::error('فشل استخراج PDF: ' . $e->getMessage());
             return '';
         }
     }
 
     /**
-     * استخراج النص من ملف Word
+     * استخراج النص من Word
      */
     private function extractFromWord(string $filePath): string
     {
         try {
             $phpWord = IOFactory::load($filePath);
-            $text = '';
+            $text    = '';
 
             foreach ($phpWord->getSections() as $section) {
                 foreach ($section->getElements() as $element) {
@@ -59,6 +74,7 @@ class ResumeParsingService
 
             return $this->cleanText($text);
         } catch (\Exception $e) {
+            Log::error('فشل استخراج Word: ' . $e->getMessage());
             return '';
         }
     }
@@ -68,86 +84,87 @@ class ResumeParsingService
      */
     private function cleanText(string $text): string
     {
-        // إزالة المسافات الزائدة والأسطر الفارغة
         $text = preg_replace('/\s+/', ' ', $text);
-        $text = trim($text);
-        return $text;
+        return trim($text);
+    }
+
+    // =========================================================
+    // ✅ الدوال الجديدة — ديناميكية لأي مجال
+    // =========================================================
+
+    /**
+     * ❌ احذفنا extractKeywords() القديمة (قائمة ثابتة للبرمجة)
+     * ✅ استبدلناها بـ extractKeywordsFromText() ديناميكية
+     *
+     * تستخرج الكلمات المهمة من أي نص (وصف وظيفي أو سيرة ذاتية)
+     */
+    public function extractKeywordsFromText(string $text): array
+    {
+        $text  = strtolower($text);
+        // تقسيم النص لكلمات مع دعم العربية والإنجليزية
+        preg_match_all('/[\w\x{0600}-\x{06FF}]+/u', $text, $matches);
+        $words = $matches[0];
+
+        // فلترة الكلمات القصيرة والـ Stop Words
+        $keywords = array_filter($words, function ($word) {
+            return mb_strlen($word) > 3
+                && !in_array($word, $this->stopWords);
+        });
+
+        // إرجاع كلمات فريدة
+        return array_values(array_unique($keywords));
     }
 
     /**
-     * استخراج الكلمات المفتاحية من النص
+     * ✅ مقارنة السيرة الذاتية مع وصف الوظيفة
+     * تعمل لأي مجال — طب، قانون، هندسة، برمجة...
      */
-    public function extractKeywords(string $text): array
-    {
-        // قائمة المهارات والتقنيات الشائعة
-        $keywords = [
-            // لغات البرمجة
-            'php', 'python', 'javascript', 'java', 'c++', 'c#', 'ruby', 'go', 'rust', 'kotlin',
-            'swift', 'typescript', 'scala', 'perl', 'r', 'matlab',
+    public function compareWithJobDescription(
+        string $resumeText,
+        string $jobDescription
+    ): array {
+        // استخرج كلمات الوظيفة
+        $jobKeywords    = $this->extractKeywordsFromText($jobDescription);
 
-            // إطارات العمل
-            'laravel', 'symfony', 'codeigniter', 'yii', 'zend',
-            'react', 'vue', 'angular', 'next.js', 'nuxt', 'svelte',
-            'django', 'flask', 'fastapi', 'spring', 'spring boot',
-            'express', 'nest.js', 'fastify',
+        // استخرج كلمات السيرة
+        $resumeKeywords = $this->extractKeywordsFromText($resumeText);
+        $resumeLower    = strtolower($resumeText);
 
-            // قواعد البيانات
-            'mysql', 'postgresql', 'mongodb', 'redis', 'elasticsearch', 'cassandra',
-            'oracle', 'sql server', 'mariadb', 'sqlite', 'dynamodb',
-
-            // أدوات وتقنيات
-            'git', 'docker', 'kubernetes', 'jenkins', 'gitlab', 'github', 'bitbucket',
-            'aws', 'azure', 'gcp', 'heroku', 'digitalocean',
-            'rest', 'graphql', 'soap', 'websocket',
-            'microservices', 'devops', 'ci/cd',
-
-            // أخرى
-            'html', 'css', 'sass', 'bootstrap', 'tailwind',
-            'api', 'restful', 'json', 'xml', 'yaml',
-            'agile', 'scrum', 'kanban',
-            'linux', 'windows', 'macos', 'ubuntu',
-            'sql', 'nosql', 'orm', 'eloquent',
-            'testing', 'unit test', 'integration test', 'jest', 'phpunit',
-            'design patterns', 'solid', 'clean code',
-        ];
-
-        $textLower = strtolower($text);
-        $foundKeywords = [];
-
-        foreach ($keywords as $keyword) {
-            // حساب عدد مرات ظهور الكلمة المفتاحية
-            $count = substr_count($textLower, $keyword);
-            if ($count > 0) {
-                $foundKeywords[$keyword] = $count;
-            }
-        }
-
-        // ترتيب حسب التكرار (الأكثر تكراراً أولاً)
-        arsort($foundKeywords);
-
-        return $foundKeywords;
-    }
-
-    /**
-     * حساب نسبة المطابقة بناءً على الكلمات المفتاحية
-     */
-    public function calculateMatchScore(array $resumeKeywords, array $jobKeywords): float
-    {
-        if (empty($jobKeywords)) {
-            return 0;
-        }
-
-        $matchedKeywords = 0;
+        $matched = [];
+        $missing = [];
 
         foreach ($jobKeywords as $keyword) {
-            if (isset($resumeKeywords[$keyword])) {
-                $matchedKeywords++;
+            if (in_array($keyword, $resumeKeywords)) {
+                $matched[] = $keyword; // ✅ موجودة
+            } else {
+                $missing[] = $keyword; // ❌ ناقصة
             }
         }
 
-        // حساب النسبة المئوية
-        $score = ($matchedKeywords / count($jobKeywords)) * 100;
+        $total      = count($jobKeywords);
+        $matchScore = $total > 0
+            ? round((count($matched) / $total) * 100)
+            : 0;
 
-        return round($score, 2);
+        return [
+            'match_score'    => $matchScore,
+            'matched_skills' => $matched,
+            'missing_skills' => $missing,
+            'total_required' => $total,
+            'total_matched'  => count($matched),
+        ];
+    }
+
+    /**
+     * ✅ احتُفظ بـ calculateMatchScore للتوافق مع الكود القديم
+     */
+    public function calculateMatchScore(
+        array $resumeKeywords,
+        array $jobKeywords
+    ): float {
+        if (empty($jobKeywords)) return 0;
+
+        $matched = count(array_intersect($jobKeywords, $resumeKeywords));
+        return round(($matched / count($jobKeywords)) * 100, 2);
     }
 }

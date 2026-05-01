@@ -28,6 +28,9 @@ class Application extends Model
         'feedback',
         'submitted_at',
         'reviewed_at',
+        'match_score',
+        'ai_analysis',
+        'evaluated_at',
     ];
 
     /**

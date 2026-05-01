@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1;
 
+use Illuminate\Support\Facades\Log; // ← أضف هاد السطر
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Application\StoreApplicationRequest;
 use App\Http\Requests\Application\UpdateApplicationStatusRequest;
@@ -22,28 +23,39 @@ class ApplicationController extends Controller
     /**
      * عرض قائمة الطلبات
      */
-    public function index(Request $request): JsonResponse
-    {
-        try {
-            $filters = $request->only(['status', 'job_posting_id', 'user_id', 'search']);
-            $applications = $this->applicationService->getApplicationsByJobPosting(
-                JobPosting::find($filters['job_posting_id'] ?? 0) ?? new JobPosting(),
-                $filters
-            );
+   public function index(Request $request): JsonResponse
+{
+    try {
+        $filters = $request->only(['status', 'job_posting_id', 'user_id', 'search']);
 
-            return response()->json([
-                'status' => true,
-                'message' => 'تم جلب الطلبات بنجاح.',
-                'data' => ApplicationResource::collection($applications),
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'حدث خطأ أثناء جلب الطلبات.',
-                'data' => null,
-            ], 500);
+        // إذا في job_posting_id — جيب طلبات هالوظيفة بس
+        if (!empty($filters['job_posting_id'])) {
+            $jobPosting = JobPosting::findOrFail($filters['job_posting_id']);
+            $applications = $this->applicationService
+                                 ->getApplicationsByJobPosting($jobPosting, $filters);
+
+        // إذا ما في — جيب كل الطلبات
+        } else {
+            $applications = Application::with(['jobPosting'])
+                                       ->latest()
+                                       ->get();
         }
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'تم جلب الطلبات بنجاح.',
+            'data'    => ApplicationResource::collection($applications),
+        ], 200);
+
+    } catch (\Exception $e) {
+        Log::error('index error: ' . $e->getMessage()); // ← لا تنسى اللوق
+        return response()->json([
+            'status'  => false,
+            'message' => 'حدث خطأ أثناء جلب الطلبات.',
+            'data'    => null,
+        ], 500);
     }
+}
 
     /**
      * تقديم طلب لوظيفة

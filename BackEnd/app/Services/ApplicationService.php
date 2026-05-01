@@ -4,9 +4,11 @@ namespace App\Services;
 
 use App\Models\Application;
 use App\Models\JobPosting;
+use Illuminate\Support\Facades\Log;
 use App\Repositories\Interfaces\ApplicationRepositoryInterface;
 use App\Repositories\Interfaces\AttachmentRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\UploadedFile;
 
 class ApplicationService
@@ -40,8 +42,8 @@ class ApplicationService
         $data['job_posting_id'] = $jobPosting->id;
 
         // إضافة معرف المستخدم الحالي إذا كان مسجلاً
-        if (auth()->check()) {
-            $data['user_id'] = auth()->id();
+        if (Auth::check()) {
+            $data['user_id'] = Auth::id();
         }
 
         // تحديد المرحلة الأولى
@@ -110,10 +112,10 @@ class ApplicationService
             }
 
             // استخراج الكلمات المفتاحية من السيرة الذاتية
-            $resumeKeywords = $this->resumeParsingService->extractKeywords($resumeText);
+            $resumeKeywords = $this->resumeParsingService->extractKeywordsFromText($resumeText);
 
             // استخراج الكلمات المفتاحية من الوصف الوظيفي
-            $jobKeywords = $this->resumeParsingService->extractKeywords($jobPosting->description);
+            $jobKeywords = $this->resumeParsingService->extractKeywordsFromText($jobPosting->description);
 
             // حساب نسبة المطابقة بناءً على الكلمات المفتاحية
             $keywordMatchScore = $this->resumeParsingService->calculateMatchScore(
@@ -147,12 +149,13 @@ class ApplicationService
                 'match_score' => $finalScore,
                 'ai_analysis' => json_encode($evaluation),
                 'feedback' => $evaluation['recommendation'] ?? '',
+                'evaluated_at'  => now(),
             ]);
 
             // تحديث حالة الطلب بناءً على النقاط
             $this->updateApplicationStatusByScore($application, $finalScore);
         } catch (\Exception $e) {
-            \Log::error('خطأ في تقييم السيرة الذاتية: ' . $e->getMessage());
+            Log::error('خطأ في تقييم السيرة الذاتية: ' . $e->getMessage());
         }
     }
 
