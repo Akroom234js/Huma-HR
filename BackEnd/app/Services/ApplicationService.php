@@ -123,17 +123,20 @@ class ApplicationService
                 array_keys($jobKeywords)
             );
 
-            // محاولة التقييم باستخدام OpenAI
+                        // محاولة التقييم باستخدام OpenAI
             $aiEvaluation = $this->aiEvaluationService->evaluateResume(
                 $resumeText,
                 $jobPosting->description,
-                array_keys($jobKeywords)
+                $resumeKeywords // تم تصحيح المعامل ليكون الكلمات المستخرجة من السيرة
             );
 
-            // استخدام نتيجة OpenAI إذا نجحت
-            if ($aiEvaluation['success'] ?? false) {
-                $finalScore = $aiEvaluation['overall_score'];
+            // استخدام نتيجة OpenAI إذا نجحت مع دمج درجة الكلمات المفتاحية
+            if ($aiEvaluation["success"] ?? false) {
+                // تطبيق المعادلة: 40% كلمات مفتاحية + 60% تقييم AI
+                $finalScore = ($keywordMatchScore * 0.4) + ($aiEvaluation["overall_score"] * 0.6);
                 $evaluation = $aiEvaluation;
+                $evaluation["overall_score"] = $finalScore;
+                $evaluation["keyword_score"] = $keywordMatchScore;
             } else {
                 // استخدام التقييم السريع بناءً على الكلمات المفتاحية
                 $finalScore = $keywordMatchScore;
@@ -185,12 +188,12 @@ class ApplicationService
                 'مرشح متوسط - يحتاج تقييم إضافي',
                 'Under Review - Needs Assessment'
             );
-        } else {
+                } else {
             $this->updateApplicationStatus(
                 $application,
-                'rejected',
-                'مرشح ضعيف - نقاط مطابقة منخفضة',
-                'Rejected - Low Match'
+                'reviewed',
+                'مرشح ضعيف - نقاط مطابقة منخفضة (يحتاج مراجعة)',
+                'low_match'
             );
         }
     }
