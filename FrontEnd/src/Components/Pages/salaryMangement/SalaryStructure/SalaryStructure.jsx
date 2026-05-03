@@ -15,7 +15,7 @@ const SalaryStructure = () => {
     const [activeTab, setActiveTab] = useState('structures'); // 'structures' or 'employees'
 
     const [selectedStructureId, setSelectedStructureId] = useState("");
-    const [editData, setEditData] = useState({ min_salary: "", max_salary: "", tax_percent: "", insurance_amount: "", allowances: "" });
+    const [editData, setEditData] = useState({ min_salary: "", max_salary: "", tax_percent: "", insurance_amount: "", allowances: "", apply_to_all_employees: false });
 
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [empEditData, setEmpEditData] = useState({ salary: "", tax_percent: "", insurance_amount: "", allowances: "" });
@@ -30,7 +30,8 @@ const SalaryStructure = () => {
                 max_salary: position.max_salary,
                 tax_percent: position.tax_percent || 0,
                 insurance_amount: position.insurance_amount || 0,
-                allowances: position.allowances || 0
+                allowances: position.allowances || 0,
+                apply_to_all_employees: false
             });
         }
     };
@@ -51,7 +52,6 @@ const SalaryStructure = () => {
     const handleOpenEmpEdit = (emp) => {
         setSelectedEmployee(emp);
         setEmpEditData({
-            salary: emp.salary,
             tax_percent: emp.tax_percent || 0,
             insurance_amount: emp.insurance_amount || 0,
             allowances: emp.allowances || 0
@@ -294,6 +294,18 @@ const SalaryStructure = () => {
                                     <input type="number" className="sm-input" value={editData.insurance_amount} onChange={e => setEditData({...editData, insurance_amount: e.target.value})} />
                                 </div>
                             </div>
+                            <div className="sm-form-group" style={{ marginTop: '10px', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
+                                <input 
+                                    type="checkbox" 
+                                    id="apply_to_all"
+                                    checked={editData.apply_to_all_employees} 
+                                    onChange={(e) => setEditData({...editData, apply_to_all_employees: e.target.checked})}
+                                    style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                                />
+                                <label htmlFor="apply_to_all" style={{ marginBottom: 0, fontSize: '13px', fontWeight: '500', cursor: 'pointer' }}>
+                                    {t('modal.applyToAll', 'Apply these settings to all current employees in this position')}
+                                </label>
+                            </div>
                         </div>
                         <div className="sm-modal-footer">
                             <button onClick={() => setIsEditModalOpen(false)} className="sm-btn-secondary">{t('modal.cancel')}</button>
@@ -320,17 +332,6 @@ const SalaryStructure = () => {
                             </button>
                         </div>
                         <div className="sm-modal-body">
-                            <div className="sm-form-group">
-                                <label className="sm-label">{t('empModal.salaryLabel', 'Current Salary')}</label>
-                                <div className="sm-input-with-icon">
-                                    <span className="sm-input-icon">$</span>
-                                    <input type="number" className="sm-input" value={empEditData.salary} onChange={e => setEmpEditData({...empEditData, salary: e.target.value})} />
-                                </div>
-                                <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
-                                    Range: ${Number(salaryData.find(s => s.title === selectedEmployee.job_title)?.min_salary || 0).toLocaleString()} - 
-                                    ${Number(salaryData.find(s => s.title === selectedEmployee.job_title)?.max_salary || 0).toLocaleString()}
-                                </p>
-                            </div>
                             <div className="sm-form-row">
                                 <div className="sm-form-group">
                                     <label className="sm-label">{t('empModal.allowancesLabel', 'Personal Allowances ($)')}</label>

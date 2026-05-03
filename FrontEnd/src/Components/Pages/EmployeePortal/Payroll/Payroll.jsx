@@ -3,79 +3,6 @@ import "./Payroll.css";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
 import apiClient from "../../../../apiConfig";
 
-const overviewData = [
-  {
-    title: "Gross Total Cost",
-    value: "$55,000",
-    type: "green",
-    icon: "payments",
-  },
-  {
-    title: "Bonuses",
-    value: "$3,500",
-    type: "green",
-    icon: "card_giftcard",
-  },
-  {
-    title: "Deductions",
-    value: "-$12,000",
-    type: "red",
-    icon: "trending_down",
-  },
-  {
-    title: "Total Net Paid",
-    value: "$46,500",
-    type: "blue",
-    icon: "account_balance_wallet",
-  },
-];
-
-const payrollHistory = [
-  {
-    month: "May 2025",
-    salaries: 60000,
-    allowances: 4100,
-    bonuses: 2300,
-    deductions: {
-      tax: 50,
-      insurance: 300,
-      absences: 4000,
-    },
-  },
-  {
-    month: "May 2024",
-    salaries: 40000,
-    allowances: 4500,
-    bonuses: 3100,
-    deductions: {
-      tax: 50,
-      insurance: 3000,
-      absences: 400,
-    },
-  },
-  {
-    month: "May 2024",
-    salaries: 51000,
-    allowances: 4500,
-    bonuses: 3000,
-    deductions: {
-      tax: 50,
-      insurance: 200,
-      absences: 4200,
-    },
-  },
-  {
-    month: "May 2024",
-    salaries: 44000,
-    allowances: 4500,
-    bonuses: 3000,
-    deductions: {
-      tax: 50,
-      insurance: 300,
-      absences: 4000,
-    },
-  },
-];
 
 const Payroll = () => {
   const [payrollHistory, setPayrollHistory] = useState([]);
@@ -160,6 +87,7 @@ const Payroll = () => {
                 <th>Insurance</th>
                 <th>Absences</th>
                 <th>Net</th>
+                <th>Status</th>
               </tr>
             </thead>
 
@@ -186,6 +114,16 @@ const Payroll = () => {
                     <td className="negative">${insurance.toLocaleString()}</td>
                     <td className="negative">${absences.toLocaleString()}</td>
                     <td className="net">${net.toLocaleString()}</td>
+                    <td>
+                      <span className={`status-badge ${item.status === 'paid' ? 'paid' : 'unpaid'}`} style={{
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        fontSize: '11px',
+                        fontWeight: '600'
+                      }}>
+                        {item.status === 'paid' ? 'Paid' : 'Pending'}
+                      </span>
+                    </td>
                   </tr>
                 );
               })}
