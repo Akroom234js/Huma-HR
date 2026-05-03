@@ -49,14 +49,23 @@ class AuthController extends Controller
             // ── 3. إنشاء البروفايل بكل المعلومات ─────────────────────────
             // Fetch default salary settings from position if not provided
             $position = \App\Models\Position::find($request->position_id);
-            $defaultSalary = $position->min_salary ?? 0;
-            $defaultTax = $position->tax_percent ?? 0;
-            $defaultInsurance = $position->insurance_amount ?? 0;
+            $defaultSalary = $position ? ($position->min_salary ?? 0) : 0;
+            $defaultTax = $position ? ($position->tax_percent ?? 0) : 0;
+            $defaultInsurance = $position ? ($position->insurance_amount ?? 0) : 0;
+            $defaultAllowances = $position ? ($position->allowances ?? 0) : 0;
+
+            // Auto-generate employee_id if not provided
+            $employeeId = $request->employee_id;
+            if (empty($employeeId)) {
+                $latestProfile = EmployeeProfile::orderBy('id', 'desc')->first();
+                $nextId = $latestProfile ? $latestProfile->id + 1 : 1;
+                $employeeId = 'EMP-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
+            }
 
             EmployeeProfile::create([
                 'user_id'                => $user->id,
                 'full_name'              => $request->full_name,
-                'employee_id'            => $request->employee_id,
+                'employee_id'            => $employeeId,
                 'date_of_birth'          => $request->date_of_birth,
                 'marital_status'         => $request->marital_status,
                 'phone_number'           => $request->phone_number,
@@ -72,6 +81,7 @@ class AuthController extends Controller
                 'grade'                  => $request->grade,
                 'start_date'             => $request->start_date,
                 'salary'                 => $request->salary ?? $defaultSalary,
+                'allowances'             => $request->allowances ?? $defaultAllowances,
                 'tax_percent'            => $request->tax_percent ?? $defaultTax,
                 'insurance_amount'       => $request->insurance_amount ?? $defaultInsurance,
                 'internal_transfer_date' => $request->internal_transfer_date,

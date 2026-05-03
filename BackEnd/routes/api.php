@@ -101,12 +101,24 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/payroll/overview', [PayrollController::class, 'overview']);
         Route::post('/payroll/initialize', [PayrollController::class, 'initialize']);
         Route::get('/payroll',          [PayrollController::class, 'index']);
+        Route::patch('/payroll/{id}',   [PayrollController::class, 'update']);
+        Route::delete('/payroll/{id}',  [PayrollController::class, 'destroy']);
         Route::patch('/payroll/{id}/pay', [PayrollController::class, 'pay']);
+        Route::patch('/payroll/{id}/revert', [PayrollController::class, 'revert']);
         Route::post('/payroll/pay-all',  [PayrollController::class, 'payAll']);
 
         // Deductions
         Route::get('/deductions', [App\Http\Controllers\DeductionController::class, 'index']);
         Route::post('/deductions', [App\Http\Controllers\DeductionController::class, 'store']);
+        Route::patch('/deductions/{id}', [App\Http\Controllers\DeductionController::class, 'update']);
+        Route::delete('/deductions/{id}', [App\Http\Controllers\DeductionController::class, 'destroy']);
+
+        // Bonus Rules
+        Route::get('/bonus-rules', [App\Http\Controllers\BonusRuleController::class, 'index']);
+        Route::post('/bonus-rules', [App\Http\Controllers\BonusRuleController::class, 'store']);
+        Route::patch('/bonus-rules/{id}', [App\Http\Controllers\BonusRuleController::class, 'update']);
+        Route::delete('/bonus-rules/{id}', [App\Http\Controllers\BonusRuleController::class, 'destroy']);
+        Route::post('/bonus-rules/apply', [App\Http\Controllers\BonusRuleController::class, 'apply']);
     });
     // ── Department Manager — قسمه وفريقه فقط ────────────────────────────
     Route::middleware('role:department_manager')->group(function () {
