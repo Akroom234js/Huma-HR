@@ -89,4 +89,53 @@ class DeductionController extends Controller
             return $this->successResponse($deduction, 'Deduction recorded and payroll updated successfully.', 201);
         });
     }
+
+    // PATCH /api/deductions/{id}
+    public function update(Request $request, int $id): JsonResponse
+    {
+        $deduction = PayrollDeduction::find($id);
+        if (!$deduction) return $this->errorResponse('Deduction not found.', 404);
+
+        $request->validate([
+            'amount' => 'required|numeric|min:0',
+            'reason' => 'nullable|string',
+        ]);
+
+        return DB::transaction(function () use ($request, $deduction) {
+            $deduction->update($request->only(['amount', 'reason']));
+
+            // Update Payroll Record Net Salary
+            $payroll = $deduction->payrollRecord;
+            $additionsSum = $payroll->deductions()->where('is_addition', true)->sum('amount');
+            $deductionsSum = $payroll->deductions()->where('is_addition', false)->sum('amount');
+
+            $payroll->bonuses_amount = $additionsSum;
+            $payroll->final_net_salary = $payroll->basic_salary + $payroll->allowances_amount + $payroll->overtime_amount + $additionsSum - $deductionsSum;
+            $payroll->save();
+
+            return $this->successResponse($deduction, 'Deduction updated successfully.');
+        });
+    }
+
+    // DELETE /api/deductions/{id}
+    public function destroy(int $id): JsonResponse
+    {
+        $deduction = PayrollDeduction::find($id);
+        if (!$deduction) return $this->errorResponse('Deduction not found.', 404);
+
+        return DB::transaction(function () use ($deduction) {
+            $payroll = $deduction->payrollRecord;
+            $deduction->delete();
+
+            // Update Payroll Record Net Salary
+            $additionsSum = $payroll->deductions()->where('is_addition', true)->sum('amount');
+            $deductionsSum = $payroll->deductions()->where('is_addition', false)->sum('amount');
+
+            $payroll->bonuses_amount = $additionsSum;
+            $payroll->final_net_salary = $payroll->basic_salary + $payroll->allowances_amount + $payroll->overtime_amount + $additionsSum - $deductionsSum;
+            $payroll->save();
+
+            return $this->successResponse(null, 'Deduction deleted and payroll updated.');
+        });
+    }
 }

@@ -49,17 +49,24 @@ class SalaryStructureController extends Controller
             'tax_percent' => 'nullable|numeric|min:0|max:100',
             'insurance_amount' => 'nullable|numeric|min:0',
             'allowances' => 'nullable|numeric|min:0',
+            'apply_to_all_employees' => 'nullable|boolean'
         ]);
 
-        $position->update($validated);
+        $position->update($request->only([
+            'min_salary', 'max_salary', 'tax_percent', 'insurance_amount', 'allowances'
+        ]));
 
-        // Auto-apply to ALL employees in this position
-        \App\Models\EmployeeProfile::where('job_title', $position->title)->update([
-            'tax_percent' => $position->tax_percent,
-            'insurance_amount' => $position->insurance_amount,
-        ]);
+        if ($request->apply_to_all_employees) {
+            // Apply all changes to ALL employees in this position
+            \App\Models\EmployeeProfile::where('job_title', $position->title)->update([
+                'salary' => $position->min_salary,
+                'tax_percent' => $position->tax_percent,
+                'insurance_amount' => $position->insurance_amount,
+                'allowances' => $position->allowances,
+            ]);
+        }
 
-        return $this->successResponse($position, 'Position salary structure updated and applied to all employees.');
+        return $this->successResponse($position, 'Position salary structure updated.');
     }
 
     // DELETE /api/salary-structures/{id}
@@ -77,7 +84,7 @@ class SalaryStructureController extends Controller
     // GET /api/salary-structures/employees
     public function employees(): JsonResponse
     {
-        $employees = \App\Models\EmployeeProfile::with(['user', 'position'])->get();
+        $employees = \App\Models\EmployeeProfile::with(['user'])->get();
         return $this->successResponse($employees, 'Employees salary data retrieved successfully.');
     }
 
@@ -88,27 +95,116 @@ class SalaryStructureController extends Controller
         if (!$profile) return $this->errorResponse('Employee not found.', 404);
 
         $request->validate([
-            'salary' => 'required|numeric',
+            'salary' => 'nullable|numeric',
             'tax_percent' => 'nullable|numeric|min:0|max:100',
             'insurance_amount' => 'nullable|numeric|min:0',
             'allowances' => 'nullable|numeric|min:0',
         ]);
 
-        // Check if salary is within range of the position
-        $position = \App\Models\Position::where('title', $profile->job_title)->first();
-        if ($position) {
-            if ($request->salary < $position->min_salary || $request->salary > $position->max_salary) {
-                return $this->errorResponse("Salary must be between {$position->min_salary} and {$position->max_salary} for this position.", 422);
-            }
-        }
+        $oldTax = $profile->tax_percent;
+        $oldInsurance = $profile->insurance_amount;
 
-        $profile->update([
-            'salary' => $request->salary,
+        $updateData = [
             'tax_percent' => $request->tax_percent ?? 0,
             'insurance_amount' => $request->insurance_amount ?? 0,
             'allowances' => $request->allowances ?? 0,
-        ]);
+        ];
 
-        return $this->successResponse($profile, 'Employee salary settings updated successfully.');
+        // Only update salary if provided (as requested, it's removed from frontend)
+        if ($request->has('salary')) {
+             $position = \App\Models\Position::where('title', $profile->job_title)->first();
+             if ($position && ($request->salary < $position->min_salary || $request->salary > $position->max_salary)) {
+                 return $this->errorResponse("Salary must be between {$position->min_salary} and {$position->max_salary} for this position.", 422);
+             }
+             $updateData['salary'] = $request->salary;
+        }
+
+        $profile->update($updateData);
+
+        // Record the Tax & Insurance Adjustment in the current month's unpaid payroll
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
+        
+        $payroll = \App\Models\PayrollRecord::where('user_id', $profile->user_id)
+            ->where('payroll_month', $currentMonth)
+            ->where('payroll_year', $currentYear)
+            ->where('status', 'unpaid')
+            ->first();
+
+        if ($payroll) {
+            $hasChanges = false;
+
+            // Handle Tax Changes
+            if ($oldTax != $profile->tax_percent) {
+                $hasChanges = true;
+                $taxAmount = ($profile->salary * $profile->tax_percent) / 100;
+                
+                $taxDeduction = \App\Models\PayrollDeduction::where('payroll_record_id', $payroll->id)
+                    ->where('deduction_type', 'tax')
+                    ->first();
+                    
+                if ($taxDeduction) {
+                    $taxDeduction->update([
+                        'amount' => $taxAmount,
+                        'reason' => "Tax adjusted to {$profile->tax_percent}%",
+                        'applied_by' => auth()->user()->name ?? 'System',
+                        'applied_date' => now(),
+                    ]);
+                } else {
+                    \App\Models\PayrollDeduction::create([
+                        'payroll_record_id' => $payroll->id,
+                        'deduction_type' => 'tax',
+                        'amount' => $taxAmount,
+                        'is_addition' => false,
+                        'reason' => "Tax adjusted to {$profile->tax_percent}%",
+                        'applied_by' => auth()->user()->name ?? 'System',
+                        'applied_date' => now(),
+                    ]);
+                }
+            }
+
+            // Handle Insurance Changes
+            if ($oldInsurance != $profile->insurance_amount) {
+                $hasChanges = true;
+                $insDeduction = \App\Models\PayrollDeduction::where('payroll_record_id', $payroll->id)
+                    ->where('deduction_type', 'insurance')
+                    ->first();
+                    
+                if ($insDeduction) {
+                    $insDeduction->update([
+                        'amount' => $profile->insurance_amount,
+                        'reason' => "Insurance adjusted",
+                        'applied_by' => auth()->user()->name ?? 'System',
+                        'applied_date' => now(),
+                    ]);
+                } else {
+                    \App\Models\PayrollDeduction::create([
+                        'payroll_record_id' => $payroll->id,
+                        'deduction_type' => 'insurance',
+                        'amount' => $profile->insurance_amount,
+                        'is_addition' => false,
+                        'reason' => "Insurance adjusted",
+                        'applied_by' => auth()->user()->name ?? 'System',
+                        'applied_date' => now(),
+                    ]);
+                }
+            }
+
+            if ($hasChanges || $request->has('salary') || $request->has('allowances')) {
+                // Recalculate net salary
+                $payroll->allowances_amount = $profile->allowances;
+                if ($request->has('salary')) {
+                    $payroll->basic_salary = $profile->salary;
+                }
+                $additionsSum = $payroll->deductions()->where('is_addition', true)->sum('amount');
+                $deductionsSum = $payroll->deductions()->where('is_addition', false)->sum('amount');
+                
+                $payroll->bonuses_amount = $additionsSum;
+                $payroll->final_net_salary = $payroll->basic_salary + $payroll->allowances_amount + $payroll->overtime_amount + $additionsSum - $deductionsSum;
+                $payroll->save();
+            }
+        }
+
+        return $this->successResponse($profile, 'Employee settings updated and adjustments recorded successfully.');
     }
 }
