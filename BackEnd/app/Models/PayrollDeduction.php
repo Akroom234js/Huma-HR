@@ -13,6 +13,7 @@ class PayrollDeduction extends Model
         'payroll_record_id',
         'deduction_type',
         'amount',
+        'is_addition',
         'absence_days',
         'reason',
         'applied_by',

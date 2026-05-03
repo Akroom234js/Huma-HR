@@ -1,5 +1,90 @@
 @import '../PayrollOverview/PayrollOverview.css';
 
+.payroll-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.payroll-stat-card {
+    background-color: var(--bg-card);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--border-color);
+}
+
+.stat-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.payroll-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
+}
+
+.payroll-tab-btn {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.payroll-tab-btn.active {
+    color: var(--primary-color);
+}
+
+.payroll-tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--primary-color);
+    border-radius: 3px 3px 0 0;
+}
+
+.btn-icon-edit, .btn-icon-delete, .revert-pay-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.btn-icon-edit { color: var(--primary-color); }
+.btn-icon-edit:hover { background-color: rgba(59, 130, 246, 0.1); }
+
+.btn-icon-delete { color: #ef4444; }
+.btn-icon-delete:hover { background-color: rgba(239, 68, 68, 0.1); }
+
+.revert-pay-btn { color: #f59e0b; }
+.revert-pay-btn:hover { background-color: rgba(245, 158, 11, 0.1); }
+
 div.monthlypayrollco {
     background-color: var(--bg-card);
     border-radius: 12px;
@@ -376,4 +461,14 @@ div.salaryinfocard div.infocard {
         width: 95%;
         margin: 5vh auto;
     }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+    display: inline-block;
 }

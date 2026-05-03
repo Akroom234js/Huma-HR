@@ -15,6 +15,8 @@ class PayrollRecord extends Model
         'payroll_month',
         'payroll_year',
         'basic_salary',
+        'allowances_amount',
+        'bonuses_amount',
         'overtime_hours',
         'overtime_amount',
         'final_net_salary',

@@ -4,7 +4,7 @@ import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
-import axios from 'axios';
+import apiClient from '../../../../apiConfig';
 
 const Salaries = () => {
     const { t } = useTranslation('Dashboard/SalariesCompensation');
@@ -13,23 +13,51 @@ const Salaries = () => {
     const [statFilter, setStatFilter] = useState('');
     const [payrollFilter, setPayrollFilter] = useState('');
     const [payrollData, setPayrollData] = useState([]);
+    const [departments, setDepartments] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const [selectedMonth, setSelectedMonth] = useState('');
+
+    // Generate dynamic months list
+    const monthsList = [];
+    const now = new Date();
+    for (let i = 0; i < 6; i++) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        monthsList.push(d.toLocaleString('en-US', { month: 'long', year: 'numeric' }));
+    }
+
+    useEffect(() => {
+        if (!payrollFilter) setPayrollFilter(monthsList[0]);
+    }, [monthsList]);
 
     useEffect(() => {
         fetchPayroll();
     }, [deptFilter, statFilter, payrollFilter]);
 
+    useEffect(() => {
+        fetchDepartments();
+    }, []);
+
+    const fetchDepartments = async () => {
+        try {
+            const res = await apiClient.get('/departments');
+            setDepartments(res.data?.data || []);
+        } catch (error) {
+            console.error("Failed to fetch departments", error);
+        }
+    };
+
     const fetchPayroll = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('/api/payroll', {
+            const response = await apiClient.get('/payroll', {
                 params: {
-                    department_id: deptFilter,
-                    status: statFilter,
-                    month: payrollFilter
+                    department_id: deptFilter === 'all' ? undefined : deptFilter,
+                    status: statFilter || undefined,
+                    month: payrollFilter || undefined
                 }
             });
-            setPayrollData(response.data.data || []);
+            setPayrollData(response.data?.data || []);
         } catch (error) {
             console.error('Error fetching payroll:', error);
         } finally {
@@ -38,9 +66,8 @@ const Salaries = () => {
     };
 
     const departmentOptions = [
-        { value: '', label: t('filters.department') },
-        { value: '1', label: t('Engineering') },
-        { value: '2', label: t('Design') },
+        { value: 'all', label: t('filters.all_departments', 'All Departments') },
+        ...departments.map(dept => ({ value: dept.id.toString(), label: dept.name })),
     ];
 
     const statusOptions = [
@@ -50,9 +77,8 @@ const Salaries = () => {
     ];
 
     const payrollperiodOptions = [
-        { value: '', label: t('filters.payrollperiod') },
-        { value: '4', label: 'April' },
-        { value: '5', label: 'May' },
+        { value: '', label: t('filters.all_periods', 'All Periods') },
+        ...monthsList.map(m => ({ value: m, label: m })),
     ];
 
     return (
@@ -152,33 +178,48 @@ const Salaries = () => {
                         <tbody>
                             {loading ? (
                                 <tr>
-                                    <td colSpan="7" className="text-center py-4">{t('Loading')}</td>
+                                    <td colSpan="7" className="text-center py-4">{t('Loading', 'Loading payroll data...')}</td>
                                 </tr>
-                            ) : payrollData.map((row, i) => {
-                                const totalDeductions = row.deductions?.reduce((acc, d) => acc + parseFloat(d.amount), 0) || 0;
+                            ) : payrollData.length > 0 ? payrollData.map((row, i) => {
+                                const totalDeductions = row.deductions?.reduce((acc, d) => acc + Number(d.amount), 0) || 0;
                                 return (
                                 <tr key={i}>
                                     <td className="name-emp-salary">
                                         <img
-                                            src={row.user?.employee_profile?.profile_pic || 'https://i.pravatar.cc/150'}
-                                            alt={row.user?.name}
+                                            src={row.user?.employee_profile?.profile_pic ? `/storage/${row.user.employee_profile.profile_pic}` : 'https://i.pravatar.cc/150'}
+                                            alt={row.user?.employee_profile?.full_name || row.user?.name}
                                             className="er-avatar"
                                         />{' '}
-                                        {row.user?.name}
+                                        {row.user?.employee_profile?.full_name || row.user?.name}
                                     </td>
-                                    <td>{row.user?.employee_profile?.job_title}</td>
-                                    <td>${row.basic_salary}</td>
-                                    <td>${row.overtime_amount}</td>
-                                    <td>${totalDeductions}</td>
-                                    <td>${row.final_net_salary}</td>
+                                    <td>{row.user?.employee_profile?.job_title || '—'}</td>
+                                    <td>${Number(row.basic_salary).toLocaleString()}</td>
+                                    <td>${Number(row.overtime_amount).toLocaleString()}</td>
+                                    <td>${totalDeductions.toLocaleString()}</td>
+                                    <td style={{ fontWeight: 'bold' }}>${Number(row.final_net_salary).toLocaleString()}</td>
                                     <td>
-                                        <span className={`bg-${row.status === 'paid' ? 'green' : 'orange'}`}>
-                                            {t(row.status)}
+                                        <span className={`status-badge ${row.status === 'paid' ? 'paid' : 'unpaid'}`} style={{
+                                            padding: '4px 12px',
+                                            borderRadius: '20px',
+                                            fontSize: '12px',
+                                            backgroundColor: row.status === 'paid' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(249, 115, 22, 0.2)',
+                                            color: row.status === 'paid' ? '#16a34a' : '#ea580c'
+                                        }}>
+                                            {t(row.status === 'paid' ? 'Paid' : 'Unpaid')}
                                         </span>
                                     </td>
                                 </tr>
                                 );
-                            })}
+                            }) : (
+                                <tr>
+                                    <td colSpan="7" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                                            <i className="bi bi-inbox" style={{ fontSize: '2rem' }}></i>
+                                            <p>{t('NoData', 'No payroll records found for the selected criteria.')}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>

@@ -7,21 +7,32 @@ import apiClient from '../../../../apiConfig';
 const SalaryStructure = () => {
     const { t } = useTranslation('SalaryManagement/SalaryStructure');
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isEmpModalOpen, setIsEmpModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [salaryData, setSalaryData] = useState([]);
+    const [employees, setEmployees] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('structures'); // 'structures' or 'employees'
 
     const [selectedStructureId, setSelectedStructureId] = useState("");
-    const [editData, setEditData] = useState({ min_salary: "", max_salary: "" });
+    const [editData, setEditData] = useState({ min_salary: "", max_salary: "", tax_percent: "", insurance_amount: "", allowances: "", apply_to_all_employees: false });
+
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [empEditData, setEmpEditData] = useState({ salary: "", tax_percent: "", insurance_amount: "", allowances: "" });
 
     const handleSelectStructure = (e) => {
         const id = e.target.value;
         setSelectedStructureId(id);
-        const structure = salaryData.find(s => s.id == id);
-        if (structure) {
-            setEditData({ min_salary: structure.min_salary, max_salary: structure.max_salary });
-        } else {
-            setEditData({ min_salary: "", max_salary: "" });
+        const position = salaryData.find(s => s.id == id);
+        if (position) {
+            setEditData({ 
+                min_salary: position.min_salary, 
+                max_salary: position.max_salary,
+                tax_percent: position.tax_percent || 0,
+                insurance_amount: position.insurance_amount || 0,
+                allowances: position.allowances || 0,
+                apply_to_all_employees: false
+            });
         }
     };
 
@@ -30,14 +41,39 @@ const SalaryStructure = () => {
         try {
             await apiClient.put(`/salary-structures/${selectedStructureId}`, editData);
             setIsEditModalOpen(false);
+            // Refresh both because position changes affect employees
             fetchSalaryStructures();
+            fetchEmployees();
         } catch (error) {
             console.error('Error updating salary structure:', error);
         }
     };
 
+    const handleOpenEmpEdit = (emp) => {
+        setSelectedEmployee(emp);
+        setEmpEditData({
+            tax_percent: emp.tax_percent || 0,
+            insurance_amount: emp.insurance_amount || 0,
+            allowances: emp.allowances || 0
+        });
+        setIsEmpModalOpen(true);
+    };
+
+    const handleSaveEmpChanges = async () => {
+        if (!selectedEmployee) return;
+        try {
+            await apiClient.patch(`/salary-structures/employees/${selectedEmployee.id}`, empEditData);
+            setIsEmpModalOpen(false);
+            fetchEmployees();
+        } catch (error) {
+            console.error('Error updating employee salary:', error);
+            alert(error.response?.data?.message || "Update failed");
+        }
+    };
+
     useEffect(() => {
         fetchSalaryStructures();
+        fetchEmployees();
     }, []);
 
     const fetchSalaryStructures = async () => {
@@ -52,9 +88,22 @@ const SalaryStructure = () => {
         }
     };
 
+    const fetchEmployees = async () => {
+        try {
+            const response = await apiClient.get('/salary-structures/employees');
+            setEmployees(response.data.data || []);
+        } catch (error) {
+            console.error('Error fetching employees:', error);
+        }
+    };
+
     const filteredData = salaryData.filter(item => 
-        (item.job_title && item.job_title.toLowerCase().includes(searchTerm.toLowerCase())) || 
-        (item.job_level && item.job_level.toLowerCase().includes(searchTerm.toLowerCase()))
+        (item.title && item.title.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+
+    const filteredEmployees = employees.filter(emp => 
+        (emp.full_name && emp.full_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (emp.job_title && emp.job_title.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     return (
@@ -68,63 +117,131 @@ const SalaryStructure = () => {
                     <h1 className="sm-title">{t('title')}</h1>
                     <p className="sm-subtitle">{t('subtitle')}</p>
                 </div>
-                <button onClick={() => setIsEditModalOpen(true)} className="sm-btn-primary">
-                    <span className="material-symbols-outlined">edit</span>
-                    <span>{t('editStructure')}</span>
-                </button>
+                <div className="sm-header-actions">
+                    <button 
+                        onClick={() => setActiveTab(activeTab === 'structures' ? 'employees' : 'structures')} 
+                        className="sm-btn-secondary"
+                    >
+                        <span className="material-symbols-outlined">{activeTab === 'structures' ? 'group' : 'account_balance_wallet'}</span>
+                        <span>{activeTab === 'structures' ? t('viewEmployees', 'Employee Salaries') : t('viewStructures', 'Salary Structures')}</span>
+                    </button>
+                    <button onClick={() => setIsEditModalOpen(true)} className="sm-btn-primary">
+                        <span className="material-symbols-outlined">edit</span>
+                        <span>{t('editStructure')}</span>
+                    </button>
+                </div>
             </header>
 
-            <div className="sm-content-card">
-                <div className="sm-card-header">
-                    <h3 className="sm-card-title">{t('scalesTitle')}</h3>
-                    <div className="sm-search-wrapper">
-                        <span className="material-symbols-outlined sm-search-icon">search</span>
-                        <input 
-                            type="text" 
-                            className="sm-input sm-search-input" 
-                            placeholder={t('searchPlaceholder')}
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+            {activeTab === 'structures' ? (
+                <div className="sm-content-card">
+                    <div className="sm-card-header">
+                        <h3 className="sm-card-title">{t('scalesTitle')}</h3>
+                        <div className="sm-search-wrapper">
+                            <span className="material-symbols-outlined sm-search-icon">search</span>
+                            <input 
+                                type="text" 
+                                className="sm-input sm-search-input" 
+                                placeholder={t('searchPlaceholder')}
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="sm-table-wrapper">
+                        <table className="sm-table">
+                            <thead>
+                                <tr>
+                                    <th>{t('table.positionTitle', 'POSITION TITLE')}</th>
+                                    <th className="text-right">{t('table.minSalary')}</th>
+                                    <th className="text-right">{t('table.maxSalary')}</th>
+                                    <th className="text-center">{t('table.allowances', 'Allowances')}</th>
+                                    <th className="text-center">{t('table.tax', 'Tax %')}</th>
+                                    <th className="text-center">{t('table.insurance', 'Insurance')}</th>
+                                    <th className="text-center">{t('table.range')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {loading ? (
+                                    <tr>
+                                        <td colSpan="7" className="text-center py-4">{t('table.loading', 'Loading...')}</td>
+                                    </tr>
+                                ) : filteredData.map((row, idx) => (
+                                    <tr key={idx}>
+                                        <td className="font-medium">{row.title}</td>
+                                        <td className="text-right">${Number(row.min_salary).toLocaleString()}</td>
+                                        <td className="text-right">${Number(row.max_salary).toLocaleString()}</td>
+                                        <td className="text-center">${Number(row.allowances).toLocaleString()}</td>
+                                        <td className="text-center">{row.tax_percent}%</td>
+                                        <td className="text-center">${Number(row.insurance_amount).toLocaleString()}</td>
+                                        <td className="text-center">${Number(row.min_salary).toLocaleString()} - ${Number(row.max_salary).toLocaleString()}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+            ) : (
+                <div className="sm-content-card">
+                    <div className="sm-card-header">
+                        <h3 className="sm-card-title">{t('employeeSalaries', 'Individual Employee Salaries')}</h3>
+                        <div className="sm-search-wrapper">
+                            <span className="material-symbols-outlined sm-search-icon">search</span>
+                            <input 
+                                type="text" 
+                                className="sm-input sm-search-input" 
+                                placeholder={t('searchPlaceholder')}
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                    </div>
 
-                <div className="sm-table-wrapper">
-                    <table className="sm-table">
-                        <thead>
-                            <tr>
-                                <th>{t('table.jobLevel')}</th>
-                                <th>{t('table.positionTitle')}</th>
-                                <th className="text-right">{t('table.minSalary')}</th>
-                                <th className="text-right">{t('table.maxSalary')}</th>
-                                <th className="text-center">{t('table.range')}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {loading ? (
+                    <div className="sm-table-wrapper">
+                        <table className="sm-table">
+                            <thead>
                                 <tr>
-                                    <td colSpan="5" className="text-center py-4">{t('table.loading', 'Loading...')}</td>
+                                    <th>{t('table.employee', 'EMPLOYEE')}</th>
+                                    <th>{t('table.position', 'POSITION')}</th>
+                                    <th className="text-right">{t('table.salary', 'SALARY')}</th>
+                                    <th className="text-center">{t('table.allowances', 'ALLOWANCES')}</th>
+                                    <th className="text-center">{t('table.tax', 'TAX %')}</th>
+                                    <th className="text-center">{t('table.insurance', 'INSURANCE')}</th>
+                                    <th className="text-center">{t('table.actions', 'ACTIONS')}</th>
                                 </tr>
-                            ) : filteredData.map((row, idx) => (
-                                <tr key={idx}>
-                                    <td className="font-medium">{row.job_level}</td>
-                                    <td>{row.job_title}</td>
-                                    <td className="text-right">${row.min_salary}</td>
-                                    <td className="text-right">${row.max_salary}</td>
-                                    <td className="text-center">${row.min_salary} - ${row.max_salary}</td>
-                                </tr>
-                            ))}
-                            {!loading && filteredData.length === 0 && (
-                                <tr>
-                                    <td colSpan="5" className="sm-no-data">{t('table.noResults')}</td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {filteredEmployees.map((emp, idx) => (
+                                    <tr key={idx}>
+                                        <td>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                <img 
+                                                    src={emp.profile_pic ? `/storage/${emp.profile_pic}` : 'https://i.pravatar.cc/150'} 
+                                                    alt="" 
+                                                    style={{ width: '32px', height: '32px', borderRadius: '50%' }}
+                                                />
+                                                <span>{emp.full_name}</span>
+                                            </div>
+                                        </td>
+                                        <td>{emp.job_title}</td>
+                                        <td className="text-right" style={{ fontWeight: '600' }}>${Number(emp.salary).toLocaleString()}</td>
+                                        <td className="text-center">${Number(emp.allowances).toLocaleString()}</td>
+                                        <td className="text-center">{emp.tax_percent}%</td>
+                                        <td className="text-center">${Number(emp.insurance_amount).toLocaleString()}</td>
+                                        <td className="text-center">
+                                            <button onClick={() => handleOpenEmpEdit(emp)} className="btn-edit-salary">
+                                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>settings</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
+            )}
 
-            {/* Edit Modal */}
+            {/* Structure Edit Modal */}
             {isEditModalOpen && (
                 <div className="sm-modal-overlay">
                     <div className="sm-modal">
@@ -139,11 +256,11 @@ const SalaryStructure = () => {
                         </div>
                         <div className="sm-modal-body">
                             <div className="sm-form-group">
-                                <label className="sm-label">{t('modal.jobLevelLabel')}</label>
+                                <label className="sm-label">{t('modal.jobLevelLabel', 'Select Position')}</label>
                                 <select className="sm-input" value={selectedStructureId} onChange={handleSelectStructure}>
-                                    <option value="">{t('modal.selectJobLevel')}</option>
+                                    <option value="">{t('modal.selectJobLevel', 'Select a Position')}</option>
                                     {salaryData.map(s => (
-                                        <option key={s.id} value={s.id}>{s.job_level} - {s.job_title}</option>
+                                        <option key={s.id} value={s.id}>{s.title}</option>
                                     ))}
                                 </select>
                             </div>
@@ -163,10 +280,76 @@ const SalaryStructure = () => {
                                     </div>
                                 </div>
                             </div>
+                            <div className="sm-form-row" style={{ marginTop: '15px', borderTop: '1px dashed var(--border-color)', paddingTop: '15px' }}>
+                                <div className="sm-form-group">
+                                    <label className="sm-label">{t('modal.allowancesLabel', 'Default Allowances ($)')}</label>
+                                    <input type="number" className="sm-input" value={editData.allowances} onChange={e => setEditData({...editData, allowances: e.target.value})} />
+                                </div>
+                                <div className="sm-form-group">
+                                    <label className="sm-label">{t('modal.taxLabel', 'Default Tax (%)')}</label>
+                                    <input type="number" className="sm-input" value={editData.tax_percent} onChange={e => setEditData({...editData, tax_percent: e.target.value})} />
+                                </div>
+                                <div className="sm-form-group">
+                                    <label className="sm-label">{t('modal.insuranceLabel', 'Default Insurance ($)')}</label>
+                                    <input type="number" className="sm-input" value={editData.insurance_amount} onChange={e => setEditData({...editData, insurance_amount: e.target.value})} />
+                                </div>
+                            </div>
+                            <div className="sm-form-group" style={{ marginTop: '10px', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
+                                <input 
+                                    type="checkbox" 
+                                    id="apply_to_all"
+                                    checked={editData.apply_to_all_employees} 
+                                    onChange={(e) => setEditData({...editData, apply_to_all_employees: e.target.checked})}
+                                    style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                                />
+                                <label htmlFor="apply_to_all" style={{ marginBottom: 0, fontSize: '13px', fontWeight: '500', cursor: 'pointer' }}>
+                                    {t('modal.applyToAll', 'Apply these settings to all current employees in this position')}
+                                </label>
+                            </div>
                         </div>
                         <div className="sm-modal-footer">
                             <button onClick={() => setIsEditModalOpen(false)} className="sm-btn-secondary">{t('modal.cancel')}</button>
                             <button onClick={handleSaveChanges} className="sm-btn-primary" disabled={!selectedStructureId}>
+                                <span className="material-symbols-outlined">save</span>
+                                {t('modal.saveChanges')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Employee Salary Edit Modal */}
+            {isEmpModalOpen && selectedEmployee && (
+                <div className="sm-modal-overlay">
+                    <div className="sm-modal">
+                        <div className="sm-modal-header">
+                            <div>
+                                <h2 className="sm-modal-title">{t('empModal.title', 'Adjust Salary Settings')}</h2>
+                                <p className="sm-modal-subtitle">{selectedEmployee.full_name} - {selectedEmployee.job_title}</p>
+                            </div>
+                            <button onClick={() => setIsEmpModalOpen(false)} className="sm-modal-close">
+                                <span className="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+                        <div className="sm-modal-body">
+                            <div className="sm-form-row">
+                                <div className="sm-form-group">
+                                    <label className="sm-label">{t('empModal.allowancesLabel', 'Personal Allowances ($)')}</label>
+                                    <input type="number" className="sm-input" value={empEditData.allowances} onChange={e => setEmpEditData({...empEditData, allowances: e.target.value})} />
+                                </div>
+                                <div className="sm-form-group">
+                                    <label className="sm-label">{t('empModal.taxLabel', 'Personal Tax (%)')}</label>
+                                    <input type="number" className="sm-input" value={empEditData.tax_percent} onChange={e => setEmpEditData({...empEditData, tax_percent: e.target.value})} />
+                                </div>
+                                <div className="sm-form-group">
+                                    <label className="sm-label">{t('empModal.insuranceLabel', 'Personal Insurance ($)')}</label>
+                                    <input type="number" className="sm-input" value={empEditData.insurance_amount} onChange={e => setEmpEditData({...empEditData, insurance_amount: e.target.value})} />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="sm-modal-footer">
+                            <button onClick={() => setIsEmpModalOpen(false)} className="sm-btn-secondary">{t('modal.cancel')}</button>
+                            <button onClick={handleSaveEmpChanges} className="sm-btn-primary">
                                 <span className="material-symbols-outlined">save</span>
                                 {t('modal.saveChanges')}
                             </button>
