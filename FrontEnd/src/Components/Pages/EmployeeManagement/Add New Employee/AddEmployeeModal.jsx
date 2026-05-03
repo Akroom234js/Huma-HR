@@ -284,14 +284,26 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
                   <input
                     type="text"
                     name="employeeId"
-                    placeholder="EMP-12345"
+                    placeholder="Auto-generated if left blank"
                     value={formData.employeeId}
-                    required
                     onChange={handleChange}
                   />
                 </div>
                 <div className="input-group">
-                  <label>Basic Salary</label>
+                  <label>
+                    Basic Salary
+                    {(() => {
+                      const selectedPosition = positionOptions?.find(p => p.value == formData.jobTitle);
+                      if (selectedPosition && selectedPosition.value) {
+                        return (
+                          <span style={{ fontSize: '0.75rem', color: 'var(--primary-color)', fontWeight: 500, marginInlineStart: '6px' }}>
+                            (Range: ${selectedPosition.min_salary} - ${selectedPosition.max_salary})
+                          </span>
+                        );
+                      }
+                      return null;
+                    })()}
+                  </label>
                   <input
                     type="number"
                     name="basicSalary"
