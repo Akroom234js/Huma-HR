@@ -42,8 +42,7 @@ return new class extends Migration
                   ->nullable();
             $table->enum('experience_level', ['entry-level', 'associate', 'mid-senior', 'director', 'executive'])
                   ->nullable();
-
-
+            $table->softDeletes();
             $table->timestamps();
         });
     }

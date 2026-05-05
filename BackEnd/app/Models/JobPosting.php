@@ -4,19 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class JobPosting extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
-    /**
-     * الحقول القابلة للملء (Fillable)
-     */
+    public const STATUS_DRAFT    = 'draft';
+    public const STATUS_OPEN     = 'open';
+    public const STATUS_CLOSED   = 'closed';
+    public const STATUS_ARCHIVED = 'archived';
+
     protected $fillable = [
         'title',
         'description',
+        'position_id',
         'department_id',
         'salary_min',
         'salary_max',
@@ -31,99 +36,88 @@ class JobPosting extends Model
         'updated_by',
     ];
 
-    /**
-     * تحويل البيانات (Casts)
-     */
     protected $casts = [
-        'posted_at' => 'datetime',
+        'posted_at'            => 'datetime',
         'application_deadline' => 'datetime',
+        'salary_min'           => 'float',
+        'salary_max'           => 'float',
     ];
 
-    /**
-     * العلاقات
-     */
-
-    /**
-     * الوظيفة تنتمي إلى قسم واحد
-     */
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);
     }
 
-    /**
-     * الوظيفة تم إنشاؤها بواسطة مستخدم واحد
-     */
+    public function position(): BelongsTo
+    {
+        return $this->belongsTo(Position::class);
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    /**
-     * الوظيفة تم تحديثها بواسطة مستخدم واحد
-     */
     public function updater(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    /**
-     * الوظيفة لها العديد من الطلبات
-     */
     public function applications(): HasMany
     {
         return $this->hasMany(Application::class);
     }
 
-    /**
-     * النطاقات المسماة (Named Scopes)
-     */
-
-    /**
-     * الوظائف المفتوحة فقط
-     */
     public function scopeOpen($query)
     {
-        return $query->where('status', 'open');
+        return $query->where('status', self::STATUS_OPEN);
     }
 
-    /**
-     * الوظائف المغلقة
-     */
     public function scopeClosed($query)
     {
-        return $query->where('status', 'closed');
+        return $query->where('status', self::STATUS_CLOSED);
     }
 
-    /**
-     * الوظائف المنشورة (بعد تاريخ معين)
-     */
     public function scopePublished($query)
     {
         return $query->whereNotNull('posted_at');
     }
 
-    /**
-     * الوظائف حسب القسم
-     */
     public function scopeByDepartment($query, int $departmentId)
     {
         return $query->where('department_id', $departmentId);
     }
 
-    /**
-     * الوظائف حسب مستوى الخبرة
-     */
     public function scopeByExperienceLevel($query, string $level)
     {
         return $query->where('experience_level', $level);
     }
 
-    /**
-     * الوظائف حسب نوع التوظيف
-     */
     public function scopeByEmploymentType($query, string $type)
     {
         return $query->where('employment_type', $type);
+    }
+
+    public function scopeAcceptingApplications($query)
+    {
+        return $query->where('status', self::STATUS_OPEN)
+                     ->where(function ($q) {
+                         $q->whereNull('application_deadline')
+                           ->orWhere('application_deadline', '>', now());
+                     });
+    }
+
+    public function getIsActiveAttribute(): bool
+    {
+        if ($this->status !== self::STATUS_OPEN) {
+            return false;
+        }
+
+        if ($this->application_deadline &&
+            $this->application_deadline->isPast()) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -28,22 +28,50 @@ return new class extends Migration
             $table->string('resume_path')->nullable();
             $table->string('cover_letter_path')->nullable();
 
+            // --- إضافات نظام الـ ATS ---
 
-            // --- إضافات نظام الـ ATS الجديدة ---
+            // ✅ تعديل: أضفنا no_show و offer_expired
+            // no_show       → لم يحضر المقابلة (HR يقدر يعطيه فرصة ثانية أو يرفضه)
+            // offer_expired → انتهت صلاحية العرض بدون رد (يتعامل معها الـ Scheduler تلقائياً)
+            $table->enum('status', [
+                'pending',
+                'reviewed',
+                'shortlisted',
+                'interviewing',
+                'offered',
+                'hired',
+                'rejected',
+                'withdrawn',
+                'no_show',       // ✅ جديد
+                'offer_expired', // ✅ جديد
+            ])->default('pending');
 
-            // الحالة العامة (للتوافق مع النظام القديم)
-            $table->enum('status', ['pending', 'reviewed', 'shortlisted', 'interviewing', 'offered', 'hired', 'rejected', 'withdrawn'])
-                  ->default('pending');
-
-            // المرحلة الحالية في خط أنابيب التوظيف (Pipeline Stage)
-            // مراحل مقترحة: Applied, Screening, Technical Interview, HR Interview, Offer, Hired
             $table->string('current_stage')->nullable()->default('Application Received');
-            $table->float('match_score')->nullable()->default(0)->comment('نسبة المطابقة بين السيرة الذاتية والوصف الوظيفي');
-            $table->json('ai_analysis')->nullable()->comment('تحليل OpenAI الكامل بصيغة JSON');
-            $table->timestamp('evaluated_at')->nullable()->comment('وقت إجراء التقييم');
+            $table->float('match_score')->nullable()->default(0)
+                  ->comment('نسبة المطابقة بين السيرة الذاتية والوصف الوظيفي');
+            $table->json('ai_analysis')->nullable()
+                  ->comment('تحليل OpenAI الكامل بصيغة JSON');
+            $table->timestamp('evaluated_at')->nullable()
+                  ->comment('وقت إجراء التقييم');
             $table->text('feedback')->nullable();
             $table->timestamp('reviewed_at')->nullable();
+
+            // ✅ جديد: submitted_at — وقت إرسال الطلب بدقة
+            // الفرق عن created_at: created_at بيتحدث تلقائياً مع أي update
+            // submitted_at بيبقى ثابت — هو اللحظة الفعلية اللي ضغط فيها المتقدم Submit
+            $table->timestamp('submitted_at')->nullable()
+                  ->comment('وقت إرسال الطلب — لا يتغير بعد الإنشاء');
+
             $table->timestamps();
+
+            // ✅ جديد: Unique Constraint
+            // يمنع نفس الشخص من التقديم على نفس الوظيفة مرتين
+            // هاد خط الدفاع الثاني بعد الـ check في ApplicationService
+            // بيحمي من الـ Race Condition لو ضغط Submit مرتين بنفس الثانية
+            $table->unique(
+                ['job_posting_id', 'email'],
+                'applications_job_email_unique'
+            );
         });
     }
 
@@ -55,3 +83,4 @@ return new class extends Migration
         Schema::dropIfExists('applications');
     }
 };
+

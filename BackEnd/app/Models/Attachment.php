@@ -10,69 +10,75 @@ class Attachment extends Model
 {
     use HasFactory;
 
-    /**
-     * الحقول القابلة للملء (Fillable)
-     */
+    // =========================================================
+    // الحقول القابلة للملء
+    // =========================================================
+    // مبنية على أعمدة migration عندك بالضبط:
+    // file_url, file_name, file_type, file_size, uploaded_at
     protected $fillable = [
         'application_id',
+        'file_url',    // ← اسمه في migration عندك file_url مش file_path
         'file_name',
-        'file_path',
-        'file_type',
-        'file_size',
+        'file_type',   // resume أو attachment
+        'file_size',   // بالبايت
+        'uploaded_at',
     ];
 
-    /**
-     * تحويل البيانات (Casts)
-     */
+    // =========================================================
+    // Casts
+    // =========================================================
     protected $casts = [
-        'file_size' => 'integer',
+        // ✅ uploaded_at كـ datetime
+        // ليش؟ بدونه بيرجع كـ string
+        // مع الـ cast تقدر تعمل:
+        // $attachment->uploaded_at->diffForHumans() → "5 minutes ago"
+        'uploaded_at' => 'datetime',
+
+        // ✅ file_size كـ integer
+        // ليش؟ DB بيخزنه كـ bigInteger
+        // الـ cast يضمن إنك تشتغل مع رقم مش string
+        // مفيد لما تحسب الحجم: $size / 1024 / 1024 → MB
+        'file_size'   => 'integer',
     ];
 
-    /**
-     * العلاقات
-     */
+    // =========================================================
+    // العلاقات
+    // =========================================================
 
     /**
-     * المرفق ينتمي إلى طلب واحد
+     * المرفق ينتمي لطلب توظيف واحد
+     * ليش مهم؟ تقدر تعمل:
+     * $attachment->application->full_name
+     * أو $attachment->application->jobPosting->title
      */
     public function application(): BelongsTo
     {
         return $this->belongsTo(Application::class);
     }
 
-    /**
-     * النطاقات المسماة (Named Scopes)
-     */
+    // =========================================================
+    // ✅ Accessor: حجم الملف بشكل مقروء
+    // =========================================================
 
     /**
-     * المرفقات حسب نوع الملف
+     * يحول حجم الملف من Bytes لنص مقروء
+     * ليش مفيد؟ بدل ما تعرض "1048576 bytes" للـ Frontend
+     * بتعرض "1.00 MB" تلقائياً
+     *
+     * الاستخدام: $attachment->file_size_human → "2.5 MB"
      */
-    public function scopeByType($query, string $type)
+    public function getFileSizeHumanAttribute(): string
     {
-        return $query->where('file_type', $type);
-    }
+        $bytes = $this->file_size;
 
-    /**
-     * المرفقات لطلب معين
-     */
-    public function scopeForApplication($query, int $applicationId)
-    {
-        return $query->where('application_id', $applicationId);
-    }
+        if ($bytes >= 1048576) {
+            return round($bytes / 1048576, 2) . ' MB';
+        }
 
-    /**
-     * المرفقات حسب حجم الملف (أكبر من)
-     */
-    public function scopeLargerThan($query, int $size)
-    {
-        return $query->where('file_size', '>', $size);
-    }
+        if ($bytes >= 1024) {
+            return round($bytes / 1024, 2) . ' KB';
+        }
 
-    /**
-     * المرفقات حسب حجم الملف (أصغر من)
-     */
-    public function scopeSmallerThan($query, int $size)
-    {
-        return $query->where('file_size', '<', $size);
+        return $bytes . ' B';
     }
 }
