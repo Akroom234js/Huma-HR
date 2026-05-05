@@ -43,11 +43,19 @@ const AllEmployees = () => {
       .catch(err => console.error("Failed to fetch statuses", err));
 
     // 3. جلب المناصب (Positions)
-    apiClient.get('/employees/positions')
+    apiClient.get('/positions')
       .then(res => {
         setPositionOptions([
           { value: "", label: "Position" },
-          ...(res.data?.data?.map(p => ({ value: p, label: p })) || [])
+          ...(res.data?.data?.positions?.map(p => ({ 
+             value: p.id, 
+             label: p.title,
+             min_salary: p.min_salary,
+             max_salary: p.max_salary,
+             tax_percent: p.tax_percent,
+             allowances: p.allowances,
+             insurance_amount: p.insurance_amount
+          })) || [])
         ]);
       })
       .catch(err => console.error("Failed to fetch positions", err));
@@ -144,7 +152,11 @@ const AllEmployees = () => {
       if (data.dob) formData.append("date_of_birth", data.dob);
       if (data.address) formData.append("address", data.address);
       if (data.emergencyContact) formData.append("emergency_contacts", data.emergencyContact);
-      if (data.jobTitle) formData.append("job_title", data.jobTitle);
+      if (data.jobTitle) {
+        formData.append("position_id", data.jobTitle);
+        const selectedPos = positionOptions.find(p => p.value == data.jobTitle);
+        if (selectedPos) formData.append("job_title", selectedPos.label);
+      }
       if (data.department) formData.append("department_id", data.department);
       if (data.joiningDate) formData.append("start_date", data.joiningDate);
       if (data.profilePicture) formData.append("profile_pic", data.profilePicture);

@@ -11,11 +11,11 @@ const PayrollOverview = () => {
   const { t } = useTranslation('SalaryManagement/PayrollOverview');
 
   const [overviewData, setOverviewData] = useState({
-    totalMonthlyPayroll: 0,
-    totalEmployeesPaid: 0,
-    totalEmployees: 0,
-    avgSalary: 0,
-    departmentDistribution: []
+    total_payroll_amount: 0,
+    total_paid: 0,
+    total_records: 0,
+    avg_salary: 0,
+    department_distribution: []
   });
 
   useEffect(() => {
@@ -31,7 +31,7 @@ const PayrollOverview = () => {
     }
   };
 
-  const data = overviewData.departmentDistribution.length > 0 ? overviewData.departmentDistribution : [
+  const data = overviewData.department_distribution && overviewData.department_distribution.length > 0 ? overviewData.department_distribution : [
     { name: t('Engineering'), value: 0 },
     { name: t('Product'), value: 0 },
     { name: t('Design'), value: 0 },
@@ -49,17 +49,17 @@ const PayrollOverview = () => {
       <div className="con_divs">
         <div>
           <p>{t('TotalMonthlyCompanyPayroll')}</p>
-          <h3>${Number(overviewData.totalMonthlyPayroll).toLocaleString()}</h3>
+          <h3>${Number(overviewData.total_payroll_amount).toLocaleString()}</h3>
         </div>
 
         <div>
           <p>{t('EmployeesPaid')}</p>
-          <h3>{overviewData.totalEmployeesPaid} / {overviewData.totalEmployees}</h3>
+          <h3>{overviewData.total_paid} / {overviewData.total_records}</h3>
         </div>
 
         <div>
           <p>{t('AvgSalaryEmployee')}</p>
-          <h3>${Number(overviewData.avgSalary).toLocaleString()}</h3>
+          <h3>${Number(overviewData.avg_salary).toLocaleString()}</h3>
         </div>
       </div>
       <div className="all_chart">
@@ -111,18 +111,18 @@ const PayrollOverview = () => {
           </thead>
 
           <tbody>
-            {overviewData.departmentDistribution.map((dept, index) => (
+            {overviewData.department_distribution && overviewData.department_distribution.map((dept, index) => (
               <tr key={index}>
                 <td>{dept.name}</td>
-                <td>${Number(dept.totalPayroll).toLocaleString()}</td>
-                <td>${Number(dept.averageSalary).toLocaleString(undefined, {maximumFractionDigits: 0})}</td>
-                <td>{dept.employees}</td>
-                <td>{dept.ofTotal}</td>
+                <td>${Number(dept.total_payroll).toLocaleString()}</td>
+                <td>${Number(dept.avg_salary).toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
+                <td>{dept.employee_count}</td>
+                <td>{dept.value}%</td>
               </tr>
             ))}
-            {overviewData.departmentDistribution.length === 0 && (
+            {(!overviewData.department_distribution || overviewData.department_distribution.length === 0) && (
               <tr>
-                <td colSpan="5" style={{textAlign: 'center'}}>{t('NoData', 'No data available')}</td>
+                <td colSpan="5" style={{ textAlign: 'center' }}>{t('NoData', 'No data available')}</td>
               </tr>
             )}
           </tbody>

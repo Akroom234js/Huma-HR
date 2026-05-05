@@ -15,6 +15,11 @@ class Position extends Model
         'description',
         'requirements',
         'reporting_to',
+        'min_salary',
+        'max_salary',
+        'tax_percent',
+        'insurance_amount',
+        'allowances',
     ];
 
     // ── Relationships ─────────────────────────────────────────────────────────

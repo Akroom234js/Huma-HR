@@ -19,6 +19,11 @@ class PositionResource extends JsonResource
                 'id'   => $this->department->id,
                 'name' => $this->department->name,
             ]),
+            'min_salary'       => $this->min_salary,
+            'max_salary'       => $this->max_salary,
+            'tax_percent'      => $this->tax_percent,
+            'insurance_amount' => $this->insurance_amount,
+            'allowances'       => $this->allowances,
             // عدد الشواغر من job_postings
             'openings'     => $this->whenCounted('jobPostings'),
             'created_at'   => $this->created_at?->format('Y-m-d'),
