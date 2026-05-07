@@ -100,6 +100,7 @@ const MonthlyPayroll = () => {
                 dedAmounts: (row.deductions || []).map(d => ({ val: `$${Number(d.amount).toLocaleString()}`, muted: false })),
                 final: `$${Number(row.final_net_salary).toLocaleString()}`,
                 status: row.status === 'paid' ? 'Paid' : 'Unpaid',
+                userId: row.user_id,
                 // Extra details for modal
                 allowanceVal: `$${Number(row.allowances_amount || 0).toLocaleString()}`,
                 bonusVal: `$${Number(row.bonuses_amount || 0).toLocaleString()}`,
@@ -214,6 +215,23 @@ const MonthlyPayroll = () => {
             fetchBonusRules();
         } catch (error) {
             console.error("Failed to save bonus rule", error);
+        }
+    };
+
+    const handleSaveDed = async () => {
+        try {
+            const dataToSubmit = { 
+                ...dedFormData,
+                month: dedFormData.month || selectedMonth
+            };
+            await apiClient.post('/deductions', dataToSubmit);
+            setIsDedModalOpen(false);
+            fetchPayroll();
+            fetchStats();
+            if (activeTab === 'deductions') fetchAllAdjustments();
+        } catch (error) {
+            console.error("Failed to save deduction", error);
+            alert("Failed to save adjustment. Make sure the employee has a payroll record for this month.");
         }
     };
 
@@ -506,6 +524,12 @@ const MonthlyPayroll = () => {
                                                 </button>
                                                 <button className="btn-icon-edit" title="Edit" onClick={() => openEditModal(row)}>
                                                     <i className="bi bi-pencil-square"></i>
+                                                </button>
+                                                <button className="btn-icon-add" title="Add Adjustment" onClick={() => {
+                                                    setDedFormData({ ...dedFormData, user_id: row.userId, amount: "", reason: "", is_addition: false });
+                                                    setIsDedModalOpen(true);
+                                                }} style={{ color: '#10b981' }}>
+                                                    <i className="bi bi-plus-circle"></i>
                                                 </button>
                                                 <button className="btn-icon-delete" title="Delete" onClick={() => handleDeletePayroll(row.id)}>
                                                     <i className="bi bi-trash"></i>
@@ -820,6 +844,64 @@ const MonthlyPayroll = () => {
                             <button onClick={() => setIsBonusModalOpen(false)} className="sm-btn-secondary">{t('Cancel', 'Cancel')}</button>
                             <button onClick={handleSaveBonusRule} className="sm-btn-primary">
                                 <i className="bi bi-check-lg"></i> {t('SaveRule', 'Save Rule')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Deduction Modal */}
+            {isDedModalOpen && (
+                <div className="sm-modal-overlay">
+                    <div className="sm-modal" style={{ maxWidth: '450px' }}>
+                        <div className="sm-modal-header">
+                            <div>
+                                <h2 className="sm-modal-title">{t('AddAdjustment', 'Add Adjustment')}</h2>
+                                <p className="sm-modal-subtitle">{t('AddAdjSubtitle', 'Bonuses, Penalties, or manual adjustments')}</p>
+                            </div>
+                            <button onClick={() => setIsDedModalOpen(false)} className="sm-modal-close">
+                                <span className="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+                        <div className="sm-modal-body">
+                            <div className="sm-form-group">
+                                <label className="sm-label">{t('Type', 'Adjustment Type')}</label>
+                                <select 
+                                    className="sm-input" 
+                                    value={dedFormData.deduction_type} 
+                                    onChange={e => setDedFormData({...dedFormData, deduction_type: e.target.value, is_addition: ['bonus', 'reward'].includes(e.target.value)})}
+                                >
+                                    <option value="penalty">{t('Penalty', 'Penalty')}</option>
+                                    <option value="bonus">{t('Bonus', 'Bonus')}</option>
+                                    <option value="reward">{t('Reward', 'Reward')}</option>
+                                    <option value="absence">{t('Absence', 'Absence')}</option>
+                                    <option value="other">{t('Other', 'Other')}</option>
+                                </select>
+                            </div>
+                            <div className="sm-form-group">
+                                <label className="sm-label">{t('Amount', 'Amount ($)')}</label>
+                                <input 
+                                    type="number" 
+                                    className="sm-input" 
+                                    value={dedFormData.amount} 
+                                    onChange={e => setDedFormData({...dedFormData, amount: e.target.value})} 
+                                    placeholder="0.00"
+                                />
+                            </div>
+                            <div className="sm-form-group">
+                                <label className="sm-label">{t('Reason', 'Reason / Description')}</label>
+                                <textarea 
+                                    className="sm-input" 
+                                    style={{ height: '80px', paddingTop: '10px' }}
+                                    value={dedFormData.reason} 
+                                    onChange={e => setDedFormData({...dedFormData, reason: e.target.value})}
+                                    placeholder={t('ReasonPlaceholder', 'Why is this being applied?')}
+                                />
+                            </div>
+                        </div>
+                        <div className="sm-modal-footer">
+                            <button onClick={() => setIsDedModalOpen(false)} className="sm-btn-secondary">{t('Cancel', 'Cancel')}</button>
+                            <button onClick={handleSaveDed} className="sm-btn-primary">
+                                <i className="bi bi-check-lg"></i> {t('ApplyAdjustment', 'Apply Adjustment')}
                             </button>
                         </div>
                     </div>
