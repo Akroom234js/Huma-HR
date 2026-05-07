@@ -18,13 +18,26 @@ const PayrollOverview = () => {
     department_distribution: []
   });
 
+  const [selectedMonth, setSelectedMonth] = useState("");
+  
+  const monthsList = [];
+  const now = new Date();
+  for (let i = 0; i < 12; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    monthsList.push(d.toLocaleString('en-US', { month: 'long', year: 'numeric' }));
+  }
+
   useEffect(() => {
-    fetchOverview();
-  }, []);
+    if (!selectedMonth) setSelectedMonth(monthsList[0]);
+  }, [monthsList]);
+
+  useEffect(() => {
+    if (selectedMonth) fetchOverview();
+  }, [selectedMonth]);
 
   const fetchOverview = async () => {
     try {
-      const response = await apiClient.get('/payroll/overview');
+      const response = await apiClient.get('/payroll/overview', { params: { month: selectedMonth } });
       setOverviewData(response.data.data);
     } catch (error) {
       console.error('Error fetching payroll overview:', error);
@@ -40,8 +53,27 @@ const PayrollOverview = () => {
 
   return (
     <div className="All_page">
-      <div className="head1">
-        <h2 className="title_salary"> {t('PayrollOverview')}</h2>
+      <div className="head1" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <h2 className="title_salary"> {t('PayrollOverview')}</h2>
+          <select 
+            className="dateselect" 
+            value={selectedMonth} 
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            style={{ 
+              padding: '8px 12px', 
+              borderRadius: '8px', 
+              border: '1px solid var(--border-color)',
+              backgroundColor: 'var(--bg-card)',
+              color: 'var(--text-primary)',
+              cursor: 'pointer'
+            }}
+          >
+            {monthsList.map(m => (
+              <option key={m} value={m}>{m}</option>
+            ))}
+          </select>
+        </div>
         <div className="sm-theme-toggle-wrapper">
           <ThemeToggle />
         </div>

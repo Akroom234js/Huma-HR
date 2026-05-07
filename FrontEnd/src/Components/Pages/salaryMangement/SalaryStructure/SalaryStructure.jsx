@@ -25,8 +25,8 @@ const SalaryStructure = () => {
         setSelectedStructureId(id);
         const position = salaryData.find(s => s.id == id);
         if (position) {
-            setEditData({ 
-                min_salary: position.min_salary, 
+            setEditData({
+                min_salary: position.min_salary,
                 max_salary: position.max_salary,
                 tax_percent: position.tax_percent || 0,
                 insurance_amount: position.insurance_amount || 0,
@@ -97,11 +97,11 @@ const SalaryStructure = () => {
         }
     };
 
-    const filteredData = salaryData.filter(item => 
+    const filteredData = salaryData.filter(item =>
         (item.title && item.title.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
-    const filteredEmployees = employees.filter(emp => 
+    const filteredEmployees = employees.filter(emp =>
         (emp.full_name && emp.full_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (emp.job_title && emp.job_title.toLowerCase().includes(searchTerm.toLowerCase()))
     );
@@ -118,8 +118,8 @@ const SalaryStructure = () => {
                     <p className="sm-subtitle">{t('subtitle')}</p>
                 </div>
                 <div className="sm-header-actions">
-                    <button 
-                        onClick={() => setActiveTab(activeTab === 'structures' ? 'employees' : 'structures')} 
+                    <button
+                        onClick={() => setActiveTab(activeTab === 'structures' ? 'employees' : 'structures')}
                         className="sm-btn-secondary"
                     >
                         <span className="material-symbols-outlined">{activeTab === 'structures' ? 'group' : 'account_balance_wallet'}</span>
@@ -138,9 +138,9 @@ const SalaryStructure = () => {
                         <h3 className="sm-card-title">{t('scalesTitle')}</h3>
                         <div className="sm-search-wrapper">
                             <span className="material-symbols-outlined sm-search-icon">search</span>
-                            <input 
-                                type="text" 
-                                className="sm-input sm-search-input" 
+                            <input
+                                type="text"
+                                className="sm-input sm-search-input"
                                 placeholder={t('searchPlaceholder')}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -187,9 +187,9 @@ const SalaryStructure = () => {
                         <h3 className="sm-card-title">{t('employeeSalaries', 'Individual Employee Salaries')}</h3>
                         <div className="sm-search-wrapper">
                             <span className="material-symbols-outlined sm-search-icon">search</span>
-                            <input 
-                                type="text" 
-                                className="sm-input sm-search-input" 
+                            <input
+                                type="text"
+                                className="sm-input sm-search-input"
                                 placeholder={t('searchPlaceholder')}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -215,9 +215,9 @@ const SalaryStructure = () => {
                                     <tr key={idx}>
                                         <td>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                <img 
-                                                    src={emp.profile_pic ? `/storage/${emp.profile_pic}` : 'https://i.pravatar.cc/150'} 
-                                                    alt="" 
+                                                <img
+                                                    src={emp.profile_pic ? `/storage/${emp.profile_pic}` : 'https://i.pravatar.cc/150'}
+                                                    alt=""
                                                     style={{ width: '32px', height: '32px', borderRadius: '50%' }}
                                                 />
                                                 <span>{emp.full_name}</span>
@@ -269,37 +269,37 @@ const SalaryStructure = () => {
                                     <label className="sm-label">{t('modal.minSalaryLabel')}</label>
                                     <div className="sm-input-with-icon">
                                         <span className="sm-input-icon">$</span>
-                                        <input type="number" className="sm-input" value={editData.min_salary} onChange={e => setEditData({...editData, min_salary: e.target.value})} />
+                                        <input type="number" className="sm-input" value={editData.min_salary} onChange={e => setEditData({ ...editData, min_salary: e.target.value })} />
                                     </div>
                                 </div>
                                 <div className="sm-form-group">
                                     <label className="sm-label">{t('modal.maxSalaryLabel')}</label>
                                     <div className="sm-input-with-icon">
                                         <span className="sm-input-icon">$</span>
-                                        <input type="number" className="sm-input" value={editData.max_salary} onChange={e => setEditData({...editData, max_salary: e.target.value})} />
+                                        <input type="number" className="sm-input" value={editData.max_salary} onChange={e => setEditData({ ...editData, max_salary: e.target.value })} />
                                     </div>
                                 </div>
                             </div>
                             <div className="sm-form-row" style={{ marginTop: '15px', borderTop: '1px dashed var(--border-color)', paddingTop: '15px' }}>
                                 <div className="sm-form-group">
                                     <label className="sm-label">{t('modal.allowancesLabel', 'Default Allowances ($)')}</label>
-                                    <input type="number" className="sm-input" value={editData.allowances} onChange={e => setEditData({...editData, allowances: e.target.value})} />
+                                    <input type="number" className="sm-input" value={editData.allowances} onChange={e => setEditData({ ...editData, allowances: e.target.value })} />
                                 </div>
                                 <div className="sm-form-group">
                                     <label className="sm-label">{t('modal.taxLabel', 'Default Tax (%)')}</label>
-                                    <input type="number" className="sm-input" value={editData.tax_percent} onChange={e => setEditData({...editData, tax_percent: e.target.value})} />
+                                    <input type="number" className="sm-input" value={editData.tax_percent} onChange={e => setEditData({ ...editData, tax_percent: e.target.value })} />
                                 </div>
                                 <div className="sm-form-group">
                                     <label className="sm-label">{t('modal.insuranceLabel', 'Default Insurance ($)')}</label>
-                                    <input type="number" className="sm-input" value={editData.insurance_amount} onChange={e => setEditData({...editData, insurance_amount: e.target.value})} />
+                                    <input type="number" className="sm-input" value={editData.insurance_amount} onChange={e => setEditData({ ...editData, insurance_amount: e.target.value })} />
                                 </div>
                             </div>
                             <div className="sm-form-group" style={{ marginTop: '10px', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
-                                <input 
-                                    type="checkbox" 
+                                <input
+                                    type="checkbox"
                                     id="apply_to_all"
-                                    checked={editData.apply_to_all_employees} 
-                                    onChange={(e) => setEditData({...editData, apply_to_all_employees: e.target.checked})}
+                                    checked={editData.apply_to_all_employees}
+                                    onChange={(e) => setEditData({ ...editData, apply_to_all_employees: e.target.checked })}
                                     style={{ width: '18px', height: '18px', cursor: 'pointer' }}
                                 />
                                 <label htmlFor="apply_to_all" style={{ marginBottom: 0, fontSize: '13px', fontWeight: '500', cursor: 'pointer' }}>
@@ -335,15 +335,15 @@ const SalaryStructure = () => {
                             <div className="sm-form-row">
                                 <div className="sm-form-group">
                                     <label className="sm-label">{t('empModal.allowancesLabel', 'Personal Allowances ($)')}</label>
-                                    <input type="number" className="sm-input" value={empEditData.allowances} onChange={e => setEmpEditData({...empEditData, allowances: e.target.value})} />
+                                    <input type="number" className="sm-input" value={empEditData.allowances} onChange={e => setEmpEditData({ ...empEditData, allowances: e.target.value })} />
                                 </div>
                                 <div className="sm-form-group">
                                     <label className="sm-label">{t('empModal.taxLabel', 'Personal Tax (%)')}</label>
-                                    <input type="number" className="sm-input" value={empEditData.tax_percent} onChange={e => setEmpEditData({...empEditData, tax_percent: e.target.value})} />
+                                    <input type="number" className="sm-input" value={empEditData.tax_percent} onChange={e => setEmpEditData({ ...empEditData, tax_percent: e.target.value })} />
                                 </div>
                                 <div className="sm-form-group">
                                     <label className="sm-label">{t('empModal.insuranceLabel', 'Personal Insurance ($)')}</label>
-                                    <input type="number" className="sm-input" value={empEditData.insurance_amount} onChange={e => setEmpEditData({...empEditData, insurance_amount: e.target.value})} />
+                                    <input type="number" className="sm-input" value={empEditData.insurance_amount} onChange={e => setEmpEditData({ ...empEditData, insurance_amount: e.target.value })} />
                                 </div>
                             </div>
                         </div>

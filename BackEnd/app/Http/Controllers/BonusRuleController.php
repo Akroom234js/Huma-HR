@@ -10,7 +10,6 @@ use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 
 class BonusRuleController extends Controller
 {
@@ -18,25 +17,25 @@ class BonusRuleController extends Controller
 
     public function index(): JsonResponse
     {
-        return $this->successResponse(BonusRule::all(), 'Bonus rules retrieved.');
+        $rules = BonusRule::orderBy('created_at', 'desc')->get();
+        return $this->successResponse($rules, 'Bonus rules retrieved.');
     }
 
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'name' => 'required|string',
-            'target_type' => 'required|in:department,employee,all',
-            'target_id' => 'nullable|integer',
+            'name' => 'required|string|max:255',
+            'target_type' => 'required|in:all,department,employee',
+            'target_id' => 'nullable|string',
             'amount' => 'required|numeric|min:0',
-            'is_percentage' => 'nullable|boolean',
+            'is_percentage' => 'required|boolean',
             'frequency' => 'required|in:monthly,once',
             'apply_month' => 'nullable|string',
-            'condition_type' => 'nullable|in:none,attendance,performance',
-            'condition_value' => 'nullable|string',
+            'condition_type' => 'nullable|string',
         ]);
 
         $rule = BonusRule::create($validated);
-        return $this->successResponse($rule, 'Bonus rule created.', 201);
+        return $this->successResponse($rule, 'Bonus rule created successfully.', 201);
     }
 
     public function update(Request $request, int $id): JsonResponse
@@ -74,76 +73,67 @@ class BonusRuleController extends Controller
         ];
         $monthInt = $monthMap[$monthName] ?? now()->month;
 
-        $activeRules = BonusRule::where('is_active', true)->get();
+        $rules = BonusRule::where('is_active', true)->get();
         $appliedCount = 0;
 
-        return DB::transaction(function () use ($activeRules, $monthInt, $year, $request, &$appliedCount) {
-            foreach ($activeRules as $rule) {
-                // Check frequency/month constraints
+        return DB::transaction(function () use ($rules, $monthInt, $year, $request, &$appliedCount) {
+            foreach ($rules as $rule) {
+                // Skip if frequency is 'once' and month doesn't match
                 if ($rule->frequency === 'once' && $rule->apply_month !== $request->month) {
                     continue;
                 }
 
-                // Find target payroll records
+                // Get target payroll records
                 $query = PayrollRecord::where('payroll_month', $monthInt)
                     ->where('payroll_year', $year)
                     ->where('status', 'unpaid');
 
-                if ($rule->target_type === 'employee') {
-                    $profile = EmployeeProfile::where('id', $rule->target_id)
-                        ->orWhere('employee_id', (string)$rule->target_id)
-                        ->orWhere('user_id', $rule->target_id)
-                        ->first();
-                    
-                    if ($profile) {
-                        $query->where('user_id', $profile->user_id);
-                    } else {
-                        $query->where('user_id', -1);
-                    }
-                } elseif ($rule->target_type === 'department') {
+                if ($rule->target_type === 'department') {
                     $query->whereHas('user.employeeProfile', function ($q) use ($rule) {
                         $q->where('department_id', $rule->target_id);
                     });
+                } elseif ($rule->target_type === 'employee') {
+                    $query->where('user_id', $rule->target_id);
                 }
 
-                $payrolls = $query->get();
+                $records = $query->get();
 
-                foreach ($payrolls as $payroll) {
-                    $bonusAmount = $rule->amount;
-                    if ($rule->is_percentage) {
-                        $bonusAmount = ($payroll->basic_salary * $rule->amount) / 100;
-                    }
-
-                    // Remove existing bonus applied from this exact rule to avoid duplicates
-                    PayrollDeduction::where('payroll_record_id', $payroll->id)
+                foreach ($records as $record) {
+                    // Check if this rule was already applied to this record
+                    $exists = PayrollDeduction::where('payroll_record_id', $record->id)
                         ->where('deduction_type', 'bonus')
-                        ->where('reason', "Rule: {$rule->name}")
-                        ->delete();
+                        ->where('reason', 'like', "Rule: {$rule->name}%")
+                        ->exists();
 
-                    // Create addition
+                    if ($exists) continue;
+
+                    $bonusAmount = $rule->is_percentage 
+                        ? ($record->basic_salary * $rule->amount / 100)
+                        : $rule->amount;
+
                     PayrollDeduction::create([
-                        'payroll_record_id' => $payroll->id,
+                        'payroll_record_id' => $record->id,
                         'deduction_type' => 'bonus',
                         'amount' => $bonusAmount,
                         'is_addition' => true,
                         'reason' => "Rule: {$rule->name}",
-                        'applied_by' => 'System (Rule)',
+                        'applied_by' => 'System',
                         'applied_date' => now(),
                     ]);
 
-                    // Recalculate net
-                    $additions = $payroll->deductions()->where('is_addition', true)->sum('amount');
-                    $deductions = $payroll->deductions()->where('is_addition', false)->sum('amount');
+                    // Update PayrollRecord
+                    $additionsSum = $record->deductions()->where('is_addition', true)->sum('amount');
+                    $deductionsSum = $record->deductions()->where('is_addition', false)->sum('amount');
                     
-                    $payroll->bonuses_amount = $additions;
-                    $payroll->final_net_salary = $payroll->basic_salary + $payroll->allowances_amount + $payroll->overtime_amount + $additions - $deductions;
-                    $payroll->save();
+                    $record->bonuses_amount = $additionsSum;
+                    $record->final_net_salary = $record->basic_salary + $record->allowances_amount + $record->overtime_amount + $additionsSum - $deductionsSum;
+                    $record->save();
 
                     $appliedCount++;
                 }
             }
 
-            return $this->successResponse(['applied_count' => $appliedCount], "Applied rules to $appliedCount records.");
+            return $this->successResponse(['applied_to_records' => $appliedCount], "Applied rules to $appliedCount records.");
         });
     }
 }

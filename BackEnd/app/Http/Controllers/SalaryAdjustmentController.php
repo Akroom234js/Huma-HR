@@ -27,7 +27,7 @@ class SalaryAdjustmentController extends Controller
     {
         $adjustments = SalaryAdjustment::with([
             'employeeProfile.user',
-            'creator.profile',
+            'createdBy.profile',
             'adjustmentType',
         ])
         ->when($request->filled('search'), fn($q) =>
@@ -43,13 +43,12 @@ class SalaryAdjustmentController extends Controller
         ->orderByDesc('effective_date')
         ->paginate($request->get('per_page', 15));
 
-        // إحصائيات للبطاقات في الأعلى
         $stats = $this->getStats();
 
         return $this->successResponse(
             data: [
                 'stats'       => $stats,
-                'adjustments' => $adjustments->items(),
+                'adjustments' => \App\Http\Resources\SalaryAdjustmentResource::collection($adjustments->items()),
                 'pagination'  => [
                     'total'        => $adjustments->total(),
                     'per_page'     => $adjustments->perPage(),
@@ -61,12 +60,48 @@ class SalaryAdjustmentController extends Controller
         );
     }
 
+    public function store(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'employee_profile_id' => 'required|exists:employee_profiles,id',
+            'adjustment_type_id'  => 'required|exists:adjustment_types,id',
+            'new_salary'          => 'required|numeric|min:0',
+            'effective_date'      => 'required|date',
+            'adjustment_reason'   => 'nullable|string',
+        ]);
+
+        $profile = \App\Models\EmployeeProfile::find($validated['employee_profile_id']);
+        
+        // Trigger EmployeeProfile->salary update
+        $oldSalary = $profile->salary;
+        $profile->update(['salary' => $validated['new_salary']]);
+
+        $adjustment = SalaryAdjustment::create([
+            'employee_profile_id' => $validated['employee_profile_id'],
+            'adjustment_type_id'  => $validated['adjustment_type_id'],
+            'current_salary'      => $oldSalary,
+            'new_salary'          => $validated['new_salary'],
+            'effective_date'      => $validated['effective_date'],
+            'adjustment_reason'   => $validated['adjustment_reason'],
+            'created_by'          => auth()->id(),
+        ]);
+
+        // Load relationships for the resource
+        $adjustment->load(['employeeProfile.user', 'createdBy.profile', 'adjustmentType']);
+
+        return $this->successResponse(
+            data: new \App\Http\Resources\SalaryAdjustmentResource($adjustment),
+            message: 'Salary adjustment created successfully and employee salary updated.',
+            statusCode: 201
+        );
+    }
+
     // ── GET /api/salary-adjustments/{id} ─────────────────────────────────────
     public function show(int $id): JsonResponse
     {
         $adjustment = SalaryAdjustment::with([
             'employeeProfile.user',
-            'creator.profile',
+            'createdBy.profile',
             'adjustmentType',
         ])->find($id);
 
@@ -78,7 +113,7 @@ class SalaryAdjustmentController extends Controller
         }
 
         return $this->successResponse(
-            data: $adjustment,
+            data: new \App\Http\Resources\SalaryAdjustmentResource($adjustment),
             message: 'Salary adjustment retrieved successfully.'
         );
     }
@@ -99,6 +134,7 @@ class SalaryAdjustmentController extends Controller
             
         // متوسط نسبة الزيادة
         $avgIncrease = SalaryAdjustment::whereYear('effective_date', $currentYear)
+            ->where('current_salary', '>', 0) // Prevent division by zero
             ->selectRaw('AVG((new_salary - current_salary) / current_salary * 100) as avg_percent')
             ->value('avg_percent');
 

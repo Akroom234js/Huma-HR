@@ -95,18 +95,42 @@ class PayrollController extends Controller
         return $this->successResponse(['updated_count' => $updated], 'Selected payroll records marked as paid.');
     }
 
-    public function overview(): JsonResponse
+    public function overview(Request $request): JsonResponse
     {
-        $totalMonthlyPayroll = PayrollRecord::where('status', 'paid')
+        $month = $request->month;
+        $year = $request->year;
+
+        if ($month && !is_numeric($month)) {
+            $monthYear = explode(' ', $month);
+            $monthName = $monthYear[0];
+            $year = $monthYear[1] ?? now()->year;
+
+            $monthMap = [
+                'January' => 1, 'February' => 2, 'March' => 3, 'April' => 4,
+                'May' => 5, 'June' => 6, 'July' => 7, 'August' => 8,
+                'September' => 9, 'October' => 10, 'November' => 11, 'December' => 12
+            ];
+            $month = $monthMap[$monthName] ?? null;
+        }
+
+        $query = PayrollRecord::query()
+            ->when($month, function ($q) use ($month) {
+                return $q->where('payroll_month', $month);
+            })
+            ->when($year, function ($q) use ($year) {
+                return $q->where('payroll_year', $year);
+            });
+
+        $totalMonthlyPayroll = (clone $query)->where('status', 'paid')
             ->sum('final_net_salary');
 
-        $totalPaid = PayrollRecord::where('status', 'paid')->count();
-        $totalUnpaid = PayrollRecord::where('status', 'unpaid')->count();
-        $totalRecords = PayrollRecord::count();
+        $totalPaid = (clone $query)->where('status', 'paid')->count();
+        $totalUnpaid = (clone $query)->where('status', 'unpaid')->count();
+        $totalRecords = (clone $query)->count();
 
         $avgSalary = $totalPaid > 0 ? $totalMonthlyPayroll / $totalPaid : 0;
 
-        $paidRecords = PayrollRecord::with('user.employeeProfile.department')
+        $paidRecords = (clone $query)->with('user.employeeProfile.department')
             ->where('status', 'paid')
             ->get();
             
