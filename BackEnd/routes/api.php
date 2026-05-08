@@ -14,22 +14,6 @@ use Illuminate\Support\Facades\Route;
 // ══════════════════════════════════════════════════════════════════════════════
 // Public Routes — بدون مصادقة
 // ══════════════════════════════════════════════════════════════════════════════
-Route::get('/migrate-db', function () {
-    try {
-        echo "Running migrations...<br>";
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        echo \Illuminate\Support\Facades\Artisan::output() . "<br>";
-
-        echo "Running seeders...<br>";
-        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
-        echo \Illuminate\Support\Facades\Artisan::output() . "<br>";
-
-        return "Database migration and seeding completed successfully!";
-    } catch (\Exception $e) {
-        return "Error: " . $e->getMessage();
-    }
-});
-
 Route::prefix('auth')->group(function () {
     Route::post('/sessions',        [AuthController::class, 'login']);
     Route::post('/password/forgot', [AuthController::class, 'forgotPassword']);
