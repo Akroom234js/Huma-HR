@@ -15,22 +15,41 @@ use Illuminate\Support\Facades\Route;
 // Public Routes — بدون مصادقة
 // ══════════════════════════════════════════════════════════════════════════════
 
-// ⚠️ مسار إصلاح قاعدة البيانات - يستخدم لمرة واحدة فقط لإعادة البناء
+// ⚠️ مسار إصلاح قاعدة البيانات - نسخة متوافقة مع TiDB/Cloud
 Route::get('/system-repair-db', function () {
     try {
-        echo "Starting Full Database Repair...<br>";
+        echo "Starting Aggressive Database Repair...<br>";
         
-        // مسح كل الجداول وبنائها من جديد
-        echo "1. Running migrate:fresh...<br>";
-        \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
+        // 1. تعطيل فحص القيود الخارجية
+        echo "Disabling foreign key checks...<br>";
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0;');
+
+        // 2. جلب جميع الجداول ومسحها يدوياً
+        echo "Dropping all tables manually...<br>";
+        $tables = DB::select('SHOW TABLES');
+        $dbName = 'test'; // حسب رسالة الخطأ لديك
+        $tableKey = "Tables_in_{$dbName}";
+
+        foreach ($tables as $table) {
+            $tableName = $table->$tableKey;
+            echo "Dropping table: {$tableName}...<br>";
+            DB::statement("DROP TABLE IF EXISTS `{$tableName}`");
+        }
+
+        // 3. إعادة تفعيل فحص القيود
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1;');
+
+        // 4. بناء الجداول من جديد
+        echo "Running migrations...<br>";
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
         echo "<pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
 
-        // إضافة البيانات الأساسية
-        echo "2. Running seeders...<br>";
+        // 5. إضافة البيانات الأساسية
+        echo "Running seeders...<br>";
         \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
         echo "<pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
 
-        return "<h2 style='color:green'>Database Repaired Successfully!</h2><p>You can now test the Payroll functionality.</p>";
+        return "<h2 style='color:green'>Database Aggressively Repaired Successfully!</h2>";
     } catch (\Exception $e) {
         return "<h2 style='color:red'>Repair Failed!</h2><p>Error: " . $e->getMessage() . "</p>";
     }
