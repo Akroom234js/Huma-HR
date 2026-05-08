@@ -41,11 +41,12 @@ const MonthlyPayroll = () => {
             const res = await apiClient.post('/payroll/initialize', {
                 month: selectedMonth
             });
-            alert(res.data.message);
+            alert(res.data.message || "Payroll initialized successfully.");
             fetchPayroll();
         } catch (error) {
             console.error("Initialization failed", error);
-            alert("Failed to initialize payroll.");
+            const errorMsg = error.response?.data?.message || "Failed to initialize payroll.";
+            alert(errorMsg);
         } finally {
             setIsInitializing(false);
         }
