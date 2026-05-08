@@ -29,6 +29,11 @@ class SalaryAdjustment extends Model
         'new_salary'       => 'decimal:2',
     ];
 
+    public function getDisplayTypeAttribute(): string
+    {
+        return $this->adjustmentType?->name ?? $this->custom_type_name ?? 'N/A';
+    }
+
     // ── Relationships ─────────────────────────────────────────────────────────
 
     public function employeeProfile(): BelongsTo
@@ -46,7 +51,7 @@ class SalaryAdjustment extends Model
         return $this->belongsTo(AdjustmentType::class, 'adjustment_type_id');
     }
 
-    public function creator(): BelongsTo
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }

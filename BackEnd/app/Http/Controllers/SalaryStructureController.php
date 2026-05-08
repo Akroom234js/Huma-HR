@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SalaryStructure;
+use App\Models\Position;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,32 +14,33 @@ class SalaryStructureController extends Controller
     // GET /api/salary-structures
     public function index(Request $request): JsonResponse
     {
-        $structures = \App\Models\Position::all();
-        return $this->successResponse($structures, 'Positions (Salary structures) retrieved successfully.');
+        $structures = Position::all();
+        return $this->successResponse($structures, 'Salary structures retrieved successfully.');
     }
 
-    // POST /api/salary-structures (Not really needed now, but keep for compatibility)
+    // POST /api/salary-structures
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'title' => 'required|string',
-            'department_id' => 'required|exists:departments,id',
+            'job_level' => 'nullable|string',
             'min_salary' => 'required|numeric',
             'max_salary' => 'required|numeric',
             'tax_percent' => 'nullable|numeric|min:0|max:100',
             'insurance_amount' => 'nullable|numeric|min:0',
             'allowances' => 'nullable|numeric|min:0',
+            'currency' => 'nullable|string|max:3',
         ]);
 
-        $structure = \App\Models\Position::create($validated);
-        return $this->successResponse($structure, 'Position created successfully.', 201);
+        $structure = Position::create($validated);
+        return $this->successResponse($structure, 'Salary structure created successfully.', 201);
     }
 
     // PUT /api/salary-structures/{id}
     public function update(Request $request, int $id): JsonResponse
     {
-        $position = \App\Models\Position::find($id);
-        if (!$position) {
+        $structure = Position::find($id);
+        if (!$structure) {
             return $this->errorResponse('Position not found.', 404);
         }
 
@@ -52,33 +53,33 @@ class SalaryStructureController extends Controller
             'apply_to_all_employees' => 'nullable|boolean'
         ]);
 
-        $position->update($request->only([
+        $structure->update($request->only([
             'min_salary', 'max_salary', 'tax_percent', 'insurance_amount', 'allowances'
         ]));
 
         if ($request->apply_to_all_employees) {
-            // Apply all changes to ALL employees in this position
-            \App\Models\EmployeeProfile::where('job_title', $position->title)->update([
-                'salary' => $position->min_salary,
-                'tax_percent' => $position->tax_percent,
-                'insurance_amount' => $position->insurance_amount,
-                'allowances' => $position->allowances,
+            // Apply all changes to ALL employees with this job title
+            \App\Models\EmployeeProfile::where('job_title', $structure->title)->update([
+                'salary' => $structure->min_salary,
+                'tax_percent' => $structure->tax_percent,
+                'insurance_amount' => $structure->insurance_amount,
+                'allowances' => $structure->allowances,
             ]);
         }
 
-        return $this->successResponse($position, 'Position salary structure updated.');
+        return $this->successResponse($structure, 'Position updated successfully.');
     }
 
     // DELETE /api/salary-structures/{id}
     public function destroy(int $id): JsonResponse
     {
-        $structure = SalaryStructure::find($id);
+        $structure = Position::find($id);
         if (!$structure) {
-            return $this->errorResponse('Salary structure not found.', 404);
+            return $this->errorResponse('Position not found.', 404);
         }
 
         $structure->delete();
-        return $this->successResponse(null, 'Salary structure deleted successfully.');
+        return $this->successResponse(null, 'Position deleted successfully.');
     }
 
     // GET /api/salary-structures/employees

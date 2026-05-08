@@ -54,6 +54,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/salary-structures',        [SalaryStructureController::class, 'store']);
         Route::put('/salary-structures/{id}',    [SalaryStructureController::class, 'update']);
         Route::delete('/salary-structures/{id}', [SalaryStructureController::class, 'destroy']);
+
+        // Salary Adjustments
+        Route::post('/salary-adjustments', [SalaryAdjustmentController::class, 'store']);
     });
 
     // ── Employee Portal ──────────────────────────────────────────────

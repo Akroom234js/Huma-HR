@@ -95,18 +95,42 @@ class PayrollController extends Controller
         return $this->successResponse(['updated_count' => $updated], 'Selected payroll records marked as paid.');
     }
 
-    public function overview(): JsonResponse
+    public function overview(Request $request): JsonResponse
     {
-        $totalMonthlyPayroll = PayrollRecord::where('status', 'paid')
+        $month = $request->month;
+        $year = $request->year;
+
+        if ($month && !is_numeric($month)) {
+            $monthYear = explode(' ', $month);
+            $monthName = $monthYear[0];
+            $year = $monthYear[1] ?? now()->year;
+
+            $monthMap = [
+                'January' => 1, 'February' => 2, 'March' => 3, 'April' => 4,
+                'May' => 5, 'June' => 6, 'July' => 7, 'August' => 8,
+                'September' => 9, 'October' => 10, 'November' => 11, 'December' => 12
+            ];
+            $month = $monthMap[$monthName] ?? null;
+        }
+
+        $query = PayrollRecord::query()
+            ->when($month, function ($q) use ($month) {
+                return $q->where('payroll_month', $month);
+            })
+            ->when($year, function ($q) use ($year) {
+                return $q->where('payroll_year', $year);
+            });
+
+        $totalMonthlyPayroll = (clone $query)->where('status', 'paid')
             ->sum('final_net_salary');
 
-        $totalPaid = PayrollRecord::where('status', 'paid')->count();
-        $totalUnpaid = PayrollRecord::where('status', 'unpaid')->count();
-        $totalRecords = PayrollRecord::count();
+        $totalPaid = (clone $query)->where('status', 'paid')->count();
+        $totalUnpaid = (clone $query)->where('status', 'unpaid')->count();
+        $totalRecords = (clone $query)->count();
 
         $avgSalary = $totalPaid > 0 ? $totalMonthlyPayroll / $totalPaid : 0;
 
-        $paidRecords = PayrollRecord::with('user.employeeProfile.department')
+        $paidRecords = (clone $query)->with('user.employeeProfile.department')
             ->where('status', 'paid')
             ->get();
             
@@ -154,91 +178,55 @@ class PayrollController extends Controller
     // POST /api/payroll/initialize
     public function initialize(Request $request): JsonResponse
     {
-        $request->validate([
-            'month' => 'required|string', // e.g. "April 2026"
-        ]);
+        try {
+            $request->validate([
+                'month' => 'required|string', // e.g. "April 2026"
+            ]);
 
-        $monthYear = explode(' ', $request->month);
-        $monthName = $monthYear[0];
-        $year = $monthYear[1] ?? now()->year;
+            $monthYear = explode(' ', $request->month);
+            if (count($monthYear) < 2) {
+                return $this->errorResponse('Invalid month format. Expected "Month Year".', 400);
+            }
+            
+            $monthName = $monthYear[0];
+            $year = $monthYear[1];
 
-        // Map month name to integer
-        $monthMap = [
-            'January' => 1, 'February' => 2, 'March' => 3, 'April' => 4,
-            'May' => 5, 'June' => 6, 'July' => 7, 'August' => 8,
-            'September' => 9, 'October' => 10, 'November' => 11, 'December' => 12
-        ];
+            // Map month name to integer
+            $monthMap = [
+                'January' => 1, 'February' => 2, 'March' => 3, 'April' => 4,
+                'May' => 5, 'June' => 6, 'July' => 7, 'August' => 8,
+                'September' => 9, 'October' => 10, 'November' => 11, 'December' => 12
+            ];
 
-        $monthInt = $monthMap[$monthName] ?? now()->month;
+            $monthInt = $monthMap[$monthName] ?? now()->month;
 
-        $activeEmployees = \App\Models\EmployeeProfile::where('employment_status', 'active')->get();
-        $createdCount = 0;
-        $updatedCount = 0;
+            $activeEmployees = \App\Models\EmployeeProfile::where('employment_status', 'active')->get();
+            $createdCount = 0;
+            $updatedCount = 0;
 
-        foreach ($activeEmployees as $profile) {
-            $payroll = PayrollRecord::where('user_id', $profile->user_id)
-                ->where('payroll_month', $monthInt)
-                ->where('payroll_year', $year)
-                ->first();
+            foreach ($activeEmployees as $profile) {
+                $payroll = PayrollRecord::where('user_id', $profile->user_id)
+                    ->where('payroll_month', $monthInt)
+                    ->where('payroll_year', $year)
+                    ->first();
 
-            if (!$payroll) {
-                $payroll = PayrollRecord::create([
-                    'user_id' => $profile->user_id,
-                    'payroll_month' => $monthInt,
-                    'payroll_year' => $year,
-                    'basic_salary' => $profile->salary ?? 0,
-                    'allowances_amount' => $profile->allowances ?? 0,
-                    'final_net_salary' => ($profile->salary ?? 0) + ($profile->allowances ?? 0),
-                    'status' => 'unpaid',
-                ]);
-
-                // Auto-apply Tax if present
-                if ($profile->tax_percent > 0) {
-                    $taxAmount = ($profile->salary * $profile->tax_percent) / 100;
-                    PayrollDeduction::create([
-                        'payroll_record_id' => $payroll->id,
-                        'deduction_type' => 'tax',
-                        'amount' => $taxAmount,
-                        'is_addition' => false,
-                        'reason' => "Automatic Tax ({$profile->tax_percent}%)",
-                        'applied_by' => 'System',
-                        'applied_date' => now(),
+                if (!$payroll) {
+                    $payroll = PayrollRecord::create([
+                        'user_id' => $profile->user_id,
+                        'payroll_month' => $monthInt,
+                        'payroll_year' => $year,
+                        'basic_salary' => $profile->salary ?? 0,
+                        'allowances_amount' => $profile->allowances ?? 0,
+                        'bonuses_amount' => 0,
+                        'overtime_hours' => 0,
+                        'overtime_amount' => 0,
+                        'final_net_salary' => ($profile->salary ?? 0) + ($profile->allowances ?? 0),
+                        'status' => 'unpaid',
                     ]);
-                }
 
-                // Auto-apply Insurance if present
-                if ($profile->insurance_amount > 0) {
-                    PayrollDeduction::create([
-                        'payroll_record_id' => $payroll->id,
-                        'deduction_type' => 'insurance',
-                        'amount' => $profile->insurance_amount,
-                        'is_addition' => false,
-                        'reason' => "Automatic Insurance",
-                        'applied_by' => 'System',
-                        'applied_date' => now(),
-                    ]);
-                }
-
-                // Update final net salary after auto-deductions
-                $additionsSum = $payroll->deductions()->where('is_addition', true)->sum('amount');
-                $deductionsSum = $payroll->deductions()->where('is_addition', false)->sum('amount');
-                $payroll->final_net_salary = $payroll->basic_salary + $payroll->allowances_amount + $payroll->overtime_amount + $additionsSum - $deductionsSum;
-                $payroll->save();
-
-                $createdCount++;
-            } else if ($payroll->status === 'unpaid') {
-                $payroll->basic_salary = $profile->salary ?? 0;
-                $payroll->allowances_amount = $profile->allowances ?? 0;
-
-                // Auto-apply Tax if present
-                if ($profile->tax_percent > 0) {
-                    $taxAmount = ($profile->salary * $profile->tax_percent) / 100;
-                    $taxDed = PayrollDeduction::where('payroll_record_id', $payroll->id)
-                        ->where('deduction_type', 'tax')
-                        ->first();
-                    if ($taxDed) {
-                        $taxDed->update(['amount' => $taxAmount, 'reason' => "Automatic Tax ({$profile->tax_percent}%)"]);
-                    } else {
+                    // Auto-apply Tax if present
+                    if ($profile->tax_percent > 0) {
+                        $taxAmount = (($profile->salary ?? 0) * $profile->tax_percent) / 100;
                         PayrollDeduction::create([
                             'payroll_record_id' => $payroll->id,
                             'deduction_type' => 'tax',
@@ -249,18 +237,9 @@ class PayrollController extends Controller
                             'applied_date' => now(),
                         ]);
                     }
-                } else {
-                    PayrollDeduction::where('payroll_record_id', $payroll->id)->where('deduction_type', 'tax')->delete();
-                }
 
-                // Auto-apply Insurance if present
-                if ($profile->insurance_amount > 0) {
-                    $insDed = PayrollDeduction::where('payroll_record_id', $payroll->id)
-                        ->where('deduction_type', 'insurance')
-                        ->first();
-                    if ($insDed) {
-                        $insDed->update(['amount' => $profile->insurance_amount]);
-                    } else {
+                    // Auto-apply Insurance if present
+                    if ($profile->insurance_amount > 0) {
                         PayrollDeduction::create([
                             'payroll_record_id' => $payroll->id,
                             'deduction_type' => 'insurance',
@@ -271,21 +250,77 @@ class PayrollController extends Controller
                             'applied_date' => now(),
                         ]);
                     }
-                } else {
-                    PayrollDeduction::where('payroll_record_id', $payroll->id)->where('deduction_type', 'insurance')->delete();
+
+                    // Update final net salary after auto-deductions
+                    $additionsSum = $payroll->deductions()->where('is_addition', true)->sum('amount');
+                    $deductionsSum = $payroll->deductions()->where('is_addition', false)->sum('amount');
+                    $payroll->final_net_salary = $payroll->basic_salary + $payroll->allowances_amount + $payroll->bonuses_amount + $payroll->overtime_amount + $additionsSum - $deductionsSum;
+                    $payroll->save();
+
+                    $createdCount++;
+                } else if ($payroll->status === 'unpaid') {
+                    $payroll->basic_salary = $profile->salary ?? 0;
+                    $payroll->allowances_amount = $profile->allowances ?? 0;
+
+                    // Auto-apply Tax if present
+                    if ($profile->tax_percent > 0) {
+                        $taxAmount = (($profile->salary ?? 0) * $profile->tax_percent) / 100;
+                        $taxDed = PayrollDeduction::where('payroll_record_id', $payroll->id)
+                            ->where('deduction_type', 'tax')
+                            ->first();
+                        if ($taxDed) {
+                            $taxDed->update(['amount' => $taxAmount, 'reason' => "Automatic Tax ({$profile->tax_percent}%)"]);
+                        } else {
+                            PayrollDeduction::create([
+                                'payroll_record_id' => $payroll->id,
+                                'deduction_type' => 'tax',
+                                'amount' => $taxAmount,
+                                'is_addition' => false,
+                                'reason' => "Automatic Tax ({$profile->tax_percent}%)",
+                                'applied_by' => 'System',
+                                'applied_date' => now(),
+                            ]);
+                        }
+                    } else {
+                        PayrollDeduction::where('payroll_record_id', $payroll->id)->where('deduction_type', 'tax')->delete();
+                    }
+
+                    // Auto-apply Insurance if present
+                    if ($profile->insurance_amount > 0) {
+                        $insDed = PayrollDeduction::where('payroll_record_id', $payroll->id)
+                            ->where('deduction_type', 'insurance')
+                            ->first();
+                        if ($insDed) {
+                            $insDed->update(['amount' => $profile->insurance_amount]);
+                        } else {
+                            PayrollDeduction::create([
+                                'payroll_record_id' => $payroll->id,
+                                'deduction_type' => 'insurance',
+                                'amount' => $profile->insurance_amount,
+                                'is_addition' => false,
+                                'reason' => "Automatic Insurance",
+                                'applied_by' => 'System',
+                                'applied_date' => now(),
+                            ]);
+                        }
+                    } else {
+                        PayrollDeduction::where('payroll_record_id', $payroll->id)->where('deduction_type', 'insurance')->delete();
+                    }
+
+                    // Update final net salary
+                    $additionsSum = $payroll->deductions()->where('is_addition', true)->sum('amount');
+                    $deductionsSum = $payroll->deductions()->where('is_addition', false)->sum('amount');
+                    $payroll->final_net_salary = $payroll->basic_salary + $payroll->allowances_amount + $payroll->bonuses_amount + $payroll->overtime_amount + $additionsSum - $deductionsSum;
+                    $payroll->save();
+
+                    $updatedCount++;
                 }
-
-                // Update final net salary
-                $additionsSum = $payroll->deductions()->where('is_addition', true)->sum('amount');
-                $deductionsSum = $payroll->deductions()->where('is_addition', false)->sum('amount');
-                $payroll->final_net_salary = $payroll->basic_salary + $payroll->allowances_amount + $payroll->overtime_amount + $additionsSum - $deductionsSum;
-                $payroll->save();
-
-                $updatedCount++;
             }
-        }
 
-        return $this->successResponse(['created_count' => $createdCount, 'updated_count' => $updatedCount], "Payroll initialized. Created: $createdCount, Updated: $updatedCount.");
+            return $this->successResponse(['created_count' => $createdCount, 'updated_count' => $updatedCount], "Payroll initialized. Created: $createdCount, Updated: $updatedCount.");
+        } catch (\Exception $e) {
+            return $this->errorResponse('Initialization failed: ' . $e->getMessage(), null, 500);
+        }
     }
 
     // GET /api/employee/payroll
