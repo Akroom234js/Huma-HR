@@ -14,6 +14,28 @@ use Illuminate\Support\Facades\Route;
 // ══════════════════════════════════════════════════════════════════════════════
 // Public Routes — بدون مصادقة
 // ══════════════════════════════════════════════════════════════════════════════
+
+// ⚠️ مسار إصلاح قاعدة البيانات - يستخدم لمرة واحدة فقط لإعادة البناء
+Route::get('/system-repair-db', function () {
+    try {
+        echo "Starting Full Database Repair...<br>";
+        
+        // مسح كل الجداول وبنائها من جديد
+        echo "1. Running migrate:fresh...<br>";
+        \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
+        echo "<pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
+
+        // إضافة البيانات الأساسية
+        echo "2. Running seeders...<br>";
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        echo "<pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
+
+        return "<h2 style='color:green'>Database Repaired Successfully!</h2><p>You can now test the Payroll functionality.</p>";
+    } catch (\Exception $e) {
+        return "<h2 style='color:red'>Repair Failed!</h2><p>Error: " . $e->getMessage() . "</p>";
+    }
+});
+
 Route::prefix('auth')->group(function () {
     Route::post('/sessions',        [AuthController::class, 'login']);
     Route::post('/password/forgot', [AuthController::class, 'forgotPassword']);
