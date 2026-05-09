@@ -10,50 +10,12 @@ use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\SalaryStructureController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 // ══════════════════════════════════════════════════════════════════════════════
 // Public Routes — بدون مصادقة
 // ══════════════════════════════════════════════════════════════════════════════
-
-// ⚠️ مسار إصلاح قاعدة البيانات - نسخة متوافقة مع TiDB/Cloud
-Route::get('/system-repair-db', function () {
-    try {
-        echo "Starting Aggressive Database Repair...<br>";
-        
-        // 1. تعطيل فحص القيود الخارجية
-        echo "Disabling foreign key checks...<br>";
-        DB::statement('SET FOREIGN_KEY_CHECKS = 0;');
-
-        // 2. جلب جميع الجداول ومسحها يدوياً
-        echo "Dropping all tables manually...<br>";
-        $tables = DB::select('SHOW TABLES');
-        $dbName = 'test'; // حسب رسالة الخطأ لديك
-        $tableKey = "Tables_in_{$dbName}";
-
-        foreach ($tables as $table) {
-            $tableName = $table->$tableKey;
-            echo "Dropping table: {$tableName}...<br>";
-            DB::statement("DROP TABLE IF EXISTS `{$tableName}`");
-        }
-
-        // 3. إعادة تفعيل فحص القيود
-        DB::statement('SET FOREIGN_KEY_CHECKS = 1;');
-
-        // 4. بناء الجداول من جديد
-        echo "Running migrations...<br>";
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        echo "<pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
-
-        // 5. إضافة البيانات الأساسية
-        echo "Running seeders...<br>";
-        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
-        echo "<pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
-
-        return "<h2 style='color:green'>Database Aggressively Repaired Successfully!</h2>";
-    } catch (\Exception $e) {
-        return "<h2 style='color:red'>Repair Failed!</h2><p>Error: " . $e->getMessage() . "</p>";
-    }
-});
 
 Route::prefix('auth')->group(function () {
     Route::post('/sessions',        [AuthController::class, 'login']);
