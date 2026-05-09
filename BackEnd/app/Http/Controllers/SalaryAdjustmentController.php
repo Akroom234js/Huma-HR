@@ -8,6 +8,7 @@ use App\Models\AdjustmentType;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Resources\SalaryAdjustmentResource;
 
 class SalaryAdjustmentController extends Controller
 {
@@ -48,7 +49,7 @@ class SalaryAdjustmentController extends Controller
         return $this->successResponse(
             data: [
                 'stats'       => $stats,
-                'adjustments' => \App\Http\Resources\SalaryAdjustmentResource::collection($adjustments->items()),
+                'adjustments' => SalaryAdjustmentResource::collection($adjustments->items()),
                 'pagination'  => [
                     'total'        => $adjustments->total(),
                     'per_page'     => $adjustments->perPage(),
@@ -90,7 +91,7 @@ class SalaryAdjustmentController extends Controller
         $adjustment->load(['employeeProfile.user', 'createdBy.profile', 'adjustmentType']);
 
         return $this->successResponse(
-            data: new \App\Http\Resources\SalaryAdjustmentResource($adjustment),
+            data: new SalaryAdjustmentResource($adjustment),
             message: 'Salary adjustment created successfully and employee salary updated.',
             statusCode: 201
         );
@@ -113,7 +114,7 @@ class SalaryAdjustmentController extends Controller
         }
 
         return $this->successResponse(
-            data: new \App\Http\Resources\SalaryAdjustmentResource($adjustment),
+            data: new SalaryAdjustmentResource($adjustment),
             message: 'Salary adjustment retrieved successfully.'
         );
     }
