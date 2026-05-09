@@ -8,7 +8,7 @@ use App\Models\AdjustmentType;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Resources\SalaryAdjustmentResource;
+// use App\Http\Resources\SalaryAdjustmentResource; // Removed to prevent production 500 errors
 
 class SalaryAdjustmentController extends Controller
 {
@@ -149,11 +149,9 @@ class SalaryAdjustmentController extends Controller
     // ── Fallback Method ───────────────────────────────────────────────────────
     private function formatAdjustment($adjustment)
     {
-        if (class_exists(SalaryAdjustmentResource::class)) {
-            return new SalaryAdjustmentResource($adjustment);
-        }
-
-        // Fallback in case Linux server case-sensitivity or caching prevents loading the Resource
+        // Removed SalaryAdjustmentResource check to ensure production stability regardless of file case issues
+        
+        // Fallback manual mapping that exactly matches the expected Resource structure
         $changePercent = $adjustment->current_salary > 0
             ? round((($adjustment->new_salary - $adjustment->current_salary) / $adjustment->current_salary) * 100, 1)
             : 0;
