@@ -3,6 +3,7 @@ import './Leaves.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 import { useTranslation } from "react-i18next";
+import Avatar from '../../../Shared/Avatar/Avatar';
 
 const Leaves = () => {
     const { t } = useTranslation("Dashboard/Leaves");
@@ -213,7 +214,7 @@ const Leaves = () => {
                             {leaveRequests.map((req) => (
                                 <tr key={req.id} onClick={() => openDetails(req)} className="clickable-row">
                                     <td className="emp-cell">
-                                        <img src={req.avatar} alt={req.name} className="emp-avatar" />
+                                        <Avatar user={{ full_name: req.name }} size="sm" />
                                         <span>{req.name}</span>
                                     </td>
                                     <td>{req.type}</td>
