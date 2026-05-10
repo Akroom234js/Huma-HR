@@ -16,6 +16,7 @@ import dagre from "dagre";
 import "@xyflow/react/dist/style.css";
 import "./OrganizationalChart.css";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
+import Avatar from "../../../Shared/Avatar/Avatar";
 
 /* ---------- Dagre Layout Engine ---------- */
 const dagreGraph = new dagre.graphlib.Graph();
@@ -61,7 +62,7 @@ const CardNode = ({ data }) => {
       <Handle type="target" position={Position.Top} className="occ-handle" />
       <div className="occ-card-content">
         <div className="occ-image-container">
-          <img src={data.image} alt={data.label} className="occ-card-image" />
+          <Avatar user={{ full_name: data.label }} size="md" className="occ-card-image" />
           <div className="occ-badge">{data.dept}</div>
         </div>
         <div className="occ-info">

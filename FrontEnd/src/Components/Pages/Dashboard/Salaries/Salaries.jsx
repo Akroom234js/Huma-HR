@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 import apiClient from '../../../../apiConfig';
+import Avatar from '../../../Shared/Avatar/Avatar';
 
 const Salaries = () => {
     const { t } = useTranslation('Dashboard/SalariesCompensation');
@@ -185,10 +186,9 @@ const Salaries = () => {
                                 return (
                                 <tr key={i}>
                                     <td className="name-emp-salary">
-                                        <img
-                                            src={row.user?.employee_profile?.profile_pic ? `/storage/${row.user.employee_profile.profile_pic}` : 'https://i.pravatar.cc/150'}
-                                            alt={row.user?.employee_profile?.full_name || row.user?.name}
-                                            className="er-avatar"
+                                        <Avatar 
+                                            user={row.user?.employee_profile || { full_name: row.user?.name, profile_pic: row.user?.employee_profile?.profile_pic }} 
+                                            size="sm" 
                                         />{' '}
                                         {row.user?.employee_profile?.full_name || row.user?.name}
                                     </td>
