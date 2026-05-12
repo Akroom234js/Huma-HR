@@ -52,19 +52,23 @@ class DeductionController extends Controller
             $monthInt = $monthMap[$monthName] ?? now()->month;
 
             // 1. Get or Create Payroll Record
-            $payroll = PayrollRecord::firstOrCreate(
-                [
+            $payroll = PayrollRecord::where('user_id', $request->user_id)
+                ->where('payroll_month', $monthInt)
+                ->where('payroll_year', $year)
+                ->first();
+
+            if (!$payroll) {
+                $profile = EmployeeProfile::where('user_id', $request->user_id)->first();
+                $payroll = PayrollRecord::create([
                     'user_id' => $request->user_id,
                     'payroll_month' => $monthInt,
                     'payroll_year' => $year,
-                ],
-                [
-                    'basic_salary' => EmployeeProfile::where('user_id', $request->user_id)->value('salary') ?? 0,
-                    'allowances_amount' => EmployeeProfile::where('user_id', $request->user_id)->value('allowances') ?? 0,
-                    'final_net_salary' => (EmployeeProfile::where('user_id', $request->user_id)->value('salary') ?? 0) + (EmployeeProfile::where('user_id', $request->user_id)->value('allowances') ?? 0),
+                    'basic_salary' => $profile->salary ?? 0,
+                    'allowances_amount' => $profile->allowances ?? 0,
+                    'final_net_salary' => ($profile->salary ?? 0) + ($profile->allowances ?? 0),
                     'status' => 'unpaid',
-                ]
-            );
+                ]);
+            }
 
             // 2. Create Deduction
             $deduction = PayrollDeduction::create([

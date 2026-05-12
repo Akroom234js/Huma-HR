@@ -44,9 +44,9 @@ const SalaryAdjustments = () => {
 
     // Filter Logic
     const filteredData = adjustmentsData.filter(row => {
-        const name = row.employee_profile?.full_name || "";
-        const title = row.employee_profile?.job_title || "";
-        const typeName = row.adjustment_type?.name || "";
+        const name = row.employee?.full_name || "";
+        const title = row.employee?.job_title || "";
+        const typeName = row.display_type || "";
 
         const matchesSearch = name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                               title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -164,11 +164,8 @@ const SalaryAdjustments = () => {
                                      <td colSpan="8" style={{textAlign: 'center', padding: '30px'}}>{t('Loading', 'Loading...')}</td>
                                  </tr>
                              ) : filteredData.length > 0 ? filteredData.map(row => {
-                                 const initials = row.employee_profile?.full_name?.split(' ').map(n => n[0]).join('').toUpperCase() || '??';
-                                 const changePercent = row.current_salary > 0 
-                                     ? (((row.new_salary - row.current_salary) / row.current_salary) * 100).toFixed(1)
-                                     : 0;
-                                 const typeLabel = row.custom_type_name || row.adjustment_type?.name || 'Adjustment';
+                                 const initials = row.employee?.full_name?.split(' ').map(n => n[0]).join('').toUpperCase() || '??';
+                                 const typeLabel = row.display_type || 'Adjustment';
 
                                  return (
                                  <tr key={row.id}>
@@ -178,25 +175,25 @@ const SalaryAdjustments = () => {
                                                  {initials}
                                              </div>
                                              <div className="adj-user-details">
-                                                 <span className="adj-user-name">{row.employee_profile?.full_name}</span>
-                                                 <span className="adj-user-role">{row.employee_profile?.job_title}</span>
+                                                 <span className="adj-user-name">{row.employee?.full_name}</span>
+                                                 <span className="adj-user-role">{row.employee?.job_title}</span>
                                              </div>
                                          </div>
                                      </td>
-                                     <td className="adj-old-salary">${row.current_salary}</td>
+                                     <td className="adj-old-salary">${row.old_salary}</td>
                                      <td className="adj-new-salary">${row.new_salary}</td>
                                      <td>
-                                         <span className={`adj-type-badge tag-${(row.adjustment_type?.name || 'other').toLowerCase().replace(/ /g, '-')}`}>
+                                         <span className={`adj-type-badge tag-${typeLabel.toLowerCase().replace(/ /g, '-')}`}>
                                              {typeLabel}
                                          </span>
                                      </td>
-                                     <td>{new Date(row.effective_date).toLocaleDateString()}</td>
-                                     <td>{row.creator?.profile?.full_name || 'System'}</td>
-                                     <td className={parseFloat(changePercent) >= 0 ? "adj-change-positive" : "adj-change-negative"}>
-                                         {parseFloat(changePercent) >= 0 ? '+' : ''}{changePercent}%
+                                     <td>{row.effective_date ? new Date(row.effective_date).toLocaleDateString() : '—'}</td>
+                                     <td>{row.created_by?.full_name || 'System'}</td>
+                                     <td className={parseFloat(row.change_percent) >= 0 ? "adj-change-positive" : "adj-change-negative"}>
+                                         {row.change_percent}
                                      </td>
                                      <td>
-                                         <button className="btn-view-reason" onClick={() => openModal(row.adjustment_reason)}>
+                                         <button className="btn-view-reason" onClick={() => openModal(row.reason)}>
                                              {t('View', 'عرض')}
                                          </button>
                                      </td>

@@ -14,6 +14,9 @@ class SalaryStructure extends Model
         'job_title',
         'min_salary',
         'max_salary',
+        'tax_percent',
+        'insurance_amount',
+        'allowances',
         'currency',
     ];
 }

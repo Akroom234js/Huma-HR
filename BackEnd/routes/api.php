@@ -10,10 +10,13 @@ use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\SalaryStructureController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 // ══════════════════════════════════════════════════════════════════════════════
 // Public Routes — بدون مصادقة
 // ══════════════════════════════════════════════════════════════════════════════
+
 Route::prefix('auth')->group(function () {
     Route::post('/sessions',        [AuthController::class, 'login']);
     Route::post('/password/forgot', [AuthController::class, 'forgotPassword']);
@@ -54,6 +57,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/salary-structures',        [SalaryStructureController::class, 'store']);
         Route::put('/salary-structures/{id}',    [SalaryStructureController::class, 'update']);
         Route::delete('/salary-structures/{id}', [SalaryStructureController::class, 'destroy']);
+
+        // Salary Adjustments
+        Route::post('/salary-adjustments', [SalaryAdjustmentController::class, 'store']);
     });
 
     // ── Employee Portal ──────────────────────────────────────────────
