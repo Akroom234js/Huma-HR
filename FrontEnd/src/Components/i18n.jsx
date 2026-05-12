@@ -14,7 +14,7 @@ i18n
 		},
 
 		ns: [
-			'ScheduleInterview',
+			'Sidebar/Sidebar',
 			'EmployeeMovement/EmployeeMovement',
 			'SalaryManagement/SalaryStructure',
 			'Dashboard/EmployeeReports',
@@ -22,7 +22,7 @@ i18n
 			'Dashboard/Leaves'
 		], // أسماء الملفات
 
-		defaultNS: "Home",
+		defaultNS: "Sidebar/Sidebar",
 		interpolation: { escapeValue: false },
 	});
 

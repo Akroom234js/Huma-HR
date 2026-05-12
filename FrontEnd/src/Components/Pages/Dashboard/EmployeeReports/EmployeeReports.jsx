@@ -3,6 +3,7 @@ import './EmployeeReports.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
 import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
+import Avatar from '../../../Shared/Avatar/Avatar';
 
 const EmployeeReports = () => {
     const { t } = useTranslation('Dashboard/EmployeeReports');
@@ -132,7 +133,7 @@ const EmployeeReports = () => {
                                 <tr key={idx}>
                                     <td>
                                         <div className="er-employee-cell">
-                                            <img src={emp.img} alt={emp.name} className="er-avatar" />
+                                            <Avatar user={{ full_name: emp.name }} size="sm" />
                                             <span className="er-employee-name">{emp.name}</span>
                                         </div>
                                     </td>

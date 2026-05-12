@@ -17,6 +17,41 @@ use Illuminate\Support\Facades\Artisan;
 // Public Routes — بدون مصادقة
 // ══════════════════════════════════════════════════════════════════════════════
 
+// ⚠️ مسار إصلاح قاعدة البيانات - يستخدم لمرة واحدة فقط لإعادة البناء في بيئة الإنتاج
+Route::get('/system-repair-db', function () {
+    try {
+        echo "Starting Database Sync...<br>";
+        
+        echo "Disabling foreign key checks...<br>";
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0;');
+
+        echo "Dropping all tables manually...<br>";
+        $tables = DB::select('SHOW TABLES');
+        $dbName = 'test'; // Ensure this matches their DB
+        $tableKey = "Tables_in_{$dbName}";
+
+        foreach ($tables as $table) {
+            if (isset($table->$tableKey)) {
+                $tableName = $table->$tableKey;
+                echo "Dropping table: {$tableName}...<br>";
+                DB::statement("DROP TABLE IF EXISTS `{$tableName}`");
+            }
+        }
+
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1;');
+
+        echo "Running migrations and seeders...<br>";
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        echo "<pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
+        echo "<pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
+
+        return "<h2 style='color:green'>Database Synced Successfully!</h2>";
+    } catch (\Exception $e) {
+        return "<h2 style='color:red'>Sync Failed!</h2><p>Error: " . $e->getMessage() . "</p>";
+    }
+});
+
 Route::prefix('auth')->group(function () {
     Route::post('/sessions',        [AuthController::class, 'login']);
     Route::post('/password/forgot', [AuthController::class, 'forgotPassword']);

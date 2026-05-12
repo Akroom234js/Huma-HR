@@ -86,7 +86,10 @@ const Sidebar = () => {
                         <div className="sidebar-header">
                             <Link to="/">
                                 <img src={logo} alt="Huma HR Logo" className="sidebar-logo" />
-                                <h1 className="sidebar-title">Huma</h1>
+                                <h1 className="sidebar-title">
+                                    <span className="brand-h">H</span>
+                                    <span className="brand-uma">uma</span>
+                                </h1>
                             </Link>
                         </div>
 
