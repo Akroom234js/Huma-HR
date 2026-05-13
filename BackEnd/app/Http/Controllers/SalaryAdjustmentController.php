@@ -8,6 +8,7 @@ use App\Models\AdjustmentType;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+// use App\Http\Resources\SalaryAdjustmentResource; // Removed to prevent production 500 errors
 
 class SalaryAdjustmentController extends Controller
 {
@@ -48,7 +49,7 @@ class SalaryAdjustmentController extends Controller
         return $this->successResponse(
             data: [
                 'stats'       => $stats,
-                'adjustments' => \App\Http\Resources\SalaryAdjustmentResource::collection($adjustments->items()),
+                'adjustments' => collect($adjustments->items())->map(fn($adj) => $this->formatAdjustment($adj)),
                 'pagination'  => [
                     'total'        => $adjustments->total(),
                     'per_page'     => $adjustments->perPage(),
@@ -90,7 +91,7 @@ class SalaryAdjustmentController extends Controller
         $adjustment->load(['employeeProfile.user', 'createdBy.profile', 'adjustmentType']);
 
         return $this->successResponse(
-            data: new \App\Http\Resources\SalaryAdjustmentResource($adjustment),
+            data: $this->formatAdjustment($adjustment),
             message: 'Salary adjustment created successfully and employee salary updated.',
             statusCode: 201
         );
@@ -113,7 +114,7 @@ class SalaryAdjustmentController extends Controller
         }
 
         return $this->successResponse(
-            data: new \App\Http\Resources\SalaryAdjustmentResource($adjustment),
+            data: $this->formatAdjustment($adjustment),
             message: 'Salary adjustment retrieved successfully.'
         );
     }
@@ -142,6 +143,39 @@ class SalaryAdjustmentController extends Controller
             'total_adjustments_ytd' => $totalThisYear,
             'vs_last_year'          => ($vsLastYear >= 0 ? '+' : '') . $vsLastYear . '%',
             'avg_adjustment_percent'=> round($avgIncrease ?? 0, 1) . '%',
+        ];
+    }
+
+    // ── Fallback Method ───────────────────────────────────────────────────────
+    private function formatAdjustment($adjustment)
+    {
+        // Removed SalaryAdjustmentResource check to ensure production stability regardless of file case issues
+        
+        // Fallback manual mapping that exactly matches the expected Resource structure
+        $changePercent = $adjustment->current_salary > 0
+            ? round((($adjustment->new_salary - $adjustment->current_salary) / $adjustment->current_salary) * 100, 1)
+            : 0;
+
+        return [
+            'id'             => $adjustment->id,
+            'employee'       => $adjustment->relationLoaded('employeeProfile') && $adjustment->employeeProfile ? [
+                'id'          => $adjustment->employeeProfile->id,
+                'full_name'   => $adjustment->employeeProfile->full_name,
+                'employee_id' => $adjustment->employeeProfile->employee_id,
+                'job_title'   => $adjustment->employeeProfile->job_title,
+                'profile_pic' => $adjustment->employeeProfile->profile_pic_url,
+            ] : null,
+            'old_salary'     => (float) $adjustment->current_salary,
+            'new_salary'     => (float) $adjustment->new_salary,
+            'display_type'   => $adjustment->display_type,
+            'change_percent' => ($changePercent > 0 ? '+' : '') . $changePercent . '%',
+            'effective_date' => $adjustment->effective_date?->format('Y-m-d'),
+            'reason'         => $adjustment->adjustment_reason,
+            'created_by'     => $adjustment->relationLoaded('createdBy') && $adjustment->createdBy ? [
+                'id'        => $adjustment->createdBy->id,
+                'full_name' => $adjustment->createdBy->profile?->full_name ?? $adjustment->createdBy->email,
+            ] : null,
+            'created_at'     => $adjustment->created_at?->format('Y-m-d H:i'),
         ];
     }
 }

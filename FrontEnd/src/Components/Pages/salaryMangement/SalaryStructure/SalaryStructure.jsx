@@ -3,6 +3,7 @@ import './SalaryStructure.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
 import apiClient from '../../../../apiConfig';
+import Avatar from '../../../Shared/Avatar/Avatar';
 
 const SalaryStructure = () => {
     const { t } = useTranslation('SalaryManagement/SalaryStructure');
@@ -215,11 +216,7 @@ const SalaryStructure = () => {
                                     <tr key={idx}>
                                         <td>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                <img
-                                                    src={emp.profile_pic ? `/storage/${emp.profile_pic}` : 'https://i.pravatar.cc/150'}
-                                                    alt=""
-                                                    style={{ width: '32px', height: '32px', borderRadius: '50%' }}
-                                                />
+                                                <Avatar user={emp} size="sm" />
                                                 <span>{emp.full_name}</span>
                                             </div>
                                         </td>
