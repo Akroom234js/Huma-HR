@@ -9,6 +9,8 @@ use App\Http\Controllers\EmployeeRequestController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\SalaryStructureController;
+use App\Http\Controllers\ApplicationController;  // ✅ جديد
+use App\Http\Controllers\JobPostingController;   // ✅ جديد
 use Illuminate\Support\Facades\Route;
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -19,6 +21,12 @@ Route::prefix('auth')->group(function () {
     Route::post('/password/forgot', [AuthController::class, 'forgotPassword']);
     Route::put('/password/reset',   [AuthController::class, 'resetPassword']);
 });
+
+// ✅ ATS Public Routes — المتقدمون الخارجيون
+// بدون Auth — أي شخص يقدر يشوف الوظائف ويتقدم
+Route::get('/job-postings',         [JobPostingController::class, 'index']);   // قائمة الوظائف المفتوحة
+Route::get('/job-postings/{id}',    [JobPostingController::class, 'show']);    // تفاصيل وظيفة
+Route::post('/job-postings/{id}/apply', [ApplicationController::class, 'store']); // تقديم طلب
 
 // ══════════════════════════════════════════════════════════════════════════════
 // Protected Routes — تحتاج توكن
@@ -32,7 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:hr')->group(function () {
 
         // Employees
-        Route::post('/auth/employees',   [AuthController::class,   'register']);
+        Route::post('/auth/employees',   [AuthController::class,    'register']);
         Route::put('/employees/{id}',    [EmployeeController::class, 'update']);
         Route::delete('/employees/{id}', [EmployeeController::class, 'destroy']);
 
@@ -55,12 +63,25 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/salary-structures/{id}',    [SalaryStructureController::class, 'update']);
         Route::delete('/salary-structures/{id}', [SalaryStructureController::class, 'destroy']);
 
-        // Salary Adjustments
-        Route::post('/salary-adjustments', [SalaryAdjustmentController::class, 'store']);
-    });
+        // ✅ ATS — HR فقط: إدارة الوظائف والطلبات
+        Route::post('/job-postings',              [JobPostingController::class,   'store']);
+        Route::put('/job-postings/{id}',          [JobPostingController::class,   'update']);
+        Route::patch('/job-postings/{id}/publish',[JobPostingController::class,   'publish']);
+        Route::patch('/job-postings/{id}/close',  [JobPostingController::class,   'close']);
+        Route::delete('/job-postings/{id}',       [JobPostingController::class,   'destroy']);
 
-    // ── Employee Portal ──────────────────────────────────────────────
-    Route::get('/employee/payroll', [PayrollController::class, 'employeeHistory']);
+        // ✅ ATS — تغيير حالة الطلبات (Pipeline Actions)
+        Route::patch('/applications/{id}/status',    [ApplicationController::class, 'updateStatus']);
+        Route::patch('/applications/{id}/review',    [ApplicationController::class, 'review']);
+        Route::patch('/applications/{id}/shortlist', [ApplicationController::class, 'shortlist']);
+        Route::patch('/applications/{id}/interview', [ApplicationController::class, 'interview']);
+        Route::patch('/applications/{id}/offer',     [ApplicationController::class, 'offer']);
+        Route::patch('/applications/{id}/hire',      [ApplicationController::class, 'hire']);
+        Route::patch('/applications/{id}/reject',    [ApplicationController::class, 'reject']);
+        Route::patch('/applications/{id}/withdraw',  [ApplicationController::class, 'withdraw']);
+        Route::delete('/applications/{id}',          [ApplicationController::class, 'destroy']);
+        Route::get('/applications/{id}/resume',      [ApplicationController::class, 'downloadResume']);
+    });
 
     // ── HR + Boss — عرض فقط ──────────────────────────────────────────────
     Route::middleware('role:hr|manager')->group(function () {
@@ -71,9 +92,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/employees/managers',            [EmployeeController::class,         'managers']);
         Route::get('/employee-movements/types',      [EmployeeMovementController::class, 'types']);
         Route::get('/salary-adjustments/types',      [SalaryAdjustmentController::class, 'types']);
-        Route::get('/departments/stats',             [DepartmentController::class,        'stats']);
-        Route::get('/departments',                   [DepartmentController::class,        'index']);
-        Route::get('/departments/{id}',              [DepartmentController::class,        'show']);
+        Route::get('/departments/stats',             [DepartmentController::class,       'stats']);
+        Route::get('/departments',                   [DepartmentController::class,       'index']);
+        Route::get('/departments/{id}',              [DepartmentController::class,       'show']);
 
         // Employees
         Route::get('/employees',      [EmployeeController::class, 'index']);
@@ -88,9 +109,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/salary-adjustments/{id}', [SalaryAdjustmentController::class, 'show']);
 
         // Salary Structures
-        Route::get('/salary-structures/employees', [SalaryStructureController::class, 'employees']);
-        Route::patch('/salary-structures/employees/{id}', [SalaryStructureController::class, 'updateEmployeeSalary']);
-        Route::get('/salary-structures',      [SalaryStructureController::class, 'index']);
+        Route::get('/salary-structures', [SalaryStructureController::class, 'index']);
 
         // Positions
         Route::get('/positions',      [PositionController::class, 'index']);
@@ -101,28 +120,20 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/requests/{id}/status', [EmployeeRequestController::class, 'updateStatus']);
 
         // Payroll
-        Route::get('/payroll/overview', [PayrollController::class, 'overview']);
-        Route::post('/payroll/initialize', [PayrollController::class, 'initialize']);
-        Route::get('/payroll',          [PayrollController::class, 'index']);
-        Route::patch('/payroll/{id}',   [PayrollController::class, 'update']);
-        Route::delete('/payroll/{id}',  [PayrollController::class, 'destroy']);
+        Route::get('/payroll/overview',   [PayrollController::class, 'overview']);
+        Route::get('/payroll',            [PayrollController::class, 'index']);
         Route::patch('/payroll/{id}/pay', [PayrollController::class, 'pay']);
-        Route::patch('/payroll/{id}/revert', [PayrollController::class, 'revert']);
-        Route::post('/payroll/pay-all',  [PayrollController::class, 'payAll']);
+        Route::post('/payroll/pay-all',   [PayrollController::class, 'payAll']);
 
-        // Deductions
-        Route::get('/deductions', [App\Http\Controllers\DeductionController::class, 'index']);
-        Route::post('/deductions', [App\Http\Controllers\DeductionController::class, 'store']);
-        Route::patch('/deductions/{id}', [App\Http\Controllers\DeductionController::class, 'update']);
-        Route::delete('/deductions/{id}', [App\Http\Controllers\DeductionController::class, 'destroy']);
-
-        // Bonus Rules
-        Route::get('/bonus-rules', [App\Http\Controllers\BonusRuleController::class, 'index']);
-        Route::post('/bonus-rules', [App\Http\Controllers\BonusRuleController::class, 'store']);
-        Route::patch('/bonus-rules/{id}', [App\Http\Controllers\BonusRuleController::class, 'update']);
-        Route::delete('/bonus-rules/{id}', [App\Http\Controllers\BonusRuleController::class, 'destroy']);
-        Route::post('/bonus-rules/apply', [App\Http\Controllers\BonusRuleController::class, 'apply']);
+        // ✅ ATS — HR + Manager: عرض فقط
+        // ⚠️ Static routes أولاً قبل {id}
+        Route::get('/applications/stats',                    [ApplicationController::class, 'stats']); // ← static
+        Route::get('/applications',                          [ApplicationController::class, 'index']);
+        Route::get('/applications/{id}',                     [ApplicationController::class, 'show']);
+        Route::get('/applications/{id}/allowed-transitions', [ApplicationController::class, 'allowedTransitions']);
+        Route::get('/job-postings/{id}/stats',               [ApplicationController::class, 'stats']);
     });
+
     // ── Department Manager — قسمه وفريقه فقط ────────────────────────────
     Route::middleware('role:department_manager')->group(function () {
         Route::get('/my-department',           [DepartmentController::class, 'myDepartment']);
