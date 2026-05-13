@@ -3,6 +3,7 @@ import './Attendance.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 import { useTranslation } from 'react-i18next';
+import Avatar from '../../../Shared/Avatar/Avatar';
 
 /* ─── Static attendance data ─── */
 const attendanceData = [
@@ -307,7 +308,7 @@ const Attendance = () => {
                                 <tr key={i}>
                                     <td>
                                         <div className="at-employee-cell">
-                                            <img src={row.img} alt={row.name} className="at-avatar" />
+                                            <Avatar user={{ full_name: row.name }} size="sm" />
                                             <span className="at-employee-name">{row.name}</span>
                                         </div>
                                     </td>

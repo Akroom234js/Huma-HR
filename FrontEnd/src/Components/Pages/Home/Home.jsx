@@ -6,6 +6,8 @@ import logo from "../../../assets/logo.png";
 import ff from "../../../assets/dd.jpg";
 import ThemeToggle from "../../ThemeToggle/ThemeToggle";
 import apiClient from "../../../apiConfig";
+import Notification from "../../Notification/Notification";
+import Avatar from "../../Shared/Avatar/Avatar";
 
 
 export default function Home() {
@@ -18,18 +20,24 @@ export default function Home() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [notification, setNotification] = useState(null); // { message, type }
+  const [showDemo, setShowDemo] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowDemo(false);
+    }, 6000); // يظهر لمدة 6 ثوانٍ ثم يختفي
+    return () => clearTimeout(timer);
+  }, []);
+
+  const showNotification = (message, type = 'info') => {
+    setNotification({ message, type });
+  };
 
   const userStr = localStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : null;
 
-  const getInitials = (name) => {
-    if (!name) return '??';
-    const words = name.split(' ').filter(w => w.length > 0);
-    if (words.length >= 2) {
-      return (words[0][0] + words[1][0]).toUpperCase();
-    }
-    return words[0].substring(0, 2).toUpperCase();
-  };
+
 
 
 
@@ -46,17 +54,19 @@ export default function Home() {
       const { data } = response.data;
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-      alert("Login successful!");
-      window.location.href = "/employees/all";
+      showNotification("Login successful!", "success");
+      setTimeout(() => {
+        window.location.href = "/employees/all";
+      }, 1000);
     } catch (err) {
       console.error("Login error:", err);
       if (err.response) {
         setErrors(err.response.data.errors || { message: err.response.data.message });
         if (err.response.data.message && !err.response.data.errors) {
-          alert(err.response.data.message);
+          showNotification(err.response.data.message, "error");
         }
       } else {
-        alert("Failed to connect to server.");
+        showNotification("Failed to connect to server.", "error");
       }
     } finally {
       setLoading(false);
@@ -67,21 +77,21 @@ export default function Home() {
     e.preventDefault();
     setErrors({});
     if (!email) {
-      alert("Please enter your email");
+      showNotification("Please enter your email", "warning");
       return;
     }
     setLoading(true);
     try {
       await apiClient.post('/auth/password/forgot', { email });
-      alert("Verification code sent to your email.");
+      showNotification("Verification code sent to your email.", "success");
       setStep("verify");
     } catch (err) {
       console.error("Forgot password error:", err);
       if (err.response) {
         setErrors(err.response.data.errors || { message: err.response.data.message });
-        alert(err.response.data.message || "Failed to send reset code.");
+        showNotification(err.response.data.message || "Failed to send reset code.", "error");
       } else {
-        alert("Failed to connect to server.");
+        showNotification("Failed to connect to server.", "error");
       }
     } finally {
       setLoading(false);
@@ -91,7 +101,7 @@ export default function Home() {
   const handleVerifyCode = async (e) => {
     e.preventDefault();
     if (!verificationCode) {
-      alert("Please enter the verification code");
+      showNotification("Please enter the verification code", "warning");
       return;
     }
     setStep("reset");
@@ -101,7 +111,7 @@ export default function Home() {
     e.preventDefault();
     setErrors({});
     if (newPassword !== confirmPassword) {
-      alert("Passwords do not match");
+      showNotification("Passwords do not match", "error");
       return;
     }
     setLoading(true);
@@ -113,7 +123,7 @@ export default function Home() {
         password_confirmation: confirmPassword
       });
 
-      alert("Password reset successfully!");
+      showNotification("Password reset successfully!", "success");
       setStep("login");
       setNewPassword("");
       setConfirmPassword("");
@@ -122,9 +132,9 @@ export default function Home() {
       console.error("Reset password error:", err);
       if (err.response) {
         setErrors(err.response.data.errors || { message: err.response.data.message });
-        alert(err.response.data.message || "Reset failed.");
+        showNotification(err.response.data.message || "Reset failed.", "error");
       } else {
-        alert("Failed to connect to server.");
+        showNotification("Failed to connect to server.", "error");
       }
     } finally {
       setLoading(false);
@@ -135,13 +145,29 @@ export default function Home() {
 
   return (
     <>
+      {loading && (
+        <div className="loading-overlay">
+          <div className="loader-content">
+            <div className="loader-spinner"></div>
+            <p>Processing, please wait...</p>
+          </div>
+        </div>
+      )}
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
       <div className="container1">
         <div className="navbar">
           <div className="logo-con">
             <Link to="/">
               <img src={logo} alt="Huma HR Logo" className="sidebar-logo" />
-              <h1 className="sidebar-title" style={{ display: "inline-block" }}>
-                Huma
+              <h1 className="sidebar-title">
+                <span className="brand-h">H</span>
+                <span className="brand-uma">uma</span>
               </h1>
             </Link>
           </div>
@@ -153,24 +179,25 @@ export default function Home() {
               <i className={`fa-solid ${isMobileMenuOpen ? 'fa-xmark' : 'fa-bars'}`}></i>
             </button>
             <div className={`nav-links ${isMobileMenuOpen ? 'open' : ''}`}>
-              <NavLink to="/" end>Home</NavLink>
-              <NavLink to="/jops">Jobs</NavLink>
-              <NavLink to="/dashboard/general">Go to website</NavLink>
+              <div className="nav-item-wrapper">
+                <NavLink to="/" end>Home</NavLink>
+              </div>
+              <div className="nav-item-wrapper">
+                <NavLink to="/jops">Jobs</NavLink>
+              </div>
+
+              <div className="nav-item-wrapper">
+                <NavLink to="/dashboard/general">Go to website</NavLink>
+                {showDemo && (
+                  <div className="tour-cloud bottom">
+                    <span className="material-icons">directions</span>
+                    <p>سيتم توجيهك تلقائياً للوحة التحكم المناسبة لدورك (موظف، HR، أو مدير)</p>
+                  </div>
+                )}
+              </div>
               <ThemeToggle />
               <div className="nav-profile">
-                {user ? (
-                  <div className="user-avatar-container small">
-                    {user.profile_picture ? (
-                      <img src={`http://localhost:8000/storage/${user.profile_picture}`} alt={user.full_name} className="user-avatar" title={user.full_name} />
-                    ) : (
-                      <div className="user-avatar-initials" title={user.full_name || user.email}>
-                        {getInitials(user.full_name || user.email)}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="nav-profile-placeholder"> </div>
-                )}
+                {user && <Avatar user={user} size="sm" />}
               </div>
 
             </div>
@@ -186,7 +213,8 @@ export default function Home() {
           </p>
         </div>
       </div >
-      <div className="container2">
+      <div className="main-content-sections">
+        <div className="container2">
         <div className="poop1">
           <span style={{ color: "var(--primary-color)" }}>.</span>
           <div className="poop2">
@@ -238,12 +266,14 @@ export default function Home() {
                       </span>
                       <Link onClick={() => setStep("forgot")}>forget Password ?</Link>
                     </div>
-                    <button className="ptn-login" onClick={handleLogin} disabled={loading}>
-                      {loading ? "Signing In..." : "Sign In to Dashboard"}
-                    </button>
+                    <div className="login-button-wrapper">
+                      <button className="ptn-login" onClick={handleLogin} disabled={loading}>
+                        {loading ? "Processing..." : "Sign In to Dashboard"}
+                      </button>
+                    </div>
 
-                    <button 
-                      className="ptn-login" 
+                    <button
+                      className="ptn-login"
                       style={{ marginTop: '10px', backgroundColor: 'var(--text-secondary)', opacity: 0.8 }}
                       onClick={(e) => {
                         e.preventDefault();
@@ -271,7 +301,7 @@ export default function Home() {
                     />
                     {errors.email && <span className="error-text">{errors.email[0]}</span>}
                     <button className="ptn-login" onClick={handleForgotPassword} disabled={loading}>
-                      {loading ? "Sending..." : "Send Reset Link"}
+                      {loading ? "Processing..." : "Send Reset Link"}
                     </button>
 
                     <button className="ptn-back-to-login" onClick={() => setStep("login")}>
@@ -323,7 +353,7 @@ export default function Home() {
                     />
                     {errors.password && <span className="error-text">{errors.password[0]}</span>}
                     <button className="ptn-login" onClick={handleResetPassword} disabled={loading}>
-                      {loading ? "Updating..." : "Save and Update"}
+                      {loading ? "Processing..." : "Save and Update"}
                     </button>
 
                     <button className="ptn-back-to-login" onClick={() => setStep("verify")}>
@@ -496,6 +526,7 @@ export default function Home() {
               HR Director, TechFlow
             </p>
           </div>
+        </div>
         </div>
       </div>
       <Footer />

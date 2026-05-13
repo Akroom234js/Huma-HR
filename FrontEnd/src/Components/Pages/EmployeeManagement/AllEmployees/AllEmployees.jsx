@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useState, useEffect, useCallback } from "react";
 import AddEmployeeModal from "../Add New Employee/AddEmployeeModal";
 import apiClient from "../../../../apiConfig";
+import Avatar from "../../../Shared/Avatar/Avatar";
 
 const AllEmployees = () => {
   const { t } = useTranslation("Sidebar/Sidebar");
@@ -256,9 +257,7 @@ const AllEmployees = () => {
             {employees.map((e) => (
               <tr key={e.id}>
                 <td className="emp-name">
-                  <div className="avatar">
-                    {e.profile_pic && <img src={e.profile_pic} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />}
-                  </div>
+                  <Avatar user={e} size="sm" className="avatar" />
                   {e.full_name}
                 </td>
                 <td>{e.employee_id}</td>

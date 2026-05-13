@@ -13,8 +13,9 @@ export default function Jops() {
           <div className="logo-con">
             <Link to="/">
               <img src={logo} alt="Huma HR Logo" className="sidebar-logo" />
-              <h1 className="sidebar-title" style={{ display: "inline-block" }}>
-                Huma
+              <h1 className="sidebar-title">
+                <span className="brand-h">H</span>
+                <span className="brand-uma">uma</span>
               </h1>
             </Link>
           </div>
@@ -43,7 +44,8 @@ export default function Jops() {
           </p>
         </div>
       </div >
-      <div className="container2">
+      <div className="main-content-sections">
+        <div className="container2">
         <div className="poop_jops">
           <div className="con_up">
             <div>
@@ -152,6 +154,7 @@ export default function Jops() {
             <h3>Interview</h3>
             <p>If your profile matches, we will schedule a call to discuss your career.</p>
           </div>
+        </div>
         </div>
       </div>
 
