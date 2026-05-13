@@ -1,7 +1,14 @@
-public function rules(): array
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;  // ← هذا مهم جداً
+class StoreJobPostingRequest extends FormRequest
 {
-    return [
-        'title'       => 'required|string|max:255',
+    public function rules(): array
+    {
+        return [
+            'title'       => 'required|string|max:255',
 
         // ✅ min:150 — يجبر الـ HR يكتب وصف مفصّل فيه Skills
         // بدون وصف مفصّل، الـ AI ما رح يقدر يقيّم صح
@@ -37,4 +44,5 @@ public function messages(): array
         'salary_max.gte'           => 'الحد الأعلى للراتب يجب أن يكون أكبر من الحد الأدنى.',
         'application_deadline.after' => 'موعد التقديم يجب أن يكون بعد اليوم.',
     ];
+}
 }
