@@ -9,6 +9,7 @@ use App\Http\Controllers\EmployeeRequestController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\SalaryStructureController;
+use App\Http\Controllers\OrgChartController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
@@ -133,6 +134,15 @@ Route::middleware('auth:sanctum')->group(function () {
         // Positions
         Route::get('/positions',      [PositionController::class, 'index']);
         Route::get('/positions/{id}', [PositionController::class, 'show']);
+
+        // ── Org Chart ─────────────────────────────────────────────────────
+        Route::get('/org-chart', [OrgChartController::class, 'index']);
+        Route::get('/org-chart/department/{id}', [OrgChartController::class, 'byDepartment']);
+        Route::post('/positions/org', [OrgChartController::class, 'store']);
+        Route::put('/positions/{position}/org', [OrgChartController::class, 'update']);
+        Route::patch('/positions/{position}/move', [OrgChartController::class, 'move']);
+        Route::patch('/positions/{position}/assign', [OrgChartController::class, 'assign']);
+        Route::patch('/positions/{position}/unassign', [OrgChartController::class, 'unassign']);
 
         // Requests
         Route::get('/requests',               [EmployeeRequestController::class, 'index']);

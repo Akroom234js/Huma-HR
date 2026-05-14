@@ -1,7 +1,5 @@
-
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState, useMemo } from "react";
 import {
-
   ReactFlow,
   Background,
   Controls,
@@ -12,171 +10,236 @@ import {
   Position,
 } from "@xyflow/react";
 import dagre from "dagre";
-
 import "@xyflow/react/dist/style.css";
 import "./OrganizationalChart.css";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
 import Avatar from "../../../Shared/Avatar/Avatar";
+import apiClient from "../../../../apiConfig";
 
-/* ---------- Dagre Layout Engine ---------- */
-const dagreGraph = new dagre.graphlib.Graph();
-dagreGraph.setDefaultEdgeLabel(() => ({}));
-
-const nodeWidth = 220;
-const nodeHeight = 120;
+/* ── Dagre Layout Engine ─────────────────────────────────────────────── */
+const nodeWidth = 230;
+const nodeHeight = 110;
 
 const getLayoutedElements = (nodes, edges, direction = "TB") => {
-  const isHorizontal = direction === "LR";
-  dagreGraph.setGraph({ rankdir: direction });
+  const dagreGraph = new dagre.graphlib.Graph();
+  dagreGraph.setDefaultEdgeLabel(() => ({}));
+  dagreGraph.setGraph({ rankdir: direction, ranksep: 90, nodesep: 50 });
 
-  nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
-  });
-
-  edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target);
-  });
-
+  nodes.forEach((node) =>
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight })
+  );
+  edges.forEach((edge) => dagreGraph.setEdge(edge.source, edge.target));
   dagre.layout(dagreGraph);
 
-  const newNodes = nodes.map((node) => {
-    const nodeWithPosition = dagreGraph.node(node.id);
-    return {
-      ...node,
-      targetPosition: isHorizontal ? Position.Left : Position.Top,
-      sourcePosition: isHorizontal ? Position.Right : Position.Bottom,
-      position: {
-        x: nodeWithPosition.x - nodeWidth / 2,
-        y: nodeWithPosition.y - nodeHeight / 2,
-      },
-    };
-  });
-
-  return { nodes: newNodes, edges };
+  const isHorizontal = direction === "LR";
+  return {
+    nodes: nodes.map((node) => {
+      const pos = dagreGraph.node(node.id);
+      return {
+        ...node,
+        targetPosition: isHorizontal ? Position.Left : Position.Top,
+        sourcePosition: isHorizontal ? Position.Right : Position.Bottom,
+        position: {
+          x: pos.x - nodeWidth / 2,
+          y: pos.y - nodeHeight / 2,
+        },
+      };
+    }),
+    edges,
+  };
 };
 
-/* ---------- Custom Node ---------- */
-const CardNode = ({ data }) => {
+/* ── Custom Node Component ───────────────────────────────────────────── */
+const OrgNode = ({ data }) => {
   return (
-    <div className="occ-card-node">
+    <div
+      className={[
+        "occ-card-node",
+        data.isVacant ? "occ-vacant" : "",
+        data.isManagerial ? "occ-managerial" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
       <Handle type="target" position={Position.Top} className="occ-handle" />
+
+      <div className="occ-dept-badge">{data.department}</div>
+
       <div className="occ-card-content">
-        <div className="occ-image-container">
-          <Avatar user={{ full_name: data.label }} size="md" className="occ-card-image" />
-          <div className="occ-badge">{data.dept}</div>
-        </div>
-        <div className="occ-info">
-          <div className="occ-card-name">{data.label}</div>
-          <div className="occ-card-title">{data.title}</div>
-        </div>
+        {data.employee ? (
+          <>
+            <Avatar
+              user={{
+                full_name: data.employee.name,
+                profile_pic: data.employee.avatar,
+              }}
+              size="sm"
+            />
+            <div className="occ-info">
+              <span className="occ-card-name">{data.employee.name}</span>
+              <span className="occ-card-title">{data.title}</span>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="occ-vacant-icon">
+              <span className="material-symbols-outlined">person_add</span>
+            </div>
+            <div className="occ-info">
+              <span className="occ-card-name occ-vacant-label">Vacant</span>
+              <span className="occ-card-title">{data.title}</span>
+            </div>
+          </>
+        )}
       </div>
+
       <Handle type="source" position={Position.Bottom} className="occ-handle" />
     </div>
   );
 };
 
-const nodeTypes = {
-  card: CardNode,
-};
+const nodeTypes = { orgNode: OrgNode };
 
-/* ---------- Initial Data ---------- */
-// Hierarchy: CEO -> Head of Eng -> Team Leads -> Devs
-const initialNodes = [
-  {
-    id: "1",
-    type: "card",
-    data: { label: "Lana Steiner", title: "CEO", dept: "Management", image: "https://i.pravatar.cc/150?img=32" },
-    position: { x: 0, y: 0 },
-  },
-  {
-    id: "2",
-    type: "card",
-    data: { label: "Candice Wu", title: "Head of Engineering", dept: "Engineering", image: "https://i.pravatar.cc/150?img=1" },
-    position: { x: 0, y: 0 },
-  },
-  {
-    id: "3",
-    type: "card",
-    data: { label: "Phoenix Baker", title: "Head of Design", dept: "Design", image: "https://i.pravatar.cc/150?img=5" },
-    position: { x: 0, y: 0 },
-  },
-  {
-    id: "4",
-    type: "card",
-    data: { label: "James Gardner", title: "Frontend Lead", dept: "Engineering", image: "https://i.pravatar.cc/150?img=8" },
-    position: { x: 0, y: 0 },
-  },
-  {
-    id: "5",
-    type: "card",
-    data: { label: "Aria Patel", title: "Backend Lead", dept: "Engineering", image: "https://i.pravatar.cc/150?img=9" },
-    position: { x: 0, y: 0 },
-  },
-  {
-    id: "6",
-    type: "card",
-    data: { label: "Leo Rivera", title: "DevOps Lead", dept: "Engineering", image: "https://i.pravatar.cc/150?img=11" },
-    position: { x: 0, y: 0 },
-  },
-  {
-    id: "7",
-    type: "card",
-    data: { label: "Ava Garcia", title: "Sr. Frontend Dev", dept: "Engineering", image: "https://i.pravatar.cc/150?img=12" },
-    position: { x: 0, y: 0 },
-  },
-  {
-    id: "8",
-    type: "card",
-    data: { label: "Lucas Martinez", title: "Sr. Backend Dev", dept: "Engineering", image: "https://i.pravatar.cc/150?img=13" },
-    position: { x: 0, y: 0 },
-  },
-];
-
-const initialEdges = [
-  { id: "e1-2", source: "1", target: "2", type: "smoothstep", animated: true },
-  { id: "e1-3", source: "1", target: "3", type: "smoothstep", animated: true },
-  { id: "e2-4", source: "2", target: "4", type: "smoothstep" },
-  { id: "e2-5", source: "2", target: "5", type: "smoothstep" },
-  { id: "e2-6", source: "2", target: "6", type: "smoothstep" },
-  { id: "e4-7", source: "4", target: "7", type: "smoothstep" },
-  { id: "e5-8", source: "5", target: "8", type: "smoothstep" },
-];
-
+/* ── Main Component ──────────────────────────────────────────────────── */
 const OrganizationalChart = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [departments, setDepartments] = useState([]);
+  const [deptFilter, setDeptFilter] = useState("");
+  const [vacantOnly, setVacantOnly] = useState(false);
+  const [direction, setDirection] = useState("TB");
 
-  const onLayout = useCallback(
-    (direction) => {
-      const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-        initialNodes,
-        initialEdges,
-        direction
-      );
+  /* ── Fetch chart data ────────────────────────────────────────────── */
+  const fetchChart = useCallback(
+    async (departmentId = null) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const url = departmentId
+          ? `/org-chart/department/${departmentId}`
+          : "/org-chart";
+        const { data } = await apiClient.get(url);
+        const rawNodes = data.data.nodes;
+        const rawEdges = data.data.edges;
 
-      setNodes([...layoutedNodes]);
-      setEdges([...layoutedEdges]);
+        const { nodes: layoutedNodes, edges: layoutedEdges } =
+          getLayoutedElements(rawNodes, rawEdges, direction);
+
+        setNodes([...layoutedNodes]);
+        setEdges([...layoutedEdges]);
+      } catch (err) {
+        setError(err.response?.data?.message || "Failed to load org chart.");
+      } finally {
+        setLoading(false);
+      }
     },
-    [setNodes, setEdges]
+    [direction, setNodes, setEdges]
   );
 
-  useEffect(() => {
-    onLayout("TB");
-  }, [onLayout]);
+  /* ── Fetch department list for filter ────────────────────────────── */
+  const fetchDepartments = useCallback(async () => {
+    try {
+      const { data } = await apiClient.get("/departments");
+      setDepartments(data.data || data || []);
+    } catch {
+      // silently fail — filters become unavailable
+    }
+  }, []);
 
+  useEffect(() => {
+    fetchDepartments();
+  }, [fetchDepartments]);
+
+  useEffect(() => {
+    fetchChart(deptFilter || null);
+  }, [deptFilter, fetchChart]);
+
+  /* ── Layout direction toggle ─────────────────────────────────────── */
+  const handleLayout = useCallback(
+    (dir) => {
+      setDirection(dir);
+      fetchChart(deptFilter || null);
+    },
+    [deptFilter, fetchChart]
+  );
+
+  /* ── Vacant filter (client-side) ─────────────────────────────────── */
+  const visibleNodes = useMemo(
+    () =>
+      vacantOnly ? nodes.filter((n) => n.data?.isVacant) : nodes,
+    [nodes, vacantOnly]
+  );
+
+  /* ── Render ──────────────────────────────────────────────────────── */
   return (
     <div className="org-chart-wrapper">
       <div className="chart-header">
-        <h1>Organizational Chart</h1>
+        <div className="chart-title-area">
+          <span className="org-subtitle">Company Structure</span>
+          <h1>Organizational Chart</h1>
+        </div>
         <div className="controls-btns">
+          <select
+            className="org-filter-select"
+            value={deptFilter}
+            onChange={(e) => setDeptFilter(e.target.value)}
+          >
+            <option value="">All Departments</option>
+            {departments.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.name}
+              </option>
+            ))}
+          </select>
+
+          <label className="org-toggle-label">
+            <input
+              type="checkbox"
+              checked={vacantOnly}
+              onChange={(e) => setVacantOnly(e.target.checked)}
+              className="org-toggle-input"
+            />
+            <span className="org-toggle-text">Vacant Only</span>
+          </label>
+
+          <button
+            className={`org-layout-btn ${direction === "TB" ? "active" : ""}`}
+            onClick={() => handleLayout("TB")}
+          >
+            <span className="material-symbols-outlined">vertical_distribute</span>
+            Vertical
+          </button>
+          <button
+            className={`org-layout-btn ${direction === "LR" ? "active" : ""}`}
+            onClick={() => handleLayout("LR")}
+          >
+            <span className="material-symbols-outlined">horizontal_distribute</span>
+            Horizontal
+          </button>
           <ThemeToggle />
-          <button onClick={() => onLayout("TB")}>Vertical</button>
-          <button onClick={() => onLayout("LR")}>Horizontal</button>
         </div>
       </div>
+
+      {loading && (
+        <div className="org-state-overlay">
+          <div className="org-spinner"></div>
+          <p>Loading chart...</p>
+        </div>
+      )}
+
+      {error && !loading && (
+        <div className="org-error-banner">
+          <span className="material-symbols-outlined">error</span>
+          {error}
+          <button onClick={() => fetchChart(deptFilter || null)}>Retry</button>
+        </div>
+      )}
+
       <div style={{ width: "100%", height: "80vh" }} className="flow-container">
         <ReactFlow
-          nodes={nodes}
+          nodes={visibleNodes}
           edges={edges}
           nodeTypes={nodeTypes}
           onNodesChange={onNodesChange}
@@ -184,7 +247,7 @@ const OrganizationalChart = () => {
           fitView
           attributionPosition="bottom-left"
         >
-          <Background color="#cbd5e1" gap={20} />
+          <Background gap={20} />
           <Controls />
           <MiniMap nodeStrokeWidth={3} zoomable pannable />
         </ReactFlow>

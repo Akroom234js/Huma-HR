@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Position extends Model
 {
@@ -20,6 +21,10 @@ class Position extends Model
         'tax_percent',
         'insurance_amount',
         'allowances',
+        // Hierarchy fields
+        'parent_position_id',
+        'hierarchy_level',
+        'is_managerial',
     ];
 
     // ── Relationships ─────────────────────────────────────────────────────────
@@ -29,11 +34,26 @@ class Position extends Model
         return $this->belongsTo(Department::class);
     }
 
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Position::class, 'parent_position_id');
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(Position::class, 'parent_position_id');
+    }
+
+    public function employee(): HasOne
+    {
+        return $this->hasOne(EmployeeProfile::class, 'position_id');
+    }
+
     // عدد الشواغر المفتوحة من job_postings
     public function jobPostings(): HasMany
-{
-    return $this->hasMany(JobPosting::class, 'position_id');
-}
+    {
+        return $this->hasMany(JobPosting::class, 'position_id');
+    }
     // ── Query Scopes ──────────────────────────────────────────────────────────
 
     public function scopeSearch(Builder $query, string $value): Builder

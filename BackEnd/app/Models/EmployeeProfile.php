@@ -27,6 +27,7 @@ class EmployeeProfile extends Model
         'insurance_amount',
         'department_id',
         'manager_id',
+        'position_id',
         'branch',
         'city',
         'grade',
@@ -56,6 +57,11 @@ class EmployeeProfile extends Model
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);
+    }
+
+    public function position(): BelongsTo
+    {
+        return $this->belongsTo(Position::class, 'position_id');
     }
 
     public function manager(): BelongsTo
