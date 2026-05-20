@@ -86,13 +86,23 @@ class EmployeeController extends Controller
     }
 
     // ── GET /api/employees/managers ──────────────────────────────────────────
-    public function managers(): JsonResponse
+    public function managers(Request $request): JsonResponse
     {
-        $managers = EmployeeProfile::whereHas('user', fn($q) =>
-            $q->whereHas('roles', fn($r) =>
-                $r->whereIn('name', ['manager', 'department_manager', 'hr'])
-            )
-        )->get(['id', 'full_name', 'job_title']);
+        $query = EmployeeProfile::whereHas('user', fn($q) =>
+            $q->where('account_status', 'active')
+        );
+
+        if ($request->filled('department_id')) {
+            $query->where('department_id', (int) $request->department_id);
+        } else {
+            $query->whereHas('user', fn($q) =>
+                $q->whereHas('roles', fn($r) =>
+                    $r->whereIn('name', ['manager', 'department_manager', 'hr'])
+                )
+            );
+        }
+
+        $managers = $query->get(['id', 'full_name', 'job_title', 'department_id']);
 
         return $this->successResponse(
             data: $managers,
@@ -146,7 +156,7 @@ class EmployeeController extends Controller
                 'full_name', 'employee_id', 'date_of_birth', 'marital_status',
                 'phone_number', 'address', 'emergency_contacts', 'manager_id',
                 'branch', 'city', 'grade', 'job_title', 'employment_status',
-                'department_id', 'start_date', 'internal_transfer_date',
+                'department_id', 'position_id', 'start_date', 'internal_transfer_date',
                 'resignation_date', 'salary',
             ]));
 
