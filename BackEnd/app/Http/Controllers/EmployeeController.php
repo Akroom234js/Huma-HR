@@ -146,7 +146,7 @@ class EmployeeController extends Controller
                 'full_name', 'employee_id', 'date_of_birth', 'marital_status',
                 'phone_number', 'address', 'emergency_contacts', 'manager_id',
                 'branch', 'city', 'grade', 'job_title', 'employment_status',
-                'department_id', 'start_date', 'internal_transfer_date',
+                'department_id', 'position_id', 'start_date', 'internal_transfer_date',
                 'resignation_date', 'salary',
             ]));
 
