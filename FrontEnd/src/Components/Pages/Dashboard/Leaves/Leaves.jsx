@@ -15,10 +15,10 @@ const Leaves = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const stats = [
-        { label: t('stats.pending'), value: "15" },
-        { label: t('stats.annual_balance'), value: "2,450 Days" },
-        { label: t('stats.highest_requester'), value: "John Doe" },
-        { label: t('stats.used_days'), value: "312" }
+        { label: t('stats.pending') || "Pending Requests", value: "15", icon: "pending_actions" },
+        { label: t('stats.annual_balance') || "Annual Balance", value: "2,450 Days", icon: "account_balance" },
+        { label: t('stats.highest_requester') || "Highest Requester", value: "John Doe", icon: "person_alert" },
+        { label: t('stats.used_days') || "Used Days", value: "312", icon: "calendar_today" }
     ];
 
     const deptHeadcounts = {
@@ -116,6 +116,16 @@ const Leaves = () => {
         }
     ];
 
+    const filteredRequests = useMemo(() => {
+        return leaveRequests.filter(req => {
+            const matchSearch = !searchTerm || req.name.toLowerCase().includes(searchTerm.toLowerCase()) || req.reason.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchDept = !dept || req.dept.toLowerCase() === dept.toLowerCase();
+            const matchType = !leaveType || req.type.toLowerCase() === leaveType.toLowerCase();
+            const matchStatus = !status || req.status.toLowerCase() === status.toLowerCase();
+            return matchSearch && matchDept && matchType && matchStatus;
+        });
+    }, [leaveRequests, searchTerm, dept, leaveType, status]);
+
     const calculatedImpacts = useMemo(() => {
         const counts = {};
         leaveRequests.forEach(req => {
@@ -144,164 +154,256 @@ const Leaves = () => {
     const openDetails = (req) => {
         setSelectedRequest(req);
         setIsModalOpen(true);
+        document.body.style.overflow = 'hidden';
+    };
+
+    const closeDetails = () => {
+        setIsModalOpen(false);
+        setSelectedRequest(null);
+        document.body.style.overflow = 'auto';
     };
 
     return (
-        <div className="leaves-page">
-            <div className="leaves-theme-toggle-wrapper">
-                <ThemeToggle />
+        <div className="portal-page-container-leaves fade-in-section">
+            {/* Header Area styled identical to the premium site pattern */}
+            <div className="leaves-portal-header-wrapper">
+                <div className="leaves-portal-title-area">
+                    <div>
+                        <span className="premium-subtitle">Management Dashboard</span>
+                        <h1>{t('title') || "Leaves Management"}</h1>
+                    </div>
+                </div>
+                <div className="leaves-theme-toggle">
+                    <ThemeToggle />
+                </div>
             </div>
-            <header className="page-header">
-                <h1>{t('title')}</h1>
-            </header>
 
-            {/* Stats Grid */}
-            <div className="stats-grid">
+            {/* Premium Stats Overview Grid compatible with Employee View */}
+            <div className="premium-stats-grid">
                 {stats.map((s, i) => (
-                    <div className="stat-card" key={i}>
-                        <span className="stat-label">{s.label}</span>
-                        <span className="stat-value">{s.value}</span>
+                    <div className="premium-stat-card" key={i}>
+                        <div className="stat-card-header">
+                            <span className="premium-stat-label">{s.label}</span>
+                            <div className="stat-icon-wrapper">
+                                <span className="material-symbols-outlined">{s.icon}</span>
+                            </div>
+                        </div>
+                        <div className="stat-card-body">
+                            <span className="premium-stat-value">{s.value}</span>
+                        </div>
+                        <div className="stat-card-glow"></div>
                     </div>
                 ))}
             </div>
 
-            {/* Filter Section */}
-            <div className="leaves-filters">
-                <div className="search-bar">
-                    <span className="material-symbols-outlined">search</span>
-                    <input
-                        type="text"
-                        placeholder={t('filters.search')}
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+            {/* Single Unified Premium Card Section enclosing Filters and Main Table */}
+            <div className="premium-card-section">
+                <div className="filter-section-header multi-row-header">
+                    <div className="search-input-wrapper custom-search-bar">
+                        <span className="material-symbols-outlined search-icon">search</span>
+                        <input
+                            type="text"
+                            className="premium-search-input"
+                            placeholder={t('filters.search') || "Search employee name or reasons..."}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    <div className="filters-controls-row">
+                        <FilterDropdown
+                            value={dept}
+                            onChange={setDept}
+                            options={[
+                                { value: "", label: t('filters.department') || "All Departments" }, 
+                                { value: "it", label: "IT" }, 
+                                { value: "marketing", label: "Marketing" }, 
+                                { value: "hr", label: "HR" }
+                            ]}
+                        />
+                        <FilterDropdown
+                            value={leaveType}
+                            onChange={setLeaveType}
+                            options={[
+                                { value: "", label: t('filters.leave_type') || "All Leave Types" }, 
+                                { value: "annual", label: "Annual" }, 
+                                { value: "sick", label: "Sick" }, 
+                                { value: "emergency", label: "Emergency" }
+                            ]}
+                        />
+                        <FilterDropdown
+                            value={status}
+                            onChange={setStatus}
+                            options={[
+                                { value: "", label: t('filters.status') || "All Statuses" }, 
+                                { value: "approved", label: t('status.approved') || "Approved" }, 
+                                { value: "pending", label: t('status.pending') || "Pending" }, 
+                                { value: "rejected", label: t('status.rejected') || "Rejected" }
+                            ]}
+                        />
+                    </div>
                 </div>
-                <div className="filters-row">
-                    <FilterDropdown
-                        value={dept}
-                        onChange={setDept}
-                        options={[{ value: "", label: t('filters.department') }, { value: "it", label: "IT" }, { value: "hr", label: "HR" }]}
-                    />
-                    <FilterDropdown
-                        value={leaveType}
-                        onChange={setLeaveType}
-                        options={[{ value: "", label: t('filters.leave_type') }, { value: "annual", label: "Annual" }, { value: "sick", label: "Sick" }]}
-                    />
-                    <FilterDropdown
-                        value={status}
-                        onChange={setStatus}
-                        options={[{ value: "", label: t('filters.status') }, { value: "approved", label: t('status.approved') }, { value: "pending", label: t('status.pending') }]}
-                    />
-                </div>
-            </div>
 
-            {/* Table Section */}
-            <div className="leaves-table-section">
-                <h3 className="section-title">Leave Requests and Records Table</h3>
-                <div className="table-wrapper">
-                    <table>
+                <div className="premium-table-container">
+                    <table className="premium-data-table">
                         <thead>
                             <tr>
-                                <th>{t('table.emp_name')}</th>
-                                <th>{t('table.leave_type')}</th>
-                                <th>{t('table.date_range')}</th>
-                                <th>{t('table.duration')}</th>
-                                <th>{t('table.status')}</th>
-                                <th>{t('table.rem_balance')}</th>
+                                <th>{t('table.emp_name') || "Employee Name"}</th>
+                                <th>{t('table.leave_type') || "Leave Type"}</th>
+                                <th>{t('table.date_range') || "Date Range"}</th>
+                                <th>{t('table.duration') || "Duration"}</th>
+                                <th>{t('table.status') || "Status"}</th>
+                                <th>{t('table.rem_balance') || "Remaining Balance"}</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {leaveRequests.map((req) => (
-                                <tr key={req.id} onClick={() => openDetails(req)} className="clickable-row">
-                                    <td className="emp-cell">
+                            {filteredRequests.length > 0 ? filteredRequests.map((req) => (
+                                <tr key={req.id} onClick={() => openDetails(req)} className="premium-table-row clickable">
+                                    <td className="emp-avatar-cell">
                                         <Avatar user={{ full_name: req.name }} size="sm" />
-                                        <span>{req.name}</span>
+                                        <div className="emp-info-col">
+                                            <span className="emp-full-name">{req.name}</span>
+                                            <span className="emp-dept-badge">{req.dept}</span>
+                                        </div>
                                     </td>
-                                    <td>{req.type}</td>
-                                    <td>{req.dates}</td>
-                                    <td>{req.duration}</td>
+                                    <td className="type-column-bold">{req.type}</td>
+                                    <td className="text-secondary-dim">{req.dates}</td>
+                                    <td><strong>{req.duration}</strong> Days</td>
                                     <td>
-                                        <span className={`status-badge ${req.status}`}>
-                                            {t(`status.${req.status}`)}
+                                        <span className={`premium-status-badge ${req.status}`}>
+                                            {t(`status.${req.status}`) || req.status}
                                         </span>
                                     </td>
-                                    <td>{req.balance}</td>
+                                    <td className="font-bold text-accent">{req.balance} Days</td>
                                 </tr>
-                            ))}
+                            )) : (
+                                <tr>
+                                    <td colSpan="6" className="premium-empty-cell">
+                                        <div className="empty-state-content">
+                                            <span className="material-symbols-outlined empty-icon">event_busy</span>
+                                            <p>No leave requests found matching the active criteria.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            {/* Reports Section */}
-            <div className="leaves-reports-grid">
-                <div className="report-card distribution">
-                    <h3>{t('reports.distribution')}</h3>
-                    <div className="chart-placeholder">
-                        {/* CSS Pie Chart Mock */}
-                        <div className="pie-chart-mock">
-                            <div className="pie-segment annual" style={{ "--p": 40, "--c": "#3b82f6" }}></div>
-                            <div className="pie-segment sick" style={{ "--p": 30, "--c": "#f59e0b" }}></div>
-                            <div className="pie-segment emergency" style={{ "--p": 20, "--c": "#ef4444" }}></div>
-                            <div className="pie-segment other" style={{ "--p": 10, "--c": "#10b981" }}></div>
+            {/* Premium Analytics Reports Grid matching unified site widgets */}
+            <div className="dashboard-reports-grid">
+                <div className="premium-card-section report-widget">
+                    <div className="widget-header">
+                        <span className="material-symbols-outlined icon-glow">donut_large</span>
+                        <h3>{t('reports.distribution') || "Leave Type Distribution"}</h3>
+                    </div>
+                    <div className="chart-preview-container">
+                        <div className="premium-pie-mock">
+                            <div className="pie-slice annual"></div>
+                            <div className="pie-slice sick"></div>
+                            <div className="pie-slice emergency"></div>
+                            <div className="pie-inner-circle">
+                                <span className="pie-total-label">Total</span>
+                                <span className="pie-total-val">100%</span>
+                            </div>
                         </div>
-                        <div className="chart-legend">
-                            <div className="legend-item"><span className="dot annual"></span> Annual</div>
-                            <div className="legend-item"><span className="dot sick"></span> Sick</div>
-                            <div className="legend-item"><span className="dot emergency"></span> Emergency</div>
+                        <div className="premium-chart-legend">
+                            <div className="legend-item"><span className="legend-dot bg-blue"></span> Annual (40%)</div>
+                            <div className="legend-item"><span className="legend-dot bg-amber"></span> Sick (30%)</div>
+                            <div className="legend-item"><span className="legend-dot bg-red"></span> Emergency (20%)</div>
+                            <div className="legend-item"><span className="legend-dot bg-emerald"></span> Other (10%)</div>
                         </div>
                     </div>
                 </div>
 
-                <div className="report-card impactful">
-                    <div className="impact-header">
-                        <h3>{t('reports.impactful')}</h3>
+                <div className="premium-card-section report-widget">
+                    <div className="widget-header">
+                        <span className="material-symbols-outlined icon-glow">moving</span>
+                        <h3>{t('reports.impactful') || "Departmental Leave Impact"}</h3>
                     </div>
-                    <div className="impact-list">
+                    <div className="premium-impact-list">
                         {calculatedImpacts.map((item, i) => (
-                            <div className="impact-item" key={i}>
-                                <div className="impact-info">
-                                    <div className="impact-meta">
-                                        <span className="impact-dept">{item.name}</span>
-                                        <span className="impact-percentage">{item.percent}%</span>
+                            <div className="premium-impact-item" key={i}>
+                                <div className="impact-main-area">
+                                    <div className="impact-title-row">
+                                        <span className="impact-dept-name">{item.name}</span>
+                                        <span className="impact-percent-val">{item.percent}%</span>
                                     </div>
-                                    <div className="impact-progress">
+                                    <div className="impact-bar-track">
                                         <div
-                                            className={`impact-progress-bar ${item.impact}`}
+                                            className={`impact-bar-fill ${item.impact}`}
                                             style={{ width: `${item.percent}%` }}
                                         ></div>
                                     </div>
                                 </div>
-                                <span className={`impact-level ${item.impact}`}>
-                                    {t(`impact.${item.impact}`)}
+                                <span className={`impact-severity-tag ${item.impact}`}>
+                                    {t(`impact.${item.impact}`) || item.impact}
                                 </span>
                             </div>
                         ))}
                     </div>
-                    <div className="comparison-section">
-                        <h3>{t('reports.comparison')}</h3>
-                        <div className="bar-chart-placeholder">
-                            <div className="bar" style={{ height: '60%' }}></div>
-                            <div className="bar" style={{ height: '80%' }}></div>
-                            <div className="bar" style={{ height: '40%' }}></div>
-                            <div className="bar" style={{ height: '90%' }}></div>
+
+                    <div className="comparison-preview-area">
+                        <div className="widget-header mini">
+                            <span className="material-symbols-outlined icon-glow">bar_chart</span>
+                            <h3>{t('reports.comparison') || "Monthly Trend Comparison"}</h3>
+                        </div>
+                        <div className="premium-bars-wrapper">
+                            <div className="chart-bar-col"><div className="chart-bar-fill" style={{ height: '60%' }}></div><span>Q1</span></div>
+                            <div className="chart-bar-col"><div className="chart-bar-fill" style={{ height: '85%' }}></div><span>Q2</span></div>
+                            <div className="chart-bar-col"><div className="chart-bar-fill active" style={{ height: '40%' }}></div><span>Q3</span></div>
+                            <div className="chart-bar-col"><div className="chart-bar-fill" style={{ height: '95%' }}></div><span>Q4</span></div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Details Modal */}
+            {/* Premium Details Modal Overlay with Full Glassmorphism Blur */}
             {isModalOpen && selectedRequest && (
-                <div className="leaves-modal-overlay" onClick={() => setIsModalOpen(false)}>
-                    <div className="leaves-modal" onClick={e => e.stopPropagation()}>
-                        <div className="modal-content">
-                            <div className="detail-row">
-                                <strong>{t('modal.duration')}:</strong> <span>{selectedRequest.duration} {t('modal.days')}</span>
+                <div className="premium-modal-overlay" onClick={closeDetails}>
+                    <div className="premium-modal-card review-modal" onClick={e => e.stopPropagation()}>
+                        <div className="premium-modal-header">
+                            <div className="modal-reviewer-info">
+                                <Avatar user={{ full_name: selectedRequest.name }} size="md" />
+                                <div>
+                                    <h3 className="modal-emp-name">{selectedRequest.name}</h3>
+                                    <span className="modal-emp-dept">{selectedRequest.dept} Department</span>
+                                </div>
                             </div>
-                            <div className="detail-row reason-row">
-                                <strong>{t('modal.reason_label')}:</strong>
-                                <p>{selectedRequest.reason}</p>
+                            <button className="premium-close-icon" onClick={closeDetails} aria-label="Close">
+                                <i className="bi bi-x-lg"></i>
+                            </button>
+                        </div>
+                        
+                        <div className="premium-modal-body">
+                            <div className="detail-meta-grid">
+                                <div className="meta-box">
+                                    <span className="meta-label">Leave Type</span>
+                                    <span className="meta-val font-bold">{selectedRequest.type}</span>
+                                </div>
+                                <div className="meta-box">
+                                    <span className="meta-label">{t('modal.duration') || "Duration"}</span>
+                                    <span className="meta-val font-bold text-accent">{selectedRequest.duration} {t('modal.days') || "Days"}</span>
+                                </div>
+                                <div className="meta-box col-full">
+                                    <span className="meta-label">Requested Date Range</span>
+                                    <span className="meta-val">{selectedRequest.dates}</span>
+                                </div>
                             </div>
+
+                            <div className="reason-container">
+                                <span className="reason-label">{t('modal.reason_label') || "Reason for Leave"}:</span>
+                                <p className="premium-reason-text">{selectedRequest.reason}</p>
+                            </div>
+                        </div>
+
+                        <div className="premium-modal-footer review-footer">
+                            <span className={`premium-status-badge ${selectedRequest.status}`}>
+                                {selectedRequest.status}
+                            </span>
+                            <button className="premium-btn-primary small-btn" onClick={closeDetails}>
+                                <i className="bi bi-check2"></i> Done Reviewing
+                            </button>
                         </div>
                     </div>
                 </div>
