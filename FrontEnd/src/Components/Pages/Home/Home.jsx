@@ -19,6 +19,8 @@ export default function Home() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [notification, setNotification] = useState(null); // { message, type }
   const [showDemo, setShowDemo] = useState(true);
@@ -56,7 +58,7 @@ export default function Home() {
       localStorage.setItem("user", JSON.stringify(data.user));
       showNotification("Login successful!", "success");
       setTimeout(() => {
-        window.location.href = "/employees/all";
+        navigate("/employees/all");
       }, 1000);
     } catch (err) {
       console.error("Login error:", err);
@@ -278,7 +280,7 @@ export default function Home() {
                       onClick={(e) => {
                         e.preventDefault();
                         localStorage.setItem("user", JSON.stringify({ role: "employee", name: "Test Employee" }));
-                        window.location.href = "/portal/dashboard";
+                        navigate("/portal/dashboard");
                       }}
                     >
                       Login as Employee (Dev Only)
