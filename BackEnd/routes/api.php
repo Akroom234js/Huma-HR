@@ -9,8 +9,9 @@ use App\Http\Controllers\EmployeeRequestController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\SalaryStructureController;
-use App\Http\Controllers\ApplicationController;  // ✅ جديد
-use App\Http\Controllers\JobPostingController;   // ✅ جديد
+use App\Http\Controllers\OrgChartController;
+use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\JobPostingController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
@@ -101,6 +102,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/salary-structures/{id}',    [SalaryStructureController::class, 'update']);
         Route::delete('/salary-structures/{id}', [SalaryStructureController::class, 'destroy']);
 
+        // Salary Adjustments
+        Route::post('/salary-adjustments', [SalaryAdjustmentController::class, 'store']);
+
         // ✅ ATS — HR فقط: إدارة الوظائف والطلبات
         Route::post('/job-postings',              [JobPostingController::class,   'store']);
         Route::put('/job-postings/{id}',          [JobPostingController::class,   'update']);
@@ -120,6 +124,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/applications/{id}',          [ApplicationController::class, 'destroy']);
         Route::get('/applications/{id}/resume',      [ApplicationController::class, 'downloadResume']);
     });
+
+    // ── Employee Portal ──────────────────────────────────────────────
+    Route::get('/employee/payroll', [PayrollController::class, 'employeeHistory']);
 
     // ── HR + Boss — عرض فقط ──────────────────────────────────────────────
     Route::middleware('role:hr|manager')->group(function () {
@@ -147,21 +154,49 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/salary-adjustments/{id}', [SalaryAdjustmentController::class, 'show']);
 
         // Salary Structures
+        Route::get('/salary-structures/employees', [SalaryStructureController::class, 'employees']);
+        Route::patch('/salary-structures/employees/{id}', [SalaryStructureController::class, 'updateEmployeeSalary']);
         Route::get('/salary-structures', [SalaryStructureController::class, 'index']);
 
         // Positions
         Route::get('/positions',      [PositionController::class, 'index']);
         Route::get('/positions/{id}', [PositionController::class, 'show']);
 
+        // ── Org Chart ─────────────────────────────────────────────────────
+        Route::get('/org-chart', [OrgChartController::class, 'index']);
+        Route::get('/org-chart/department/{id}', [OrgChartController::class, 'byDepartment']);
+        Route::post('/positions/org', [OrgChartController::class, 'store']);
+        Route::put('/positions/{position}/org', [OrgChartController::class, 'update']);
+        Route::patch('/positions/{position}/move', [OrgChartController::class, 'move']);
+        Route::patch('/positions/{position}/assign', [OrgChartController::class, 'assign']);
+        Route::patch('/positions/{position}/unassign', [OrgChartController::class, 'unassign']);
+
         // Requests
         Route::get('/requests',               [EmployeeRequestController::class, 'index']);
         Route::patch('/requests/{id}/status', [EmployeeRequestController::class, 'updateStatus']);
 
         // Payroll
-        Route::get('/payroll/overview',   [PayrollController::class, 'overview']);
-        Route::get('/payroll',            [PayrollController::class, 'index']);
-        Route::patch('/payroll/{id}/pay', [PayrollController::class, 'pay']);
-        Route::post('/payroll/pay-all',   [PayrollController::class, 'payAll']);
+        Route::get('/payroll/overview',      [PayrollController::class, 'overview']);
+        Route::post('/payroll/initialize',   [PayrollController::class, 'initialize']);
+        Route::get('/payroll',               [PayrollController::class, 'index']);
+        Route::patch('/payroll/{id}',        [PayrollController::class, 'update']);
+        Route::delete('/payroll/{id}',       [PayrollController::class, 'destroy']);
+        Route::patch('/payroll/{id}/pay',    [PayrollController::class, 'pay']);
+        Route::patch('/payroll/{id}/revert', [PayrollController::class, 'revert']);
+        Route::post('/payroll/pay-all',      [PayrollController::class, 'payAll']);
+
+        // Deductions
+        Route::get('/deductions',            [App\Http\Controllers\DeductionController::class, 'index']);
+        Route::post('/deductions',           [App\Http\Controllers\DeductionController::class, 'store']);
+        Route::patch('/deductions/{id}',     [App\Http\Controllers\DeductionController::class, 'update']);
+        Route::delete('/deductions/{id}',    [App\Http\Controllers\DeductionController::class, 'destroy']);
+
+        // Bonus Rules
+        Route::get('/bonus-rules',           [App\Http\Controllers\BonusRuleController::class, 'index']);
+        Route::post('/bonus-rules',          [App\Http\Controllers\BonusRuleController::class, 'store']);
+        Route::patch('/bonus-rules/{id}',    [App\Http\Controllers\BonusRuleController::class, 'update']);
+        Route::delete('/bonus-rules/{id}',   [App\Http\Controllers\BonusRuleController::class, 'destroy']);
+        Route::post('/bonus-rules/apply',    [App\Http\Controllers\BonusRuleController::class, 'apply']);
 
         // ✅ ATS — HR + Manager: عرض فقط
         // ⚠️ Static routes أولاً قبل {id}
