@@ -86,13 +86,23 @@ class EmployeeController extends Controller
     }
 
     // ── GET /api/employees/managers ──────────────────────────────────────────
-    public function managers(): JsonResponse
+    public function managers(Request $request): JsonResponse
     {
-        $managers = EmployeeProfile::whereHas('user', fn($q) =>
-            $q->whereHas('roles', fn($r) =>
-                $r->whereIn('name', ['manager', 'department_manager', 'hr'])
-            )
-        )->get(['id', 'full_name', 'job_title']);
+        $query = EmployeeProfile::whereHas('user', fn($q) =>
+            $q->where('account_status', 'active')
+        );
+
+        if ($request->filled('department_id')) {
+            $query->where('department_id', (int) $request->department_id);
+        } else {
+            $query->whereHas('user', fn($q) =>
+                $q->whereHas('roles', fn($r) =>
+                    $r->whereIn('name', ['manager', 'department_manager', 'hr'])
+                )
+            );
+        }
+
+        $managers = $query->get(['id', 'full_name', 'job_title', 'department_id']);
 
         return $this->successResponse(
             data: $managers,

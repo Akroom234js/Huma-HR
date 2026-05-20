@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Services\OrgChartService;
 
 class EmployeeProfile extends Model
 {
@@ -46,6 +47,34 @@ class EmployeeProfile extends Model
         'tax_percent'            => 'decimal:2',
         'insurance_amount'       => 'decimal:2',
     ];
+
+    protected static function booted()
+    {
+        static::saved(function ($employee) {
+            if ($employee->position_id) {
+                $position = Position::find($employee->position_id);
+                if ($position) {
+                    $newParentId = null;
+                    if ($employee->manager_id) {
+                        $manager = EmployeeProfile::find($employee->manager_id);
+                        if ($manager) {
+                            $newParentId = $manager->position_id;
+                        }
+                    }
+
+                    if ($position->parent_position_id !== $newParentId) {
+                        $service = app(OrgChartService::class);
+                        // Prevent potential cycle creation in the position hierarchy
+                        if ($newParentId === null || !$service->wouldCreateCycle($position->id, $newParentId)) {
+                            $position->update(['parent_position_id' => $newParentId]);
+                            $newLevel = $service->recalculateLevel($position);
+                            $service->updateDescendantLevels($position->load('children'), $newLevel);
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     // ── Relationships ─────────────────────────────────────────────────────────
 
