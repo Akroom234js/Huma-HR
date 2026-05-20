@@ -222,13 +222,6 @@ const OrganizationalChart = () => {
         </div>
       </div>
 
-      {loading && (
-        <div className="org-state-overlay">
-          <div className="org-spinner"></div>
-          <p>Loading chart...</p>
-        </div>
-      )}
-
       {error && !loading && (
         <div className="org-error-banner">
           <span className="material-symbols-outlined">error</span>
@@ -238,6 +231,15 @@ const OrganizationalChart = () => {
       )}
 
       <div style={{ width: "100%", height: "80vh" }} className="flow-container">
+        {loading && (
+          <div className="org-state-overlay">
+            <div className="org-loader-content">
+              <div className="org-spinner"></div>
+              <p>Loading chart...</p>
+            </div>
+          </div>
+        )}
+
         <ReactFlow
           nodes={visibleNodes}
           edges={edges}

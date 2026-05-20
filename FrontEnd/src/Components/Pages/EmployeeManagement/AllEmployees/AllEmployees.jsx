@@ -117,7 +117,7 @@ const AllEmployees = () => {
         employeeId: e.employee_id,
         fullName: e.full_name,
         email: e.email,
-        jobTitle: e.job_title,
+        jobTitle: e.position_id || e.job_title,
         department: e.department?.id || e.department_id,
         dob: e.date_of_birth,
         phone: e.phone_number,

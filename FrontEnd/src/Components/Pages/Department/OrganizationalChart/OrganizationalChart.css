@@ -257,28 +257,68 @@
 
 /* ── Loading Overlay ─────────────────────────────────────── */
 .org-state-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  padding: 4rem;
-  color: var(--text-secondary);
-  font-size: 0.9375rem;
-  font-weight: 500;
+  gap: 1.25rem;
+  z-index: 100;
+  animation: orgFadeIn 0.3s ease;
+}
+
+/* Glassmorphic card container for the loader */
+.org-loader-content {
+  background: var(--bg-card);
+  padding: 2.25rem 3.5rem;
+  border-radius: 24px;
+  box-shadow: var(--shadow-lg), 0 20px 45px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  border: 1px solid var(--border-color);
+  transform: scale(0.95);
+  animation: orgPopIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15) forwards;
 }
 
 .org-spinner {
-  width: 36px;
-  height: 36px;
-  border: 3px solid var(--border-color);
-  border-top-color: var(--primary-color);
+  width: 44px;
+  height: 44px;
+  border: 4px solid var(--border-color);
+  border-top: 4px solid var(--primary-color);
+  border-right: 4px solid var(--primary-color);
   border-radius: 50%;
-  animation: org-spin 0.7s linear infinite;
+  animation: org-spin 1s linear infinite;
+  filter: drop-shadow(0 0 10px rgba(19, 131, 237, 0.4));
+}
+
+.org-loader-content p {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.01em;
 }
 
 @keyframes org-spin {
   to { transform: rotate(360deg); }
+}
+
+@keyframes orgFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes orgPopIn {
+  to { transform: scale(1); opacity: 1; }
 }
 
 /* ── Error Banner ────────────────────────────────────────── */
