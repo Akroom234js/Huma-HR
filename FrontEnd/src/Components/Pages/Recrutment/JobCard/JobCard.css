@@ -76,7 +76,58 @@
     color: var(--text-muted);
 }
 
-/* تعديل لون الأيقونات الافتراضي */
+/* tعديل لون الأيقونات الافتراضي */
 .material-symbols-outlined {
     color: var(--text-secondary);
 }
+
+/* ── Title row with status pill ── */
+.job-card-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+}
+.job-card-title-row h3 { flex: 1; min-width: 0; }
+
+/* ── Status pills ── */
+.job-status-pill {
+    flex-shrink: 0;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.status-draft    { background: rgba(251,191,36,0.15); color: #fbbf24; }
+.status-open     { background: rgba(52,211,153,0.15);  color: #34d399; }
+.status-closed   { background: rgba(248,113,113,0.15); color: #f87171; }
+.status-archived { background: rgba(156,163,175,0.15); color: #9ca3af; }
+
+/* ── Icon button color variants ── */
+.icon-btn--green  { color: #34d399 !important; }
+.icon-btn--orange { color: #fbbf24 !important; }
+.icon-btn--red    { color: #f87171 !important; }
+
+/* ── Footer with deadline ── */
+.job-footer {
+    padding-top: 15px;
+    border-top: 1px solid var(--border-light);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.job-deadline {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: #fbbf24;
+}
+.job-deadline .material-symbols-outlined { font-size: 14px; color: #fbbf24; }

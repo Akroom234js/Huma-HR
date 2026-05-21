@@ -158,3 +158,128 @@
 .btn-post:hover {
     background-color: var(--primary-hover);
 }
+
+/* ── Wide modal variant ── */
+.modal-container--wide { max-width: 720px; }
+
+/* ── Form helper classes ── */
+.form-group--sm { flex: 0 0 120px; }
+.req  { color: #f87171; }
+.field-hint { font-size: 0.72rem; color: #6b7280; font-weight: 400; }
+.field-error { display: block; color: #f87171; font-size: 0.75rem; margin-top: 4px; }
+.char-count { font-size: 0.72rem; text-align: right; margin-top: 4px; transition: color 0.2s; }
+
+/* 3-col row */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-row:has(.form-group--sm) { grid-template-columns: 1fr 1fr 120px; }
+
+/* Status badge in modal header */
+.job-status-badge {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.status-draft    { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+.status-open     { background: rgba(52,211,153,0.15);  color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+.status-closed   { background: rgba(248,113,113,0.15); color: #f87171; border: 1px solid rgba(248,113,113,0.3); }
+.status-archived { background: rgba(156,163,175,0.15); color: #9ca3af; border: 1px solid rgba(156,163,175,0.3); }
+
+/* Publish / close action buttons */
+.btn-publish {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 18px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, #34d399, #059669);
+  color: #fff;
+  font-size: 0.85rem; font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-right: auto;
+}
+.btn-publish:hover:not(:disabled) { box-shadow: 0 4px 14px rgba(52,211,153,0.4); }
+
+.btn-close-job {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 18px;
+  border-radius: 8px;
+  border: 1px solid rgba(248,113,113,0.35);
+  background: rgba(248,113,113,0.1);
+  color: #f87171;
+  font-size: 0.85rem; font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-right: auto;
+}
+.btn-close-job:hover:not(:disabled) { background: rgba(248,113,113,0.18); }
+
+/* Action success / error banners in modal */
+.modal-action-msg {
+  display: flex; align-items: center; gap: 8px;
+  margin: 0 24px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(52,211,153,0.1);
+  border: 1px solid rgba(52,211,153,0.3);
+  color: #34d399;
+  font-size: 0.82rem;
+}
+.modal-error-msg {
+  display: flex; align-items: center; gap: 8px;
+  margin: 0 24px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(248,113,113,0.1);
+  border: 1px solid rgba(248,113,113,0.25);
+  color: #fca5a5;
+  font-size: 0.82rem;
+}
+
+/* Modal submit spinner */
+.modal-spinner {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: modal-spin 0.6s linear infinite;
+  display: inline-block; margin-right: 6px;
+}
+@keyframes modal-spin { to { transform: rotate(360deg); } }
+
+/* Skeleton for Jops.jsx */
+.cart1--skeleton {
+  pointer-events: none;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: center;
+}
+.skeleton-line {
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.2s ease infinite;
+}
+.skeleton-title { height: 20px; width: 60%; }
+.skeleton-sm    { width: 40%; }
+@keyframes skeleton-shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* Empty state for Jops.jsx */
+.jops-empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px;
+  color: var(--text-muted, #6b7280);
+}
+.jops-empty-state .material-symbols-outlined { font-size: 48px; opacity: 0.4; }
