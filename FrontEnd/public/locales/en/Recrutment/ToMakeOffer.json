@@ -1,8 +1,9 @@
 {
     "create": "Create Job",
     "Tabs": {
-        "Interview-Happening": "Interview Happening",
+        "Newly-Applied": "Newly Applied",
         "To-Schedule-Interview": "To Schedule Interview",
+        "Interview-Happening": "Interview Happening",
         "To-Make-Offer": "To Make Offer",
         "Opening": "Opening Jobs"
     },
@@ -15,7 +16,7 @@
         "Attachments": "View Attachments"
     },
     "departmentOptions": {
-        "all": "All Departments"
+        "all": "All Jobs"
     },
     "applicants": "View more applicants"
 }
