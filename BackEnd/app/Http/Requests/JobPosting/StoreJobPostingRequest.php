@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\JobPosting;
 
 use Illuminate\Foundation\Http\FormRequest;  // ← هذا مهم جداً
 class StoreJobPostingRequest extends FormRequest
