@@ -14,7 +14,7 @@ const CreateJobModal = ({ isOpen, onClose, onSave, editingJob, departmentOptions
     salary_min: '',
     salary_max: '',
     salary_currency: 'USD',
-    employment_type: '',
+    employment_type: 'full-time',
     experience_level: '',
     location: '',
     application_deadline: '',
@@ -51,7 +51,7 @@ const CreateJobModal = ({ isOpen, onClose, onSave, editingJob, departmentOptions
         salary_min:           editingJob.salary_min     || '',
         salary_max:           editingJob.salary_max     || '',
         salary_currency:      editingJob.salary_currency || 'USD',
-        employment_type:      editingJob.employment_type  || '',
+        employment_type:      editingJob.employment_type  || 'full-time',
         experience_level:     editingJob.experience_level || '',
         location:             editingJob.location        || '',
         application_deadline: editingJob.application_deadline ? editingJob.application_deadline.slice(0, 10) : '',
@@ -61,7 +61,7 @@ const CreateJobModal = ({ isOpen, onClose, onSave, editingJob, departmentOptions
       setFormData({
         title: '', department_id: '', position_id: '',
         salary_min: '', salary_max: '', salary_currency: 'USD',
-        employment_type: '', experience_level: '', location: '',
+        employment_type: 'full-time', experience_level: '', location: '',
         application_deadline: '', description: '',
       });
     }
@@ -73,7 +73,22 @@ const CreateJobModal = ({ isOpen, onClose, onSave, editingJob, departmentOptions
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => {
+      const nextData = { ...prev, [name]: value };
+      if (name === 'position_id') {
+        if (value) {
+          const selectedPos = positions.find(p => String(p.id) === String(value));
+          if (selectedPos) {
+            nextData.salary_min = selectedPos.min_salary || '';
+            nextData.salary_max = selectedPos.max_salary || '';
+          }
+        } else {
+          nextData.salary_min = '';
+          nextData.salary_max = '';
+        }
+      }
+      return nextData;
+    });
     if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
@@ -233,12 +248,32 @@ const CreateJobModal = ({ isOpen, onClose, onSave, editingJob, departmentOptions
             <div className="form-row">
               <div className="form-group">
                 <label>Employment Type</label>
-                <select name="employment_type" value={formData.employment_type} onChange={handleChange}>
-                  <option value="">Select type…</option>
-                  {['full-time','part-time','contract','temporary','internship'].map(t => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-                </select>
+                <div className="employment-type-selector">
+                  {['full-time','part-time','contract','temporary','internship'].map(type => {
+                    const isSelectable = type === 'full-time';
+                    const isSelected = formData.employment_type === type;
+                    return (
+                      <div
+                        key={type}
+                        className={`emp-type-pill ${isSelected ? 'selected' : ''} ${!isSelectable ? 'disabled' : ''}`}
+                        onClick={() => {
+                          if (isSelectable) {
+                            setFormData(prev => ({ ...prev, employment_type: type }));
+                            if (errors.employment_type) setErrors(prev => ({ ...prev, employment_type: '' }));
+                          }
+                        }}
+                      >
+                        <span className="emp-type-label">{type}</span>
+                        {!isSelectable && (
+                          <div className="emp-type-overlay" title="This type is currently unavailable">
+                            <span className="material-symbols-outlined">lock</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                {errors.employment_type && <span className="field-error">{errors.employment_type[0]}</span>}
               </div>
               <div className="form-group">
                 <label>Experience Level</label>
