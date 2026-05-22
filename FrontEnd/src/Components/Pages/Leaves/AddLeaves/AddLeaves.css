@@ -1,102 +1,310 @@
-div.addleaves-co{
-    display: none;
-    border: 2px solid var(--border-color);
-    border-radius: 10px;
-     background-color: var(--bg-page);
-    width: 40%;
-    height: 90vh;
-    margin: 2% auto;
-    padding: 10px;
-    overflow: scroll;
-    
+/* Premium Add Leaves Modal Styles */
+.premium-addleaves-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+    padding: 1rem;
+    animation: fadeInModal 0.3s ease;
 }
-form div.nameleaves,form div.Allocation,form div.DescriptionPolicy{
+
+[data-theme="dark"] .premium-addleaves-overlay {
+    background-color: rgba(0, 0, 0, 0.65);
+}
+
+.premium-addleaves-container {
+    width: 100%;
+    max-width: 480px;
+    background-color: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 1.75rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
-    margin: 5px;
+    gap: 1.25rem;
+    animation: scaleUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    max-height: 90vh;
 }
-form div.nameleaves input ,form div.Allocation input,form div.DescriptionPolicy textarea{
-   border-radius: 10px;
-   color: var(--text-main);
-   height: 35px;
-   outline: none;
-   background-color: rgba(202, 202, 202, 0.158);
-   margin-top: 5px;
-   border: 1px solid var(--border-color);
-   padding: 3px;
+
+[data-theme="dark"] .premium-addleaves-container {
+    background-color: rgba(15, 23, 42, 0.85);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
 }
-form div.DescriptionPolicy textarea{
-    max-height: 120px;
-    min-height: 120px;
+
+@keyframes fadeInModal {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
-div.paidApproval{
+
+@keyframes scaleUpModal {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.modal-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+    flex-shrink: 0;
+}
+
+.header-title-flex {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.header-icon-box {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background-color: var(--primary-light);
+    color: var(--primary-color);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 40px;
-    margin-bottom: 30px;
+    font-size: 1.25rem;
 }
 
-div.cancon {
-    display: flex;
-    justify-content: end;
-    margin-top: 10px;
-}
-
-.cancon button {
-    padding: 3px;
-    outline: none;
-    border-radius: 8px;
-    border: 1px solid gray;
-
-}
-
-button.confirm {
-    margin-inline-start: 10px;
-    padding: 5px;
-    width: fit-content;
-    background-color: rgb(53 158 255 / var(--tw-bg-opacity, 1));
-    color: white;
-}
-
-.confirm:hover {
-    background-color: var(--primary-hover);
-    box-shadow: var(--shadow-md);
-}
-
-button.cancel {
-    width: 90px;
+.header-title-flex h3 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
     color: var(--text-main);
-    background-color: transparent;
 }
 
-.cancel:hover {
-    background-color: var(--border-light);
+.btn-modal-close {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
 }
-@media(max-width:880px){
-   div.addleaves-co{
-    width: 70%;
-   } 
+
+.btn-modal-close:hover {
+    color: var(--text-main);
 }
-@media(max-width:480px){
-   div.addleaves-co{
-    width: 100%;
-    padding-top: 50px;
-    height: 100vh;
-    
-   } 
-   div.cancon {
-   
-    justify-content: center;
-   
-}
-div.paidApproval{
+
+.premium-addleaves-form {
     display: flex;
     flex-direction: column;
-    align-items: start;
-    gap: 5px;
-    justify-content: start;
-    
+    gap: 1.25rem;
+    overflow: hidden;
 }
 
+.form-fields-scroll-area {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow-y: auto;
+    padding-inline-end: 0.25rem;
+}
+
+/* Custom scrollbar for container */
+.form-fields-scroll-area::-webkit-scrollbar {
+    width: 5px;
+}
+
+.form-fields-scroll-area::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.form-fields-scroll-area::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+.form-row-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.premium-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.premium-input-field, .premium-textarea-field {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 0.9375rem;
+    padding: 0.625rem 0.875rem;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.premium-input-field {
+    height: 42px;
+}
+
+.premium-textarea-field {
+    resize: none;
+    line-height: 1.4;
+}
+
+.premium-input-field:focus, .premium-textarea-field:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.text-rtl {
+    direction: rtl;
+    text-align: right;
+}
+
+.checkboxes-flex-row {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    padding-top: 0.25rem;
+    flex-wrap: wrap;
+}
+
+.custom-checkbox-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.custom-checkbox-input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.custom-checkbox-box {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-page);
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.custom-checkbox-input:checked ~ .custom-checkbox-box {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.custom-checkbox-input:checked ~ .custom-checkbox-box::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 2px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-label-text {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.form-footer-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.premium-btn-cancel {
+    padding: 0.625rem 1.25rem;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.premium-btn-cancel:hover {
+    background-color: var(--border-light);
+}
+
+.premium-btn-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.625rem 1.25rem;
+    border-radius: 10px;
+    border: none;
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.premium-btn-submit:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+/* Fallback override for active legacy class sync */
+.addleaveshidden {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: transparent !important;
+    z-index: 1050 !important;
+}
+
+.addleaves-co {
+    display: none !important; /* Hide legacy block inside the wrapper since we render our own root overlay */
+}
+
+/* Responsiveness */
+@media (max-width: 480px) {
+    .premium-addleaves-container {
+        border-radius: 16px;
+        padding: 1.25rem;
+        max-height: 95vh;
+    }
+    
+    .checkboxes-flex-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .form-footer-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .premium-btn-cancel, .premium-btn-submit {
+        width: 100%;
+        justify-content: center;
+    }
 }

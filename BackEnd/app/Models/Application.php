@@ -45,6 +45,9 @@ class Application extends Model
         'full_name',
         'email',
         'phone',
+        'date_of_birth',
+        'address',
+        'emergency_contacts',
         'resume_path',
         'cover_letter_path',
         'status',
@@ -63,6 +66,7 @@ class Application extends Model
     protected $casts = [
         'submitted_at' => 'datetime',
         'reviewed_at'  => 'datetime',
+        'date_of_birth' => 'date',
 
         // ✅ إضافة: evaluated_at cast
         // ليش؟ بدونه evaluated_at بيرجع كـ string

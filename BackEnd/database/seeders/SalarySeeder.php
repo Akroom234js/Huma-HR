@@ -66,7 +66,7 @@ class SalarySeeder extends Seeder
         ];
 
         foreach ($types as $t) {
-            \App\Models\AdjustmentType::create($t);
+            \App\Models\AdjustmentType::firstOrCreate(['name' => $t['name']], $t);
         }
 
         $meritType = \App\Models\AdjustmentType::where('name', 'Merit Increase')->first();

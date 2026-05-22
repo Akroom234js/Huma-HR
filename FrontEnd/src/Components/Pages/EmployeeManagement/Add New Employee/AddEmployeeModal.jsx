@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./AddEmployeeModal.css";
+import apiClient from "../../../../apiConfig";
 
 const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, departmentOptions, positionOptions, managerOptions }) => {
   const [formData, setFormData] = useState({
@@ -21,6 +22,74 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
   });
 
   const [previewImage, setPreviewImage] = useState(null);
+  const [filteredPositions, setFilteredPositions] = useState([]);
+  const [filteredManagers, setFilteredManagers] = useState([]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    if (!formData.department) {
+      setFilteredPositions(positionOptions || []);
+      setFilteredManagers(managerOptions || []);
+      return;
+    }
+
+    let isMounted = true;
+
+    // Fetch positions for the selected department
+    apiClient.get(`/positions?department_id=${formData.department}&per_page=100`)
+      .then(res => {
+        if (!isMounted) return;
+        const fetchedPositions = [
+          { value: "", label: "Select Position" },
+          ...(res.data?.data?.positions?.map(p => ({
+            value: p.id,
+            label: p.title,
+            min_salary: p.min_salary,
+            max_salary: p.max_salary,
+            tax_percent: p.tax_percent,
+            allowances: p.allowances,
+            insurance_amount: p.insurance_amount
+          })) || [])
+        ];
+        setFilteredPositions(fetchedPositions);
+
+        // Clear job title if it is no longer valid in the restricted list
+        setFormData(prev => {
+          const isValid = fetchedPositions.some(pos => pos.value == prev.jobTitle);
+          if (!isValid && prev.jobTitle !== "") {
+            return { ...prev, jobTitle: "" };
+          }
+          return prev;
+        });
+      })
+      .catch(err => console.error("Failed to fetch positions for department", err));
+
+    // Fetch managers/employees for the selected department
+    apiClient.get(`/employees/managers?department_id=${formData.department}`)
+      .then(res => {
+        if (!isMounted) return;
+        const fetchedManagers = [
+          { value: "", label: "Select Supervisor" },
+          ...(res.data?.data?.map(m => ({ value: m.id, label: m.full_name })) || [])
+        ];
+        setFilteredManagers(fetchedManagers);
+
+        // Clear direct supervisor if they are no longer valid in the restricted list
+        setFormData(prev => {
+          const isValid = fetchedManagers.some(m => m.value == prev.directManager);
+          if (!isValid && prev.directManager !== "") {
+            return { ...prev, directManager: "" };
+          }
+          return prev;
+        });
+      })
+      .catch(err => console.error("Failed to fetch managers for department", err));
+
+    return () => {
+      isMounted = false;
+    };
+  }, [formData.department, isOpen, positionOptions, managerOptions]);
 
   useEffect(() => {
     if (editingEmployee) {
@@ -236,7 +305,7 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
                     onChange={handleChange}
                   >
                     <option value="">Select Position</option>
-                    {positionOptions && positionOptions.map(pos => (
+                    {filteredPositions && filteredPositions.map(pos => (
                       pos.value && (
                         <option key={pos.value} value={pos.value}>
                           {pos.label}
@@ -270,7 +339,7 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
                     onChange={handleChange}
                   >
                     <option value="">Select Supervisor</option>
-                    {managerOptions && managerOptions.map(m => (
+                    {filteredManagers && filteredManagers.map(m => (
                       m.value && (
                         <option key={m.value} value={m.value}>
                           {m.label}
@@ -293,7 +362,7 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
                   <label>
                     Basic Salary
                     {(() => {
-                      const selectedPosition = positionOptions?.find(p => p.value == formData.jobTitle);
+                      const selectedPosition = filteredPositions?.find(p => p.value == formData.jobTitle);
                       if (selectedPosition && selectedPosition.value) {
                         return (
                           <span style={{ fontSize: '0.75rem', color: 'var(--primary-color)', fontWeight: 500, marginInlineStart: '6px' }}>

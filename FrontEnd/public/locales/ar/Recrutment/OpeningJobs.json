@@ -1,9 +1,10 @@
 {
     "create": "إنشاء وظيفة",
     "Tabs": {
-        "Interview-Happening": "مقابلات جارية",
+        "Newly-Applied": "الطلبات الجديدة",
         "To-Schedule-Interview": "جدولة المقابلات",
-        "To-Make-Offer": "مقابلات مجدولة",
+        "Interview-Happening": "المقابلات الجارية",
+        "To-Make-Offer": "تقديم العروض",
         "Opening": "الوظائف الشاغرة"
     },
     "JobCard": {

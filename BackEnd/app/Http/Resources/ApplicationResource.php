@@ -1,4 +1,3 @@
-
 <?php
 
 namespace App\Http\Resources;
@@ -23,10 +22,13 @@ class ApplicationResource extends JsonResource
     {
         return [
             // ─── بيانات أساسية ────────────────────────────────
-            'id'            => $this->id,
-            'full_name'     => $this->full_name,
-            'email'         => $this->email,
-            'phone'         => $this->phone,
+            'id'                 => $this->id,
+            'full_name'          => $this->full_name,
+            'email'              => $this->email,
+            'phone'              => $this->phone,
+            'date_of_birth'      => $this->date_of_birth?->format('Y-m-d'),
+            'address'            => $this->address,
+            'emergency_contacts' => $this->emergency_contacts,
 
             // ─── حالة الطلب ───────────────────────────────────
             'status'        => $this->status,
@@ -75,6 +77,20 @@ class ApplicationResource extends JsonResource
                     'file_type'      => $att->file_type,
                     'file_size_human'=> $att->file_size_human, // "2.5 MB"
                     'uploaded_at'    => $att->uploaded_at?->format('Y-m-d'),
+                ])
+            ),
+
+            // ─── المقابلات المجدولة ─────────────────────────────────
+            'interviews'    => $this->whenLoaded('interviews', fn() =>
+                $this->interviews->map(fn($int) => [
+                    'id'             => $int->id,
+                    'interviewer_id' => $int->interviewer_id,
+                    'interviewer_name'=> $int->interviewer?->employeeProfile?->full_name ?? $int->interviewer?->name ?? 'N/A',
+                    'interview_type' => $int->interview_type,
+                    'scheduled_at'   => $int->scheduled_at?->format('Y-m-d H:i'),
+                    'status'         => $int->status,
+                    'feedback'       => $int->feedback,
+                    'rating'         => $int->rating,
                 ])
             ),
         ];

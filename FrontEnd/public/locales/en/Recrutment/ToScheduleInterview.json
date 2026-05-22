@@ -1,18 +1,21 @@
-{"create":"Create Job",
-    "Tabs":{
-        "Interview-Happening":"Interview Happening",
-        "To-Schedule-Interview":"To Schedule Interview",
-        "To-Make-Offer":"To Make Offer",
-        "Opening":"Opening Jobs"
+{
+    "create": "Create Job",
+    "Tabs": {
+        "Newly-Applied": "Newly Applied",
+        "To-Schedule-Interview": "To Schedule Interview",
+        "Interview-Happening": "Interview Happening",
+        "To-Make-Offer": "To Make Offer",
+        "Opening": "Opening Jobs"
     },
-    "CandidateCard":{
-        "Applying":"Applying for:",
-        "SCORE":"ATS SCORE",
-        "schedule":"schedule",
-        "Attachments":"View Attachments"
+    "CandidateCard": {
+        "Applying": "Applying for:",
+        "SCORE": "ATS SCORE",
+        "schedule": "schedule",
+        "Attachments": "View Attachments",
+        "Resume": "Resume"
     },
-    "departmentOptions":{
-        "all":"All Departments"
+    "departmentOptions": {
+        "all": "All Jobs"
     },
-    "applicants":" View more applicants"
+    "applicants": "View more applicants"
 }

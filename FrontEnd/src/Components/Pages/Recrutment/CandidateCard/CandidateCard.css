@@ -209,3 +209,136 @@ button.calender {
 .btn-view-att {
     width: 170px;
 }
+
+/* ── Stage badge ── */
+.stage-badge {
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+}
+.stage-pending      { background: rgba(156,163,175,0.15); color: #9ca3af; }
+.stage-reviewed     { background: rgba(53,158,255,0.15);  color: #359EFF; }
+.stage-shortlisted  { background: rgba(123,97,255,0.15);  color: #a78bfa; }
+.stage-interviewing { background: rgba(251,191,36,0.15);  color: #fbbf24; }
+.stage-offered      { background: rgba(52,211,153,0.15);  color: #34d399; }
+.stage-hired        { background: rgba(52,211,153,0.25);  color: #10b981; border: 1px solid rgba(52,211,153,0.4); }
+.stage-rejected     { background: rgba(248,113,113,0.15); color: #f87171; }
+.stage-withdrawn    { background: rgba(156,163,175,0.12); color: #6b7280; }
+
+/* ── AI score pending ── */
+.score-pending { color: #6b7280; font-size: 0.75rem; font-style: italic; }
+
+/* ── Candidate error ── */
+.candidate-error {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 10px;
+    margin: 8px 0;
+    border-radius: 8px;
+    background: rgba(248,113,113,0.1);
+    border: 1px solid rgba(248,113,113,0.25);
+    color: #fca5a5;
+    font-size: 0.75rem;
+}
+.candidate-error .material-symbols-outlined { font-size: 16px; }
+
+/* ── Feedback input ── */
+.feedback-input-wrap { margin: 8px 0; }
+.feedback-input {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 8px 10px;
+    color: var(--text-main, #f1f5f9);
+    font-size: 0.82rem;
+    resize: none;
+    box-sizing: border-box;
+    outline: none;
+    margin-bottom: 6px;
+}
+.feedback-input:focus { border-color: #359EFF; }
+.feedback-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.feedback-cancel {
+    padding: 5px 12px;
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: none;
+    color: var(--text-secondary, #9ca3af);
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+/* ── Action buttons row ── */
+.card-actions-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Resume download */
+.btn-resume {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-secondary, #9ca3af);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+.btn-resume:hover { background: rgba(255,255,255,0.08); color: var(--text-main, #f1f5f9); }
+.btn-resume .material-symbols-outlined { font-size: 16px; }
+
+/* Pipeline action buttons */
+.btn-action {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s;
+    flex-shrink: 0;
+}
+.btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-action .material-symbols-outlined { font-size: 15px; }
+.btn-action-label { white-space: nowrap; }
+
+.btn-action--blue    { background: rgba(53,158,255,0.15); color: #359EFF;  border: 1px solid rgba(53,158,255,0.3); }
+.btn-action--teal    { background: rgba(123,97,255,0.15);  color: #a78bfa; border: 1px solid rgba(123,97,255,0.3); }
+.btn-action--purple  { background: rgba(251,191,36,0.15); color: #fbbf24;  border: 1px solid rgba(251,191,36,0.3); }
+.btn-action--green   { background: rgba(52,211,153,0.15); color: #34d399;  border: 1px solid rgba(52,211,153,0.3); }
+.btn-action--emerald { background: rgba(16,185,129,0.2);  color: #10b981;  border: 1px solid rgba(16,185,129,0.4); }
+.btn-action--red     { background: rgba(248,113,113,0.12);color: #f87171;  border: 1px solid rgba(248,113,113,0.3); }
+.btn-action--gray    { background: rgba(156,163,175,0.1); color: #9ca3af;  border: 1px solid rgba(156,163,175,0.25); }
+.btn-action--orange  { background: rgba(251,146,60,0.12); color: #fb923c;  border: 1px solid rgba(251,146,60,0.3); }
+
+.btn-action--blue:hover    { background: rgba(53,158,255,0.28); }
+.btn-action--teal:hover    { background: rgba(123,97,255,0.28); }
+.btn-action--purple:hover  { background: rgba(251,191,36,0.28); }
+.btn-action--green:hover   { background: rgba(52,211,153,0.28); }
+.btn-action--emerald:hover { background: rgba(16,185,129,0.35); }
+.btn-action--red:hover     { background: rgba(248,113,113,0.25); }
+.btn-action--gray:hover    { background: rgba(156,163,175,0.2); }
+.btn-action--orange:hover  { background: rgba(251,146,60,0.25); }
+
+/* Spinner inside action button */
+.action-spinner {
+    width: 13px; height: 13px;
+    border: 2px solid rgba(255,255,255,0.25);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: action-spin 0.5s linear infinite;
+    display: inline-block;
+}
+@keyframes action-spin { to { transform: rotate(360deg); } }

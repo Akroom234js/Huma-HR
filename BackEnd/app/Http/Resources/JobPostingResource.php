@@ -33,7 +33,7 @@ class JobPostingResource extends JsonResource
                 'id' => $this->creator->id,
                 'name' => $this->creator->name,
             ]),
-            'applications_count' => $this->whenCounted('applications'),
+            'applications_count' => $this->applications_count ?? $this->applications()->count(),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ];

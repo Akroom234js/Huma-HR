@@ -35,6 +35,7 @@ class EmployeeResource extends JsonResource
             'marital_status'    => $this->marital_status,
             'salary'            => $this->salary,
             'manager_id'        => $this->manager_id,
+            'position_id'       => $this->position_id,
             'profile_pic'       => $this->profile_pic_url,
         ];
     }

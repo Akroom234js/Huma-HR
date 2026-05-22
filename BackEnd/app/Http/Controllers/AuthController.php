@@ -76,6 +76,7 @@ class AuthController extends Controller
                 'job_title'              => $position->title ?? $request->job_title,
                 'employment_status'      => $request->employment_status ?? 'active',
                 'department_id'          => $request->department_id,
+                'position_id'            => $request->position_id,
                 'manager_id'             => $request->manager_id,
                 'branch'                 => $request->branch,
                 'city'                   => $request->city,

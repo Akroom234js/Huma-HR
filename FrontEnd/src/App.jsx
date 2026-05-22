@@ -7,6 +7,7 @@ import LanSw from './Components/LanSw'
 import Home from './Components/Pages/Home/Home';
 import Jops from './Components/Pages/Home/Jops';
 import './App.css';
+import NewlyApplied from './Components/Pages/Recrutment/NewlyApplied/NewlyApplied';
 import ToScheduleInterview from './Components/Pages/Recrutment/ToScheduleInterview/ToScheduleInterview';
 import InterviewHappening from './Components/Pages/Recrutment/InterviewHappening/InterviewHappening';
 import ToMakeOffer from './Components/Pages/Recrutment/ToMakeOffer/ToMakeOffer';
@@ -138,7 +139,8 @@ function App() {
               <Sidebar />
               <main className="main-content">
                 <Routes>
-                  <Route path="/" element={<Recruitment />} />
+                  <Route path="/" element={<Navigate to="newly-applied" replace />} />
+                  <Route path="newly-applied" element={<NewlyApplied />} />
                   <Route path="make-offer" element={<ToMakeOffer />} />
                   <Route path="opening-jobs" element={<OpeningJobs />} />
                   <Route path="schedule-interview" element={<ToScheduleInterview />} />
