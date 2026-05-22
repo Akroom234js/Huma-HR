@@ -11,6 +11,8 @@ use App\Http\Controllers\PositionController;
 use App\Http\Controllers\SalaryStructureController;
 use App\Http\Controllers\ApplicationController;  // ✅ جديد
 use App\Http\Controllers\JobPostingController;   // ✅ جديد
+use App\Http\Controllers\InterviewController;
+use App\Http\Controllers\OfferController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
@@ -23,7 +25,7 @@ use Illuminate\Support\Facades\Artisan;
 Route::get('/system-repair-db', function () {
     try {
         echo "Starting Database Sync...<br>";
-        
+
         echo "Disabling foreign key checks...<br>";
         DB::statement('SET FOREIGN_KEY_CHECKS = 0;');
 
@@ -118,6 +120,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/applications/{id}/reject',    [ApplicationController::class, 'reject']);
         Route::patch('/applications/{id}/withdraw',  [ApplicationController::class, 'withdraw']);
         Route::delete('/applications/{id}',          [ApplicationController::class, 'destroy']);
+        Route::post('/applications/{id}/interviews',     [InterviewController::class,   'store']);
+        Route::post('/applications/{id}/offers',         [OfferController::class,       'store']);
+        Route::post('/offers/{id}/accept',               [OfferController::class,       'accept']);
         Route::get('/applications/{id}/resume',      [ApplicationController::class, 'downloadResume']);
     });
 

@@ -42,7 +42,7 @@ class ApplicationController extends Controller
                       ->orWhere('email', 'like', "%{$request->search}%");
                 })
             )
-            ->latest('submitted_at')
+            ->orderBy('match_score', 'desc')->latest('submitted_at')
             ->paginate($request->get('per_page', 15));
 
         return $this->successResponse(
