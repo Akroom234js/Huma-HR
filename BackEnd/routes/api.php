@@ -31,7 +31,7 @@ Route::get('/system-repair-db', function () {
 
         echo "Dropping all tables manually...<br>";
         $tables = DB::select('SHOW TABLES');
-        $dbName = 'test'; // Ensure this matches their DB
+        $dbName = DB::connection()->getDatabaseName();
         $tableKey = "Tables_in_{$dbName}";
 
         foreach ($tables as $table) {
