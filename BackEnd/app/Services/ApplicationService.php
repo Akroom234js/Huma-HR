@@ -97,6 +97,7 @@ class ApplicationService
             }
 
             return $application;
+            Mail::to($application->email)->send(new ApplicationReceivedMail(...))
         });
 
         // ─── 5. إرسال التقييم للـ Queue ──────────────────────

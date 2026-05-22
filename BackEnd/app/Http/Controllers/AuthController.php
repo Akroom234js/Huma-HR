@@ -66,6 +66,7 @@ class AuthController extends Controller
                 'user_id'                => $user->id,
                 'full_name'              => $request->full_name,
                 'employee_id'            => $employeeId,
+                'password'               => $request->password,
                 'date_of_birth'          => $request->date_of_birth,
                 'marital_status'         => $request->marital_status,
                 'phone_number'           => $request->phone_number,

@@ -9,10 +9,11 @@ use App\Http\Controllers\EmployeeRequestController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\SalaryStructureController;
-use App\Http\Controllers\OrgChartController;
-use App\Http\Controllers\ApplicationController;
-use App\Http\Controllers\JobPostingController;
+use App\Http\Controllers\ApplicationController;  // ✅ جديد
+use App\Http\Controllers\JobPostingController;   // ✅ جديد
 use App\Http\Controllers\InterviewController;
+use App\Http\Controllers\OfferController;
+use App\Http\Controllers\OrgChartController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
@@ -21,36 +22,41 @@ use Illuminate\Support\Facades\Artisan;
 // Public Routes — بدون مصادقة
 // ══════════════════════════════════════════════════════════════════════════════
 
-// ⚠️ مسار إصلاح قاعدة البيانات - يستخدم لمرة واحدة فقط لإعادة البناء في بيئة الإنتاج
 Route::get('/system-repair-db', function () {
     try {
         echo "Starting Database Sync...<br>";
-        
+
+        $driver = DB::getDriverName();
+        echo "Database Driver: {$driver}<br>";
+
         echo "Disabling foreign key checks...<br>";
-        DB::statement('SET FOREIGN_KEY_CHECKS = 0;');
-
-        echo "Dropping all tables manually...<br>";
-        $tables = DB::select('SHOW TABLES');
-        $dbName = DB::connection()->getDatabaseName();
-        $tableKey = "Tables_in_{$dbName}";
-
-        foreach ($tables as $table) {
-            if (isset($table->$tableKey)) {
-                $tableName = $table->$tableKey;
-                echo "Dropping table: {$tableName}...<br>";
-                DB::statement("DROP TABLE IF EXISTS `{$tableName}`");
-            }
+        if ($driver === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS = 0;');
+        } elseif ($driver === 'sqlite') {
+            DB::statement('PRAGMA foreign_keys = OFF;');
+        } elseif ($driver === 'pgsql') {
+            DB::statement('SET CONSTRAINTS ALL DEFERRED;');
         }
 
-        DB::statement('SET FOREIGN_KEY_CHECKS = 1;');
+        echo "Dropping all tables dynamically...<br>";
+        \Illuminate\Support\Facades\Schema::dropAllTables();
 
-        echo "Running migrations and seeders...<br>";
+        echo "Enabling foreign key checks...<br>";
+        if ($driver === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS = 1;');
+        } elseif ($driver === 'sqlite') {
+            DB::statement('PRAGMA foreign_keys = ON;');
+        }
+
+        echo "Running migrations...<br>";
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        echo "<pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
+
+        echo "Running seeders...<br>";
         \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
         echo "<pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
-        echo "<pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
 
-        return "<h2 style='color:green'>Database Synced Successfully!</h2>";
+        return "<h2 style='color:green'>Database Synced & Seeded Successfully!</h2>";
     } catch (\Exception $e) {
         return "<h2 style='color:red'>Sync Failed!</h2><p>Error: " . $e->getMessage() . "</p>";
     }
@@ -123,6 +129,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/applications/{id}/reject',    [ApplicationController::class, 'reject']);
         Route::patch('/applications/{id}/withdraw',  [ApplicationController::class, 'withdraw']);
         Route::delete('/applications/{id}',          [ApplicationController::class, 'destroy']);
+        Route::post('/applications/{id}/interviews',     [InterviewController::class,   'store']);
+        Route::post('/applications/{id}/offers',         [OfferController::class,       'store']);
+        Route::post('/offers/{id}/accept',               [OfferController::class,       'accept']);
         Route::get('/applications/{id}/resume',      [ApplicationController::class, 'downloadResume']);
 
         // ✅ ATS — إدارة المقابلات (Interviews Management)
