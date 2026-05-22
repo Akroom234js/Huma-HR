@@ -52,6 +52,13 @@ class AIResumeEvaluationService
             $jobDescription
         );
 
+        // التحقق من وجود مفتاح OpenAI API — إن لم يتوفر، ننتقل فوراً للتقييم المحلي المتقدم
+        $openAiKey = config('openai.api_key') ?? env('OPENAI_API_KEY');
+        if (empty($openAiKey)) {
+            Log::info('AIResumeEvaluationService: No OpenAI API key configured. Using Advanced Local Evaluator.');
+            return $this->evaluateLocally($resumeText, $jobDescription, $keywordAnalysis);
+        }
+
         // ─── الخطوة 2: تقييم الـ AI ──────────────────────────────
         try {
             $prompt   = $this->buildEvaluationPrompt(
@@ -260,6 +267,196 @@ PROMPT;
             $score >= 60 => 'Good match. Recommended for interview.',
             $score >= 40 => 'Average match. Requires HR review before proceeding.',
             default      => 'Low match. Manual HR review required.',
+        };
+    }
+
+    /**
+     * تقييم السيرة الذاتية محلياً بالكامل (بدون حاجة للاتصال بالإنترنت)
+     * Advanced Local / Offline Resume Evaluator
+     */
+    public function evaluateLocally(
+        string $resumeText,
+        string $jobDescription,
+        array $keywordAnalysis
+    ): array {
+        $resumeTextLower = mb_strtolower($resumeText, 'UTF-8');
+        $isArabic = preg_match('/[\x{0600}-\x{06FF}]/u', $jobDescription);
+
+        // 1. حساب نسبة مطابقة المهارات (Skills Match Score)
+        $skillsMatchScore = $keywordAnalysis['match_score'];
+
+        // 2. مطابقة الخبرة (Experience Match Score)
+        $experienceScore = 50.0; // القيمة الافتراضية
+        $yearsOfExperience = 0;
+        
+        // English pattern: e.g. 5+ years, 5 years
+        if (preg_match_all('/(\d+)\s*(?:\+|plus)?\s*(?:years?|yrs?)\b/u', $resumeTextLower, $matches)) {
+            $yearsOfExperience = max($matches[1]);
+        }
+        
+        // Arabic pattern: e.g. خبرة 5 سنوات، 3 أعوام، سنة واحدة
+        if (preg_match_all('/(?:خبرة)?\s*(\d+)\s*(?:سنوات|سنة|عام|أعوام|سنه)/u', $resumeTextLower, $arMatches)) {
+            $yearsOfExperience = max($yearsOfExperience, max($arMatches[1]));
+        }
+
+        // لو وجدنا كلمات تدل على الخبرة بدون رقم
+        if ($yearsOfExperience == 0) {
+            if (preg_match('/(?:senior|expert|lead|سينيور|خبير|رئيسي)/u', $resumeTextLower)) {
+                $yearsOfExperience = 7;
+            } elseif (preg_match('/(?:mid|experienced|ذو خبرة|مطور)/u', $resumeTextLower)) {
+                $yearsOfExperience = 4;
+            } elseif (preg_match('/(?:junior|entry|fresh|مبتدئ|حديث التخرج)/u', $resumeTextLower)) {
+                $yearsOfExperience = 1;
+            }
+        }
+
+        // حساب درجة الخبرة بناءً على عدد السنوات
+        if ($yearsOfExperience >= 8) {
+            $experienceScore = 95.0;
+        } elseif ($yearsOfExperience >= 5) {
+            $experienceScore = 90.0;
+        } elseif ($yearsOfExperience >= 3) {
+            $experienceScore = 80.0;
+        } elseif ($yearsOfExperience >= 1) {
+            $experienceScore = 65.0;
+        } else {
+            $experienceScore = 45.0;
+        }
+
+        // 3. مطابقة التعليم (Education Match Score)
+        $educationScore = 50.0;
+        
+        $phdTerms = ['phd', 'doctorate', 'دكتوراه'];
+        $masterTerms = ['master', 'msc', 'mba', 'ma', 'ماجستير'];
+        $bachelorTerms = ['bachelor', 'bsc', 'ba', 'b.a', 'b.s', 'university', 'college', 'بكالوريوس', 'جامعة', 'كلية'];
+        $diplomaTerms = ['diploma', 'دبلوم', 'معهد'];
+
+        $hasPhd = false;
+        $hasMaster = false;
+        $hasBachelor = false;
+        $hasDiploma = false;
+
+        foreach ($phdTerms as $term) {
+            if (str_contains($resumeTextLower, $term)) { $hasPhd = true; break; }
+        }
+        foreach ($masterTerms as $term) {
+            if (str_contains($resumeTextLower, $term)) { $hasMaster = true; break; }
+        }
+        foreach ($bachelorTerms as $term) {
+            if (str_contains($resumeTextLower, $term)) { $hasBachelor = true; break; }
+        }
+        foreach ($diplomaTerms as $term) {
+            if (str_contains($resumeTextLower, $term)) { $hasDiploma = true; break; }
+        }
+
+        if ($hasPhd) {
+            $educationScore = 98.0;
+        } elseif ($hasMaster) {
+            $educationScore = 92.0;
+        } elseif ($hasBachelor) {
+            $educationScore = 85.0;
+        } elseif ($hasDiploma) {
+            $educationScore = 70.0;
+        } else {
+            $educationScore = 50.0;
+        }
+
+        // 4. حساب الدرجة الكلية بالمعادلة
+        // Skills (40%), Experience (30%), Education (30%)
+        $finalScore = round(
+            ($skillsMatchScore * 0.4) +
+            ($experienceScore  * 0.3) +
+            ($educationScore   * 0.3)
+        );
+
+        // 5. توليد نقاط القوة والضعف باللغة المناسبة للوظيفة
+        $matchedSkills = $keywordAnalysis['matched_skills'];
+        $missingSkills = $keywordAnalysis['missing_skills'];
+
+        $strengths = [];
+        $weaknesses = [];
+
+        if ($isArabic) {
+            if (!empty($matchedSkills)) {
+                $strengths[] = 'امتلاك المهارات الأساسية المطلوبة: ' . implode(', ', array_slice($matchedSkills, 0, 4));
+            }
+            if ($experienceScore >= 80) {
+                $strengths[] = "يمتلك المرشح خبرة عملية جيدة جداً في هذا مجال العمل (تقديراً: {$yearsOfExperience} سنوات).";
+            }
+            if ($educationScore >= 85) {
+                $strengths[] = 'المؤهل الأكاديمي مناسب ومتوافق مع متطلبات الوظيفة.';
+            }
+            if (empty($strengths)) {
+                $strengths[] = 'تتوفر لدى المرشح بعض الكفاءات الأساسية العامة.';
+            }
+
+            if (!empty($missingSkills)) {
+                $weaknesses[] = 'يفتقر إلى بعض المهارات المطلوبة: ' . implode(', ', array_slice($missingSkills, 0, 4));
+            }
+            if ($experienceScore < 65) {
+                $weaknesses[] = 'سنوات الخبرة العملية قد تكون أقل من المستوى المطلوب.';
+            }
+            if (empty($weaknesses)) {
+                $weaknesses[] = 'لا توجد فجوات مهارية واضحة مقارنة بالمتطلبات المباشرة.';
+            }
+
+            // التوصية
+            $recommendation = $this->generateRecommendationArabic($finalScore);
+        } else {
+            if (!empty($matchedSkills)) {
+                $strengths[] = 'Possesses key required skills: ' . implode(', ', array_slice($matchedSkills, 0, 4));
+            }
+            if ($experienceScore >= 80) {
+                $strengths[] = "Candidate has solid hands-on experience (estimated: {$yearsOfExperience} years).";
+            }
+            if ($educationScore >= 85) {
+                $strengths[] = 'Educational background is aligned with the job requirements.';
+            }
+            if (empty($strengths)) {
+                $strengths[] = 'Possesses general core competencies.';
+            }
+
+            if (!empty($missingSkills)) {
+                $weaknesses[] = 'Lacks some of the required key skills: ' . implode(', ', array_slice($missingSkills, 0, 4));
+            }
+            if ($experienceScore < 65) {
+                $weaknesses[] = 'Practical experience might be slightly below the preferred level.';
+            }
+            if (empty($weaknesses)) {
+                $weaknesses[] = 'No major skill gaps identified based on direct keywords match.';
+            }
+
+            // Recommendation
+            $recommendation = $this->generateRecommendation($finalScore);
+        }
+
+        return [
+            'success'             => true,
+            'overall_score'       => $finalScore,
+            'keyword_score'       => $skillsMatchScore,
+            'ai_score'            => $finalScore,
+            'skills_match'        => $skillsMatchScore,
+            'experience_match'    => $experienceScore,
+            'education_match'     => $educationScore,
+            'matched_skills'      => $matchedSkills,
+            'missing_skills'      => $missingSkills,
+            'strengths'           => $strengths,
+            'weaknesses'          => $weaknesses,
+            'recommendation'      => $recommendation,
+            'hire_recommendation' => $finalScore >= 60,
+        ];
+    }
+
+    /**
+     * توليد توصية نصية باللغة العربية بناءً على الـ Score
+     */
+    private function generateRecommendationArabic(float $score): string
+    {
+        return match (true) {
+            $score >= 80 => 'توافق ممتاز جداً. نوصي بشدة بجدولة مقابلة مباشرة ودفع المرشح للمراحل المتقدمة.',
+            $score >= 60 => 'توافق جيد. يمتلك المهارات الكافية لأداء الدور. نوصي بجدولة مقابلة أولية.',
+            $score >= 40 => 'توافق متوسط. توجد فجوات مهارية أو خبرة محدودة، يحتاج لمراجعة يدوية دقيقة من مسؤولي التوظيف.',
+            default      => 'توافق ضعيف. لا يلبي معظم المهارات والمتطلبات الأساسية للوظيفة.',
         };
     }
 }
