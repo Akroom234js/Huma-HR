@@ -8,13 +8,17 @@
 }
 
 .container1::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.05) 0%, transparent 40%);
+  background: radial-gradient(
+    circle at 20% 30%,
+    rgba(255, 255, 255, 0.05) 0%,
+    transparent 40%
+  );
   pointer-events: none;
 }
 
@@ -135,7 +139,7 @@
 }
 
 .logo-con .sidebar-title::after {
-  content: '';
+  content: "";
   width: 8px;
   height: 8px;
   background: #ffffff;
@@ -146,7 +150,6 @@
 }
 
 @keyframes logoFloat {
-
   0%,
   100% {
     transform: translateY(0) rotateY(0);
@@ -240,7 +243,6 @@
   font-size: 0.95rem;
   letter-spacing: 0.5px;
 }
-
 
 .nav-profile:hover {
   transform: scale(1.05);
@@ -913,13 +915,13 @@
 }
 
 .container5::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   right: 0;
   width: 100%;
   height: 100%;
-  background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
+  background-image: url("https://www.transparenttextures.com/patterns/cubes.png");
   opacity: 0.1;
   pointer-events: none;
 }
@@ -1819,16 +1821,25 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes popIn {
-  to { transform: scale(1); opacity: 1; }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* Make sure the ptn-login shows disabled state clearly */
@@ -1900,7 +1911,7 @@
 }
 
 .tour-cloud::after {
-  content: '';
+  content: "";
   position: absolute;
   border-style: solid;
 }
@@ -1954,11 +1965,16 @@
 }
 
 @keyframes floatCloud {
-  0%, 100% { transform: translate(-50%, 0); }
-  50% { transform: translate(-50%, -8px); }
+  0%,
+  100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, -8px);
+  }
 }
 
-[data-theme='dark'] .tour-cloud {
+[data-theme="dark"] .tour-cloud {
   background: rgba(15, 23, 42, 0.4);
   border-color: rgba(255, 255, 255, 0.1);
 }
@@ -1999,7 +2015,6 @@
 [data-theme="dark"] .end {
   background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
 }
-
 
 [data-theme="dark"] .nav-links a.active {
   background-color: var(--primary-color);
@@ -2050,7 +2065,6 @@
   border-color: var(--primary-color);
 }
 
-
 [data-theme="dark"] .right-side label {
   color: #94a3b8;
 }
@@ -2066,5 +2080,3 @@
 [data-theme="dark"] .footer h3 {
   color: white;
 }
-
-
