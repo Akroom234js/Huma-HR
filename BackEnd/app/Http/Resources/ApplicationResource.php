@@ -63,11 +63,12 @@ class ApplicationResource extends JsonResource
 
             // ─── الوظيفة المرتبطة ─────────────────────────────
             // whenLoaded: لو ما عملنا with('jobPosting') ما يعمل query إضافي
-            'job_posting'   => $this->whenLoaded('jobPosting', fn() => [
+            // ✅ null-safe: لو الـ jobPosting اتحذف (SoftDelete) يرجع null بدل خطأ
+            'job_posting'   => $this->whenLoaded('jobPosting', fn() => $this->jobPosting ? [
                 'id'     => $this->jobPosting->id,
                 'title'  => $this->jobPosting->title,
                 'status' => $this->jobPosting->status,
-            ]),
+            ] : null),
 
             // ─── المرفقات ─────────────────────────────────────
             'attachments'   => $this->whenLoaded('attachments', fn() =>
