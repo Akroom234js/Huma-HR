@@ -12,6 +12,7 @@ use App\Http\Controllers\SalaryStructureController;
 use App\Http\Controllers\OrgChartController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\JobPostingController;
+use App\Http\Controllers\InterviewController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
@@ -64,7 +65,7 @@ Route::prefix('auth')->group(function () {
 // ✅ ATS Public Routes — المتقدمون الخارجيون
 // بدون Auth — أي شخص يقدر يشوف الوظائف ويتقدم
 Route::get('/job-postings',         [JobPostingController::class, 'index']);   // قائمة الوظائف المفتوحة
-Route::get('/job-postings/{id}',    [JobPostingController::class, 'show']);    // تفاصيل وظيفة
+Route::get('/job-postings/{jobPosting}',    [JobPostingController::class, 'show']);    // تفاصيل وظيفة
 Route::post('/job-postings/{id}/apply', [ApplicationController::class, 'store']); // تقديم طلب
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -107,10 +108,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // ✅ ATS — HR فقط: إدارة الوظائف والطلبات
         Route::post('/job-postings',              [JobPostingController::class,   'store']);
-        Route::put('/job-postings/{id}',          [JobPostingController::class,   'update']);
-        Route::patch('/job-postings/{id}/publish',[JobPostingController::class,   'publish']);
-        Route::patch('/job-postings/{id}/close',  [JobPostingController::class,   'close']);
-        Route::delete('/job-postings/{id}',       [JobPostingController::class,   'destroy']);
+        Route::put('/job-postings/{jobPosting}',          [JobPostingController::class,   'update']);
+        Route::patch('/job-postings/{jobPosting}/publish',[JobPostingController::class,   'publish']);
+        Route::patch('/job-postings/{jobPosting}/close',  [JobPostingController::class,   'close']);
+        Route::delete('/job-postings/{jobPosting}',       [JobPostingController::class,   'destroy']);
 
         // ✅ ATS — تغيير حالة الطلبات (Pipeline Actions)
         Route::patch('/applications/{id}/status',    [ApplicationController::class, 'updateStatus']);
@@ -123,6 +124,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/applications/{id}/withdraw',  [ApplicationController::class, 'withdraw']);
         Route::delete('/applications/{id}',          [ApplicationController::class, 'destroy']);
         Route::get('/applications/{id}/resume',      [ApplicationController::class, 'downloadResume']);
+
+        // ✅ ATS — إدارة المقابلات (Interviews Management)
+        Route::post('/applications/{application}/interviews', [InterviewController::class, 'store']);
+        Route::put('/interviews/{interview}', [InterviewController::class, 'update']);
+        Route::patch('/interviews/{interview}/feedback', [InterviewController::class, 'recordFeedback']);
+        Route::patch('/interviews/{interview}/cancel', [InterviewController::class, 'cancel']);
+        Route::patch('/interviews/{interview}/reschedule', [InterviewController::class, 'reschedule']);
+        Route::delete('/interviews/{interview}', [InterviewController::class, 'destroy']);
     });
 
     // ── Employee Portal ──────────────────────────────────────────────
@@ -205,6 +214,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/applications/{id}',                     [ApplicationController::class, 'show']);
         Route::get('/applications/{id}/allowed-transitions', [ApplicationController::class, 'allowedTransitions']);
         Route::get('/job-postings/{id}/stats',               [ApplicationController::class, 'stats']);
+
+        // Interviews Read
+        Route::get('/interviews', [InterviewController::class, 'index']);
+        Route::get('/interviews/{interview}', [InterviewController::class, 'show']);
     });
 
     // ── Department Manager — قسمه وفريقه فقط ────────────────────────────

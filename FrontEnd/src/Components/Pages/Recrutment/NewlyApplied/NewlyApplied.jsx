@@ -7,10 +7,10 @@ import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 import CandidateCard from '../CandidateCard/CandidateCard';
 import CreateJobModal from '../CreateJobModal/CreateJobModal';
 import '../Main-page/Recrutment.css';
-import './ToMakeOffer.css';
+import './NewlyApplied.css';
 import { getApplications, getJobPostings, getApplicationsPipelineStats } from '../../../../services/atsService';
+import apiClient from '../../../../apiConfig';
 
-// Reusable loading skeleton
 const CandidateSkeleton = () => (
     <div className="candidate-card" style={{ minHeight: 200, pointerEvents: 'none' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: 4 }}>
@@ -21,17 +21,17 @@ const CandidateSkeleton = () => (
     </div>
 );
 
-export default function ToMakeOffer() {
-    const [activeTab, setActiveTab]     = useState('make-offer');
-    const [selectedDept, setSelectedDept] = useState(() => sessionStorage.getItem('selected_job_posting_id') || '');
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingJob, setEditingJob]   = useState(null);
-    const [applications, setApplications] = useState([]);
-    const [loading, setLoading]           = useState(true);
-    const [pagination, setPagination]     = useState({ total: 0, current_page: 1, last_page: 1 });
-    const [jobs, setJobs]                 = useState([]);
-    const [jobsCount, setJobsCount]       = useState(0);
-    const [counts, setCounts]             = useState({ pending: 0, shortlisted: 0, interviewing: 0, offered: 0 });
+export default function NewlyApplied() {
+    const [activeTab, setActiveTab]         = useState('newly-applied');
+    const [selectedDept, setSelectedDept]   = useState(() => sessionStorage.getItem('selected_job_posting_id') || '');
+    const [isModalOpen, setIsModalOpen]     = useState(false);
+    const [editingJob, setEditingJob]       = useState(null);
+    const [applications, setApplications]   = useState([]);
+    const [loading, setLoading]             = useState(true);
+    const [pagination, setPagination]       = useState({ total: 0, current_page: 1, last_page: 1 });
+    const [jobs, setJobs]                   = useState([]);
+    const [jobsCount, setJobsCount]         = useState(0);
+    const [counts, setCounts]               = useState({ pending: 0, shortlisted: 0, interviewing: 0, offered: 0 });
 
     const { t } = useTranslation('Recrutment/ToMakeOffer');
 
@@ -74,21 +74,30 @@ export default function ToMakeOffer() {
 
     useEffect(() => { fetchCounts(); }, [fetchCounts]);
 
-    // ── Fetch offered applications ─────────────────────────
+    // ── Fetch pending & reviewed applications ─────────────────────
     const fetchApplications = useCallback(async () => {
         setLoading(true);
         try {
-            const params = { status: 'offered', per_page: 20 };
+            const baseParams = { per_page: 20 };
             if (selectedDept) {
-                params.job_posting_id = selectedDept;
+                baseParams.job_posting_id = selectedDept;
             }
-            const res  = await getApplications(params);
-            const body = res.data?.data ?? {};
-            const list = body.applications ?? [];
-            setApplications(Array.isArray(list) ? list : []);
-            if (body.pagination) setPagination(body.pagination);
+            const [pendingRes, reviewedRes] = await Promise.all([
+                getApplications({ ...baseParams, status: 'pending' }),
+                getApplications({ ...baseParams, status: 'reviewed' }),
+            ]);
+
+            const pendingList = pendingRes.data?.data?.applications ?? [];
+            const reviewedList = reviewedRes.data?.data?.applications ?? [];
+
+            // Combine both lists
+            setApplications([...pendingList, ...reviewedList]);
+
+            if (pendingRes.data?.data?.pagination) {
+                setPagination(pendingRes.data.data.pagination);
+            }
         } catch (err) {
-            console.error('Failed to fetch offered applications:', err);
+            console.error('Failed to fetch pending and reviewed applications:', err);
             setApplications([]);
         } finally {
             setLoading(false);
@@ -97,14 +106,14 @@ export default function ToMakeOffer() {
 
     useEffect(() => { fetchApplications(); }, [fetchApplications]);
 
-    // After a pipeline action, update or remove the card from this tab
+    // Remove card from this tab when moved to reviewed or shortlist stage
     const handleTransitionDone = (updatedApp) => {
-        // Remove from "offered" tab if status changed away from offered
-        if (updatedApp.status !== 'offered') {
+        if (updatedApp.status !== 'pending' && updatedApp.status !== 'reviewed') {
             setApplications(prev => prev.filter(a => a.id !== updatedApp.id));
         } else {
             setApplications(prev => prev.map(a => a.id === updatedApp.id ? updatedApp : a));
         }
+        fetchCounts();
     };
 
     return (
@@ -132,8 +141,8 @@ export default function ToMakeOffer() {
                             : applications.length === 0
                                 ? (
                                     <div className="jops-empty-state" style={{ gridColumn: '1/-1' }}>
-                                        <span className="material-symbols-outlined">handshake</span>
-                                        <p>No candidates ready for an offer yet.</p>
+                                        <span className="material-symbols-outlined">inbox</span>
+                                        <p>No new applications yet.</p>
                                     </div>
                                 )
                                 : applications.map(app => (

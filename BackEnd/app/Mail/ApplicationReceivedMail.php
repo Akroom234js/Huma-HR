@@ -1,7 +1,6 @@
-
 <?php
 
-namespace app\Mail;
+namespace App\Mail;
 
 use App\Models\Application;
 use App\Models\JobPosting;
