@@ -63,7 +63,7 @@ class JobPostingController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'حدث خطأ أثناء إنشاء الوظيفة.',
+                'message' => $e->getMessage() ,
                 'data' => null,
             ], 500);
         }
