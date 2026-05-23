@@ -97,10 +97,12 @@ class Application extends Model
 
     /**
      * الطلب ينتمي إلى وظيفة واحدة
+     * ✅ withTrashed(): لو الوظيفة اتحذفت (SoftDelete)، لا تزال بيانات الطلب تظهر
+     *    بدونها: jobPosting يرجع null → ApplicationResource يكسر عند عرض القائمة
      */
     public function jobPosting(): BelongsTo
     {
-        return $this->belongsTo(JobPosting::class);
+        return $this->belongsTo(JobPosting::class)->withTrashed();
     }
 
     /**
