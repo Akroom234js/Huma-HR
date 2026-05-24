@@ -288,6 +288,26 @@ class ApplicationController extends Controller
         return $this->applicationService->downloadResume($application);
     }
 
+    // ── GET /api/attachments/{id}/download ─────────────────────────────────────
+    // Middleware: auth:sanctum + role:hr
+    public function downloadAttachment(int $id): mixed
+    {
+        $attachment = \App\Models\Attachment::find($id);
+
+        if (!$attachment) {
+            return $this->errorResponse(message: 'Attachment not found.', statusCode: 404);
+        }
+
+        if (!\Illuminate\Support\Facades\Storage::disk('local')->exists($attachment->file_url)) {
+            return $this->errorResponse(message: 'File not found on storage.', statusCode: 404);
+        }
+
+        return \Illuminate\Support\Facades\Storage::disk('local')->download(
+            $attachment->file_url,
+            $attachment->file_name
+        );
+    }
+
     // =========================================================
     // Private Helper — يقلص تكرار try/catch في كل Action
     // =========================================================

@@ -31,7 +31,7 @@ export default function NewlyApplied() {
     const [pagination, setPagination]       = useState({ total: 0, current_page: 1, last_page: 1 });
     const [jobs, setJobs]                   = useState([]);
     const [jobsCount, setJobsCount]         = useState(0);
-    const [counts, setCounts]               = useState({ pending: 0, shortlisted: 0, interviewing: 0, offered: 0 });
+    const [counts, setCounts]               = useState({ pending: 0, shortlisted: 0, interviewing: 0, offered: 0, hired: 0 });
 
     const { t } = useTranslation('Recrutment/ToMakeOffer');
 
@@ -40,6 +40,7 @@ export default function NewlyApplied() {
         { id: 'schedule-interview',  label: t('Tabs.To-Schedule-Interview'),   count: counts.shortlisted,  path: '/recruitment/schedule-interview' },
         { id: 'interview-happening', label: t('Tabs.Interview-Happening'),    count: counts.interviewing, path: '/recruitment/interview-happening' },
         { id: 'make-offer',          label: t('Tabs.To-Make-Offer'),           count: counts.offered,      path: '/recruitment/make-offer' },
+        { id: 'hired',               label: 'Hired Candidates',                count: counts.hired,        path: '/recruitment/hired' },
         { id: 'opening-jobs',        label: t('Tabs.Opening'),                 count: jobsCount,           path: '/recruitment/opening-jobs' },
     ];
 
@@ -68,6 +69,7 @@ export default function NewlyApplied() {
                 shortlisted:  stats.shortlisted ?? 0,
                 interviewing: stats.interviewing ?? 0,
                 offered:      stats.offered ?? 0,
+                hired:        stats.hired ?? 0,
             });
         } catch { /* silent */ }
     }, [selectedDept]);

@@ -78,7 +78,7 @@ export default function InterviewHappening() {
     const [pagination, setPagination]       = useState({ total: 0, current_page: 1, last_page: 1 });
     const [jobs, setJobs]                   = useState([]);
     const [jobsCount, setJobsCount]         = useState(0);
-    const [counts, setCounts]               = useState({ pending: 0, shortlisted: 0, interviewing: 0, offered: 0 });
+    const [counts, setCounts]               = useState({ pending: 0, shortlisted: 0, interviewing: 0, offered: 0, hired: 0 });
 
     // State for inline feedback/rejection drawers
     const [activeFeedbackId, setActiveFeedbackId]   = useState(null);
@@ -94,6 +94,7 @@ export default function InterviewHappening() {
         { id: 'schedule-interview',  label: t('Tabs.To-Schedule-Interview'),   count: counts.shortlisted,  path: '/recruitment/schedule-interview' },
         { id: 'interview-happening', label: t('Tabs.Interview-Happening'),    count: counts.interviewing, path: '/recruitment/interview-happening' },
         { id: 'make-offer',          label: t('Tabs.To-Make-Offer'),           count: counts.offered,      path: '/recruitment/make-offer' },
+        { id: 'hired',               label: 'Hired Candidates',                count: counts.hired,        path: '/recruitment/hired' },
         { id: 'opening-jobs',        label: t('Tabs.Opening'),                 count: jobsCount,           path: '/recruitment/opening-jobs' },
     ];
 
@@ -122,6 +123,7 @@ export default function InterviewHappening() {
                 shortlisted:  stats.shortlisted ?? 0,
                 interviewing: stats.interviewing ?? 0,
                 offered:      stats.offered ?? 0,
+                hired:        stats.hired ?? 0,
             });
         } catch { /* silent */ }
     }, [selectedDept]);
@@ -378,6 +380,33 @@ export default function InterviewHappening() {
                                                     <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>{typeIcon}</span>
                                                     <span>{typeLabel}</span>
                                                 </div>
+                                                {latestInterview?.rating > 0 && (
+                                                    <div className="rating-display" style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+                                                        <div style={{ display: 'flex', gap: '1px' }}>
+                                                            {Array.from({ length: 5 }).map((_, idx) => (
+                                                                <span 
+                                                                    key={idx} 
+                                                                    className="material-symbols-outlined" 
+                                                                    style={{ 
+                                                                        fontSize: '15px', 
+                                                                        color: idx < latestInterview.rating ? '#fbbf24' : '#d1d5db' 
+                                                                    }}
+                                                                >
+                                                                    {idx < latestInterview.rating ? 'star' : 'star_border'}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                        {latestInterview.feedback && (
+                                                            <span 
+                                                                className="material-symbols-outlined" 
+                                                                style={{ fontSize: '14px', color: 'var(--text-muted, #6b7280)', cursor: 'help', verticalAlign: 'middle' }}
+                                                                title={latestInterview.feedback}
+                                                            >
+                                                                chat_bubble
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </div>
 
                                             {/* Action Buttons Column */}
