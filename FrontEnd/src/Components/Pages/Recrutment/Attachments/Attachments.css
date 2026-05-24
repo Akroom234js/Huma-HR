@@ -1,58 +1,314 @@
-div.attachments {
-    background-color: var(--bg-page);
-    width: 80%;
-    border-radius: 10px;
-    height: 90vb;
-    border: 1px solid var(--border-color);
+/* Attachments.css */
 
+/* Modal overlay backdrop with premium blur */
+.shinvisibility {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(15, 23, 42, 0.45); /* Light backdrop */
+    backdrop-filter: blur(12px); /* Luxurious soft blur */
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 9999;
+    padding: 20px;
+    animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+[data-theme="dark"] .shinvisibility {
+    background-color: rgba(15, 23, 42, 0.7) !important; /* Darker backdrop in dark mode */
+}
+
+/* Modal Content Card - Supports Light and Dark modes */
+div.attachments-card {
+    background: #ffffff; /* Crisp clean white in light mode */
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 780px; /* Modern centered width */
+    height: auto;
+    max-height: 85vh;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: modalSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+[data-theme="dark"] div.attachments-card {
+    background: rgba(15, 23, 42, 0.92) !important; /* Premium dark slate in dark mode */
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65) !important;
+}
+
+/* Header Area styling */
 div.att-name-x {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--bg-page);
-    padding: 10px 10px 2px 10px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    border-bottom: 1px solid var(--border-color);
+    background: rgba(0, 0, 0, 0.01);
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border-color, #e2e8f0);
+}
+
+[data-theme="dark"] div.att-name-x {
+    background: rgba(255, 255, 255, 0.01) !important;
+}
+
+p.att-name {
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: var(--text-main, #1f2937);
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+p.att-attachments {
+    color: var(--text-secondary, #64748b);
+    font-size: 0.85rem;
+    margin: 4px 0 0 0;
 }
 
 div.down-x {
     display: flex;
     align-items: center;
+    gap: 16px;
+}
+
+/* Download button */
+button.btn-move.calender {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #359EFF 0%, #1d4ed8 100%);
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(53, 158, 255, 0.25);
+}
+
+button.btn-move.calender:hover {
+    background: linear-gradient(135deg, #1383ed 0%, #1e3a8a 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(53, 158, 255, 0.4);
+}
+
+/* Close x button */
+button.sh_In_x.x {
+    border: none;
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: var(--text-secondary, #64748b);
+    background-color: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+button.sh_In_x.x:hover {
+    color: var(--text-main, #1f2937);
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] button.sh_In_x.x:hover {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Document List Scroll View */
+div.doc {
+    flex-grow: 1;
+    background-color: transparent;
+    display: flex;
+    padding: 24px 32px;
+    gap: 16px;
+    flex-direction: column;
+    overflow-y: auto;
+    max-height: 50vh;
+}
+
+/* Style individual document item rows */
+.doc-att {
+    display: flex;
+    align-items: center;
+    background: #f8fafc; /* Beautiful clean gray in light mode */
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 20px;
+    gap: 16px;
+    transition: all 0.22s ease;
+}
+
+.doc-att:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    transform: translateX(4px);
+}
+
+[data-theme="dark"] .doc-att {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] .doc-att:hover {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-color: rgba(53, 158, 255, 0.3) !important;
+}
+
+/* Document Icon thumbnail */
+img.doc {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    object-fit: cover;
+    background-color: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] img.doc {
+    background-color: rgba(0, 0, 0, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.name-doc {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-main, #1f2937);
+    margin: 0;
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.size-doc {
+    font-size: 0.8rem;
+    color: var(--text-secondary, #64748b);
+    margin: 0;
+}
+
+/* Preview / Download action controls inside the row */
+.preview-download {
+    display: flex;
+    align-items: center;
     gap: 10px;
 }
 
-button.x {
-    color: var(--text-main);
-}
-
-p.att-name {
-    font-weight: 800;
-    font-size: 18px;
-}
-
-p.att-attachments {
-    color: gray;
-}
-
-div.doc {
-    height: 60vb;
-    background-color: var(--bg-page);
+/* Preview button */
+.preview-download button.eye {
     display: flex;
-    padding: 5px 20px;
-    gap: 2rem;
-    flex-wrap: wrap;
-    overflow-y: scroll;
-
-
-}
-
-div.total {
-    display: flex;
-
     align-items: center;
-    padding-inline-start: 10px;
-    padding-top: 40px;
+    gap: 6px;
+    background: rgba(53, 158, 255, 0.1);
+    color: var(--primary-color, #359EFF);
+    border: 1px solid rgba(53, 158, 255, 0.2);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.preview-download button.eye:hover:not(.disabled) {
+    background: var(--primary-color, #359EFF);
+    color: #ffffff;
+    border-color: var(--primary-color, #359EFF);
+}
+
+/* Individual download button */
+.preview-download button.down-doc {
+    background: rgba(0, 0, 0, 0.02);
+    color: var(--text-secondary, #64748b);
+    border: 1px solid var(--border-color, #e2e8f0);
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .preview-download button.down-doc {
+    background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.preview-download button.down-doc:hover:not(.disabled) {
+    background: rgba(20, 184, 166, 0.1);
+    color: #14b8a6;
+    border-color: rgba(20, 184, 166, 0.3);
+}
+
+/* Disabled state */
+.preview-download button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Total Stats Area */
+div.total {
+    background: rgba(0, 0, 0, 0.02);
+    padding: 20px 32px;
+    border-top: 1px solid var(--border-color, #e2e8f0);
+    display: flex;
+    align-items: center;
+}
+
+[data-theme="dark"] div.total {
+    background: rgba(0, 0, 0, 0.15) !important;
+}
+
+div.total p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary, #64748b);
+}
+
+/* Animations */
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modalSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Custom Scrollbar for list */
+div.doc::-webkit-scrollbar {
+    width: 6px;
+}
+div.doc::-webkit-scrollbar-track {
+    background: transparent;
+}
+div.doc::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+[data-theme="dark"] div.doc::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+div.doc::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.2);
 }

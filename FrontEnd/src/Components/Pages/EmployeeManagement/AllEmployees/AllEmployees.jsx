@@ -8,8 +8,11 @@ import AddEmployeeModal from "../Add New Employee/AddEmployeeModal";
 import apiClient from "../../../../apiConfig";
 import Avatar from "../../../Shared/Avatar/Avatar";
 
+import { useLocation } from "react-router-dom";
+
 const AllEmployees = () => {
   const { t } = useTranslation("Sidebar/Sidebar");
+  const location = useLocation();
   const [selectedDepartment1, setSelectedDepartment1] = useState("");
   const [EmpStatus, setEmpStatus] = useState("");
   const [EmpPosition, setEmpPosition] = useState("");
@@ -21,6 +24,7 @@ const AllEmployees = () => {
   const [positionOptions, setPositionOptions] = useState([{ value: "", label: "Position" }]);
   const [managerOptions, setManagerOptions] = useState([{ value: "", label: "Direct Supervisor" }]);
   const [searchQuery, setSearchQuery] = useState("");
+
 
   const fetchFilters = async () => {
     // 1. جلب الأقسام
@@ -93,6 +97,32 @@ const AllEmployees = () => {
   useEffect(() => {
     fetchEmployees();
   }, [fetchEmployees]);
+
+  useEffect(() => {
+    if (location.state?.prefillCandidate) {
+      const c = location.state.prefillCandidate;
+      setEditingEmployee({
+        fullName: c.full_name || "",
+        email: c.email || "",
+        phone: c.phone || "",
+        dob: c.date_of_birth || "",
+        address: c.address || "",
+        emergencyContact: c.emergency_contacts || "",
+        jobTitle: c.job_posting?.position_id || "",
+        department: c.job_posting?.department_id || "",
+        joiningDate: new Date().toISOString().split('T')[0],
+        // Omit / leave blank explicitly
+        password: "",
+        employeeId: "",
+        directManager: "",
+      });
+      setIsModalOpen(true);
+      
+      // Clear location state after parsing to prevent launching modal again on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
+
 
   async function handleDeleteEmployee(id) {
     const confirmDelete = window.confirm("Are you sure you want to delete this employee?");

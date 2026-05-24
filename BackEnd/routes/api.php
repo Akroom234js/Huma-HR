@@ -129,10 +129,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/applications/{id}/reject',    [ApplicationController::class, 'reject']);
         Route::patch('/applications/{id}/withdraw',  [ApplicationController::class, 'withdraw']);
         Route::delete('/applications/{id}',          [ApplicationController::class, 'destroy']);
-        Route::post('/applications/{id}/interviews',     [InterviewController::class,   'store']);
-        Route::post('/applications/{id}/offers',         [OfferController::class,       'store']);
-        Route::post('/offers/{id}/accept',               [OfferController::class,       'accept']);
+        Route::post('/applications/{application}/offers',         [OfferController::class,       'store']);
+        Route::post('/offers/{offer}/accept',               [OfferController::class,       'accept']);
         Route::get('/applications/{id}/resume',      [ApplicationController::class, 'downloadResume']);
+        Route::get('/attachments/{id}/download',     [ApplicationController::class, 'downloadAttachment']);
 
         // ✅ ATS — إدارة المقابلات (Interviews Management)
         Route::post('/applications/{application}/interviews', [InterviewController::class, 'store']);
