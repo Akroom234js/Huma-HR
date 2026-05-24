@@ -92,12 +92,12 @@ export const getApplication = (id) =>
 export const getAllowedTransitions = (id) =>
   apiClient.get(`/applications/${id}/allowed-transitions`);
 
-/**
- * GET /api/applications/{id}/resume — HR only
- * Returns binary blob for download.
- */
 export const downloadResume = (id) =>
   apiClient.get(`/applications/${id}/resume`, { responseType: 'blob' });
+
+/** GET /api/attachments/{id}/download — HR only */
+export const downloadAttachment = (id) =>
+  apiClient.get(`/attachments/${id}/download`, { responseType: 'blob' });
 
 // ─────────────────────────────────────────────────────────────
 // PIPELINE ACTIONS — HR only

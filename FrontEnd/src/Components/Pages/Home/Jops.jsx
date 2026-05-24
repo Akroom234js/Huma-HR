@@ -15,6 +15,24 @@ export default function Jops() {
   const [selectedJob, setSelectedJob] = useState(null); // job to apply for
   const [isApplyOpen, setIsApplyOpen] = useState(false);
 
+  const userStr = localStorage.getItem('user');
+  const user = userStr ? JSON.parse(userStr) : null;
+
+  const getGoToWebsitePath = () => {
+    if (!user) return "/";
+    if (user.role === "hr") return "/dashboard/general";
+    if (user.role === "employee" || user.role === "department supervisor") return "/portal/dashboard";
+    return "/";
+  };
+
+  const handleGoToWebsite = (e) => {
+    if (!user) {
+      e.preventDefault();
+      alert("الرجاء تسجيل الدخول أولاً للوصول إلى لوحة التحكم.");
+      window.location.href = "/";
+    }
+  };
+
   // ── Fetch published / open job postings (Public — no auth) ──
   useEffect(() => {
     const fetchJobs = async () => {
@@ -85,7 +103,7 @@ export default function Jops() {
             <div className={`nav-links ${isMobileMenuOpen ? 'open' : ''}`}>
               <NavLink to="/" end>Home</NavLink>
               <NavLink to="/jops">Jobs</NavLink>
-              <NavLink to="/dashboard/general">Go to website</NavLink>
+              <NavLink to={getGoToWebsitePath()} onClick={handleGoToWebsite}>Go to website</NavLink>
               <ThemeToggle />
               <div className="nav-profile"> </div>
             </div>
