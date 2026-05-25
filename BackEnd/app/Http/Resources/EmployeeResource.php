@@ -37,6 +37,10 @@ class EmployeeResource extends JsonResource
             'manager_id'        => $this->manager_id,
             'position_id'       => $this->position_id,
             'profile_pic'       => $this->profile_pic_url,
+            'emergency_contacts' => $this->emergency_contacts,
+            'allowances'         => $this->allowances,
+            'tax_percent'        => $this->tax_percent,
+            'insurance_amount'   => $this->insurance_amount,
         ];
     }
 }

@@ -19,7 +19,8 @@ i18n
 			'SalaryManagement/SalaryStructure',
 			'Dashboard/EmployeeReports',
 			'Dashboard/Attendance',
-			'Dashboard/Leaves'
+			'Dashboard/Leaves',
+			'EmployeePortal/Profile'
 		], // أسماء الملفات
 
 		defaultNS: "Sidebar/Sidebar",

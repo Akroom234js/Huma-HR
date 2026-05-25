@@ -81,6 +81,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // ── أي مستخدم مسجّل دخول ─────────────────────────────────────────────
     Route::delete('/auth/sessions', [AuthController::class, 'logout']);
+    Route::get('/my-profile',       [EmployeeController::class, 'myProfile']);
+    Route::put('/my-profile',       [EmployeeController::class, 'updateMyProfile']);
+    // POST route needed for multipart/form-data uploads (file uploads via _method=PUT spoofing)
+    Route::post('/my-profile',      [EmployeeController::class, 'updateMyProfile']);
 
     // ── HR فقط — كل العمليات ─────────────────────────────────────────────
     Route::middleware('role:hr')->group(function () {
@@ -236,8 +240,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // ── Employee — بياناته الشخصية فقط ──────────────────────────────────
-    Route::middleware('role:employee')->group(function () {
-        Route::get('/my-profile', [EmployeeController::class, 'myProfile']);
-    });
+    // (الـ Route انتقل إلى القسم العام بالأعلى ليدعم كافة المستخدمين المسجّلين)
 
 });

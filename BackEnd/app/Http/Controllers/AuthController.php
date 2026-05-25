@@ -141,15 +141,19 @@ class AuthController extends Controller
             $tokenResult->accessToken->update(['expires_at' => $expiration]);
         }
 
+        $profile = $user->employeeProfile;
+
         return $this->successResponse(
             data: [
                 'token'      => $token,
                 'token_type' => 'Bearer',
                 'expires_at' => $expiration?->toDateTimeString() ?? 'Never',
                 'user'       => [
-                    'id'    => $user->id,
-                    'email' => $user->email,
-                    'role'  => $user->roles->pluck('name')->first(),
+                    'id'          => $user->id,
+                    'email'       => $user->email,
+                    'role'        => $user->roles->pluck('name')->first(),
+                    'full_name'   => $profile?->full_name,
+                    'profile_pic' => $profile?->profile_pic_url,
                 ],
             ],
             message: 'Login successful.'
