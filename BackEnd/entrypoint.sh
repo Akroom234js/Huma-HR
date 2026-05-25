@@ -3,6 +3,9 @@
 # انتظر قليلاً للتأكد من استقرار الشبكة (اختياري)
 sleep 5
 
+echo "Creating storage symlink..."
+php artisan storage:link --force
+
 echo "Running Migrations..."
 php artisan migrate --force
 
