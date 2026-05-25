@@ -24,41 +24,18 @@ use Illuminate\Support\Facades\Artisan;
 
 Route::get('/system-repair-db', function () {
     try {
-        echo "Starting Database Sync...<br>";
+        echo "Starting Safe Database Migration...<br>";
 
         $driver = DB::getDriverName();
         echo "Database Driver: {$driver}<br>";
 
-        echo "Disabling foreign key checks...<br>";
-        if ($driver === 'mysql') {
-            DB::statement('SET FOREIGN_KEY_CHECKS = 0;');
-        } elseif ($driver === 'sqlite') {
-            DB::statement('PRAGMA foreign_keys = OFF;');
-        } elseif ($driver === 'pgsql') {
-            DB::statement('SET CONSTRAINTS ALL DEFERRED;');
-        }
-
-        echo "Dropping all tables dynamically...<br>";
-        \Illuminate\Support\Facades\Schema::dropAllTables();
-
-        echo "Enabling foreign key checks...<br>";
-        if ($driver === 'mysql') {
-            DB::statement('SET FOREIGN_KEY_CHECKS = 1;');
-        } elseif ($driver === 'sqlite') {
-            DB::statement('PRAGMA foreign_keys = ON;');
-        }
-
-        echo "Running migrations...<br>";
+        echo "Running pending migrations incrementally...<br>";
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
         echo "<pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
 
-        echo "Running seeders...<br>";
-        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
-        echo "<pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
-
-        return "<h2 style='color:green'>Database Synced & Seeded Successfully!</h2>";
+        return "<h2 style='color:green'>Database Migrated Successfully! All existing live data has been preserved.</h2>";
     } catch (\Exception $e) {
-        return "<h2 style='color:red'>Sync Failed!</h2><p>Error: " . $e->getMessage() . "</p>";
+        return "<h2 style='color:red'>Migration Failed!</h2><p>Error: " . $e->getMessage() . "</p>";
     }
 });
 
