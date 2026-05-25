@@ -23,13 +23,12 @@ return [
         ],
     ],
 
-    // ✅ إضافة: OpenAI
+    // ✅ إضافة:gemini API credentials
     // ليش هنا؟ لأن config/services.php هو المكان الرسمي في Laravel
     // لكل الـ third-party credentials
-    // openai-php/laravel بيقرأ الـ key من هنا تلقائياً
-    'openai' => [
-        'api_key'      => env('OPENAI_API_KEY'),
-        'organization' => env('OPENAI_ORGANIZATION'), // اختياري
+    // gemini-php/laravel بيقرأ الـ key من هنا تلقائياً
+    'gemini' => [
+        'api_key' => env('GEMINI_API_KEY'),
     ],
 
 ];
