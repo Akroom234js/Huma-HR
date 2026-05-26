@@ -14,6 +14,9 @@ use App\Http\Controllers\JobPostingController;   // ✅ جديد
 use App\Http\Controllers\InterviewController;
 use App\Http\Controllers\OfferController;
 use App\Http\Controllers\OrgChartController;
+use App\Http\Controllers\OfficeLocationController;
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\DepartmentHourController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
@@ -86,6 +89,20 @@ Route::middleware('auth:sanctum')->group(function () {
     // POST route needed for multipart/form-data uploads (file uploads via _method=PUT spoofing)
     Route::post('/my-profile',      [EmployeeController::class, 'updateMyProfile']);
 
+    // ── Employee Attendance & Geofencing Routes ──────────────────────────
+    Route::get('/employee/attendance/today',    [AttendanceController::class, 'today']);
+    Route::post('/employee/attendance/checkin',  [AttendanceController::class, 'checkIn']);
+    Route::post('/employee/attendance/checkout', [AttendanceController::class, 'checkOut']);
+    Route::get('/employee/attendance/history',  [AttendanceController::class, 'history']);
+    Route::get('/employee/attendance/trends',   [AttendanceController::class, 'trends']);
+
+    // ── Office Locations Read ────────────────────────────────────────────
+    Route::get('/office-locations',             [OfficeLocationController::class, 'index']);
+    Route::get('/office-locations/{id}',        [OfficeLocationController::class, 'show']);
+
+    // ── Department Work Hours Settings ───────────────────────────────────
+    Route::get('/department-hours',             [DepartmentHourController::class, 'index']);
+
     // ── HR فقط — كل العمليات ─────────────────────────────────────────────
     Route::middleware('role:hr')->group(function () {
 
@@ -93,6 +110,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/auth/employees',   [AuthController::class,    'register']);
         Route::put('/employees/{id}',    [EmployeeController::class, 'update']);
         Route::delete('/employees/{id}', [EmployeeController::class, 'destroy']);
+
+        // Office Locations CRUD (HR Only)
+        Route::post('/office-locations',        [OfficeLocationController::class, 'store']);
+        Route::put('/office-locations/{id}',    [OfficeLocationController::class, 'update']);
+        Route::delete('/office-locations/{id}', [OfficeLocationController::class, 'destroy']);
+
+        // Department Hours Settings CRUD (HR Only)
+        Route::put('/department-hours/{deptName}', [DepartmentHourController::class, 'update']);
 
         // Departments
         Route::post('/departments',        [DepartmentController::class, 'store']);
