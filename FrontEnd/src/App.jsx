@@ -7,16 +7,19 @@ import LanSw from './Components/LanSw'
 import Home from './Components/Pages/Home/Home';
 import Jops from './Components/Pages/Home/Jops';
 import './App.css';
+import NewlyApplied from './Components/Pages/Recrutment/NewlyApplied/NewlyApplied';
 import ToScheduleInterview from './Components/Pages/Recrutment/ToScheduleInterview/ToScheduleInterview';
 import InterviewHappening from './Components/Pages/Recrutment/InterviewHappening/InterviewHappening';
 import ToMakeOffer from './Components/Pages/Recrutment/ToMakeOffer/ToMakeOffer';
 import OpeningJobs from './Components/Pages/Recrutment/OpeningJobs/OpeningJobs';
+import HiredCandidates from './Components/Pages/Recrutment/HiredCandidates/HiredCandidates';
 import AddDepartment from './Components/Pages/Department/AddDepartment/AddDepartment';
 import LeavesManagement from './Components/Pages/Leaves/LeavesManagement/LeavesManagement'
 import DepartmentOverview from './Components/Pages/Department/DepartmentOverview/DepartmentOverview';
 import OrganizationalChart from './Components/Pages/Department/OrganizationalChart/OrganizationalChart';
 import PositionsRoles from './Components/Pages/Department/PositionsRoles/PositionsRoles';
 import AddRole from './Components/Pages/Department/AddRole/AddRole';
+import ProtectedRoute from './Components/Shared/ProtectedRoute';
 
 import AllEmployees from './Components/Pages/EmployeeManagement/AllEmployees/AllEmployees';
 import EmployeeMovement from './Components/Pages/EmployeeManagement/EmployeeMovement/EmployeeMovement';
@@ -64,149 +67,155 @@ function App() {
         <Route path="/home" element={<Navigate to="/" replace />} />
         <Route path="/jops" element={<Jops />} />
 
-        {/* Dashboard Routes with Sidebar */}
-        <Route
-          path="/dashboard/*"
-          element={
-            <div className="app-container">
-              <Sidebar />
-              <main className="main-content">
-                <Routes>
-                  <Route path="general" element={<General />} />
-                  <Route path="employee-reports" element={<EmployeeReports />} />
-                  <Route path="attendance" element={<Attendance />} />
-                  <Route path="leaves" element={<LeavesDashboard />} />
-                  <Route path="salaries" element={<SalariesDashboard />} />
-                  <Route path="performance" element={<OverallPerformance />} />
-                  <Route path="improvement" element={<ImprovementStatistics />} />
-                </Routes>
-              </main>
-            </div>
-          }
-        />
+        {/* Protected Admin/HR Routes */}
+        <Route element={<ProtectedRoute allowedRoles={['hr']} />}>
+          {/* Dashboard Routes with Sidebar */}
+          <Route
+            path="/dashboard/*"
+            element={
+              <div className="app-container">
+                <Sidebar />
+                <main className="main-content">
+                  <Routes>
+                    <Route path="general" element={<General />} />
+                    <Route path="employee-reports" element={<EmployeeReports />} />
+                    <Route path="attendance" element={<Attendance />} />
+                    <Route path="leaves" element={<LeavesDashboard />} />
+                    <Route path="salaries" element={<SalariesDashboard />} />
+                    <Route path="performance" element={<OverallPerformance />} />
+                    <Route path="improvement" element={<ImprovementStatistics />} />
+                  </Routes>
+                </main>
+              </div>
+            }
+          />
 
-        {/* Dashboard Routes with Sidebar */}
-        <Route
-          path="/department/*"
-          element={
-            <div className="app-container">
-              <Sidebar />
-              <main className="main-content">
-                <Routes>
-                  <Route path="overview" element={<DepartmentOverview />} />
-                  <Route path="org-chart" element={<OrganizationalChart />} />
-                  <Route path="positions" element={<PositionsRoles />} />
-                </Routes>
-              </main>
-            </div>
-          }
-        />
-        <Route
-          path="/employees/*"
-          element={
-            <div className="app-container">
-              <Sidebar />
-              <main className="main-content">
-                <Routes>
-                  <Route path="all" element={<AllEmployees />} />
-                  <Route path="movement" element={<EmployeeMovement />} />
-                </Routes>
-              </main>
-            </div>
-          }
-        />
-        <Route
-          path="/salary/*"
-          element={
-            <div className="app-container">
-              <Sidebar />
-              <main className="main-content">
-                <Routes>
-                  <Route path="payroll-overview" element={<PayrollOverview />} />
-                  <Route path="salary-structure" element={<SalaryStructure />} />
-                  <Route path="monthly-payroll" element={<MonthlyPayroll />} />
-                  <Route path="salary-adjustments" element={<SalaryAdjustments />} />
-                </Routes>
-              </main>
-            </div>
-          }
-        />
-        <Route
-          path="/recruitment/*"
-          element={
-            <div className="app-container">
-              <Sidebar />
-              <main className="main-content">
-                <Routes>
-                  <Route path="/" element={<Recruitment />} />
-                  <Route path="make-offer" element={<ToMakeOffer />} />
-                  <Route path="opening-jobs" element={<OpeningJobs />} />
-                  <Route path="schedule-interview" element={<ToScheduleInterview />} />
-                  <Route path="interview-happening" element={<InterviewHappening />} />
-                </Routes>
-              </main>
+          {/* Department Routes with Sidebar */}
+          <Route
+            path="/department/*"
+            element={
+              <div className="app-container">
+                <Sidebar />
+                <main className="main-content">
+                  <Routes>
+                    <Route path="overview" element={<DepartmentOverview />} />
+                    <Route path="org-chart" element={<OrganizationalChart />} />
+                    <Route path="positions" element={<PositionsRoles />} />
+                  </Routes>
+                </main>
+              </div>
+            }
+          />
+          <Route
+            path="/employees/*"
+            element={
+              <div className="app-container">
+                <Sidebar />
+                <main className="main-content">
+                  <Routes>
+                    <Route path="all" element={<AllEmployees />} />
+                    <Route path="movement" element={<EmployeeMovement />} />
+                  </Routes>
+                </main>
+              </div>
+            }
+          />
+          <Route
+            path="/salary/*"
+            element={
+              <div className="app-container">
+                <Sidebar />
+                <main className="main-content">
+                  <Routes>
+                    <Route path="payroll-overview" element={<PayrollOverview />} />
+                    <Route path="salary-structure" element={<SalaryStructure />} />
+                    <Route path="monthly-payroll" element={<MonthlyPayroll />} />
+                    <Route path="salary-adjustments" element={<SalaryAdjustments />} />
+                  </Routes>
+                </main>
+              </div>
+            }
+          />
+          <Route
+            path="/recruitment/*"
+            element={
+              <div className="app-container">
+                <Sidebar />
+                <main className="main-content">
+                  <Routes>
+                    <Route path="/" element={<Navigate to="newly-applied" replace />} />
+                    <Route path="newly-applied" element={<NewlyApplied />} />
+                    <Route path="make-offer" element={<ToMakeOffer />} />
+                    <Route path="opening-jobs" element={<OpeningJobs />} />
+                    <Route path="schedule-interview" element={<ToScheduleInterview />} />
+                    <Route path="interview-happening" element={<InterviewHappening />} />
+                    <Route path="hired" element={<HiredCandidates />} />
+                  </Routes>
+                </main>
+              </div>
+            }
+          />
 
-            </div>
-          }
-        />
+          <Route
+            path="/leaves/*"
+            element={
+              <div className="app-container">
+                <Sidebar />
+                <main className="main-content">
+                  <Routes>
+                    <Route path="/" element={<LeavesManagement />} />
 
-        <Route
-          path="/leaves/*"
-          element={
-            <div className="app-container">
-              <Sidebar />
-              <main className="main-content">
-                <Routes>
-                  <Route path="/" element={<LeavesManagement />} />
+                  </Routes>
+                </main>
+              </div>
+            }
+          />
+          <Route
+            path="/reports/*"
+            element={
+              <div className="app-container">
+                <Sidebar />
+                <main className="main-content">
+                  <Routes>
+                    <Route path="payroll" element={<PayrollReports />} />
+                    <Route path="performance" element={<PerformanceReports />} />
+                    <Route path="leaves" element={<LeavesReports />} />
+                    <Route path="attendance" element={<AttendanceTracking />} />
+                    <Route path="employees" element={<EmployeesReports />} />
+                  </Routes>
+                </main>
+              </div>
+            }
+          />
+          <Route
+            path="/request/*"
+            element={
+              <div className="app-container">
+                <Sidebar />
+                <main className="main-content">
+                  <Routes>
+                    <Route path="/" element={<Requests />} />
+                    <Route path=":category" element={<Requests />} />
+                  </Routes>
+                </main>
+              </div>
+            }
+          />
+        </Route>
 
-                </Routes>
-              </main>
-            </div>
-          }
-        />
-        <Route
-          path="/reports/*"
-          element={
-            <div className="app-container">
-              <Sidebar />
-              <main className="main-content">
-                <Routes>
-                  <Route path="payroll" element={<PayrollReports />} />
-                  <Route path="performance" element={<PerformanceReports />} />
-                  <Route path="leaves" element={<LeavesReports />} />
-                  <Route path="attendance" element={<AttendanceTracking />} />
-                  <Route path="employees" element={<EmployeesReports />} />
-                </Routes>
-              </main>
-            </div>
-          }
-        />
-        <Route
-          path="/request/*"
-          element={
-            <div className="app-container">
-              <Sidebar />
-              <main className="main-content">
-                <Routes>
-                  <Route path="/" element={<Requests />} />
-                  <Route path=":category" element={<Requests />} />
-                </Routes>
-              </main>
-            </div>
-          }
-        />
-
-        {/* Employee Portal Routes */}
-        <Route path="/portal" element={<EmpLayout />}>
-          <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="my-requests/leaves" element={<Leaves />} />
-          <Route path="my-requests/attendance" element={<MyAttendance />} />
-          <Route path="payroll" element={<Payroll />} />
-          <Route path="performance" element={<Performance />} />
-          <Route path="rewards" element={<Rewards />} />
-          <Route path="chat" element={<Chat />} />
+        {/* Protected Employee Portal Routes */}
+        <Route element={<ProtectedRoute allowedRoles={['employee', 'department supervisor']} />}>
+          <Route path="/portal" element={<EmpLayout />}>
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="my-requests/leaves" element={<Leaves />} />
+            <Route path="my-requests/attendance" element={<MyAttendance />} />
+            <Route path="payroll" element={<Payroll />} />
+            <Route path="performance" element={<Performance />} />
+            <Route path="rewards" element={<Rewards />} />
+            <Route path="chat" element={<Chat />} />
+          </Route>
         </Route>
 
       </Routes>

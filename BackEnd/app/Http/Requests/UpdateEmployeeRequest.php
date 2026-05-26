@@ -33,6 +33,7 @@ class UpdateEmployeeRequest extends FormRequest
             'job_title'              => 'sometimes|string|max:255',
             'employment_status'      => 'sometimes|in:active,on_leave,inactive,terminated',
             'department_id'          => 'sometimes|nullable|exists:departments,id',
+            'position_id'            => 'sometimes|nullable|exists:positions,id',
             'manager_id'             => 'sometimes|nullable|exists:employee_profiles,id',
             'branch'                 => 'sometimes|string|max:255',
             'city'                   => 'sometimes|string|max:255',

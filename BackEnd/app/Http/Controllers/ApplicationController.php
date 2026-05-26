@@ -29,7 +29,7 @@ class ApplicationController extends Controller
     // Middleware: auth:sanctum + role:hr|manager
     public function index(Request $request): JsonResponse
     {
-        $applications = Application::with(['jobPosting', 'attachments'])
+        $applications = Application::with(['jobPosting', 'attachments', 'interviews.interviewer.employeeProfile'])
             ->when($request->filled('status'),
                 fn($q) => $q->byStatus($request->status)
             )
@@ -42,7 +42,7 @@ class ApplicationController extends Controller
                       ->orWhere('email', 'like', "%{$request->search}%");
                 })
             )
-            ->latest('submitted_at')
+            ->orderBy('match_score', 'desc')->latest('submitted_at')
             ->paginate($request->get('per_page', 15));
 
         return $this->successResponse(
@@ -97,7 +97,7 @@ class ApplicationController extends Controller
         try {
             $application = $this->applicationService->applyForJob(
                 $jobPosting,
-                $request->only(['full_name', 'email', 'phone']),
+                $request->only(['full_name', 'email', 'phone', 'date_of_birth', 'address', 'emergency_contacts']),
                 $request->file('resume'),
                 $request->file('cover_letter')
             );
@@ -238,18 +238,22 @@ class ApplicationController extends Controller
         );
     }
 
-    // ── GET /api/job-postings/{id}/stats ──────────────────────────────────────
+    // ── GET /api/applications/stats ── OR ── GET /api/job-postings/{id}/stats ──
     // Middleware: auth:sanctum + role:hr|manager
-    public function stats(int $jobPostingId): JsonResponse
+    public function stats(Request $request, ?int $id = null): JsonResponse
     {
-        $jobPosting = JobPosting::find($jobPostingId);
+        $jobPostingId = $id ?? ($request->filled('job_posting_id') ? (int) $request->query('job_posting_id') : null);
 
-        if (!$jobPosting) {
-            return $this->errorResponse(message: 'Job posting not found.', statusCode: 404);
+        if ($jobPostingId !== null) {
+            $jobPosting = JobPosting::find($jobPostingId);
+
+            if (!$jobPosting) {
+                return $this->errorResponse(message: 'Job posting not found.', statusCode: 404);
+            }
         }
 
         return $this->successResponse(
-            data: $this->applicationService->getJobStats($jobPosting),
+            data: $this->applicationService->getGlobalOrJobStats($jobPostingId),
             message: 'Stats retrieved successfully.'
         );
     }
@@ -282,6 +286,26 @@ class ApplicationController extends Controller
         }
 
         return $this->applicationService->downloadResume($application);
+    }
+
+    // ── GET /api/attachments/{id}/download ─────────────────────────────────────
+    // Middleware: auth:sanctum + role:hr
+    public function downloadAttachment(int $id): mixed
+    {
+        $attachment = \App\Models\Attachment::find($id);
+
+        if (!$attachment) {
+            return $this->errorResponse(message: 'Attachment not found.', statusCode: 404);
+        }
+
+        if (!\Illuminate\Support\Facades\Storage::disk('local')->exists($attachment->file_url)) {
+            return $this->errorResponse(message: 'File not found on storage.', statusCode: 404);
+        }
+
+        return \Illuminate\Support\Facades\Storage::disk('local')->download(
+            $attachment->file_url,
+            $attachment->file_name
+        );
     }
 
     // =========================================================

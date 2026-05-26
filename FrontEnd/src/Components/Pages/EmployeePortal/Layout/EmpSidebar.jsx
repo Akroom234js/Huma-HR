@@ -74,7 +74,7 @@ const EmpSidebar = () => {
 
                         {/* ── Logo ── */}
                         <div className="sidebar-header">
-                            <Link to="/portal/dashboard">
+                            <Link to="/">
                                 <img src={logo} alt="Huma HR Logo" className="sidebar-logo" />
                                 <h1 className="sidebar-title">Huma</h1>
                             </Link>

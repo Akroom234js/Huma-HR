@@ -36,12 +36,44 @@ export default function Home() {
     setNotification({ message, type });
   };
 
-  const userStr = localStorage.getItem('user');
-  const user = userStr ? JSON.parse(userStr) : null;
+  const [user, setUser] = useState(() => {
+    const userStr = localStorage.getItem('user');
+    return userStr ? JSON.parse(userStr) : null;
+  });
 
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const userStr = localStorage.getItem('user');
+      setUser(userStr ? JSON.parse(userStr) : null);
+    };
 
+    window.addEventListener('storage', handleStorageChange);
+    // Listen to standard storage events as well as custom window events triggered in the same window
+    window.addEventListener('local-storage-update', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('local-storage-update', handleStorageChange);
+    };
+  }, []);
 
+  const getGoToWebsitePath = () => {
+    if (!user) return "/";
+    if (user.role === "hr") return "/dashboard/general";
+    if (user.role === "employee" || user.role === "department supervisor") return "/portal/dashboard";
+    return "/";
+  };
 
+  const handleGoToWebsite = (e) => {
+    if (!user) {
+      e.preventDefault();
+      showNotification("الرجاء تسجيل الدخول أولاً للوصول إلى لوحة التحكم.", "warning");
+      const loginSection = document.querySelector(".poop2");
+      if (loginSection) {
+        loginSection.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -58,7 +90,13 @@ export default function Home() {
       localStorage.setItem("user", JSON.stringify(data.user));
       showNotification("Login successful!", "success");
       setTimeout(() => {
-        navigate("/employees/all");
+        if (data.user.role === "hr") {
+          navigate("/employees/all");
+        } else if (data.user.role === "employee" || data.user.role === "department supervisor") {
+          navigate("/portal/dashboard");
+        } else {
+          navigate("/");
+        }
       }, 1000);
     } catch (err) {
       console.error("Login error:", err);
@@ -189,7 +227,7 @@ export default function Home() {
               </div>
 
               <div className="nav-item-wrapper">
-                <NavLink to="/dashboard/general">Go to website</NavLink>
+                <NavLink to={getGoToWebsitePath()} onClick={handleGoToWebsite}>Go to website</NavLink>
                 {showDemo && (
                   <div className="tour-cloud bottom">
                     <span className="material-icons">directions</span>
@@ -274,17 +312,7 @@ export default function Home() {
                       </button>
                     </div>
 
-                    <button
-                      className="ptn-login"
-                      style={{ marginTop: '10px', backgroundColor: 'var(--text-secondary)', opacity: 0.8 }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        localStorage.setItem("user", JSON.stringify({ role: "employee", name: "Test Employee" }));
-                        navigate("/portal/dashboard");
-                      }}
-                    >
-                      Login as Employee (Dev Only)
-                    </button>
+
 
                   </div>
                 </div>

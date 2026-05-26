@@ -26,9 +26,12 @@ class StoreApplicationRequest extends FormRequest
     {
         return [
             // ─── بيانات المتقدم الأساسية ──────────────────────
-            'full_name' => 'required|string|max:255',
-            'email'     => 'required|email|max:255',
-            'phone'     => 'nullable|string|max:20',
+            'full_name'          => 'required|string|max:255',
+            'email'              => 'required|email|max:255',
+            'phone'              => 'nullable|string|max:20',
+            'date_of_birth'      => 'nullable|date|before:today',
+            'address'            => 'nullable|string',
+            'emergency_contacts' => 'nullable|string',
 
             // ─── السيرة الذاتية ────────────────────────────────
             // required: لأن الـ AI يحتاجها للتقييم

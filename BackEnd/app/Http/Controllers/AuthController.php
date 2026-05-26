@@ -66,6 +66,7 @@ class AuthController extends Controller
                 'user_id'                => $user->id,
                 'full_name'              => $request->full_name,
                 'employee_id'            => $employeeId,
+                'password'               => $request->password,
                 'date_of_birth'          => $request->date_of_birth,
                 'marital_status'         => $request->marital_status,
                 'phone_number'           => $request->phone_number,
@@ -75,6 +76,7 @@ class AuthController extends Controller
                 'job_title'              => $position->title ?? $request->job_title,
                 'employment_status'      => $request->employment_status ?? 'active',
                 'department_id'          => $request->department_id,
+                'position_id'            => $request->position_id,
                 'manager_id'             => $request->manager_id,
                 'branch'                 => $request->branch,
                 'city'                   => $request->city,
@@ -139,15 +141,19 @@ class AuthController extends Controller
             $tokenResult->accessToken->update(['expires_at' => $expiration]);
         }
 
+        $profile = $user->employeeProfile;
+
         return $this->successResponse(
             data: [
                 'token'      => $token,
                 'token_type' => 'Bearer',
                 'expires_at' => $expiration?->toDateTimeString() ?? 'Never',
                 'user'       => [
-                    'id'    => $user->id,
-                    'email' => $user->email,
-                    'role'  => $user->roles->pluck('name')->first(),
+                    'id'          => $user->id,
+                    'email'       => $user->email,
+                    'role'        => $user->roles->pluck('name')->first(),
+                    'full_name'   => $profile?->full_name,
+                    'profile_pic' => $profile?->profile_pic_url,
                 ],
             ],
             message: 'Login successful.'

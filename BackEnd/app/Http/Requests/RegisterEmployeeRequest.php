@@ -34,6 +34,7 @@ class RegisterEmployeeRequest extends FormRequest
             'job_title'             => 'nullable|string|max:255',
             'employment_status'     => 'nullable|in:active,on_leave,inactive,terminated',
             'department_id'         => 'nullable|exists:departments,id',
+            'position_id'           => 'nullable|exists:positions,id',
             'manager_id'            => 'nullable|exists:employee_profiles,id',
             'branch'                => 'nullable|string|max:255',
             'city'                  => 'nullable|string|max:255',

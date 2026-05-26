@@ -60,6 +60,10 @@ class InterviewController extends Controller
                 'data' => new InterviewResource($interview),
             ], 201);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error scheduling interview: ' . $e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
                 'status' => false,
                 'message' => 'حدث خطأ أثناء جدولة المقابلة.',

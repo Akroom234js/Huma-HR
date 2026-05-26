@@ -20,7 +20,7 @@ class AdjustmentTypeSeeder extends Seeder
         ];
 
         foreach ($types as $type) {
-            AdjustmentType::create($type);
+            AdjustmentType::firstOrCreate(['name' => $type['name']], $type);
         }
 
         $this->command->info('✅ Adjustment types seeded successfully.');

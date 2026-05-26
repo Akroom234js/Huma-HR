@@ -86,13 +86,23 @@ class EmployeeController extends Controller
     }
 
     // ── GET /api/employees/managers ──────────────────────────────────────────
-    public function managers(): JsonResponse
+    public function managers(Request $request): JsonResponse
     {
-        $managers = EmployeeProfile::whereHas('user', fn($q) =>
-            $q->whereHas('roles', fn($r) =>
-                $r->whereIn('name', ['manager', 'department_manager', 'hr'])
-            )
-        )->get(['id', 'full_name', 'job_title']);
+        $query = EmployeeProfile::whereHas('user', fn($q) =>
+            $q->where('account_status', 'active')
+        );
+
+        if ($request->filled('department_id')) {
+            $query->where('department_id', (int) $request->department_id);
+        } else {
+            $query->whereHas('user', fn($q) =>
+                $q->whereHas('roles', fn($r) =>
+                    $r->whereIn('name', ['manager', 'department_manager', 'hr'])
+                )
+            );
+        }
+
+        $managers = $query->get(['id', 'full_name', 'job_title', 'department_id']);
 
         return $this->successResponse(
             data: $managers,
@@ -133,22 +143,23 @@ class EmployeeController extends Controller
         }
 
         $employee = DB::transaction(function () use ($request, $employee) {
+            $updateData = $request->only([
+                'full_name', 'employee_id', 'date_of_birth', 'marital_status',
+                'phone_number', 'address', 'emergency_contacts', 'manager_id',
+                'branch', 'city', 'grade', 'job_title', 'employment_status',
+                'department_id', 'position_id', 'start_date', 'internal_transfer_date',
+                'resignation_date', 'salary',
+            ]);
 
             if ($request->hasFile('profile_pic')) {
                 if ($employee->profile_pic) {
                     Storage::disk('public')->delete($employee->profile_pic);
                 }
-                $employee->profile_pic = $request->file('profile_pic')
+                $updateData['profile_pic'] = $request->file('profile_pic')
                     ->store('profile_pictures', 'public');
             }
 
-            $employee->update($request->only([
-                'full_name', 'employee_id', 'date_of_birth', 'marital_status',
-                'phone_number', 'address', 'emergency_contacts', 'manager_id',
-                'branch', 'city', 'grade', 'job_title', 'employment_status',
-                'department_id', 'start_date', 'internal_transfer_date',
-                'resignation_date', 'salary',
-            ]));
+            $employee->update($updateData);
 
             return $employee;
         });
@@ -180,6 +191,68 @@ class EmployeeController extends Controller
 
         return $this->successResponse(
             message: 'Employee deleted successfully.'
+        );
+    }
+
+    // ── GET /api/my-profile ──────────────────────────────────────────────
+    public function myProfile(Request $request): JsonResponse
+    {
+        $employee = $request->user()->employeeProfile;
+
+        if (! $employee) {
+            return $this->errorResponse(
+                message: 'Employee profile not found.',
+                statusCode: 404
+            );
+        }
+
+        $employee->load(['user', 'department', 'manager']);
+
+        return $this->successResponse(
+            data: new EmployeeResource($employee),
+            message: 'My profile retrieved successfully.'
+        );
+    }
+
+    // ── PUT /api/my-profile ──────────────────────────────────────────────
+    public function updateMyProfile(Request $request): JsonResponse
+    {
+        $employee = $request->user()->employeeProfile;
+
+        if (! $employee) {
+            return $this->errorResponse(
+                message: 'Employee profile not found.',
+                statusCode: 404
+            );
+        }
+
+        $validated = $request->validate([
+            'phone_number'       => 'sometimes|nullable|string|max:20',
+            'address'            => 'sometimes|nullable|string',
+            'marital_status'     => 'sometimes|nullable|in:single,married,divorced,widowed',
+            'emergency_contacts' => 'sometimes|nullable|string',
+            'profile_pic'        => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        $employee = DB::transaction(function () use ($request, $employee, $validated) {
+            $updateData = array_diff_key($validated, ['profile_pic' => '']);
+
+            if ($request->hasFile('profile_pic')) {
+                if ($employee->profile_pic) {
+                    Storage::disk('public')->delete($employee->profile_pic);
+                }
+                $updateData['profile_pic'] = $request->file('profile_pic')
+                    ->store('profile_pictures', 'public');
+            }
+
+            $employee->update($updateData);
+
+            return $employee;
+        });
+
+        return $this->successResponse(
+            data: new EmployeeResource($employee->fresh(['user', 'department', 'manager'])),
+            message: 'My profile updated successfully.'
         );
     }
 }

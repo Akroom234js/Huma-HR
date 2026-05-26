@@ -38,7 +38,7 @@ class EloquentJobPostingRepository implements JobPostingRepositoryInterface
      */
     public function all(array $filters = [], array $orderBy = []): Collection
     {
-        $query = JobPosting::query();
+        $query = JobPosting::query()->withCount('applications')->with('department');
 
         // تطبيق التصفية
         if (!empty($filters['status'])) {

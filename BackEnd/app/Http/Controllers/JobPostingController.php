@@ -61,6 +61,10 @@ class JobPostingController extends Controller
                 'data' => new JobPostingResource($jobPosting),
             ], 201);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error creating job: ' . $e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
                 'status' => false,
                 'message' => 'حدث خطأ أثناء إنشاء الوظيفة.',

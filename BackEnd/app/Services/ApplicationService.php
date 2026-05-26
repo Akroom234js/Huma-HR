@@ -275,8 +275,20 @@ class ApplicationService
 
     public function getJobStats(JobPosting $jobPosting): array
     {
-        $stats = Application::where('job_posting_id', $jobPosting->id)
-            ->selectRaw('
+        return $this->getGlobalOrJobStats($jobPosting->id);
+    }
+
+    /**
+     * جلب إحصائيات التقديمات بشكل مجمع (عالمي أو لوظيفة معينة)
+     */
+    public function getGlobalOrJobStats(?int $jobPostingId = null): array
+    {
+        $query = Application::query();
+        if ($jobPostingId !== null) {
+            $query->where('job_posting_id', $jobPostingId);
+        }
+
+        $stats = $query->selectRaw('
                 COUNT(*) as total,
                 SUM(status = "pending") as pending,
                 SUM(status = "reviewed") as reviewed,
