@@ -95,6 +95,10 @@
   background: #dcfce7;
   color: #15803d;
 }
+.attendance-page .danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
 .attendance-page .right-section {
   display: flex;
   flex-direction: column;

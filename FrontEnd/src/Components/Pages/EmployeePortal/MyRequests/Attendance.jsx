@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import apiClient from "../../../../apiConfig";
 import "./Attendance.css";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
 import {
@@ -11,22 +11,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const API = axios.create({
-  baseURL: "https://huma-hr.onrender.com/api",
-});
-
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-
-  config.headers.Accept = "application/json";
-
-  return config;
-});
-
 const Attendance = () => {
   const [todayStatus, setTodayStatus] = useState(null);
   const [attendanceHistory, setAttendanceHistory] = useState([]);
@@ -34,7 +18,7 @@ const Attendance = () => {
   const [loading, setLoading] = useState(false);
 
   const convertHours = (decimalHours) => {
-    if (!decimalHours) return "--h --m";
+    if (decimalHours === null || decimalHours === undefined) return "--h --m";
 
     const hours = Math.floor(decimalHours);
     const minutes = Math.round((decimalHours - hours) * 60);
@@ -44,6 +28,10 @@ const Attendance = () => {
 
   const getCurrentLocation = () => {
     return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject(new Error("geolocation_not_supported"));
+        return;
+      }
       navigator.geolocation.getCurrentPosition(
         (position) => {
           resolve({
@@ -54,13 +42,14 @@ const Attendance = () => {
         (error) => {
           reject(error);
         },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     });
   };
 
   const fetchTodayStatus = async () => {
     try {
-      const response = await API.get("/employee/attendance/today");
+      const response = await apiClient.get("/employee/attendance/today");
 
       setTodayStatus(response.data.data);
     } catch (error) {
@@ -72,7 +61,7 @@ const Attendance = () => {
     try {
       const currentMonth = new Date().toISOString().slice(0, 7);
 
-      const response = await API.get(
+      const response = await apiClient.get(
         `/employee/attendance/history?month=${currentMonth}`,
       );
 
@@ -84,7 +73,7 @@ const Attendance = () => {
 
   const fetchAttendanceTrends = async () => {
     try {
-      const response = await API.get("/employee/attendance/trends");
+      const response = await apiClient.get("/employee/attendance/trends");
 
       const formattedData = response.data.data.map((item) => ({
         day: item.day,
@@ -115,7 +104,7 @@ const Attendance = () => {
 
       const location = await getCurrentLocation();
 
-      const response = await API.post("/employee/attendance/checkin", location);
+      const response = await apiClient.post("/employee/attendance/checkin", location);
 
       console.log(response.data);
 
@@ -124,8 +113,19 @@ const Attendance = () => {
       alert(response.data.message);
     } catch (error) {
       console.log(error);
-
-      alert(error?.response?.data?.message || "Failed to check in");
+      let errorMsg = "فشل تسجيل الدخول";
+      if (error instanceof Error && error.message === "geolocation_not_supported") {
+        errorMsg = "متصفحك لا يدعم تحديد الموقع الجغرافي.";
+      } else if (error.code === 1) { // PERMISSION_DENIED
+        errorMsg = "يرجى تفعيل صلاحية الوصول للموقع الجغرافي (GPS) للمتصفح لتتمكن من تسجيل الحضور.";
+      } else if (error.code === 2) { // POSITION_UNAVAILABLE
+        errorMsg = "لم يتمكن الجهاز من تحديد موقعك الجغرافي، يرجى التحقق من اتصال الـ GPS.";
+      } else if (error.code === 3) { // TIMEOUT
+        errorMsg = "انتهت مهلة تحديد الموقع الجغرافي، يرجى المحاولة مرة أخرى.";
+      } else {
+        errorMsg = error?.response?.data?.message || "فشل تسجيل الحضور، يرجى المحاولة مجدداً.";
+      }
+      alert(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -137,7 +137,7 @@ const Attendance = () => {
 
       const location = await getCurrentLocation();
 
-      const response = await API.post(
+      const response = await apiClient.post(
         "/employee/attendance/checkout",
         location,
       );
@@ -149,8 +149,19 @@ const Attendance = () => {
       alert(response.data.message);
     } catch (error) {
       console.log(error);
-
-      alert(error?.response?.data?.message || "Failed to check out");
+      let errorMsg = "فشل تسجيل الانصراف";
+      if (error instanceof Error && error.message === "geolocation_not_supported") {
+        errorMsg = "متصفحك لا يدعم تحديد الموقع الجغرافي.";
+      } else if (error.code === 1) { // PERMISSION_DENIED
+        errorMsg = "يرجى تفعيل صلاحية الوصول للموقع الجغرافي (GPS) للمتصفح لتتمكن من تسجيل الانصراف.";
+      } else if (error.code === 2) { // POSITION_UNAVAILABLE
+        errorMsg = "لم يتمكن الجهاز من تحديد موقعك الجغرافي، يرجى التحقق من اتصال الـ GPS.";
+      } else if (error.code === 3) { // TIMEOUT
+        errorMsg = "انتهت مهلة تحديد الموقع الجغرافي، يرجى المحاولة مرة أخرى.";
+      } else {
+        errorMsg = error?.response?.data?.message || "فشل تسجيل الانصراف، يرجى المحاولة مجدداً.";
+      }
+      alert(errorMsg);
     } finally {
       setLoading(false);
     }
