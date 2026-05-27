@@ -76,6 +76,15 @@ class PayrollController extends Controller
             'processed_by_id' => Auth::id(),
         ]);
 
+        // Trigger notification
+        \App\Models\HrNotification::create([
+            'user_id' => $payroll->user_id,
+            'type' => 'payroll_ready',
+            'title' => 'Payroll Processed & Paid!',
+            'body' => "Your payroll for month {$payroll->payroll_month}/{$payroll->payroll_year} has been processed and paid.",
+            'data' => json_encode(['payroll_record_id' => $payroll->id]),
+        ]);
+
         return $this->successResponse($payroll, 'Payroll marked as paid.');
     }
 
@@ -84,15 +93,101 @@ class PayrollController extends Controller
     {
         $ids = $request->input('ids', []);
         
-        $updated = PayrollRecord::whereIn('id', $ids)
+        $records = PayrollRecord::whereIn('id', $ids)
             ->where('status', 'unpaid')
-            ->update([
+            ->get();
+            
+        $updated = 0;
+        foreach ($records as $payroll) {
+            $payroll->update([
                 'status'  => 'paid',
                 'paid_date' => now(),
                 'processed_by_id' => Auth::id(),
             ]);
+            $updated++;
+
+            // Trigger notification
+            \App\Models\HrNotification::create([
+                'user_id' => $payroll->user_id,
+                'type' => 'payroll_ready',
+                'title' => 'Payroll Processed & Paid!',
+                'body' => "Your payroll for month {$payroll->payroll_month}/{$payroll->payroll_year} has been processed and paid.",
+                'data' => json_encode(['payroll_record_id' => $payroll->id]),
+            ]);
+        }
 
         return $this->successResponse(['updated_count' => $updated], 'Selected payroll records marked as paid.');
+    }
+
+    // GET /api/employee/rewards
+    public function employeeRewards(): JsonResponse
+    {
+        $userId = Auth::id();
+        
+        // Fetch payroll records for this user with deductions (which include additions)
+        $payrollRecords = PayrollRecord::with(['deductions' => function ($q) {
+                $q->where('is_addition', true);
+            }])
+            ->where('user_id', $userId)
+            ->get();
+            
+        $bonuses = [];
+        $totalAmount = 0;
+        $currentYear = now()->year;
+        
+        foreach ($payrollRecords as $record) {
+            // Bonuses are from is_addition deductions
+            foreach ($record->deductions as $deduction) {
+                $bonuses[] = [
+                    'id' => $deduction->id,
+                    'date_received' => $deduction->applied_date ?? $record->paid_date ?? $record->created_at,
+                    'type' => $deduction->reason ?? 'Performance Bonus',
+                    'amount' => $deduction->amount,
+                    'reason' => $deduction->reason ?? 'Exceeding target expectations',
+                    'awarded_by' => $deduction->applied_by ?? 'Management',
+                ];
+                
+                $year = null;
+                if ($deduction->applied_date) {
+                    $year = \Carbon\Carbon::parse($deduction->applied_date)->year;
+                } else if ($record->paid_date) {
+                    $year = \Carbon\Carbon::parse($record->paid_date)->year;
+                } else {
+                    $year = $record->payroll_year;
+                }
+                
+                if ($year == $currentYear) {
+                    $totalAmount += $deduction->amount;
+                }
+            }
+            
+            // Also overtime_amount is an addition!
+            if ($record->overtime_amount > 0) {
+                $bonuses[] = [
+                    'id' => 'ot-' . $record->id,
+                    'date_received' => $record->paid_date ?? $record->created_at,
+                    'type' => 'Overtime Payment',
+                    'amount' => $record->overtime_amount,
+                    'reason' => "Payment for {$record->overtime_hours} overtime hours",
+                    'awarded_by' => 'System',
+                ];
+                
+                if ($record->payroll_year == $currentYear) {
+                    $totalAmount += $record->overtime_amount;
+                }
+            }
+        }
+        
+        // Sort bonuses by date descending
+        usort($bonuses, function ($a, $b) {
+            return strtotime($b['date_received']) - strtotime($a['date_received']);
+        });
+        
+        return $this->successResponse([
+            'bonuses' => $bonuses,
+            'total_amount' => $totalAmount,
+            'current_year' => $currentYear,
+        ], 'Employee rewards retrieved successfully.');
     }
 
     public function overview(Request $request): JsonResponse

@@ -174,6 +174,23 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // ── Employee Portal ──────────────────────────────────────────────
     Route::get('/employee/payroll', [PayrollController::class, 'employeeHistory']);
+    Route::get('/employee/rewards', [PayrollController::class, 'employeeRewards']);
+    
+    // Recognitions
+    Route::get('/employee/recognitions', [App\Http\Controllers\RecognitionController::class, 'index']);
+    Route::post('/employee/recognitions', [App\Http\Controllers\RecognitionController::class, 'store']);
+
+    // Chat
+    Route::get('/employee/chats', [App\Http\Controllers\ChatController::class, 'getConversations']);
+    Route::get('/employee/chats/contacts', [App\Http\Controllers\ChatController::class, 'getContacts']);
+    Route::get('/employee/chats/{id}/messages', [App\Http\Controllers\ChatController::class, 'getMessages']);
+    Route::post('/employee/chats/send', [App\Http\Controllers\ChatController::class, 'sendMessage']);
+
+    // Notifications
+    Route::get('/employee/notifications', [App\Http\Controllers\NotificationController::class, 'index']);
+    Route::get('/employee/notifications/unread-count', [App\Http\Controllers\NotificationController::class, 'unreadCount']);
+    Route::post('/employee/notifications/{id}/read', [App\Http\Controllers\NotificationController::class, 'markRead']);
+    Route::post('/employee/notifications/read-all', [App\Http\Controllers\NotificationController::class, 'markAllRead']);
 
     // ── HR + Boss — عرض فقط ──────────────────────────────────────────────
     Route::middleware('role:hr|manager')->group(function () {
