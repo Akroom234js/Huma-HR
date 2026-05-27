@@ -118,11 +118,24 @@ class AttendanceController extends Controller
                 return $this->errorResponse('أنت خارج النطاق الجغرافي المسموح به للشركة! أقرب فرع هو: ' . $nearestLocation->name . ' (تبعد عنه ' . round($minDistance) . ' متر، والحد المسموح به هو ' . $nearestLocation->radius_meters . ' متر).', 422);
             }
 
-            // 4. حساب حالة الحضور (متأخر أو في الموعد)
-            // نعتمد على توقيت افتراضي وهو 09:15 صباحاً (09:00 مع فترة سماح 15 دقيقة)
+            // 4. حساب حالة الحضور (متأخر أو في الموعد) باستخدام إعدادات القسم الفعلي للموظف
             $status = 'present';
             $now = Carbon::now();
-            $checkInLimit = Carbon::today()->setTime(9, 15, 0); // 09:15 AM
+
+            $deptName = $employee->department ? $employee->department->name : null;
+            $deptHour = null;
+            if ($deptName) {
+                $deptHour = \App\Models\DepartmentHour::where('dept', $deptName)->first();
+            }
+
+            // جلب موعد بدء العمل وفترة السماح من إعدادات القسم أو استخدام توقيت افتراضي (09:00 صباحاً مع فترة سماح 15 دقيقة)
+            $startTimeString = $deptHour ? $deptHour->start_time : '09:00:00';
+            $gracePeriodMinutes = $deptHour ? $deptHour->grace_period : 15;
+
+            $startTime = Carbon::parse($startTimeString);
+            $checkInLimit = Carbon::today()
+                ->setTime($startTime->hour, $startTime->minute, $startTime->second)
+                ->addMinutes($gracePeriodMinutes);
 
             if ($now->greaterThan($checkInLimit)) {
                 $status = 'late';

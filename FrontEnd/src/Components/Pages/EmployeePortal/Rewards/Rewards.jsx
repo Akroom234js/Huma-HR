@@ -32,7 +32,6 @@ export default function RewardsBonuses() {
                 alt="employee"
                 className="recognition-avatar"
               />
-
               <div>
                 <p>
                   "Alex has been a rockstar this quarter, consistently going

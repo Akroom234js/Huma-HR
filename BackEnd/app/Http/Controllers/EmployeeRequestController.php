@@ -80,7 +80,7 @@ class EmployeeRequestController extends Controller
             'status' => 'required|in:approved,rejected',
         ]);
 
-        $employeeRequest = EmployeeRequest::find($id);
+        $employeeRequest = EmployeeRequest::with('employeeProfile')->find($id);
         if (!$employeeRequest) {
             return $this->errorResponse('Request not found.', 404);
         }
@@ -90,6 +90,25 @@ class EmployeeRequestController extends Controller
             'actioned_by' => Auth::id(),
             'actioned_at' => now(),
         ]);
+
+        // Trigger notification
+        $recipientUserId = optional($employeeRequest->employeeProfile)->user_id;
+        if ($recipientUserId) {
+            $type = $request->status === 'approved' ? 'leave_approved' : 'leave_rejected';
+            $title = $request->status === 'approved' ? 'Request Approved' : 'Request Rejected';
+            $typeName = ucfirst(str_replace('_', ' ', $employeeRequest->type));
+            $actionerProfile = Auth::user()->employeeProfile;
+            $actionerName = $actionerProfile ? $actionerProfile->full_name : 'Management';
+            $body = "Your {$typeName} request has been {$request->status} by {$actionerName}.";
+
+            \App\Models\HrNotification::create([
+                'user_id' => $recipientUserId,
+                'type' => $type,
+                'title' => $title,
+                'body' => $body,
+                'data' => json_encode(['request_id' => $employeeRequest->id]),
+            ]);
+        }
 
         // TODO: Trigger movement creation or updates if approved and type is promotion/transfer/etc.
 
