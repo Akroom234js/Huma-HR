@@ -36,8 +36,26 @@ export default function Home() {
     setNotification({ message, type });
   };
 
-  const userStr = localStorage.getItem('user');
-  const user = userStr ? JSON.parse(userStr) : null;
+  const [user, setUser] = useState(() => {
+    const userStr = localStorage.getItem('user');
+    return userStr ? JSON.parse(userStr) : null;
+  });
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const userStr = localStorage.getItem('user');
+      setUser(userStr ? JSON.parse(userStr) : null);
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    // Listen to standard storage events as well as custom window events triggered in the same window
+    window.addEventListener('local-storage-update', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('local-storage-update', handleStorageChange);
+    };
+  }, []);
 
   const getGoToWebsitePath = () => {
     if (!user) return "/";

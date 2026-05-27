@@ -14,6 +14,9 @@ use App\Http\Controllers\JobPostingController;   // ✅ جديد
 use App\Http\Controllers\InterviewController;
 use App\Http\Controllers\OfferController;
 use App\Http\Controllers\OrgChartController;
+use App\Http\Controllers\OfficeLocationController;
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\DepartmentHourController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
@@ -81,6 +84,24 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // ── أي مستخدم مسجّل دخول ─────────────────────────────────────────────
     Route::delete('/auth/sessions', [AuthController::class, 'logout']);
+    Route::get('/my-profile',       [EmployeeController::class, 'myProfile']);
+    Route::put('/my-profile',       [EmployeeController::class, 'updateMyProfile']);
+    // POST route needed for multipart/form-data uploads (file uploads via _method=PUT spoofing)
+    Route::post('/my-profile',      [EmployeeController::class, 'updateMyProfile']);
+
+    // ── Employee Attendance & Geofencing Routes ──────────────────────────
+    Route::get('/employee/attendance/today',    [AttendanceController::class, 'today']);
+    Route::post('/employee/attendance/checkin',  [AttendanceController::class, 'checkIn']);
+    Route::post('/employee/attendance/checkout', [AttendanceController::class, 'checkOut']);
+    Route::get('/employee/attendance/history',  [AttendanceController::class, 'history']);
+    Route::get('/employee/attendance/trends',   [AttendanceController::class, 'trends']);
+
+    // ── Office Locations Read ────────────────────────────────────────────
+    Route::get('/office-locations',             [OfficeLocationController::class, 'index']);
+    Route::get('/office-locations/{id}',        [OfficeLocationController::class, 'show']);
+
+    // ── Department Work Hours Settings ───────────────────────────────────
+    Route::get('/department-hours',             [DepartmentHourController::class, 'index']);
 
     // ── HR فقط — كل العمليات ─────────────────────────────────────────────
     Route::middleware('role:hr')->group(function () {
@@ -89,6 +110,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/auth/employees',   [AuthController::class,    'register']);
         Route::put('/employees/{id}',    [EmployeeController::class, 'update']);
         Route::delete('/employees/{id}', [EmployeeController::class, 'destroy']);
+
+        // Office Locations CRUD (HR Only)
+        Route::post('/office-locations',        [OfficeLocationController::class, 'store']);
+        Route::put('/office-locations/{id}',    [OfficeLocationController::class, 'update']);
+        Route::delete('/office-locations/{id}', [OfficeLocationController::class, 'destroy']);
+
+        // Department Hours Settings CRUD (HR Only)
+        Route::put('/department-hours/{deptName}', [DepartmentHourController::class, 'update']);
 
         // Departments
         Route::post('/departments',        [DepartmentController::class, 'store']);
@@ -145,6 +174,23 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // ── Employee Portal ──────────────────────────────────────────────
     Route::get('/employee/payroll', [PayrollController::class, 'employeeHistory']);
+    Route::get('/employee/rewards', [PayrollController::class, 'employeeRewards']);
+    
+    // Recognitions
+    Route::get('/employee/recognitions', [App\Http\Controllers\RecognitionController::class, 'index']);
+    Route::post('/employee/recognitions', [App\Http\Controllers\RecognitionController::class, 'store']);
+
+    // Chat
+    Route::get('/employee/chats', [App\Http\Controllers\ChatController::class, 'getConversations']);
+    Route::get('/employee/chats/contacts', [App\Http\Controllers\ChatController::class, 'getContacts']);
+    Route::get('/employee/chats/{id}/messages', [App\Http\Controllers\ChatController::class, 'getMessages']);
+    Route::post('/employee/chats/send', [App\Http\Controllers\ChatController::class, 'sendMessage']);
+
+    // Notifications
+    Route::get('/employee/notifications', [App\Http\Controllers\NotificationController::class, 'index']);
+    Route::get('/employee/notifications/unread-count', [App\Http\Controllers\NotificationController::class, 'unreadCount']);
+    Route::post('/employee/notifications/{id}/read', [App\Http\Controllers\NotificationController::class, 'markRead']);
+    Route::post('/employee/notifications/read-all', [App\Http\Controllers\NotificationController::class, 'markAllRead']);
 
     // ── HR + Boss — عرض فقط ──────────────────────────────────────────────
     Route::middleware('role:hr|manager')->group(function () {
@@ -236,8 +282,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // ── Employee — بياناته الشخصية فقط ──────────────────────────────────
-    Route::middleware('role:employee')->group(function () {
-        Route::get('/my-profile', [EmployeeController::class, 'myProfile']);
-    });
+    // (الـ Route انتقل إلى القسم العام بالأعلى ليدعم كافة المستخدمين المسجّلين)
 
 });

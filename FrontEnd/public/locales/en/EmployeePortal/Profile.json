@@ -1,0 +1,60 @@
+{
+  "title": "My Profile",
+  "tabs": {
+    "personal": "Personal Info",
+    "job": "Job Details",
+    "financial": "Financial Details",
+    "emergency": "Emergency Contacts"
+  },
+  "buttons": {
+    "edit": "Edit Profile",
+    "cancel": "Cancel",
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "logout": "Logout",
+    "switchModel": "Switch Model",
+    "uploadPhoto": "Upload Photo"
+  },
+  "fields": {
+    "fullName": "Full Name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "dob": "Date of Birth",
+    "maritalStatus": "Marital Status",
+    "address": "Address",
+    "city": "City",
+    "jobTitle": "Job Title",
+    "department": "Department",
+    "employeeId": "Employee ID",
+    "startDate": "Date of Joining",
+    "branch": "Branch",
+    "grade": "Grade",
+    "status": "Employment Status",
+    "manager": "Direct Manager",
+    "salary": "Basic Salary",
+    "allowances": "Allowances",
+    "taxPercent": "Tax Deductions (%)",
+    "insurance": "Insurance Amount",
+    "emergencyContacts": "Emergency Contacts Details",
+    "noEmergency": "No emergency contacts listed.",
+    "active": "Active",
+    "on_leave": "On Leave",
+    "inactive": "Inactive",
+    "terminated": "Terminated",
+    "single": "Single",
+    "married": "Married",
+    "divorced": "Divorced",
+    "widowed": "Widowed"
+  },
+  "alerts": {
+    "loadError": "Failed to load profile data. Please try again.",
+    "saveSuccess": "Profile updated successfully!",
+    "saveError": "Failed to update profile. Please check the validation rules.",
+    "picSuccess": "Profile picture updated successfully!"
+  },
+  "placeholders": {
+    "phone": "e.g. +966 50 000 0000",
+    "address": "Enter your current address",
+    "emergency": "Enter emergency contacts (e.g. Name: Jane Doe - Phone: +123...)"
+  }
+}
