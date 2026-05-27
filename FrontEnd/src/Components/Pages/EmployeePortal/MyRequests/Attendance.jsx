@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import "./Attendance.css";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
 import {
@@ -10,51 +11,151 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const chartData = [
-  { day: "Mon", attendance: 20 },
-  { day: "Tue", attendance: 30 },
-  { day: "Wed", attendance: 25 },
-  { day: "Thu", attendance: 45 },
-  { day: "Fri", attendance: 35 },
-  { day: "Sat", attendance: 50 },
-];
+const API = axios.create({
+  baseURL: "https://huma-hr.onrender.com/api",
+});
 
-const attendanceHistory = [
-  {
-    date: "2024-05-20",
-    checkIn: "09:02 AM",
-    checkOut: "05:15 PM",
-    hours: "8h 15m",
-  },
-  {
-    date: "2024-05-19",
-    checkIn: "09:10 AM",
-    checkOut: "05:05 PM",
-    hours: "7h 55m",
-  },
-  {
-    date: "2024-05-18",
-    checkIn: "08:55 AM",
-    checkOut: "05:00 PM",
-    hours: "8h 05m",
-  },
-  {
-    date: "2024-05-17",
-    checkIn: "09:30 AM",
-    checkOut: "05:00 PM",
-    hours: "7h 30m",
-    late: true,
-  },
-  {
-    date: "2024-05-16",
-    checkIn: "--:--",
-    checkOut: "--:--",
-    hours: "Absent",
-    absent: true,
-  },
-];
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  config.headers.Accept = "application/json";
+
+  return config;
+});
 
 const Attendance = () => {
+  const [todayStatus, setTodayStatus] = useState(null);
+  const [attendanceHistory, setAttendanceHistory] = useState([]);
+  const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const convertHours = (decimalHours) => {
+    if (!decimalHours) return "--h --m";
+
+    const hours = Math.floor(decimalHours);
+    const minutes = Math.round((decimalHours - hours) * 60);
+
+    return `${hours}h ${minutes}m`;
+  };
+
+  const getCurrentLocation = () => {
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+        },
+        (error) => {
+          reject(error);
+        },
+      );
+    });
+  };
+
+  const fetchTodayStatus = async () => {
+    try {
+      const response = await API.get("/employee/attendance/today");
+
+      setTodayStatus(response.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchAttendanceHistory = async () => {
+    try {
+      const currentMonth = new Date().toISOString().slice(0, 7);
+
+      const response = await API.get(
+        `/employee/attendance/history?month=${currentMonth}`,
+      );
+
+      setAttendanceHistory(response.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchAttendanceTrends = async () => {
+    try {
+      const response = await API.get("/employee/attendance/trends");
+
+      const formattedData = response.data.data.map((item) => ({
+        day: item.day,
+        attendance: item.hours,
+      }));
+
+      setChartData(formattedData);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const loadAllData = async () => {
+    await Promise.all([
+      fetchTodayStatus(),
+      fetchAttendanceHistory(),
+      fetchAttendanceTrends(),
+    ]);
+  };
+
+  useEffect(() => {
+    loadAllData();
+  }, []);
+
+  const handleCheckin = async () => {
+    try {
+      setLoading(true);
+
+      const location = await getCurrentLocation();
+
+      const response = await API.post("/employee/attendance/checkin", location);
+
+      console.log(response.data);
+
+      await loadAllData();
+
+      alert(response.data.message);
+    } catch (error) {
+      console.log(error);
+
+      alert(error?.response?.data?.message || "Failed to check in");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCheckOut = async () => {
+    try {
+      setLoading(true);
+
+      const location = await getCurrentLocation();
+
+      const response = await API.post(
+        "/employee/attendance/checkout",
+        location,
+      );
+
+      console.log(response.data);
+
+      await loadAllData();
+
+      alert(response.data.message);
+    } catch (error) {
+      console.log(error);
+
+      alert(error?.response?.data?.message || "Failed to check out");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="attendance-page">
       <h1 className="page-title">Attendance Management</h1>
@@ -64,14 +165,20 @@ const Attendance = () => {
       </div>
 
       <div className="attendance-actions">
-        <button className="checkin">
+        <button className="checkin" onClick={handleCheckin} disabled={loading}>
           <span className="material-symbols-outlined">login</span>
-          Check-in
+
+          {loading ? "Loading..." : "Check-in"}
         </button>
 
-        <button className="checkout">
+        <button
+          className="checkout"
+          onClick={handleCheckOut}
+          disabled={loading}
+        >
           <span className="material-symbols-outlined">logout</span>
-          Checkout
+
+          {loading ? "Loading..." : "Checkout"}
         </button>
       </div>
 
@@ -81,26 +188,41 @@ const Attendance = () => {
 
           <div className="status-row">
             <span>Status</span>
-            <span className="badge success">Present</span>
+
+            <span
+              className={`badge ${
+                todayStatus?.status === "present" ? "success" : "danger"
+              }`}
+            >
+              {todayStatus?.status || "Unknown"}
+            </span>
           </div>
 
           <div className="status-row">
             <span>Check-in Time</span>
-            <span>09:02 AM</span>
+
+            <span>{todayStatus?.check_in || "--:--"}</span>
           </div>
 
           <div className="status-row">
             <span>Check-out Time</span>
-            <span>--:--</span>
+
+            <span>{todayStatus?.check_out || "--:--"}</span>
           </div>
 
           <hr />
 
           <div className="status-row">
             <span>Hours Worked Today</span>
-            <strong>--h --m</strong>
+
+            <strong>
+              {todayStatus?.hours_worked
+                ? convertHours(todayStatus.hours_worked)
+                : "--h --m"}
+            </strong>
           </div>
         </div>
+
         <div className="right-section">
           <div className="chart-card">
             <h2>Attendance Trends over Time</h2>
@@ -109,14 +231,16 @@ const Attendance = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData}>
                   <XAxis dataKey="day" stroke="#ccc" />
+
                   <YAxis
                     stroke="#ccc"
                     label={{
-                      value: "Employees",
+                      value: "Hours",
                       angle: -90,
                       position: "insideLeft",
                     }}
                   />
+
                   <Tooltip />
 
                   <Line
@@ -132,6 +256,7 @@ const Attendance = () => {
           </div>
         </div>
       </div>
+
       <div className="table-card full-width">
         <div className="card-header">
           <h2>Historical Attendance</h2>
@@ -152,17 +277,18 @@ const Attendance = () => {
               <tr key={index}>
                 <td>{item.date}</td>
 
-                <td>{item.checkIn}</td>
+                <td>{item.check_in}</td>
 
-                <td>{item.checkOut}</td>
+                <td>{item.check_out}</td>
 
                 <td
                   className={
-                    item.absent ? "negative" : item.late ? "warning" : ""
+                    item.is_absent ? "negative" : item.is_late ? "warning" : ""
                   }
                 >
-                  {item.hours}
-                  {item.late && " (Late)"}
+                  {item.hours_worked}
+
+                  {item.is_late && " (Late)"}
                 </td>
               </tr>
             ))}
