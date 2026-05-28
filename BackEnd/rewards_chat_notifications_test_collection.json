@@ -1,8 +1,8 @@
 {
 	"info": {
 		"_postman_id": "c1f7a2db-8a5f-4c3e-b8cd-bf85ccfa9bb6",
-		"name": "Huma-HR Employee Portal — Rewards, Peer Recognition, Chats & Notifications APIs",
-		"description": "مجموعة اختبارات Postman كاملة لاختبار الباك اند لخصائص بوابة الموظف الجديدة: المكافآت والأرباح (Rewards)، تكريم الزملاء والشارات (Peer Recognitions)، نظام المحادثات الفورية والرسائل (Chats & Messaging)، ونظام الإشعارات المدمج (Notifications) في Huma-HR.",
+		"name": "Huma-HR Employee Portal — Leaves & Vacations APIs",
+		"description": "مجموعة اختبارات Postman كاملة لاختبار الباك اند لنظام الإجازات المتكامل (Leaves & Vacations) من جهة الموظف والـ HR، مع دعم أرصدة الإجازات، رفع المرفقات، والتحقق التلقائي من الأرصدة، وإنشاء أنواع إجازات جديدة ديناميكياً في Huma-HR.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -110,10 +110,10 @@
 			]
 		},
 		{
-			"name": "2. نظام المكافآت والأرباح (Rewards & Bonuses)",
+			"name": "2. أرصدة الإجازات (Leave Balances)",
 			"item": [
 				{
-					"name": "عرض المكافآت والرواتب الإضافية (Get Employee Rewards History)",
+					"name": "عرض أرصدتي كأرقام (Get My Leave Balances)",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -134,26 +134,25 @@
 							}
 						],
 						"url": {
-							"raw": "{{BASE_URL}}/employee/rewards",
+							"raw": "{{BASE_URL}}/my-leave-balances",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
-								"employee",
-								"rewards"
+								"my-leave-balances"
 							]
 						},
-						"description": "جلب تاريخ أرباح ومكافآت الموظف الإضافية (Performance bonuses, Spot bonuses, Overtime) والمجموع السنوي الإجمالي."
+						"description": "جلب أرصدة إجازات الموظف الحالي (السنوية، المرضية، وأي إجازة مخصصة أخرى) مع عدد الأيام المتاحة، المستهلكة، والمتبقية ديناميكياً."
 					},
 					"response": []
 				}
 			]
 		},
 		{
-			"name": "3. شارات وتكريم الزملاء (Peer Recognition)",
+			"name": "3. أنواع الإجازات (Leave Types)",
 			"item": [
 				{
-					"name": "جلب تكريمات الموظف ووجبة التكريمات العامة (Get Recognitions)",
+					"name": "عرض جميع أنواع الإجازات (Get All Leave Types)",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -174,28 +173,41 @@
 							}
 						],
 						"url": {
-							"raw": "{{BASE_URL}}/employee/recognitions",
+							"raw": "{{BASE_URL}}/leave-types",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
-								"employee",
-								"recognitions"
+								"leave-types"
 							]
 						},
-						"description": "جلب قائمة التكريمات التي حصل عليها الموظف الحالي (received)، وقائمة التكريمات المنشورة عامة لباقي الزملاء (public feed)."
+						"description": "جلب كافة أنواع الإجازات المتاحة في النظام لملء قائمة الاختيار (Dropdown) عند تقديم الموظف لإجازة."
 					},
 					"response": []
 				},
 				{
-					"name": "إرسال تكريم وشارة إلى زميل (Send Recognition to Peer)",
+					"name": "إضافة نوع إجازة جديد (HR - Create Custom Leave Type)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.data && jsonData.data.id) {",
+									"    pm.globals.set(\"custom_leave_type_id\", jsonData.data.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "bearer",
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{employee_token}}",
+									"value": "{{hr_token}}",
 									"type": "string"
 								}
 							]
@@ -210,7 +222,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"recipient_id\": 2,\n    \"badge_type\": \"innovator\",\n    \"message\": \"شكراً جزيلاً على المساعدة في حل مشكلة قاعدة البيانات بالأمس، لقد أبدعت حقاً!\",\n    \"is_public\": true\n}",
+							"raw": "{\n    \"nameEn\": \"Bereavement Leave\",\n    \"nameAr\": \"إجازة وفاة / عزاء\",\n    \"allocation\": 3,\n    \"descEn\": \"Paid leave for the death of an immediate family member.\",\n    \"descAr\": \"إجازة مدفوعة الأجر في حال وفاة قريب من الدرجة الأولى.\",\n    \"isPaid\": true,\n    \"requiresApproval\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -218,84 +230,33 @@
 							}
 						},
 						"url": {
-							"raw": "{{BASE_URL}}/employee/recognitions",
+							"raw": "{{BASE_URL}}/leave-types",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
-								"employee",
-								"recognitions"
+								"leave-types"
 							]
 						},
-						"description": "إرسال بطاقة شكر وتكريم وشارة (rockstar, teamplayer, innovator, leader, creative) لأحد الزملاء وإرسال إشعار تلقائي له."
+						"description": "إضافة نوع إجازة مخصص جديد بواسطة الـ HR. سيقوم النظام تلقائياً بإنشاء سجل رصيد إجازة (Leave Balance) بقيمة 3 أيام لكل الموظفين الحاليين في الشركة فور إنشائها."
 					},
 					"response": []
 				}
 			]
 		},
 		{
-			"name": "4. نظام المحادثات والرسائل الفورية (Chats & Messaging)",
+			"name": "4. طلبات الإجازات (Leaves Requests)",
 			"item": [
 				{
-					"name": "جلب قائمة الزملاء المتاحين للمحادثة (Get Chat Contacts)",
+					"name": "تقديم طلب إجازة (Employee - Submit Leave Request)",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
 									"var jsonData = pm.response.json();",
-									"if (jsonData.data && jsonData.data.length > 0) {",
-									"    pm.globals.set(\"chat_recipient_user_id\", jsonData.data[0].user_id);",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{employee_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{BASE_URL}}/employee/chats/contacts",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"employee",
-								"chats",
-								"contacts"
-							]
-						},
-						"description": "جلب قائمة الزملاء النشطين في الشركة لتمكين الموظف من بدء محادثة معهم."
-					},
-					"response": []
-				},
-				{
-					"name": "إرسال رسالة فورية (Send Message / Start Conversation)",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"var jsonData = pm.response.json();",
-									"if (jsonData.data && jsonData.data.conversation_id) {",
-									"    pm.globals.set(\"conversation_id\", jsonData.data.conversation_id);",
+									"if (jsonData.data && jsonData.data.id) {",
+									"    pm.globals.set(\"leave_request_id\", jsonData.data.id);",
 									"}"
 								],
 								"type": "text/javascript"
@@ -323,7 +284,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"recipient_id\": {{chat_recipient_user_id}},\n    \"body\": \"أهلاً بك! هل قمت بمراجعة التقرير الأسبوعي الجديد الخاص بالقسم؟\"\n}",
+							"raw": "{\n    \"type\": \"Annual Leave\",\n    \"reason\": \"قضاء عطلة سنوية للاستجمام مع العائلة\",\n    \"details\": {\n        \"start_date\": \"2026-06-15\",\n        \"duration\": 5\n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -331,184 +292,20 @@
 							}
 						},
 						"url": {
-							"raw": "{{BASE_URL}}/employee/chats/send",
+							"raw": "{{BASE_URL}}/requests",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
-								"employee",
-								"chats",
-								"send"
+								"requests"
 							]
 						},
-						"description": "إرسال رسالة فورية لزميل (سيتم إنشاء محادثة تلقائياً إذا لم تكن موجودة مسبقاً) وإطلاق إشعار فوراً للمستلم."
+						"description": "تقديم طلب إجازة سنوية لمدة 5 أيام. سيقوم النظام بالتحقق أولاً من رصيد الموظف المتاح وإرجاع خطأ 422 إذا كان الرصيد غير كافٍ."
 					},
 					"response": []
 				},
 				{
-					"name": "عرض المحادثات النشطة (Get Active Conversations)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{employee_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{BASE_URL}}/employee/chats",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"employee",
-								"chats"
-							]
-						},
-						"description": "جلب جميع المحادثات النشطة للموظف الحالي مع عرض تفاصيل الزميل والرسالة الأخيرة والرسائل غير المقروءة."
-					},
-					"response": []
-				},
-				{
-					"name": "جلب رسائل المحادثة (Get Conversation Messages)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{employee_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{BASE_URL}}/employee/chats/{{conversation_id}}/messages",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"employee",
-								"chats",
-								"{{conversation_id}}",
-								"messages"
-							]
-						},
-						"description": "جلب الرسائل داخل محادثة معينة مرتبة زمنياً، ووضع وسم مقروء (Read) على رسائل الطرف الآخر تلقائياً."
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "5. نظام الإشعارات الداخلي (Hr Notifications)",
-			"item": [
-				{
-					"name": "جلب جميع الإشعارات (Get All Notifications)",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"var jsonData = pm.response.json();",
-									"if (jsonData.data && jsonData.data.length > 0) {",
-									"    pm.globals.set(\"notification_id\", jsonData.data[0].id);",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{employee_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{BASE_URL}}/employee/notifications",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"employee",
-								"notifications"
-							]
-						},
-						"description": "جلب جميع الإشعارات الخاصة بالموظف مرتبة من الأحدث إلى الأقدم."
-					},
-					"response": []
-				},
-				{
-					"name": "عدد الإشعارات غير المقروءة (Get Unread Notifications Count)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{employee_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{BASE_URL}}/employee/notifications/unread-count",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"employee",
-								"notifications",
-								"unread-count"
-							]
-						},
-						"description": "الحصول على عدد الإشعارات غير المقروءة فقط لعرض عداد الإشعارات بالواجهة."
-					},
-					"response": []
-				},
-				{
-					"name": "تحديد إشعار كمقروء (Mark Notification As Read)",
+					"name": "اختبار تجاوز الرصيد المتاح (Validation Test - Insufficient Balance)",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -528,24 +325,30 @@
 								"type": "text"
 							}
 						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"Annual Leave\",\n    \"reason\": \"طلب إجازة طويلة تفوق الرصيد\",\n    \"details\": {\n        \"start_date\": \"2026-08-01\",\n        \"duration\": 30\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{BASE_URL}}/employee/notifications/{{notification_id}}/read",
+							"raw": "{{BASE_URL}}/requests",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
-								"employee",
-								"notifications",
-								"{{notification_id}}",
-								"read"
+								"requests"
 							]
 						},
-						"description": "تعديل حالة إشعار معين إلى مقروء."
+						"description": "محاولة تقديم طلب إجازة لمدة 30 يوماً بينما الرصيد السنوي الأقصى للموظف هو 24 يوماً. يجب أن يرفض الباك اند ويرجع خطأ 422 برصيد غير كافٍ."
 					},
 					"response": []
 				},
 				{
-					"name": "قراءة جميع الإشعارات (Mark All Notifications As Read)",
+					"name": "عرض طلباتي الشخصية (Employee - Get My Requests)",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -557,7 +360,7 @@
 								}
 							]
 						},
-						"method": "POST",
+						"method": "GET",
 						"header": [
 							{
 								"key": "Accept",
@@ -566,27 +369,64 @@
 							}
 						],
 						"url": {
-							"raw": "{{BASE_URL}}/employee/notifications/read-all",
+							"raw": "{{BASE_URL}}/my-requests",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
-								"employee",
-								"notifications",
-								"read-all"
+								"my-requests"
 							]
 						},
-						"description": "تحديث حالة جميع الإشعارات لتصبح مقروءة بضغطة زر واحدة."
+						"description": "جلب كافة الطلبات التي قدمها الموظف الحالي فقط وحالاتها الحالية (موافقة، معلقة، مرفوضة)."
 					},
 					"response": []
-				}
-			]
-		},
-		{
-			"name": "6. تحفيز الأحداث لإصدار الإشعارات (Events Triggers - HR Role)",
-			"item": [
+				},
 				{
-					"name": "قبول أو رفض طلب الموظف (HR Action - Approve/Reject Request)",
+					"name": "عرض كافة طلبات الإجازة بالمؤسسة (HR - View All Requests)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{hr_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/requests?status=all&type=all",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"requests"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "all"
+								},
+								{
+									"key": "type",
+									"value": "all"
+								}
+							]
+						},
+						"description": "صلاحية الـ HR لعرض كافة طلبات الإجازات لجميع الموظفين في المؤسسة مع الإحصائيات (Pending, Approved, Rejected) والفرز."
+					},
+					"response": []
+				},
+				{
+					"name": "اتخاذ قرار بالقبول والخصم من الرصيد (HR - Approve Leave Request)",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -608,7 +448,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"status\": \"approved\"\n}",
+							"raw": "{\n    \"status\": \"approved\",\n    \"reason\": \"تم قبول طلب إجازتك السنوية بنجاح، استمتع بوقتك!\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -616,53 +456,17 @@
 							}
 						},
 						"url": {
-							"raw": "{{BASE_URL}}/requests/1/status",
+							"raw": "{{BASE_URL}}/requests/{{leave_request_id}}/status",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
 								"requests",
-								"1",
+								"{{leave_request_id}}",
 								"status"
 							]
 						},
-						"description": "يقوم مسؤول الـ HR باعتماد أو رفض إجازة أو طلب للموظف (مثال: طلب برقم 1)، ويقوم النظام بإصدار إشعار (leave_approved) للموظف صاحب الطلب."
-					},
-					"response": []
-				},
-				{
-					"name": "اعتماد وصرف الراتب للموظف (HR Action - Mark Payroll Paid)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{hr_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{BASE_URL}}/payroll/1/pay",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"payroll",
-								"1",
-								"pay"
-							]
-						},
-						"description": "يقوم الـ HR بوضع الراتب برقم 1 كـ Paid (مدفوع)، مما يطلق إشعاراً فورياً للموظف (payroll_ready) يخبره أن راتبه قد تم إيداعه."
+						"description": "قرار الـ HR بقبول طلب الإجازة. عند القبول، يقوم الباك اند بخصم 5 أيام تلقائياً من رصيد الإجازات السنوية للموظف وإرسال إشعار فوري (leave_approved) لحسابه."
 					},
 					"response": []
 				}

@@ -3,16 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\EmployeeRequest;
+use App\Models\LeaveType;
+use App\Models\LeaveBalance;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class EmployeeRequestController extends Controller
 {
     use ApiResponse;
 
-    // GET /api/requests
+    // GET /api/requests (HR / Manager)
     public function index(Request $request): JsonResponse
     {
         $requests = EmployeeRequest::with(['employeeProfile', 'actionedBy'])
@@ -52,32 +55,194 @@ class EmployeeRequestController extends Controller
         );
     }
 
-    // POST /api/requests
+    // GET /api/my-requests (Employee)
+    public function myRequests(Request $request): JsonResponse
+    {
+        $employeeProfile = Auth::user()->employeeProfile;
+        if (!$employeeProfile) {
+            return $this->errorResponse('Employee profile not found.', 404);
+        }
+
+        $requests = EmployeeRequest::where('employee_profile_id', $employeeProfile->id)
+            ->when($request->filled('type') && $request->type !== 'all', function ($q) use ($request) {
+                return $q->where('type', $request->type);
+            })
+            ->when($request->filled('status') && $request->status !== 'all', function ($q) use ($request) {
+                return $q->where('status', $request->status);
+            })
+            ->latest()
+            ->get();
+
+        return $this->successResponse($requests, 'Your requests retrieved successfully.');
+    }
+
+    // GET /api/leave-types (Everyone authenticated)
+    public function getLeaveTypes(): JsonResponse
+    {
+        $types = LeaveType::orderBy('id', 'asc')->get();
+        return $this->successResponse($types, 'Leave types retrieved successfully.');
+    }
+
+    // POST /api/leave-types (HR Only)
+    public function storeLeaveType(Request $request): JsonResponse
+    {
+        $request->validate([
+            'nameEn'            => 'required|string',
+            'nameAr'            => 'nullable|string',
+            'allocation'        => 'required|integer|min:1',
+            'descEn'            => 'nullable|string',
+            'descAr'            => 'nullable|string',
+            'isPaid'            => 'nullable|boolean',
+            'requiresApproval'  => 'nullable|boolean',
+        ]);
+
+        $leaveType = LeaveType::create([
+            'name_en'           => $request->nameEn,
+            'name_ar'           => $request->nameAr,
+            'allocation'        => $request->allocation,
+            'desc_en'           => $request->descEn,
+            'desc_ar'           => $request->descAr,
+            'is_paid'           => $request->isPaid ?? false,
+            'requires_approval' => $request->requiresApproval ?? true,
+        ]);
+
+        return $this->successResponse($leaveType, 'Leave type created successfully.', 201);
+    }
+
+    // GET /api/my-leave-balances (Employee)
+    public function myLeaveBalances(): JsonResponse
+    {
+        $employeeProfile = Auth::user()->employeeProfile;
+        if (!$employeeProfile) {
+            return $this->errorResponse('Employee profile not found.', 404);
+        }
+
+        $balances = LeaveBalance::with('leaveType')
+            ->where('employee_profile_id', $employeeProfile->id)
+            ->get();
+
+        return $this->successResponse($balances, 'Leave balances retrieved successfully.');
+    }
+
+    // POST /api/requests (Employee)
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'employee_profile_id' => 'required|exists:employee_profiles,id',
             'type'                => 'required|string',
             'reason'              => 'nullable|string',
-            'details'             => 'nullable|array',
+            'details'             => 'nullable', // details can be sent as JSON or form fields
         ]);
 
+        $employeeProfile = Auth::user()->employeeProfile;
+        $employeeProfileId = $request->employee_profile_id ?? ($employeeProfile ? $employeeProfile->id : null);
+
+        if (!$employeeProfileId) {
+            return $this->errorResponse('Employee profile not found.', 400);
+        }
+
+        // Details parsing (support both JSON string and raw array)
+        $details = $request->details;
+        if (is_string($details)) {
+            $details = json_decode($details, true) ?? [];
+        } elseif (!is_array($details)) {
+            $details = [];
+        }
+
+        // Try to handle frontend specific fields (startDate, duration, reason)
+        if ($request->filled('startDate')) {
+            $details['start_date'] = $request->startDate;
+        }
+        if ($request->filled('duration')) {
+            $details['duration'] = (int)$request->duration;
+        }
+        if ($request->filled('leaveType')) {
+            $request->merge(['type' => $request->leaveType]);
+        }
+
+        $isLeave = false;
+        $leaveType = null;
+
+        // Is this a leave request?
+        if (in_array(strtolower($request->type), ['vacation', 'leave', 'sick', 'annual', 'emergency', 'personal']) || str_ends_with(strtolower($request->type), 'leave')) {
+            $isLeave = true;
+        }
+
+        // Look up leave type
+        $searchType = $details['leave_type_id'] ?? $request->type;
+        if (is_numeric($searchType)) {
+            $leaveType = LeaveType::find($searchType);
+        } else {
+            $leaveType = LeaveType::where('name_en', 'like', "%{$searchType}%")
+                ->orWhere('name_ar', 'like', "%{$searchType}%")
+                ->first();
+        }
+
+        if ($isLeave && !$leaveType) {
+            // Default fallback
+            $leaveType = LeaveType::where('name_en', 'Annual Leave')->first();
+        }
+
+        if ($leaveType) {
+            $isLeave = true;
+            $duration = (int)($details['duration'] ?? $request->duration ?? 1);
+            $details['leave_type_id'] = $leaveType->id;
+            $details['leave_type_name'] = $leaveType->name_en;
+
+            // Check if there is enough balance
+            $balance = LeaveBalance::where('employee_profile_id', $employeeProfileId)
+                ->where('leave_type_id', $leaveType->id)
+                ->first();
+
+            if ($balance && $balance->remaining < $duration) {
+                return $this->errorResponse("Insufficient leave balance. You have only {$balance->remaining} days left for {$leaveType->name_en}.", 422);
+            }
+        }
+
+        // Handle attachment file upload
+        if ($request->hasFile('attachment')) {
+            $file = $request->file('attachment');
+            $path = $file->store('attachments', 'public');
+            
+            $details['attachment_name'] = $file->getClientOriginalName();
+            $details['attachment_url']  = asset('storage/' . $path);
+            $details['attachment_size'] = $file->getSize();
+        }
+
+        $status = 'pending';
+        // Auto-approve if leave doesn't require approval
+        if ($leaveType && !$leaveType->requires_approval) {
+            $status = 'approved';
+        }
+
         $employeeRequest = EmployeeRequest::create([
-            'employee_profile_id' => $request->employee_profile_id,
+            'employee_profile_id' => $employeeProfileId,
             'type'                => $request->type,
-            'reason'              => $request->reason,
-            'details'             => $request->details,
-            'status'              => 'pending',
+            'reason'              => $request->reason ?? $request->reson,
+            'details'             => $details,
+            'status'              => $status,
         ]);
+
+        // If auto-approved, deduct from balance right away
+        if ($status === 'approved' && $leaveType) {
+            $balance = LeaveBalance::where('employee_profile_id', $employeeProfileId)
+                ->where('leave_type_id', $leaveType->id)
+                ->first();
+            if ($balance) {
+                $balance->used += $duration;
+                $balance->remaining = max(0, $balance->allocated - $balance->used);
+                $balance->save();
+            }
+        }
 
         return $this->successResponse($employeeRequest, 'Request submitted successfully.', 201);
     }
 
-    // PATCH /api/requests/{id}/status
+    // PATCH /api/requests/{id}/status (HR Only)
     public function updateStatus(Request $request, int $id): JsonResponse
     {
         $request->validate([
             'status' => 'required|in:approved,rejected',
+            'reason' => 'nullable|string',
         ]);
 
         $employeeRequest = EmployeeRequest::with('employeeProfile')->find($id);
@@ -85,8 +250,58 @@ class EmployeeRequestController extends Controller
             return $this->errorResponse('Request not found.', 404);
         }
 
+        if ($employeeRequest->status !== 'pending') {
+            return $this->errorResponse('Request has already been actioned.', 400);
+        }
+
+        $details = $employeeRequest->details ?? [];
+        $isLeave = false;
+        $leaveType = null;
+
+        // Is this a leave request?
+        if (in_array(strtolower($employeeRequest->type), ['vacation', 'leave', 'sick', 'annual', 'emergency', 'personal']) || str_ends_with(strtolower($employeeRequest->type), 'leave')) {
+            $isLeave = true;
+        }
+
+        // Look up leave type
+        $searchType = $details['leave_type_id'] ?? $employeeRequest->type;
+        if (is_numeric($searchType)) {
+            $leaveType = LeaveType::find($searchType);
+        } else {
+            $leaveType = LeaveType::where('name_en', 'like', "%{$searchType}%")
+                ->orWhere('name_ar', 'like', "%{$searchType}%")
+                ->first();
+        }
+
+        if ($isLeave && !$leaveType) {
+            $leaveType = LeaveType::where('name_en', 'Annual Leave')->first();
+        }
+
+        if ($request->status === 'approved' && $leaveType) {
+            $duration = (int)($details['duration'] ?? 1);
+            
+            // Check & deduct balance
+            $balance = LeaveBalance::where('employee_profile_id', $employeeRequest->employee_profile_id)
+                ->where('leave_type_id', $leaveType->id)
+                ->first();
+
+            if ($balance) {
+                if ($balance->remaining < $duration) {
+                    return $this->errorResponse("Cannot approve. Employee only has {$balance->remaining} days left for {$leaveType->name_en}.", 400);
+                }
+
+                $balance->used += $duration;
+                $balance->remaining = max(0, $balance->allocated - $balance->used);
+                $balance->save();
+
+                $details['remaining_balance'] = $balance->remaining;
+                $employeeRequest->details = $details;
+            }
+        }
+
         $employeeRequest->update([
             'status'      => $request->status,
+            'reason'      => $request->reason ?? $employeeRequest->reason,
             'actioned_by' => Auth::id(),
             'actioned_at' => now(),
         ]);
@@ -109,8 +324,6 @@ class EmployeeRequestController extends Controller
                 'data' => json_encode(['request_id' => $employeeRequest->id]),
             ]);
         }
-
-        // TODO: Trigger movement creation or updates if approved and type is promotion/transfer/etc.
 
         return $this->successResponse($employeeRequest, "Request {$request->status} successfully.");
     }

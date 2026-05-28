@@ -102,6 +102,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // ── Department Work Hours Settings ───────────────────────────────────
     Route::get('/department-hours', [DepartmentHourController::class, 'index']);
 
+    // ── Employee Requests / Leaves Routes ──────────────────────────────
+    Route::get('/leave-types',         [EmployeeRequestController::class, 'getLeaveTypes']);
+    Route::get('/my-leave-balances',   [EmployeeRequestController::class, 'myLeaveBalances']);
+    Route::get('/my-requests',         [EmployeeRequestController::class, 'myRequests']);
+    Route::post('/requests',           [EmployeeRequestController::class, 'store']);
+
     // ── HR فقط — كل العمليات ─────────────────────────────────────────────
     Route::middleware('role:hr')->group(function () {
 
@@ -169,6 +175,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/interviews/{interview}/cancel',        [InterviewController::class, 'cancel']);
         Route::patch('/interviews/{interview}/reschedule',    [InterviewController::class, 'reschedule']);
         Route::delete('/interviews/{interview}',              [InterviewController::class, 'destroy']);
+
+        // Leave Types (HR Only)
+        Route::post('/leave-types', [EmployeeRequestController::class, 'storeLeaveType']);
     });
 
     // ── Employee Portal ──────────────────────────────────────────────────
