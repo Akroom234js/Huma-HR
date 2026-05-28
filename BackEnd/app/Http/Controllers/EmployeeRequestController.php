@@ -162,6 +162,37 @@ class EmployeeRequestController extends Controller
             $request->merge(['type' => $request->leaveType]);
         }
 
+        // --- SMART VALIDATION: Enforce medical attachment for sick leaves ---
+        $isSickLeave = in_array(strtolower($request->type), ['sick', 'sick leave', 'sick_leave']) || 
+                       str_contains(strtolower($request->type), 'sick') || 
+                       (isset($details['leave_type_name']) && str_contains(strtolower($details['leave_type_name']), 'sick'));
+        
+        if ($isSickLeave && !$request->hasFile('attachment')) {
+            return $this->errorResponse('Medical attachment is mandatory for sick leaves. Please upload a medical certificate.', 422);
+        }
+
+        // --- SMART VALIDATION: Cross date range overlap / intersection check ---
+        $startDate = $details['start_date'] ?? null;
+        $duration = (int)($details['duration'] ?? $request->duration ?? 1);
+        if ($startDate) {
+            $endDate = date('Y-m-d', strtotime($startDate . " + " . ($duration - 1) . " days"));
+            $existingRequests = EmployeeRequest::where('employee_profile_id', $employeeProfileId)
+                ->where('status', '!=', 'rejected')
+                ->get();
+
+            foreach ($existingRequests as $existing) {
+                $existStart = $existing->details['start_date'] ?? null;
+                $existDuration = (int)($existing->details['duration'] ?? 1);
+                if ($existStart) {
+                    $existEnd = date('Y-m-d', strtotime($existStart . " + " . ($existDuration - 1) . " days"));
+                    // Overlap check formula: (start1 <= end2) && (end1 >= start2)
+                    if ($startDate <= $existEnd && $endDate >= $existStart) {
+                        return $this->errorResponse('Cross date overlap: You already have an active request submitted that covers this period.', 422);
+                    }
+                }
+            }
+        }
+
         $isLeave = false;
         $leaveType = null;
 
@@ -225,16 +256,19 @@ class EmployeeRequestController extends Controller
             'status'              => $status,
         ]);
 
-        // If auto-approved, deduct from balance right away
-        if ($status === 'approved' && $leaveType) {
-            $balance = LeaveBalance::where('employee_profile_id', $employeeProfileId)
-                ->where('leave_type_id', $leaveType->id)
-                ->first();
-            if ($balance) {
-                $balance->used += $duration;
-                $balance->remaining = max(0, $balance->allocated - $balance->used);
-                $balance->save();
+        // If auto-approved, deduct from balance right away and sync attendance records
+        if ($status === 'approved') {
+            if ($leaveType) {
+                $balance = LeaveBalance::where('employee_profile_id', $employeeProfileId)
+                    ->where('leave_type_id', $leaveType->id)
+                    ->first();
+                if ($balance) {
+                    $balance->used += $duration;
+                    $balance->remaining = max(0, $balance->allocated - $balance->used);
+                    $balance->save();
+                }
             }
+            $this->syncAttendanceRecords($employeeRequest);
         }
 
         return $this->successResponse($employeeRequest, 'Request submitted successfully.', 201);
@@ -248,66 +282,82 @@ class EmployeeRequestController extends Controller
             'reason' => 'nullable|string',
         ]);
 
-        $employeeRequest = EmployeeRequest::with('employeeProfile')->find($id);
-        if (!$employeeRequest) {
-            return $this->errorResponse('Request not found.', 404);
-        }
-
-        if ($employeeRequest->status !== 'pending') {
-            return $this->errorResponse('Request has already been actioned.', 400);
-        }
-
-        $details = $employeeRequest->details ?? [];
-        $isLeave = false;
-        $leaveType = null;
-
-        // Is this a leave request?
-        if (in_array(strtolower($employeeRequest->type), ['vacation', 'leave', 'sick', 'annual', 'emergency', 'personal']) || str_ends_with(strtolower($employeeRequest->type), 'leave')) {
-            $isLeave = true;
-        }
-
-        // Look up leave type
-        $searchType = $details['leave_type_id'] ?? $employeeRequest->type;
-        if (is_numeric($searchType)) {
-            $leaveType = LeaveType::find($searchType);
-        } else {
-            $leaveType = LeaveType::where('name_en', 'like', "%{$searchType}%")
-                ->orWhere('name_ar', 'like', "%{$searchType}%")
-                ->first();
-        }
-
-        if ($isLeave && !$leaveType) {
-            $leaveType = LeaveType::where('name_en', 'Annual Leave')->first();
-        }
-
-        if ($request->status === 'approved' && $leaveType) {
-            $duration = (int)($details['duration'] ?? 1);
-            
-            // Check & deduct balance
-            $balance = LeaveBalance::where('employee_profile_id', $employeeRequest->employee_profile_id)
-                ->where('leave_type_id', $leaveType->id)
-                ->first();
-
-            if ($balance) {
-                if ($balance->remaining < $duration) {
-                    return $this->errorResponse("Cannot approve. Employee only has {$balance->remaining} days left for {$leaveType->name_en}.", 400);
-                }
-
-                $balance->used += $duration;
-                $balance->remaining = max(0, $balance->allocated - $balance->used);
-                $balance->save();
-
-                $details['remaining_balance'] = $balance->remaining;
-                $employeeRequest->details = $details;
+        // --- SMART FEATURES: Complete Database Transaction wrapper for Transaction Integrity ---
+        $result = DB::transaction(function () use ($request, $id) {
+            $employeeRequest = EmployeeRequest::with('employeeProfile')->lockForUpdate()->find($id);
+            if (!$employeeRequest) {
+                return ['error' => 'Request not found.', 'code' => 404];
             }
+
+            if ($employeeRequest->status !== 'pending') {
+                return ['error' => 'Request has already been actioned.', 'code' => 400];
+            }
+
+            $details = $employeeRequest->details ?? [];
+            $isLeave = false;
+            $leaveType = null;
+
+            // Is this a leave request?
+            if (in_array(strtolower($employeeRequest->type), ['vacation', 'leave', 'sick', 'annual', 'emergency', 'personal']) || str_ends_with(strtolower($employeeRequest->type), 'leave')) {
+                $isLeave = true;
+            }
+
+            // Look up leave type
+            $searchType = $details['leave_type_id'] ?? $employeeRequest->type;
+            if (is_numeric($searchType)) {
+                $leaveType = LeaveType::find($searchType);
+            } else {
+                $leaveType = LeaveType::where('name_en', 'like', "%{$searchType}%")
+                    ->orWhere('name_ar', 'like', "%{$searchType}%")
+                    ->first();
+            }
+
+            if ($isLeave && !$leaveType) {
+                $leaveType = LeaveType::where('name_en', 'Annual Leave')->first();
+            }
+
+            if ($request->status === 'approved' && $leaveType) {
+                $duration = (int)($details['duration'] ?? 1);
+                
+                // Check & deduct balance
+                $balance = LeaveBalance::where('employee_profile_id', $employeeRequest->employee_profile_id)
+                    ->where('leave_type_id', $leaveType->id)
+                    ->first();
+
+                if ($balance) {
+                    if ($balance->remaining < $duration) {
+                        return ['error' => "Cannot approve. Employee only has {$balance->remaining} days left for {$leaveType->name_en}.", 'code' => 400];
+                    }
+
+                    $balance->used += $duration;
+                    $balance->remaining = max(0, $balance->allocated - $balance->used);
+                    $balance->save();
+
+                    $details['remaining_balance'] = $balance->remaining;
+                    $employeeRequest->details = $details;
+                }
+            }
+
+            $employeeRequest->update([
+                'status'      => $request->status,
+                'reason'      => $request->reason ?? $employeeRequest->reason,
+                'actioned_by' => Auth::id(),
+                'actioned_at' => now(),
+            ]);
+
+            // --- SMART FEATURES: Attendance Sync integration on approval ---
+            if ($request->status === 'approved') {
+                $this->syncAttendanceRecords($employeeRequest);
+            }
+
+            return ['success' => true, 'request' => $employeeRequest];
+        });
+
+        if (isset($result['error'])) {
+            return $this->errorResponse($result['error'], $result['code']);
         }
 
-        $employeeRequest->update([
-            'status'      => $request->status,
-            'reason'      => $request->reason ?? $employeeRequest->reason,
-            'actioned_by' => Auth::id(),
-            'actioned_at' => now(),
-        ]);
+        $employeeRequest = $result['request'];
 
         // Trigger notification
         $recipientUserId = optional($employeeRequest->employeeProfile)->user_id;
@@ -523,5 +573,34 @@ class EmployeeRequestController extends Controller
             'trends'           => $trends,
         ], 'Dashboard analytics retrieved successfully.');
     }
-}
+    // --- SMART FEATURES: Attendance Sync helper method ---
+    private function syncAttendanceRecords(EmployeeRequest $employeeRequest): void
+    {
+        $profile = $employeeRequest->employeeProfile;
+        if (!$profile) return;
 
+        $details = $employeeRequest->details;
+        $startDate = $details['start_date'] ?? null;
+        $duration = (int)($details['duration'] ?? 1);
+
+        if ($startDate) {
+            for ($i = 0; $i < $duration; $i++) {
+                $currentDate = date('Y-m-d', strtotime($startDate . " + {$i} days"));
+                
+                // Create or update pre-approved attendance records to prevent lateness penalties or geofencing alerts
+                \App\Models\AttendanceRecord::updateOrCreate(
+                    [
+                        'employee_profile_id' => $profile->id,
+                        'date'                => $currentDate,
+                    ],
+                    [
+                        'status'          => 'Approved Leave',
+                        'check_in'        => null,
+                        'check_out'       => null,
+                        'hours_worked'    => 0,
+                    ]
+                );
+            }
+        }
+    }
+}
