@@ -4,7 +4,7 @@ import UserProfileInfo from '../../../Requests/UI/UserProfileInfo/UserProfileInf
 import StatusBadge from '../StatusBadge/StatusBadge';
 import Button from '../../../Requests/UI/Button/Button';
 
-const RequestCard = ({ request }) => {
+const RequestCard = ({ request, onAction }) => {
     const { employee, type, requestType, status, data } = request;
 
     const renderRequestDetails = () => {
@@ -166,8 +166,12 @@ const RequestCard = ({ request }) => {
 
                     <div className="req-actions-section">
                         <Button variant="outline" size="sm">Details</Button>
-                        <Button variant="danger" size="sm">Reject</Button>
-                        <Button variant="primary" size="sm">Approve</Button>
+                        {status.toLowerCase() === 'pending' && (
+                            <>
+                                <Button variant="danger" size="sm" onClick={() => onAction && onAction(request.id, 'rejected')}>Reject</Button>
+                                <Button variant="primary" size="sm" onClick={() => onAction && onAction(request.id, 'approved')}>Approve</Button>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
