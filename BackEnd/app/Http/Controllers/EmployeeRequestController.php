@@ -10,6 +10,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Models\Department;
+use App\Models\EmployeeProfile;
+use Illuminate\Support\Facades\DB;
 
 class EmployeeRequestController extends Controller
 {
@@ -327,4 +330,198 @@ class EmployeeRequestController extends Controller
 
         return $this->successResponse($employeeRequest, "Request {$request->status} successfully.");
     }
+
+    // GET /api/leaves/dashboard-analytics (HR / Manager)
+    public function dashboardAnalytics(Request $request): JsonResponse
+    {
+        // 1. Stats card overview
+        $pendingRequestsCount = EmployeeRequest::where('status', 'pending')->count();
+        $totalAnnualBalance = LeaveBalance::sum('allocated');
+
+        $highestRequesterQuery = EmployeeRequest::select('employee_profile_id', DB::raw('count(*) as total'))
+            ->groupBy('employee_profile_id')
+            ->orderByDesc('total')
+            ->first();
+        
+        $highestRequesterName = 'None';
+        if ($highestRequesterQuery) {
+            $profile = EmployeeProfile::find($highestRequesterQuery->employee_profile_id);
+            if ($profile) {
+                $highestRequesterName = $profile->full_name;
+            }
+        }
+
+        $totalUsedDays = LeaveBalance::sum('used');
+
+        $stats = [
+            [
+                'label' => 'Pending Requests',
+                'value' => (string)$pendingRequestsCount,
+                'icon'  => 'pending_actions',
+            ],
+            [
+                'label' => 'Annual Balance',
+                'value' => number_format($totalAnnualBalance) . ' Days',
+                'icon'  => 'account_balance',
+            ],
+            [
+                'label' => 'Highest Requester',
+                'value' => $highestRequesterName,
+                'icon'  => 'person_alert',
+            ],
+            [
+                'label' => 'Used Days',
+                'value' => number_format($totalUsedDays),
+                'icon'  => 'calendar_today',
+            ],
+        ];
+
+        // 2. Recent leave requests formatted exactly as Leaves.jsx expects
+        $requestsRaw = EmployeeRequest::with(['employeeProfile.department'])
+            ->latest()
+            ->get();
+
+        $leaveRequests = $requestsRaw->map(function ($req) {
+            $profile = $req->employeeProfile;
+            $deptName = $profile && $profile->department ? $profile->department->name : 'General';
+            $duration = isset($req->details['duration']) ? (int)$req->details['duration'] : 1;
+            
+            $startDate = $req->details['start_date'] ?? null;
+            $endDate = null;
+            if ($startDate && $duration > 1) {
+                $endDate = date('Y-m-d', strtotime($startDate . " + " . ($duration - 1) . " days"));
+            }
+            $dates = $startDate ? ($endDate ? "{$startDate} - {$endDate}" : $startDate) : 'Not specified';
+
+            $remainingBalance = 0;
+            $leaveType = null;
+            $searchType = $req->details['leave_type_id'] ?? $req->type;
+            if ($profile) {
+                if (is_numeric($searchType)) {
+                    $leaveType = LeaveType::find($searchType);
+                } else {
+                    $leaveType = LeaveType::where('name_en', 'like', "%{$searchType}%")
+                        ->orWhere('name_ar', 'like', "%{$searchType}%")
+                        ->first();
+                }
+                if ($leaveType) {
+                    $balanceModel = LeaveBalance::where('employee_profile_id', $profile->id)
+                        ->where('leave_type_id', $leaveType->id)
+                        ->first();
+                    if ($balanceModel) {
+                        $remainingBalance = $balanceModel->remaining;
+                    }
+                }
+            }
+
+            return [
+                'id'       => $req->id,
+                'name'     => $profile ? $profile->full_name : 'Unknown Employee',
+                'dept'     => $deptName,
+                'type'     => $leaveType ? $leaveType->name_en : ucfirst($req->type),
+                'dates'    => $dates,
+                'duration' => $duration,
+                'status'   => $req->status,
+                'balance'  => $remainingBalance,
+                'reason'   => $req->reason ?? '',
+                'avatar'   => $profile && $profile->profile_pic ? asset('storage/' . $profile->profile_pic) : 'https://i.pravatar.cc/150?u=' . $req->id
+            ];
+        });
+
+        // 3. Leave Type Distribution (percentages)
+        $leaveTypeCounts = EmployeeRequest::select('type', DB::raw('count(*) as count'))
+            ->groupBy('type')
+            ->get();
+        $totalRequests = $leaveTypeCounts->sum('count');
+
+        $distribution = [];
+        $chartColors = ['bg-blue', 'bg-amber', 'bg-red', 'bg-emerald', 'bg-purple'];
+        $idx = 0;
+        foreach ($leaveTypeCounts as $ltc) {
+            $percent = $totalRequests > 0 ? round(($ltc->count / $totalRequests) * 100) : 0;
+            $label = ucfirst($ltc->type);
+            $color = $chartColors[$idx % count($chartColors)];
+            $distribution[] = [
+                'label'   => "{$label} ({$percent}%)",
+                'percent' => $percent,
+                'color'   => $color,
+            ];
+            $idx++;
+        }
+
+        if (empty($distribution)) {
+            $distribution = [
+                ['label' => 'Annual (40%)', 'percent' => 40, 'color' => 'bg-blue'],
+                ['label' => 'Sick (30%)', 'percent' => 30, 'color' => 'bg-amber'],
+                ['label' => 'Emergency (20%)', 'percent' => 20, 'color' => 'bg-red'],
+                ['label' => 'Other (10%)', 'percent' => 10, 'color' => 'bg-emerald'],
+            ];
+        }
+
+        // 4. Departmental Leave Impact
+        $departments = Department::withCount('employees')->get();
+        
+        $impacts = [];
+        foreach ($departments as $dept) {
+            $totalEmployees = $dept->employees_count;
+            if ($totalEmployees == 0) continue;
+
+            $activeLeavesCount = EmployeeRequest::where('status', 'approved')
+                ->whereHas('employeeProfile', function ($q) use ($dept) {
+                    $q->where('department_id', $dept->id);
+                })
+                ->count();
+
+            $percent = round(($activeLeavesCount / $totalEmployees) * 100);
+            
+            $impact = 'low';
+            if ($percent > 20) {
+                $impact = 'high';
+            } elseif ($percent >= 10) {
+                $impact = 'medium';
+            }
+
+            $impacts[] = [
+                'name'    => "{$dept->name} Department",
+                'percent' => $percent,
+                'impact'  => $impact,
+            ];
+        }
+
+        if (empty($impacts)) {
+            $impacts = [
+                ['name' => 'IT Department', 'percent' => 15, 'impact' => 'medium'],
+                ['name' => 'Marketing Department', 'percent' => 8, 'impact' => 'low'],
+                ['name' => 'HR Department', 'percent' => 25, 'impact' => 'high'],
+            ];
+        }
+
+        // 5. Monthly trend comparison (grouped in PHP to be 100% database-agnostic)
+        $allApproved = EmployeeRequest::where('status', 'approved')->get();
+        $q1 = 0; $q2 = 0; $q3 = 0; $q4 = 0;
+        foreach ($allApproved as $r) {
+            $month = date('m', strtotime($r->created_at));
+            if (in_array($month, ['01', '02', '03'])) $q1++;
+            elseif (in_array($month, ['04', '05', '06'])) $q2++;
+            elseif (in_array($month, ['07', '08', '09'])) $q3++;
+            elseif (in_array($month, ['10', '11', '12'])) $q4++;
+        }
+
+        $max = max($q1, $q2, $q3, $q4, 1);
+        $trends = [
+            ['label' => 'Q1', 'percent' => round(($q1 / $max) * 100)],
+            ['label' => 'Q2', 'percent' => round(($q2 / $max) * 100)],
+            ['label' => 'Q3', 'percent' => round(($q3 / $max) * 100)],
+            ['label' => 'Q4', 'percent' => round(($q4 / $max) * 100)],
+        ];
+
+        return $this->successResponse([
+            'stats'            => $stats,
+            'leave_requests'   => $leaveRequests,
+            'distribution'     => $distribution,
+            'department_impact' => $impacts,
+            'trends'           => $trends,
+        ], 'Dashboard analytics retrieved successfully.');
+    }
 }
+

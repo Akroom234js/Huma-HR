@@ -246,6 +246,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Requests
         Route::get('/requests',               [EmployeeRequestController::class, 'index']);
         Route::patch('/requests/{id}/status', [EmployeeRequestController::class, 'updateStatus']);
+        Route::get('/leaves/dashboard-analytics', [EmployeeRequestController::class, 'dashboardAnalytics']);
 
         // Payroll
         Route::get('/payroll/overview',      [PayrollController::class, 'overview']);
