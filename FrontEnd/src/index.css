@@ -221,3 +221,58 @@ div.interview,
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
 }
+
+/* ==========================================================================
+   DARK MODE FORM AND INPUT STYLE OVERRIDES
+   ========================================================================== */
+
+/* Target all text-like input fields, textareas, and selects in dark theme */
+[data-theme="dark"] select,
+[data-theme="dark"] textarea,
+[data-theme="dark"] input:not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+[data-theme="dark"] .premium-input,
+[data-theme="dark"] .premium-textarea,
+[data-theme="dark"] .premium-select,
+[data-theme="dark"] .premium-input-field,
+[data-theme="dark"] .premium-textarea-field,
+[data-theme="dark"] .premium-select-input,
+[data-theme="dark"] .premium-date-input,
+[data-theme="dark"] .filter-dropdown {
+    background-color: #1e293b !important; /* Solid dark blue/slate background to prevent backdrop shine-through */
+    color: #f3f4f6 !important; /* Readable light text */
+    border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Specific placeholder text colors inside text fields in dark theme */
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder,
+[data-theme="dark"] .premium-input::placeholder,
+[data-theme="dark"] .premium-textarea::placeholder,
+[data-theme="dark"] .premium-input-field::placeholder,
+[data-theme="dark"] .premium-textarea-field::placeholder {
+    color: #9ca3af !important;
+}
+
+/* Style select option list explicitly to override browser default white popup panels */
+[data-theme="dark"] select option,
+[data-theme="dark"] .premium-select option,
+[data-theme="dark"] .premium-select-input option,
+[data-theme="dark"] .filter-dropdown option {
+    background-color: #1e293b !important;
+    color: #f3f4f6 !important;
+}
+
+/* Fix browser autofill / autocomplete white background override in dark theme */
+[data-theme="dark"] input:-webkit-autofill,
+[data-theme="dark"] input:-webkit-autofill:hover,
+[data-theme="dark"] input:-webkit-autofill:focus,
+[data-theme="dark"] textarea:-webkit-autofill,
+[data-theme="dark"] textarea:-webkit-autofill:hover,
+[data-theme="dark"] textarea:-webkit-autofill:focus,
+[data-theme="dark"] select:-webkit-autofill,
+[data-theme="dark"] select:-webkit-autofill:hover,
+[data-theme="dark"] select:-webkit-autofill:focus {
+    -webkit-text-fill-color: #f3f4f6 !important;
+    -webkit-box-shadow: 0 0 0px 1000px #1e293b inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+}

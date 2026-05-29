@@ -95,14 +95,13 @@ const EmpSidebar = () => {
                             </NavLink>
 
                             {/* My Requests (Accordion) */}
-                            {/* رابط الإجازات المنفصل */}
                             <NavLink
                                 to="/portal/my-requests/leaves"
                                 className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
                             >
                                 <div className="nav-item-content">
-                                    <span className="nav-icon material-symbols-outlined">event_available</span>
-                                    <p>{t('My-Leaves') || 'My Leaves'}</p>
+                                    <span className="nav-icon material-symbols-outlined">assignment</span>
+                                    <p>{t('My-Requests') || 'My Requests'}</p>
                                 </div>
                             </NavLink>
 
