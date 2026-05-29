@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import apiClient, { STORAGE_BASE_URL } from "../../../../apiConfig";
 import "./Profile.css";
+import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
 
 const Profile = () => {
   const { t, i18n } = useTranslation("EmployeePortal/Profile");
@@ -40,7 +41,7 @@ const Profile = () => {
         window.dispatchEvent(new Event('local-storage-update'));
       } catch (err) {
         console.error("Error syncing user storage:", err);
-      }
+      } 
     }
   };
 
@@ -191,6 +192,9 @@ const Profile = () => {
     <div className={`profile-page ${isRtl ? "rtl" : "ltr"}`}>
       <div className="profile-header-section">
         <h1 className="page-title">{t("title")}</h1>
+         <div className="sm-theme-toggle-wrapper">
+        <ThemeToggle />
+      </div>
         {saveSuccess && (
           <div className="success-toast">
             <span className="material-symbols-outlined">check_circle</span>
