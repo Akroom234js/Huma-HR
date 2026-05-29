@@ -185,8 +185,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/employee/rewards',  [PayrollController::class, 'employeeRewards']);
 
     // Recognitions
-    Route::get('/employee/recognitions',  [App\Http\Controllers\RecognitionController::class, 'index']);
-    Route::post('/employee/recognitions', [App\Http\Controllers\RecognitionController::class, 'store']);
+    Route::get('/employee/recognitions',         [App\Http\Controllers\RecognitionController::class, 'index']);
+    Route::post('/employee/recognitions',        [App\Http\Controllers\RecognitionController::class, 'store']);
+    Route::put('/employee/recognitions/{id}',    [App\Http\Controllers\RecognitionController::class, 'update']);
+    Route::delete('/employee/recognitions/{id}', [App\Http\Controllers\RecognitionController::class, 'destroy']);
 
     // Chat
     Route::get('/employee/chats',                    [App\Http\Controllers\ChatController::class, 'getConversations']);
