@@ -441,6 +441,7 @@ const MonthlyPayroll = () => {
                                 borderRadius: '12px',
                                 border: '1px solid var(--border-color)',
                                 backgroundColor: 'var(--bg-card)',
+                                
                                 color: 'var(--text-primary)',
                                 cursor: 'pointer',
                                 transition: 'all 0.3s ease'
@@ -456,7 +457,7 @@ const MonthlyPayroll = () => {
                             </button>
                         )}
 
-                        <button className="apply-rules-btn" onClick={handleApplyBonusRules} style={{ backgroundColor: '#8b5cf6', color: 'white', border: 'none', borderRadius: '8px', padding: '10px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <button className="apply-rules-btn" onClick={handleApplyBonusRules} style={{ backgroundColor: "rgb(19 131 237)", color: 'white', border: 'none', borderRadius: '8px', padding: '10px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
                             <i className="bi bi-magic"></i> {t('ApplyBonusRules', 'Apply Bonus Rules')}
                         </button>
                     </div>
