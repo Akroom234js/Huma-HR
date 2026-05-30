@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function Footer() {
+  const { t } = useTranslation("Home/Footer");
+
   return (
     <>
       <div className="footer">
@@ -9,14 +12,10 @@ export default function Footer() {
             <span className="material-icons">business</span>
             <h3>Huma</h3>
           </div>
-          <p>
-            Streamlining human resources for a digital world. Our platform
-            connects talent with opportunity and simplifies workforce
-            management.
-          </p>
+          <p>{t("brand.desc")}</p>
         </div>
         <div className="two">
-          <h3>Contact Us</h3>
+          <h3>{t("contact.title")}</h3>
           <div className="contact-item">
             <span className="material-icons text-sm">email</span>
             <span>contact@huma.com</span>
@@ -27,23 +26,23 @@ export default function Footer() {
           </div>
           <div className="contact-item">
             <span className="material-icons text-sm">location_on</span>
-            <span>San Francisco, CA</span>
+            <span>{t("contact.location")}</span>
           </div>
         </div>
         <div className="three">
-          <h3>Newsletter</h3>
-          <p>Subscribe to get the latest HR news and updates.</p>
+          <h3>{t("newsletter.title")}</h3>
+          <p>{t("newsletter.subtitle")}</p>
           <div className="newsletter-box">
-            <input type="email" placeholder="Enter your email" />
-            <button>Subscribe</button>
+            <input type="email" placeholder={t("newsletter.placeholder")} />
+            <button>{t("newsletter.btn")}</button>
           </div>
         </div>
       </div>
       <div className="end">
-        <p>© 2024 Huma. All Rights Reserved.</p>
+        <p>{t("bottom.rights")}</p>
         <div className="footer-links-bottom">
-          <Link to="#">Privacy Policy</Link>
-          <Link to="#">Terms of Use</Link>
+          <Link to="#">{t("bottom.privacy")}</Link>
+          <Link to="#">{t("bottom.terms")}</Link>
         </div>
       </div>
     </>
