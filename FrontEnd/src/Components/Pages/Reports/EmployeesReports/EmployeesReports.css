@@ -232,12 +232,16 @@
 }
 
 .blue-light {
-  background-color: #eff6ff;
+  /* background-color: #eff6ff; */
+  background-color: var(--bg-page);
+  
   color: #3b82f6;
 }
 
 .grey-light {
-  background-color: #f1f5f9;
+  /* background-color: #f1f5f9; */
+  background-color: var(--bg-page);
+
   color: #64748b;
 }
 
