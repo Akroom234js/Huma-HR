@@ -18,6 +18,8 @@ use App\Http\Controllers\OfficeLocationController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\DepartmentHourController;
 use App\Http\Controllers\TaskController; // ✅ Performance Module
+use App\Http\Controllers\PeerEvaluationController;
+use App\Http\Controllers\PerformanceEvaluationController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
@@ -271,6 +273,10 @@ Route::middleware('auth:sanctum')->group(function () {
         // Interviews Read
         Route::get('/interviews',             [InterviewController::class, 'index']);
         Route::get('/interviews/{interview}', [InterviewController::class, 'show']);
+Route::post('/peer-evaluations', [PeerEvaluationController::class, 'store']);
+Route::get('/peer-evaluations/{cycle}/{employee}', [PeerEvaluationController::class, 'show']);
+        Route::post('/performance-evaluations/{cycle}/{employee}', [PerformanceEvaluationController::class, 'store']);
+        Route::get('/performance-evaluations/{cycle}/{employee}', [PerformanceEvaluationController::class, 'show']);
     });
 
     // ── Department Manager — قسمه وفريقه فقط ────────────────────────────
