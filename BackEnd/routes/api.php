@@ -104,6 +104,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // ── Department Work Hours Settings ───────────────────────────────────
     Route::get('/department-hours', [DepartmentHourController::class, 'index']);
 
+    // ── Employee Requests / Leaves Routes ──────────────────────────────
+    Route::get('/leave-types',         [EmployeeRequestController::class, 'getLeaveTypes']);
+    Route::get('/my-leave-balances',   [EmployeeRequestController::class, 'myLeaveBalances']);
+    Route::get('/my-requests',         [EmployeeRequestController::class, 'myRequests']);
+    Route::post('/requests',           [EmployeeRequestController::class, 'store']);
+
     // ── HR فقط — كل العمليات ─────────────────────────────────────────────
     Route::middleware('role:hr')->group(function () {
 
@@ -171,6 +177,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/interviews/{interview}/cancel',        [InterviewController::class, 'cancel']);
         Route::patch('/interviews/{interview}/reschedule',    [InterviewController::class, 'reschedule']);
         Route::delete('/interviews/{interview}',              [InterviewController::class, 'destroy']);
+
+        // Leave Types (HR Only)
+        Route::post('/leave-types', [EmployeeRequestController::class, 'storeLeaveType']);
     });
 
     // ── Employee Portal ──────────────────────────────────────────────────
@@ -178,8 +187,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/employee/rewards',  [PayrollController::class, 'employeeRewards']);
 
     // Recognitions
-    Route::get('/employee/recognitions',  [App\Http\Controllers\RecognitionController::class, 'index']);
-    Route::post('/employee/recognitions', [App\Http\Controllers\RecognitionController::class, 'store']);
+    Route::get('/employee/recognitions',         [App\Http\Controllers\RecognitionController::class, 'index']);
+    Route::post('/employee/recognitions',        [App\Http\Controllers\RecognitionController::class, 'store']);
+    Route::put('/employee/recognitions/{id}',    [App\Http\Controllers\RecognitionController::class, 'update']);
+    Route::delete('/employee/recognitions/{id}', [App\Http\Controllers\RecognitionController::class, 'destroy']);
 
     // Chat
     Route::get('/employee/chats',                    [App\Http\Controllers\ChatController::class, 'getConversations']);
@@ -239,6 +250,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Requests
         Route::get('/requests',               [EmployeeRequestController::class, 'index']);
         Route::patch('/requests/{id}/status', [EmployeeRequestController::class, 'updateStatus']);
+        Route::get('/leaves/dashboard-analytics', [EmployeeRequestController::class, 'dashboardAnalytics']);
 
         // Payroll
         Route::get('/payroll/overview',      [PayrollController::class, 'overview']);

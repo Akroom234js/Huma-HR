@@ -28,7 +28,7 @@ return [
     // لكل الـ third-party credentials
     // gemini-php/laravel بيقرأ الـ key من هنا تلقائياً
     'gemini' => [
-        'api_key' => env('GEMINI_API_KEY'),
+        'api_key' => env('GEMINI_API_KEY') ?: env('OPENAI_API_KEY'),
     ],
 
 ];
