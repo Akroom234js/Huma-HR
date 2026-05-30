@@ -1,0 +1,107 @@
+{
+  "nav": {
+    "home": "Home",
+    "jobs": "Jobs",
+    "goToWebsite": "Go to website",
+    "demoTooltip": "You will be automatically directed to the appropriate control panel for your role."
+  },
+  "intro": {
+    "badge": "Empowering the Future of Work",
+    "title": "Join Our Innovative Team",
+    "description": "Welcome to our career portal. Whether you are an applicant looking for your next challenge or an employee managing your profile, we empower you with transparency."
+  },
+  "portal": {
+    "title": "Employee Portal",
+    "description": "Seamlessly manage your professional profile, track attendance, and access internal resources.",
+    "security": "Enterprise Grade Security"
+  },
+  "login": {
+    "title": "Welcome Back",
+    "subtitle": "Please enter your credentials to access your dashboard.",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "name@company.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••",
+    "rememberMe": "Remember me",
+    "forgetPassword": "forget Password ?",
+    "signInBtn": "Sign In to Dashboard",
+    "processing": "Processing..."
+  },
+  "forgot": {
+    "title": "Reset Password",
+    "subtitle": "Enter your email to recover your account access.",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "name@company.com",
+    "sendBtn": "Send Reset Link",
+    "backToLogin": "Back to Login"
+  },
+  "verify": {
+    "title": "Verify Your Email",
+    "subtitle": "Enter the 6-digit code sent to your email address.",
+    "codeLabel": "Verification Code",
+    "codePlaceholder": "000000",
+    "confirmBtn": "Confirm Code",
+    "back": "Back"
+  },
+  "reset": {
+    "title": "New Password",
+    "subtitle": "Please choose a strong and easy-to-remember password.",
+    "newPasswordLabel": "New Password",
+    "confirmPasswordLabel": "Confirm Password",
+    "saveBtn": "Save and Update"
+  },
+  "whyChoose": {
+    "title": "Why Choose Our Platform",
+    "subtitle": "Discover the powerful tools and features designed to streamline your HR processes.",
+    "analyticsTitle": "Advanced Analytics",
+    "analyticsDesc": "Gain insights into workforce trends with our comprehensive dashboard.",
+    "integrationTitle": "Seamless Integration",
+    "integrationDesc": "Connect easily with your favorite tools like Slack and Zoom.",
+    "securityTitle": "Enterprise Security",
+    "securityDesc": "Bank-grade encryption keeps your sensitive data protected.",
+    "timeTitle": "Time Management",
+    "timeDesc": "Automated attendance tracking and leave management systems.",
+    "teamTitle": "Team Collaboration",
+    "teamDesc": "Foster a connected culture with built-in communication channels.",
+    "aiTitle": "AI Recruiting",
+    "aiDesc": "Leverage artificial intelligence to screen candidates faster."
+  },
+  "process": {
+    "title": "Application Process",
+    "step1Title": "Submit CV",
+    "step1Desc": "Upload your resume directly to the opening. Our AI screening gives instant feedback.",
+    "step2Title": "Review",
+    "step2Desc": "Our HR team carefully reviews your profile against our requirements.",
+    "step3Title": "Interview",
+    "step3Desc": "Schedule a meeting with the team to discuss your future at Huma."
+  },
+  "workplace": {
+    "title": "Experience the Digital Workplace",
+    "desc": "Our internal platform streamlines everything from attendance to analytics. Get a glimpse of the tools you'll use daily.",
+    "learnMore": "Learn More"
+  },
+  "testimonials": {
+    "title": "Trusted by the Best HR Teams",
+    "card1": {
+      "quote": "\"Huma HR transformed our high-volume candidate screening, reducing review time by 45% while preserving data-driven recruitment metrics.\"",
+      "author": "Marcus Thorne",
+      "role": "Global Talent Acquisition, Google"
+    },
+    "card2": {
+      "quote": "\"The seamless integration between attendance tracking and payroll analytics is exceptional. It has unified our fragmented HR tools into a single ecosystem.\"",
+      "author": "Elena Rostova",
+      "role": "HR Operations Director, Microsoft Europe"
+    },
+    "card3": {
+      "quote": "\"Deploying Huma's employee portal has significantly increased self-service adoption. Our supervisors now approve leaves and track metrics in seconds.\"",
+      "author": "David Chen",
+      "role": "Senior VP of People, Amazon Operations"
+    }
+  },
+  "notifications": {
+    "loginSuccess": "Login successful!",
+    "forgotSuccess": "Verification code sent to your email.",
+    "resetSuccess": "Password reset successfully!",
+    "pleaseLogin": "Please login first to access the control panel."
+  }
+}

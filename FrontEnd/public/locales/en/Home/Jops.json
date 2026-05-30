@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "home": "Home",
+    "jobs": "Jobs",
+    "goToWebsite": "Go to website",
+    "demoTooltip": "You will be automatically directed to the appropriate control panel for your role."
+  },
+  "hero": {
+    "badge": "Grow With Us",
+    "title": "Find Your Dream Job",
+    "description": "Explore exciting opportunities at Huma. We are always looking for talented individuals to join our mission of revolutionizing HR."
+  },
+  "positions": {
+    "title": "Open Positions",
+    "subtitle": "Browse our latest job openings and apply today.",
+    "searchPlaceholder": "Search by job title or department...",
+    "applyBtn": "Apply Now",
+    "showMore": "Show more jobs",
+    "noMatch": "No jobs match your search.",
+    "noJobs": "No open positions at the moment. Check back soon!"
+  },
+  "time": {
+    "today": "Today",
+    "oneDay": "1 day ago",
+    "days": "{{count}} days ago",
+    "oneWeek": "1 week ago",
+    "weeks": "{{count}} weeks ago"
+  },
+  "howToApply": {
+    "title": "How to Apply",
+    "step1Title": "Submit Application",
+    "step1Desc": "Click apply on any listing. Upload your CV easily and get instant confirmation.",
+    "step2Title": "Review",
+    "step2Desc": "Our HR team reviews applications daily to find the perfect fit.",
+    "step3Title": "Interview",
+    "step3Desc": "If your profile matches, we will schedule a call to discuss your career with us."
+  }
+}

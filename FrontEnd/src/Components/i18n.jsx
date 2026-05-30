@@ -20,7 +20,10 @@ i18n
 			'Dashboard/EmployeeReports',
 			'Dashboard/Attendance',
 			'Dashboard/Leaves',
-			'EmployeePortal/Profile'
+			'EmployeePortal/Profile',
+			'Home/Home',
+			'Home/Jops',
+			'Home/Footer'
 		], // أسماء الملفات
 
 		defaultNS: "Sidebar/Sidebar",
