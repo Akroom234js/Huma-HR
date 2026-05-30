@@ -134,7 +134,9 @@ const Recruitment = () => {
             <div className="recruitment-container">
                 <div className="recruitment-header-flex">
                     <Header onCreateJob={() => { setEditingJob(null); setIsModalOpen(true); }} />
+                    <div className="sm-theme-toggle-wrapper">
                     <ThemeToggle />
+                </div>
                 </div>
 
                 <Tabs tabs={updatedTabs} />

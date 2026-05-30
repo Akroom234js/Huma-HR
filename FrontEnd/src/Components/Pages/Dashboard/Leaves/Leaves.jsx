@@ -118,7 +118,7 @@ const Leaves = () => {
             <div className="leaves-portal-header-wrapper">
                 <div className="leaves-portal-title-area">
                     <div>
-                        <span className="premium-subtitle">Management Dashboard</span>
+                        {/* <span className="premium-subtitle">Management Dashboard</span> */}
                         <h1>{t('title') || "Leaves Management"}</h1>
                     </div>
                 </div>

@@ -173,9 +173,9 @@ export default function LeavesManagement() {
                         </button>
                     </div>
                 </div>
-                <div className="leaves-theme-toggle">
-                    <ThemeToggle />
-                </div>
+                <div className="sm-theme-toggle-wrapper">
+                                    <ThemeToggle />
+                                </div>
             </header>
 
             {/* Stats Overview Grid */}

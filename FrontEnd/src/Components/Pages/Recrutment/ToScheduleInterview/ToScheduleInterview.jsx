@@ -112,8 +112,9 @@ export default function ToScheduleInterview() {
                 <div className="recruitment-container">
                     <div className="recruitment-header-flex">
                         <Header onCreateJob={() => { setEditingJob(null); setIsModalOpen(true); }} />
-                        <ThemeToggle />
-                    </div>
+<div className="sm-theme-toggle-wrapper">
+                    <ThemeToggle />
+                </div>                    </div>
                     <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
                     <FilterDropdown

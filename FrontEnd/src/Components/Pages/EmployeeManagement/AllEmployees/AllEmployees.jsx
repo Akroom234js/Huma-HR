@@ -239,7 +239,7 @@ const AllEmployees = () => {
         <div className="all-filt">
           <input
             type="text"
-            placeholder="  🔍 Search by name or ID ..."
+            placeholder="   Search by name or ID ..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />

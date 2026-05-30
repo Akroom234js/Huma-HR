@@ -52,7 +52,7 @@ div.add-department div.add-department-co div.assign textarea {
     max-height: 70px;
     min-height: 70px;
      outline: none;
-
+     background-color: var(--bg-card);
 }
 
 div.add-department div.add-department-co div.assign div.skill,

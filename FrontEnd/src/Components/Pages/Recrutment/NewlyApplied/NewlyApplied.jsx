@@ -124,7 +124,9 @@ export default function NewlyApplied() {
                 <div className="recruitment-container">
                     <div className="recruitment-header-flex">
                         <Header onCreateJob={() => { setEditingJob(null); setIsModalOpen(true); }} />
-                        <ThemeToggle />
+                        <div className="sm-theme-toggle-wrapper">
+                    <ThemeToggle />
+                </div>
                     </div>
                     <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
