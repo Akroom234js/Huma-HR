@@ -14,6 +14,7 @@
   padding: 2rem;
   background: var(--bg-page);
   min-height: 100vh;
+  /* overflow-y: auto; */
 }
 
 .attendance-page .attendance-actions {
@@ -167,4 +168,77 @@
 
 .attendance-page .arrow {
   text-align: right;
+}
+@media (max-width: 1024px) {
+  .attendance-page {
+    padding: 25px;
+  }
+  .attendance-page .main-grid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+  
+  .attendance-page .status-card {
+    height: auto; 
+  }
+}
+
+@media (max-width: 768px) {
+  .attendance-page {
+    padding: 15px; 
+    overflow-y: auto;
+  }
+  .attendance-page .status-card,
+  .attendance-page .chart-card,
+  .attendance-page .table-card {
+    width: 100% !important;
+    min-width: 100% !important;
+    padding: 20px;
+    height: auto;
+  }
+
+  .attendance-page table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .portal-page-container h1 {
+    font-size: 1.6rem;
+  }
+
+  .attendance-page .attendance-actions {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .attendance-page {
+    padding: 10px; 
+   
+  }
+  .attendance-page .attendance-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .attendance-page .checkin,
+  .attendance-page .checkout {
+    width: 100%;
+    justify-content: center;
+    height: 48px;
+  }
+
+  .attendance-page .status-card,
+  .attendance-page .chart-card,
+  .attendance-page .table-card {
+    padding: 16px;
+    border-radius: 22px;
+  }
+
+  .attendance-page .chart-box {
+    height: 180px; 
+  }
 }
