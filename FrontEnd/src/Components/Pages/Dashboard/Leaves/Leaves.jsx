@@ -1,9 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import './Leaves.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 import { useTranslation } from "react-i18next";
 import Avatar from '../../../Shared/Avatar/Avatar';
+import apiClient from '../../../../apiConfig';
 
 const Leaves = () => {
     const { t } = useTranslation("Dashboard/Leaves");
@@ -14,142 +15,79 @@ const Leaves = () => {
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const stats = [
-        { label: t('stats.pending') || "Pending Requests", value: "15", icon: "pending_actions" },
-        { label: t('stats.annual_balance') || "Annual Balance", value: "2,450 Days", icon: "account_balance" },
-        { label: t('stats.highest_requester') || "Highest Requester", value: "John Doe", icon: "person_alert" },
-        { label: t('stats.used_days') || "Used Days", value: "312", icon: "calendar_today" }
-    ];
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [dashboardData, setDashboardData] = useState(null);
 
-    const deptHeadcounts = {
-        "IT": 20,
-        "Marketing": 15,
-        "HR": 8,
-        "Sales": 25,
-        "Design": 10
-    };
+    useEffect(() => {
+        const fetchAnalytics = async () => {
+            try {
+                setLoading(true);
+                const res = await apiClient.get('/leaves/dashboard-analytics');
+                setDashboardData(res.data.data);
+                setError(null);
+            } catch (err) {
+                console.error("Failed fetching dashboard analytics:", err);
+                setError("Failed to fetch dashboard data.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchAnalytics();
+    }, []);
 
-    const leaveRequests = [
-        {
-            id: 1,
-            name: "Olivia Rhye",
-            dept: "IT",
-            type: "Annual",
-            dates: "2023-11-01 - 2023-11-03",
-            duration: 3,
-            status: "approved",
-            balance: 17,
-            reason: "Family vacation to Europe.",
-            avatar: "https://i.pravatar.cc/150?u=olivia"
-        },
-        {
-            id: 2,
-            name: "Phoenix Baker",
-            dept: "Marketing",
-            type: "Sick",
-            dates: "2023-10-26",
-            duration: 1,
-            status: "pending",
-            balance: 9,
-            reason: "Flu and high fever.",
-            avatar: "https://i.pravatar.cc/150?u=phoenix"
-        },
-        {
-            id: 3,
-            name: "Lana Steiner",
-            dept: "HR",
-            type: "Emergency",
-            dates: "2023-10-20",
-            duration: 1,
-            status: "rejected",
-            balance: 4,
-            reason: "Personal emergency at home.",
-            avatar: "https://i.pravatar.cc/150?u=lana"
-        },
-        {
-            id: 4,
-            name: "Candice Wu",
-            dept: "IT",
-            type: "Annual",
-            dates: "2023-12-20 - 2024-01-05",
-            duration: 12,
-            status: "pending",
-            balance: 8,
-            reason: "Winter holiday with family.",
-            avatar: "https://i.pravatar.cc/150?u=candice"
-        },
-        {
-            id: 5,
-            name: "Lara Maciel",
-            dept: "IT",
-            type: "Sick",
-            dates: "2023-11-05",
-            duration: 1,
-            status: "pending",
-            balance: 12,
-            reason: "Doctor appointment.",
-            avatar: "https://i.pravatar.cc/150?u=lara"
-        },
-        {
-            id: 6,
-            name: "Zayn Malik",
-            dept: "IT",
-            type: "Annual",
-            dates: "2023-11-10",
-            duration: 5,
-            status: "pending",
-            balance: 20,
-            reason: "Personal leave.",
-            avatar: "https://i.pravatar.cc/150?u=zayn"
-        },
-        {
-            id: 7,
-            name: "Gigi Hadid",
-            dept: "Marketing",
-            type: "Annual",
-            dates: "2023-11-12",
-            duration: 2,
-            status: "pending",
-            balance: 15,
-            reason: "Event attendance.",
-            avatar: "https://i.pravatar.cc/150?u=gigi"
+    // Fallbacks to mock data if backend has no records yet
+    const stats = useMemo(() => {
+        if (dashboardData?.stats) {
+            return dashboardData.stats.map(s => ({
+                label: t(`stats.${s.label.toLowerCase().replace(' ', '_')}`) || s.label,
+                value: s.value,
+                icon: s.icon
+            }));
         }
-    ];
+        return [
+            { label: t('stats.pending') || "Pending Requests", value: "0", icon: "pending_actions" },
+            { label: t('stats.annual_balance') || "Annual Balance", value: "0 Days", icon: "account_balance" },
+            { label: t('stats.highest_requester') || "Highest Requester", value: "None", icon: "person_alert" },
+            { label: t('stats.used_days') || "Used Days", value: "0", icon: "calendar_today" }
+        ];
+    }, [dashboardData, t]);
+
+    const leaveRequests = useMemo(() => {
+        return dashboardData?.leave_requests || [];
+    }, [dashboardData]);
+
+    const calculatedImpacts = useMemo(() => {
+        return dashboardData?.department_impact || [];
+    }, [dashboardData]);
+
+    const distribution = useMemo(() => {
+        return dashboardData?.distribution || [
+            { label: 'Annual (0%)', percent: 0, color: 'bg-blue' },
+            { label: 'Sick (0%)', percent: 0, color: 'bg-amber' },
+            { label: 'Emergency (0%)', percent: 0, color: 'bg-red' },
+            { label: 'Other (0%)', percent: 0, color: 'bg-emerald' }
+        ];
+    }, [dashboardData]);
+
+    const trends = useMemo(() => {
+        return dashboardData?.trends || [
+            { label: 'Q1', percent: 0 },
+            { label: 'Q2', percent: 0 },
+            { label: 'Q3', percent: 0 },
+            { label: 'Q4', percent: 0 }
+        ];
+    }, [dashboardData]);
 
     const filteredRequests = useMemo(() => {
         return leaveRequests.filter(req => {
-            const matchSearch = !searchTerm || req.name.toLowerCase().includes(searchTerm.toLowerCase()) || req.reason.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchSearch = !searchTerm || req.name.toLowerCase().includes(searchTerm.toLowerCase()) || (req.reason && req.reason.toLowerCase().includes(searchTerm.toLowerCase()));
             const matchDept = !dept || req.dept.toLowerCase() === dept.toLowerCase();
             const matchType = !leaveType || req.type.toLowerCase() === leaveType.toLowerCase();
             const matchStatus = !status || req.status.toLowerCase() === status.toLowerCase();
             return matchSearch && matchDept && matchType && matchStatus;
         });
     }, [leaveRequests, searchTerm, dept, leaveType, status]);
-
-    const calculatedImpacts = useMemo(() => {
-        const counts = {};
-        leaveRequests.forEach(req => {
-            if (req.status !== 'rejected') {
-                counts[req.dept] = (counts[req.dept] || 0) + 1;
-            }
-        });
-
-        return Object.keys(deptHeadcounts).map(deptKey => {
-            const count = counts[deptKey] || 0;
-            const total = deptHeadcounts[deptKey];
-            const percent = Math.round((count / total) * 100);
-
-            let impact = "low";
-            if (percent > 20) impact = "high";
-            else if (percent >= 10) impact = "medium";
-
-            return {
-                name: `${deptKey} Department`,
-                percent,
-                impact
-            };
-        }).sort((a, b) => b.percent - a.percent);
-    }, [leaveRequests]);
 
     const openDetails = (req) => {
         setSelectedRequest(req);
@@ -162,6 +100,17 @@ const Leaves = () => {
         setSelectedRequest(null);
         document.body.style.overflow = 'auto';
     };
+
+    if (loading) {
+        return (
+            <div className="portal-page-container-leaves fade-in-section" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
+                <div className="premium-spinner-container" style={{ textAlign: 'center' }}>
+                    <div className="premium-spinner"></div>
+                    <p style={{ marginTop: '1rem', color: 'var(--text-secondary)' }}>Loading Dashboard Analytics...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="portal-page-container-leaves fade-in-section">
@@ -308,10 +257,11 @@ const Leaves = () => {
                             </div>
                         </div>
                         <div className="premium-chart-legend">
-                            <div className="legend-item"><span className="legend-dot bg-blue"></span> Annual (40%)</div>
-                            <div className="legend-item"><span className="legend-dot bg-amber"></span> Sick (30%)</div>
-                            <div className="legend-item"><span className="legend-dot bg-red"></span> Emergency (20%)</div>
-                            <div className="legend-item"><span className="legend-dot bg-emerald"></span> Other (10%)</div>
+                            {distribution.map((item, i) => (
+                                <div className="legend-item" key={i}>
+                                    <span className={`legend-dot ${item.color}`}></span> {item.label}
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -349,10 +299,12 @@ const Leaves = () => {
                             <h3>{t('reports.comparison') || "Monthly Trend Comparison"}</h3>
                         </div>
                         <div className="premium-bars-wrapper">
-                            <div className="chart-bar-col"><div className="chart-bar-fill" style={{ height: '60%' }}></div><span>Q1</span></div>
-                            <div className="chart-bar-col"><div className="chart-bar-fill" style={{ height: '85%' }}></div><span>Q2</span></div>
-                            <div className="chart-bar-col"><div className="chart-bar-fill active" style={{ height: '40%' }}></div><span>Q3</span></div>
-                            <div className="chart-bar-col"><div className="chart-bar-fill" style={{ height: '95%' }}></div><span>Q4</span></div>
+                            {trends.map((tItem, i) => (
+                                <div className="chart-bar-col" key={i}>
+                                    <div className={`chart-bar-fill ${i === 2 ? 'active' : ''}`} style={{ height: `${tItem.percent}%` }}></div>
+                                    <span>{tItem.label}</span>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>

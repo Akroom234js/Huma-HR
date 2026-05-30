@@ -161,21 +161,27 @@ class ResumeParsingService
      * الـ Recursive بيضمن إننا نوصل لأعمق مستوى ونستخرج النص
      */
     private function extractTextFromElement($element): string
-    {
-        $text = '';
+{
+    $text = '';
 
-        if (method_exists($element, 'getText')) {
-            $text .= $element->getText() . ' ';
+    // ✅ إضافة: تجاهل Title مباشرة والنزول لعناصره
+    if (method_exists($element, 'getElements')) {
+        foreach ($element->getElements() as $child) {
+            $text .= $this->extractTextFromElement($child);
         }
-
-        if (method_exists($element, 'getElements')) {
-            foreach ($element->getElements() as $child) {
-                $text .= $this->extractTextFromElement($child);
-            }
-        }
-
         return $text;
     }
+
+    // ✅ استخراج النص فقط من العناصر البسيطة
+    if (method_exists($element, 'getText')) {
+        $value = $element->getText();
+        if (is_string($value)) {
+            $text .= $value . ' ';
+        }
+    }
+
+    return $text;
+}
 
     /**
      * تنظيف النص المستخرج

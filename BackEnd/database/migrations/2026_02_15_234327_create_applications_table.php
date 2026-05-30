@@ -61,7 +61,7 @@ return new class extends Migration
             // submitted_at بيبقى ثابت — هو اللحظة الفعلية اللي ضغط فيها المتقدم Submit
             $table->timestamp('submitted_at')->nullable()
                   ->comment('وقت إرسال الطلب — لا يتغير بعد الإنشاء');
-
+            $table->softDeletes(); // لإمكانية استرجاع الطلبات المحذوفة
             $table->timestamps();
 
             // ✅ جديد: Unique Constraint

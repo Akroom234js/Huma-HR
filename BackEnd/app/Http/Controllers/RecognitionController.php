@@ -22,20 +22,25 @@ class RecognitionController extends Controller
             return $this->errorResponse('Employee profile not found.', 404);
         }
 
-        $received = Recognition::with(['sender', 'recipient'])
+        $received = Recognition::with([
+            'sender:id,full_name,job_title,profile_pic',
+            'recipient:id,full_name,job_title,profile_pic'
+        ])
             ->where('recipient_id', $profile->id)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $public = Recognition::with(['sender', 'recipient'])
-            ->where('is_public', true)
-            ->where('recipient_id', '!=', $profile->id)
+        $sent = Recognition::with([
+            'sender:id,full_name,job_title,profile_pic',
+            'recipient:id,full_name,job_title,profile_pic'
+        ])
+            ->where('sender_id', $profile->id)
             ->orderBy('created_at', 'desc')
             ->get();
 
         return $this->successResponse([
             'received' => $received,
-            'public' => $public
+            'sent' => $sent
         ], 'Recognitions retrieved successfully.');
     }
 
@@ -63,7 +68,7 @@ class RecognitionController extends Controller
             'sender_id' => $senderProfile->id,
             'message' => $request->message,
             'badge_type' => $request->badge_type,
-            'is_public' => $request->input('is_public', true),
+            'is_public' => false,
         ]);
 
         // Send Notification
@@ -78,6 +83,66 @@ class RecognitionController extends Controller
             ]);
         }
 
-        return $this->successResponse($recognition->load(['sender', 'recipient']), 'Recognition sent successfully.', 201);
+        return $this->successResponse($recognition->load([
+            'sender:id,full_name,job_title,profile_pic',
+            'recipient:id,full_name,job_title,profile_pic'
+        ]), 'Recognition sent successfully.', 201);
+    }
+
+    // PUT /api/employee/recognitions/{id}
+    public function update(Request $request, int $id): JsonResponse
+    {
+        $recognition = Recognition::find($id);
+        if (!$recognition) {
+            return $this->errorResponse('Recognition not found.', 404);
+        }
+
+        $senderProfile = Auth::user()->employeeProfile;
+        if (!$senderProfile) {
+            return $this->errorResponse('Employee profile not found.', 404);
+        }
+
+        if ($recognition->sender_id !== $senderProfile->id) {
+            return $this->errorResponse('You can only edit recognitions that you have sent.', 403);
+        }
+
+        $request->validate([
+            'message' => 'required|string',
+            'badge_type' => 'nullable|string|in:rockstar,teamplayer,innovator,leader,creative',
+            'is_public' => 'boolean',
+        ]);
+
+        $recognition->update([
+            'message' => $request->message,
+            'badge_type' => $request->badge_type,
+            'is_public' => false,
+        ]);
+
+        return $this->successResponse($recognition->load([
+            'sender:id,full_name,job_title,profile_pic',
+            'recipient:id,full_name,job_title,profile_pic'
+        ]), 'Recognition updated successfully.');
+    }
+
+    // DELETE /api/employee/recognitions/{id}
+    public function destroy(int $id): JsonResponse
+    {
+        $recognition = Recognition::find($id);
+        if (!$recognition) {
+            return $this->errorResponse('Recognition not found.', 404);
+        }
+
+        $senderProfile = Auth::user()->employeeProfile;
+        if (!$senderProfile) {
+            return $this->errorResponse('Employee profile not found.', 404);
+        }
+
+        if ($recognition->sender_id !== $senderProfile->id) {
+            return $this->errorResponse('You can only delete recognitions that you have sent.', 403);
+        }
+
+        $recognition->delete();
+
+        return $this->successResponse(null, 'Recognition deleted successfully.');
     }
 }

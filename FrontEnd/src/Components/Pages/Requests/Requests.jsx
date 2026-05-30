@@ -78,6 +78,22 @@ const Requests = () => {
         navigate(`/request/${newCategory === 'all' ? '' : newCategory}`);
     };
 
+    const handleAction = async (id, status) => {
+        let reason = '';
+        if (status === 'rejected') {
+            reason = prompt("Enter rejection reason:");
+            if (reason === null) return;
+        }
+        
+        try {
+            await apiClient.patch(`/requests/${id}/status`, { status, reason });
+            fetchRequests();
+        } catch (error) {
+            console.error('Failed to update request status', error);
+            alert(error.response?.data?.message || 'Failed to update status.');
+        }
+    };
+
     return (
         <div className="req-page">
             <MainContent>
@@ -113,7 +129,7 @@ const Requests = () => {
                 {isLoading ? (
                     <div className="req-loading">Loading requests...</div>
                 ) : (
-                    <RequestList requests={requests} />
+                    <RequestList requests={requests} onAction={handleAction} />
                 )}
 
                 <Pagination totalRequests={pagination.total} currentCount={pagination.current} />
