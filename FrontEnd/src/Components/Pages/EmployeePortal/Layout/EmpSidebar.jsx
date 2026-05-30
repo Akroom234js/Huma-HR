@@ -13,8 +13,15 @@ const EmpSidebar = () => {
     const { t } = useTranslation('Sidebar/Sidebar'); // We can reuse or create specific one
     const [isOpen, setIsOpen] = useState(false);
 
+    // Retrieve user and role from local storage to check for department supervisor privileges
+    const userStr = localStorage.getItem('user');
+    const user = userStr ? JSON.parse(userStr) : null;
+    const isSupervisor = user && (user.role === 'department supervisor' || user.role === 'department_manager' || user.role === 'manager');
+
     const [openMenu, setOpenMenu] = useState(() => {
         if (location.pathname.startsWith('/portal/my-requests')) return 'requests';
+        if (location.pathname.startsWith('/portal/performance')) return 'my_performance';
+        if (location.pathname.startsWith('/portal/manager')) return 'manager_performance';
         return null;
     });
 
@@ -23,13 +30,16 @@ const EmpSidebar = () => {
     const isProfileActive = location.pathname === '/portal/profile';
     const isRequestsActive = location.pathname.startsWith('/portal/my-requests');
     const isPayrollActive = location.pathname === '/portal/payroll';
-    const isPerformanceActive = location.pathname === '/portal/performance';
+    const isMyPerformanceActive = location.pathname.startsWith('/portal/performance');
+    const isManagerPerformanceActive = location.pathname.startsWith('/portal/manager');
     const isRewardsActive = location.pathname === '/portal/rewards';
     const isChatActive = location.pathname === '/portal/chat';
 
     // Sync menu states on location change
     useEffect(() => {
         if (isRequestsActive) setOpenMenu('requests');
+        else if (isMyPerformanceActive) setOpenMenu('my_performance');
+        else if (isManagerPerformanceActive) setOpenMenu('manager_performance');
         else setOpenMenu(null);
     }, [location.pathname]);
 
@@ -39,6 +49,7 @@ const EmpSidebar = () => {
         }
         setOpenMenu(prev => (prev === menu ? null : menu));
     };
+
 
     const handleLogout = async (e) => {
         e.preventDefault();
@@ -122,11 +133,74 @@ const EmpSidebar = () => {
                                 <p>{t('Payroll') || 'Payroll'}</p>
                             </NavLink>
 
-                            {/* Performance */}
-                            <NavLink to="/portal/performance" className="nav-item">
-                                <span className="nav-icon material-symbols-outlined">trending_up</span>
-                                <p>{t('Performance') || 'Performance'}</p>
-                            </NavLink>
+                            {/* My Performance (Accordion) */}
+                            <div className="nav-section">
+                                <button
+                                    className={`nav-item nav-toggle ${isMyPerformanceActive ? 'active' : ''}`}
+                                    onClick={() => handleSectionToggle('my_performance', '/portal/performance')}
+                                >
+                                    <div className="nav-item-content">
+                                        <span className="nav-icon material-symbols-outlined">trending_up</span>
+                                        <p>{t('My-Performance') || 'My Performance'}</p>
+                                    </div>
+                                    <span className={`material-symbols-outlined expand-icon ${openMenu === 'my_performance' ? 'expanded' : ''}`}>
+                                        expand_more
+                                    </span>
+                                </button>
+                                <div className={`sub-menu ${openMenu === 'my_performance' ? 'open' : ''}`}>
+                                    <NavLink to="/portal/performance" end className="sub-nav-item">
+                                        {t('My-Tasks-Portal') || 'My Tasks Portal'}
+                                    </NavLink>
+                                    <NavLink to="/portal/performance/tasks/active" className="sub-nav-item">
+                                        {t('Task-Details-View') || 'Task Details View'}
+                                    </NavLink>
+                                    <NavLink to="/portal/performance/report" className="sub-nav-item">
+                                        {t('Performance-Report') || 'Performance Report'}
+                                    </NavLink>
+                                    <NavLink to="/portal/performance/peer-review" className="sub-nav-item">
+                                        {t('Peer-Review-Form') || 'Peer Review Form'}
+                                    </NavLink>
+                                </div>
+                            </div>
+
+                            {/* Department Performance Accordion - Conditional for Supervisor */}
+                            {isSupervisor && (
+                                <div className="nav-section">
+                                    <button
+                                        className={`nav-item nav-toggle ${isManagerPerformanceActive ? 'active' : ''}`}
+                                        onClick={() => handleSectionToggle('manager_performance', '/portal/manager/tasks')}
+                                    >
+                                        <div className="nav-item-content">
+                                            <span className="nav-icon material-symbols-outlined">manage_accounts</span>
+                                            <p>{t('Department-Performance') || 'Department Performance'}</p>
+                                        </div>
+                                        <span className={`material-symbols-outlined expand-icon ${openMenu === 'manager_performance' ? 'expanded' : ''}`}>
+                                            expand_more
+                                        </span>
+                                    </button>
+                                    <div className={`sub-menu ${openMenu === 'manager_performance' ? 'open' : ''}`}>
+                                        <NavLink to="/portal/manager/tasks" className="sub-nav-item">
+                                            {t('Department-Tasks') || 'Department Tasks'}
+                                        </NavLink>
+                                        <NavLink to="/portal/manager/tasks/new" className="sub-nav-item">
+                                            {t('Assign-New-Task') || 'Assign New Task'}
+                                        </NavLink>
+                                        <NavLink to="/portal/manager/tasks/edit/active" className="sub-nav-item">
+                                            {t('Edit-Task-Panel') || 'Edit Task Panel'}
+                                        </NavLink>
+                                        <NavLink to="/portal/manager/tasks/score/active" className="sub-nav-item">
+                                            {t('Task-Score-Drawer') || 'Task Score Drawer'}
+                                        </NavLink>
+                                        <NavLink to="/portal/manager/evaluate/active" className="sub-nav-item">
+                                            {t('Periodic-Evaluation') || 'Periodic Evaluation'}
+                                        </NavLink>
+                                        <NavLink to="/portal/manager/cycles" className="sub-nav-item">
+                                            {t('Performance-Cycles') || 'Performance Cycles'}
+                                        </NavLink>
+                                    </div>
+                                </div>
+                            )}
+
 
                             {/* Rewards & Bonuses */}
                             <NavLink to="/portal/rewards" className="nav-item">

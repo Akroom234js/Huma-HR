@@ -57,6 +57,26 @@ import Performance from './Components/Pages/EmployeePortal/Performance/Performan
 import Rewards from './Components/Pages/EmployeePortal/Rewards/Rewards';
 import Chat from './Components/Pages/EmployeePortal/Chat/Chat';
 
+// HR Performance Module Pages
+import CompanyOverview from './Components/Pages/HRPerformance/CompanyOverview/CompanyOverview';
+import HRPerformanceReports from './Components/Pages/HRPerformance/PerformanceReports/PerformanceReports';
+import AutoActionsHub from './Components/Pages/HRPerformance/AutoActionsHub/AutoActionsHub';
+
+// Employee Performance Portal Pages
+import MyTasksPortal from './Components/Pages/EmployeePortal/Performance/MyTasksPortal/MyTasksPortal';
+import TaskDetailsView from './Components/Pages/EmployeePortal/Performance/TaskDetailsView/TaskDetailsView';
+import PerformanceReport from './Components/Pages/EmployeePortal/Performance/PerformanceReport/PerformanceReport';
+import PeerReviewForm from './Components/Pages/EmployeePortal/Performance/PeerReviewForm/PeerReviewForm';
+
+// Manager Performance Portal Pages
+import DepartmentTasks from './Components/Pages/EmployeePortal/Performance/Manager/DepartmentTasks/DepartmentTasks';
+import AssignNewTask from './Components/Pages/EmployeePortal/Performance/Manager/AssignNewTask/AssignNewTask';
+import EditTaskPanel from './Components/Pages/EmployeePortal/Performance/Manager/EditTaskPanel/EditTaskPanel';
+import TaskScoreDrawer from './Components/Pages/EmployeePortal/Performance/Manager/TaskScoreDrawer/TaskScoreDrawer';
+import PeriodicEvaluation from './Components/Pages/EmployeePortal/Performance/Manager/PeriodicEvaluation/PeriodicEvaluation';
+import PerformanceCycles from './Components/Pages/EmployeePortal/Performance/Manager/PerformanceCycles/PerformanceCycles';
+
+
 
 function App() {
   return (
@@ -201,6 +221,23 @@ function App() {
               </div>
             }
           />
+
+          {/* HR/Admin Performance Hub Routes */}
+          <Route
+            path="/performance/*"
+            element={
+              <div className="app-container">
+                <Sidebar />
+                <main className="main-content">
+                  <Routes>
+                    <Route path="/" element={<CompanyOverview />} />
+                    <Route path="reports" element={<HRPerformanceReports />} />
+                    <Route path="actions" element={<AutoActionsHub />} />
+                  </Routes>
+                </main>
+              </div>
+            }
+          />
         </Route>
 
         {/* Protected Employee Portal Routes */}
@@ -212,11 +249,26 @@ function App() {
             <Route path="my-requests/leaves" element={<Leaves />} />
             <Route path="my-requests/attendance" element={<MyAttendance />} />
             <Route path="payroll" element={<Payroll />} />
-            <Route path="performance" element={<Performance />} />
+            
+            {/* Employee Performance Routes */}
+            <Route path="performance" element={<MyTasksPortal />} />
+            <Route path="performance/tasks/:id" element={<TaskDetailsView />} />
+            <Route path="performance/report" element={<PerformanceReport />} />
+            <Route path="performance/peer-review" element={<PeerReviewForm />} />
+
+            {/* Manager Performance Portal Routes */}
+            <Route path="manager/tasks" element={<DepartmentTasks />} />
+            <Route path="manager/tasks/new" element={<AssignNewTask />} />
+            <Route path="manager/tasks/edit/:id" element={<EditTaskPanel />} />
+            <Route path="manager/tasks/score/:id" element={<TaskScoreDrawer />} />
+            <Route path="manager/evaluate/:employee_id" element={<PeriodicEvaluation />} />
+            <Route path="manager/cycles" element={<PerformanceCycles />} />
+
             <Route path="rewards" element={<Rewards />} />
             <Route path="chat" element={<Chat />} />
           </Route>
         </Route>
+
 
       </Routes>
 
