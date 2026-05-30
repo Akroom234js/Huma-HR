@@ -89,6 +89,29 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/my-profile',       [EmployeeController::class, 'myProfile']);
     Route::put('/my-profile',       [EmployeeController::class, 'updateMyProfile']);
     Route::post('/my-profile',      [EmployeeController::class, 'updateMyProfile']);
+    
+    // ✅ RBAC Role Verification Endpoint
+    Route::get('/auth/verify-role-access', function () {
+        $user = auth()->user();
+        $role = 'employee';
+        if ($user->hasRole('hr', 'api')) {
+            $role = 'hr';
+        } elseif ($user->hasRole('department_manager', 'api') || $user->hasRole('manager', 'api') || $user->hasRole('boss', 'api')) {
+            $role = 'department supervisor';
+        } else {
+            $role = $user->roles->pluck('name')->first() ?? 'employee';
+        }
+
+        return response()->json([
+            'id' => $user->id,
+            'name' => $user->name,
+            'role' => $role,
+            'roles' => method_exists($user, 'getRoleNames') ? $user->getRoleNames() : [$user->role],
+            'status' => 'authorized'
+        ]);
+    });
+
+
 
     // ── Employee Attendance & Geofencing Routes ──────────────────────────
     Route::get('/employee/attendance/today',     [AttendanceController::class, 'today']);

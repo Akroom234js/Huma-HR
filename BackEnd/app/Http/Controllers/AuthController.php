@@ -143,6 +143,16 @@ class AuthController extends Controller
 
         $profile = $user->employeeProfile;
 
+        // Map Spatie roles to Frontend routing expected roles
+        $role = 'employee';
+        if ($user->hasRole('hr', 'api')) {
+            $role = 'hr';
+        } elseif ($user->hasRole('department_manager', 'api') || $user->hasRole('manager', 'api') || $user->hasRole('boss', 'api')) {
+            $role = 'department supervisor';
+        } else {
+            $role = $user->roles->pluck('name')->first() ?? 'employee';
+        }
+
         return $this->successResponse(
             data: [
                 'token'      => $token,
@@ -151,7 +161,7 @@ class AuthController extends Controller
                 'user'       => [
                     'id'          => $user->id,
                     'email'       => $user->email,
-                    'role'        => $user->roles->pluck('name')->first(),
+                    'role'        => $role,
                     'full_name'   => $profile?->full_name,
                     'profile_pic' => $profile?->profile_pic_url,
                 ],
@@ -159,6 +169,7 @@ class AuthController extends Controller
             message: 'Login successful.'
         );
     }
+
 
     // ─── تسجيل الخروج ──────────────────────────────────────────────────────
     // DELETE /api/auth/sessions
