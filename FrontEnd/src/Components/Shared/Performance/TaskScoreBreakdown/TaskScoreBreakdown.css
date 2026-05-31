@@ -1,4 +1,107 @@
-﻿/* CSS for shared component TaskScoreBreakdown */
-.performance-shared-component {
-    display: inline-block;
+.task-score-breakdown-card {
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: all 0.3s ease;
+}
+
+.task-score-breakdown-card:hover {
+  border-color: rgba(53, 158, 255, 0.25);
+  box-shadow: var(--shadow-md);
+}
+
+.breakdown-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 10px;
+  margin: 0;
+}
+
+.title-icon {
+  color: var(--primary-color);
+}
+
+.breakdown-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.breakdown-metric {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.breakdown-metric:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.metric-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.metric-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-top: 6px;
+}
+
+.metric-contrib {
+  font-size: 10px;
+  color: var(--primary-color);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.breakdown-metric.has-penalty {
+  border-color: rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.02);
+}
+
+.penalty-text {
+  color: var(--color-revision);
+}
+
+.breakdown-footer-score {
+  border-top: 1px solid var(--border-light);
+  padding-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.footer-score-val {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-scored);
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
 }

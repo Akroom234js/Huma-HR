@@ -1,4 +1,42 @@
-﻿/* CSS for shared component PriorityBadge */
-.performance-shared-component {
-    display: inline-block;
+.performance-priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.priority-icon {
+  font-size: 9px;
+}
+
+.badge-priority-low {
+  background: rgba(156, 163, 175, 0.15);
+  color: var(--priority-low);
+  border: 1px solid rgba(156, 163, 175, 0.2);
+}
+
+.badge-priority-medium {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--priority-medium);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.badge-priority-high {
+  background: rgba(249, 115, 22, 0.15);
+  color: var(--priority-high);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+}
+
+.badge-priority-urgent {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--priority-urgent);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.15);
 }

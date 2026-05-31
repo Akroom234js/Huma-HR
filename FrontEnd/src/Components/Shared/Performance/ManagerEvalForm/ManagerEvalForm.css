@@ -1,4 +1,264 @@
-﻿/* CSS for shared component ManagerEvalForm */
-.performance-shared-component {
-    display: inline-block;
+/* ==========================================================================
+   Manager Evaluation Form Stylesheet - Shared Performance Component
+   Fully Responsive & Theme-Aware for Light & Dark Modes
+   ========================================================================== */
+
+.performance-manager-eval-form {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border-radius: var(--radius-md, 12px);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.eval-form-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 12px;
+  margin: 0;
+}
+
+.eval-sliders-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Theme-aware range containers */
+.eval-range-container {
+  border-radius: var(--radius-md, 12px);
+  padding: 16px 18px;
+  transition: all 0.3s ease;
+}
+
+[data-theme="light"] .eval-range-container {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="dark"] .eval-range-container {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+.eval-range-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.eval-range-title {
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.eval-range-title i {
+  color: var(--primary-color);
+}
+
+.eval-range-val {
+  font-weight: 700;
+  color: var(--primary-color);
+  background: rgba(53, 158, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid rgba(53, 158, 255, 0.2);
+}
+
+/* Theme-aware input range tracks and handles */
+.eval-custom-range {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 9999px;
+  outline: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+[data-theme="light"] .eval-custom-range {
+  background: #e2e8f0 !important;
+}
+
+[data-theme="dark"] .eval-custom-range {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.eval-custom-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  box-shadow: 0 0 10px rgba(53, 158, 255, 0.6);
+  transition: transform 0.1s ease;
+}
+
+.eval-custom-range::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.slider-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: block;
+  margin-top: 8px;
+}
+
+.eval-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.eval-form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Theme-aware Textarea */
+.eval-textarea-control {
+  padding: 12px;
+  border-radius: var(--radius-md, 12px);
+  font-size: 14px;
+  outline: none;
+  min-height: 100px;
+  resize: vertical;
+  font-family: inherit;
+  width: 100%;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="light"] .eval-textarea-control {
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  color: #1f2937 !important;
+}
+
+[data-theme="light"] .eval-textarea-control::placeholder {
+  color: #9ca3af !important;
+}
+
+[data-theme="light"] .eval-textarea-control:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 8px rgba(53, 158, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .eval-textarea-control {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #f3f4f6 !important;
+}
+
+[data-theme="dark"] .eval-textarea-control::placeholder {
+  color: #9ca3af !important;
+}
+
+[data-theme="dark"] .eval-textarea-control:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 10px rgba(53, 158, 255, 0.3) !important;
+}
+
+/* Theme-aware Live Preview Boxes */
+.eval-live-preview-box {
+  border-radius: var(--radius-md, 12px);
+  padding: 18px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+[data-theme="light"] .eval-live-preview-box {
+  background: linear-gradient(135deg, rgba(53, 158, 255, 0.04) 0%, rgba(29, 78, 216, 0.01) 100%) !important;
+  border: 1px dashed rgba(53, 158, 255, 0.3) !important;
+}
+
+[data-theme="dark"] .eval-live-preview-box {
+  background: linear-gradient(135deg, rgba(53, 158, 255, 0.08) 0%, rgba(29, 78, 216, 0.02) 100%) !important;
+  border: 1px dashed rgba(53, 158, 255, 0.3) !important;
+}
+
+.preview-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.preview-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.preview-math {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: monospace;
+}
+
+.preview-value-big {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--primary-color);
+  text-shadow: 0 0 12px rgba(53, 158, 255, 0.3);
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.preview-max {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.eval-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid var(--border-light);
+  padding-top: 18px;
+}
+
+.eval-submit-btn {
+  background: var(--primary-gradient);
+  color: var(--text-on-primary);
+  border: none;
+  padding: 12px 28px;
+  border-radius: var(--radius-md, 12px);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(53, 158, 255, 0.25);
+}
+
+.eval-submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(53, 158, 255, 0.4);
+}
+
+.eval-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

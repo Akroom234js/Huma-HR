@@ -60,6 +60,34 @@
   --radius-xl: 0.75rem;
   --radius-full: 9999px;
   font-family: 'Plus Jakarta Sans', sans-serif;
+
+  /* Performance Module Theme Colors */
+  --color-pending: #f59e0b;     /* Yellow */
+  --color-progress: #3b82f6;    /* Blue */
+  --color-review: #f97316;      /* Orange */
+  --color-revision: #ef4444;    /* Red */
+  --color-scored: #10b981;      /* Green */
+
+  /* Priority Levels */
+  --priority-low: #9ca3af;
+  --priority-medium: #3b82f6;
+  --priority-high: #f97316;
+  --priority-urgent: #ef4444;
+
+  /* Difficulty Levels */
+  --difficulty-easy: #10b981;
+  --difficulty-medium: #fbbf24;
+  --difficulty-hard: #ef4444;
+
+  /* Automatic Decision Colors */
+  --decision-promo: #10b981;
+  --decision-bonus: #3b82f6;
+  --decision-training: #f59e0b;
+  --decision-warning: #ef4444;
+  --decision-pip: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+
+  /* AI & Brain Brand Color */
+  --purple-ai: #a855f7;
 }
 
 [data-theme="dark"] {
@@ -84,6 +112,13 @@
 
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
   --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+
+  /* Performance overrides for dark theme */
+  --color-pending: #fbbf24;
+  --color-progress: #60a5fa;
+  --color-review: #ff974d;
+  --color-revision: #f87171;
+  --color-scored: #34d399;
 }
 
 body {

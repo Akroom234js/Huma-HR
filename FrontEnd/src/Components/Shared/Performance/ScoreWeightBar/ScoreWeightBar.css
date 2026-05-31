@@ -1,4 +1,41 @@
-﻿/* CSS for shared component ScoreWeightBar */
-.performance-shared-component {
-    display: inline-block;
+.performance-weight-bar-item {
+  margin-bottom: 18px;
+  width: 100%;
+}
+
+.performance-weight-bar-item:last-child {
+  margin-bottom: 0;
+}
+
+.weight-bar-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+}
+
+.weight-bar-label {
+  color: var(--text-secondary);
+}
+
+.weight-bar-score-val {
+  font-weight: 700;
+}
+
+.weight-bar-outer {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.weight-bar-inner {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
 }

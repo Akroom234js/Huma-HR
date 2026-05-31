@@ -1,4 +1,48 @@
-﻿/* CSS for shared component StatusBadge */
-.performance-shared-component {
-    display: inline-block;
+.performance-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.badge-icon {
+  font-size: 10px;
+}
+
+/* Badge variants mapping to CSS variables */
+.badge-pending {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--color-pending);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.badge-progress {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--color-progress);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.badge-review {
+  background: rgba(249, 115, 22, 0.15);
+  color: var(--color-review);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+}
+
+.badge-revision {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--color-revision);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.badge-scored {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--color-scored);
+  border: 1px solid rgba(16, 185, 129, 0.2);
 }

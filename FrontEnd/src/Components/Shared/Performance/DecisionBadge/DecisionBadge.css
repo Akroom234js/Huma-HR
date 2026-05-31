@@ -1,4 +1,55 @@
-﻿/* CSS for shared component DecisionBadge */
-.performance-shared-component {
-    display: inline-block;
+.performance-decision-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.performance-decision-badge:hover {
+  transform: scale(1.02);
+}
+
+.decision-icon {
+  font-size: 11px;
+}
+
+.badge-promo {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--decision-promo);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.1);
+}
+
+.badge-bonus {
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--decision-bonus);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.1);
+}
+
+.badge-training {
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--decision-training);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.badge-warning {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--decision-warning);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.badge-pip {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.1);
 }
