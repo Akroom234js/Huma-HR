@@ -87,7 +87,8 @@
     padding: 10px 12px;
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    background-color: var(--bg-light);
+    /* background-color: var(--bg-light); */
+    background-color: var(--bg-card);
     color: var(--text-main);
     font-size: 0.9rem;
     transition: border-color 0.2s;
@@ -107,7 +108,8 @@
     border: 1px solid var(--border-color);
     border-bottom: none;
     border-radius: 8px 8px 0 0;
-    background-color: var(--bg-light);
+    /* background-color: var(--bg-light); */
+    background-color: var(--bg-card);
 }
 
 .editor-btn {
@@ -350,4 +352,4 @@
 .emp-type-overlay .material-symbols-outlined {
     font-size: 13px;
     color: #ef4444;
-}
+}

@@ -50,6 +50,23 @@ class EmployeeProfile extends Model
 
     protected static function booted()
     {
+        static::created(function ($employee) {
+            $leaveTypes = \App\Models\LeaveType::all();
+            foreach ($leaveTypes as $type) {
+                \App\Models\LeaveBalance::firstOrCreate(
+                    [
+                        'employee_profile_id' => $employee->id,
+                        'leave_type_id' => $type->id,
+                    ],
+                    [
+                        'allocated' => $type->allocation,
+                        'used' => 0,
+                        'remaining' => $type->allocation,
+                    ]
+                );
+            }
+        });
+
         static::saved(function ($employee) {
             if ($employee->position_id) {
                 $position = Position::find($employee->position_id);

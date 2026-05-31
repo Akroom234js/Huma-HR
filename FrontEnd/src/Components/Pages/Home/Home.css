@@ -873,7 +873,7 @@
 
 .con_cart2 div {
   width: 30%;
-  height: 27vh;
+  height: 31vh;
   background-color: var(--bg-card);
   border-radius: 12px;
   border: none;
@@ -889,7 +889,8 @@
 .con_cart2 span {
   font-size: 30px;
   text-align: center;
-  color: var(--text-accent);
+  /* color: var(--text-accent); */
+  color: var(--text-on-primary);
   font-weight: 600;
   padding-top: 2px;
   width: 50px;
@@ -1046,7 +1047,7 @@
   width: 75%;
   height: 40px;
   color: var(--primary-color);
-  margin-top: 10px;
+  /* margin-top: 10px; */
   border: none;
   background-color: var(--text-on-primary);
   border-radius: 8px;
@@ -1059,9 +1060,10 @@
   display: flex;
   justify-content: space-between;
   /* height: 70px; */
-  margin-top: -100px;
+  margin-top: -70px;
   /* padding-top: 30px; */
-  background: var(--primary-gradient);
+  /* background: var(--primary-gradient); */
+  background-color: transparent;
 }
 
 .footer hr {
