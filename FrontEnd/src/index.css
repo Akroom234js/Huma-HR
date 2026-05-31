@@ -275,4 +275,12 @@ div.interview,
     -webkit-text-fill-color: #f3f4f6 !important;
     -webkit-box-shadow: 0 0 0px 1000px #1e293b inset !important;
     transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Global RTL/LTR layouts */
+.rtl {
+  direction: rtl;
+}
+.ltr {
+  direction: ltr;
 }

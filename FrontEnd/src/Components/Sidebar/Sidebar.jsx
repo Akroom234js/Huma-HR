@@ -19,6 +19,7 @@ const Sidebar = () => {
         if (location.pathname.startsWith('/employees')) return 'employee';
         if (location.pathname.startsWith('/department')) return 'department';
         if (location.pathname.startsWith('/salary')) return 'salary';
+        if (location.pathname.startsWith('/performance')) return 'performance';
         return null;
     });
 
@@ -27,6 +28,7 @@ const Sidebar = () => {
     const isEmployeeActive = location.pathname.startsWith('/employees');
     const isDepartmentActive = location.pathname.startsWith('/department');
     const isSalaryActive = location.pathname.startsWith('/salary');
+    const isPerformanceActive = location.pathname.startsWith('/performance');
 
     // Sync menu states on location change
     useEffect(() => {
@@ -34,6 +36,7 @@ const Sidebar = () => {
         else if (isEmployeeActive) setOpenMenu('employee');
         else if (isDepartmentActive) setOpenMenu('department');
         else if (isSalaryActive) setOpenMenu('salary');
+        else if (isPerformanceActive) setOpenMenu('performance');
         else setOpenMenu(null);
     }, [location.pathname]);
 
@@ -221,11 +224,33 @@ const Sidebar = () => {
                                 <p>{t('Leaves')}</p>
                             </NavLink>
 
-                            {/* Performance */}
-                            <NavLink to="/performance" className="nav-item">
-                                <span className="nav-icon material-symbols-outlined">trending_up</span>
-                                <p>{t('Performance')}</p>
-                            </NavLink>
+                            {/* Performance Hub */}
+                            <div className="nav-section">
+                                <button
+                                    className={`nav-item nav-toggle ${isPerformanceActive ? 'active' : ''}`}
+                                    onClick={() => handleSectionToggle('performance', '/performance')}
+                                >
+                                    <div className="nav-item-content">
+                                        <span className="nav-icon material-symbols-outlined">trending_up</span>
+                                        <p>{t('Performance') || 'Performance Hub'}</p>
+                                    </div>
+                                    <span className={`material-symbols-outlined expand-icon ${openMenu === 'performance' ? 'expanded' : ''}`}>
+                                        expand_more
+                                    </span>
+                                </button>
+                                <div className={`sub-menu ${openMenu === 'performance' ? 'open' : ''}`}>
+                                    <NavLink to="/performance" end className="sub-nav-item">
+                                        {t('Company-Overview') || 'Company Overview'}
+                                    </NavLink>
+                                    <NavLink to="/performance/reports" className="sub-nav-item">
+                                        {t('Performance-Reports') || 'Performance Reports'}
+                                    </NavLink>
+                                    <NavLink to="/performance/actions" className="sub-nav-item">
+                                        {t('Auto-Actions-Hub') || 'Auto-Actions Hub'}
+                                    </NavLink>
+                                </div>
+                            </div>
+
 
                             {/* Recruitment */}
                             <NavLink to="/recruitment/make-offer" className="nav-item">

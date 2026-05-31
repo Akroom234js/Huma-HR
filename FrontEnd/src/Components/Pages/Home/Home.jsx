@@ -8,9 +8,13 @@ import ThemeToggle from "../../ThemeToggle/ThemeToggle";
 import apiClient from "../../../apiConfig";
 import Notification from "../../Notification/Notification";
 import Avatar from "../../Shared/Avatar/Avatar";
-
+import { useTranslation } from "react-i18next";
+import LanSw from "../../LanSw";
 
 export default function Home() {
+  const { t, i18n } = useTranslation('Home/Home');
+  const isRtl = i18n.language === "ar";
+
   const [step, setStep] = useState("login"); // login, forgot, verify, reset
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -67,7 +71,7 @@ export default function Home() {
   const handleGoToWebsite = (e) => {
     if (!user) {
       e.preventDefault();
-      showNotification("الرجاء تسجيل الدخول أولاً للوصول إلى لوحة التحكم.", "warning");
+      showNotification(t("notifications.pleaseLogin"), "warning");
       const loginSection = document.querySelector(".poop2");
       if (loginSection) {
         loginSection.scrollIntoView({ behavior: "smooth" });
@@ -88,7 +92,7 @@ export default function Home() {
       const { data } = response.data;
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-      showNotification("Login successful!", "success");
+      showNotification(t("notifications.loginSuccess"), "success");
       setTimeout(() => {
         if (data.user.role === "hr") {
           navigate("/employees/all");
@@ -123,7 +127,7 @@ export default function Home() {
     setLoading(true);
     try {
       await apiClient.post('/auth/password/forgot', { email });
-      showNotification("Verification code sent to your email.", "success");
+      showNotification(t("notifications.forgotSuccess"), "success");
       setStep("verify");
     } catch (err) {
       console.error("Forgot password error:", err);
@@ -163,7 +167,7 @@ export default function Home() {
         password_confirmation: confirmPassword
       });
 
-      showNotification("Password reset successfully!", "success");
+      showNotification(t("notifications.resetSuccess"), "success");
       setStep("login");
       setNewPassword("");
       setConfirmPassword("");
@@ -180,8 +184,6 @@ export default function Home() {
       setLoading(false);
     }
   };
-
-
 
   return (
     <>
@@ -200,7 +202,7 @@ export default function Home() {
           onClose={() => setNotification(null)}
         />
       )}
-      <div className="container1">
+      <div className={`container1 ${isRtl ? "rtl" : "ltr"}`}>
         <div className="navbar">
           <div className="logo-con">
             <Link to="/">
@@ -220,20 +222,23 @@ export default function Home() {
             </button>
             <div className={`nav-links ${isMobileMenuOpen ? 'open' : ''}`}>
               <div className="nav-item-wrapper">
-                <NavLink to="/" end>Home</NavLink>
+                <NavLink to="/" end>{t("nav.home")}</NavLink>
               </div>
               <div className="nav-item-wrapper">
-                <NavLink to="/jops">Jobs</NavLink>
+                <NavLink to="/jops">{t("nav.jobs")}</NavLink>
               </div>
 
               <div className="nav-item-wrapper">
-                <NavLink to={getGoToWebsitePath()} onClick={handleGoToWebsite}>Go to website</NavLink>
+                <NavLink to={getGoToWebsitePath()} onClick={handleGoToWebsite}>{t("nav.goToWebsite")}</NavLink>
                 {showDemo && (
                   <div className="tour-cloud bottom">
                     <span className="material-icons">directions</span>
-                    <p>سيتم توجيهك تلقائياً للوحة التحكم المناسبة لدورك (موظف، HR، أو مدير)</p>
+                    <p>{t("nav.demoTooltip")}</p>
                   </div>
                 )}
+              </div>
+              <div className="nav-item-wrapper">
+                <LanSw />
               </div>
               <ThemeToggle />
               <div className="nav-profile">
@@ -244,16 +249,12 @@ export default function Home() {
           </div>
         </div>
         <div className="intro-box">
-          <span className="intro">Empowering the Future of Work</span>
-          <h2 className="title">Join Our Innovative Team</h2>
-          <p className="description">
-            Welcome to our career portal. Whether you are an applicant looking
-            for your next challenge or an employee managing your profile, we
-            empower you with transparency.
-          </p>
+          <span className="intro">{t("intro.badge")}</span>
+          <h2 className="title">{t("intro.title")}</h2>
+          <p className="description">{t("intro.description")}</p>
         </div>
       </div >
-      <div className="main-content-sections">
+      <div className={`main-content-sections ${isRtl ? "rtl" : "ltr"}`}>
         <div className="container2">
         <div className="poop1">
           <span style={{ color: "var(--primary-color)" }}>.</span>
@@ -262,15 +263,12 @@ export default function Home() {
               <span className="icon1">
                 <i className="material-icons">badge</i>
               </span>
-              <h2>Employee Portal</h2>
-              <p>
-                Seamlessly manage your professional profile, track attendance,
-                and access internal resources.
-              </p>
+              <h2>{t("portal.title")}</h2>
+              <p>{t("portal.description")}</p>
               <hr />
               <div className="icon_bottom">
                 <span className="material-icons text-sm">verified_user</span>
-                <p>Enterprise Grade Security</p>
+                <p>{t("portal.security")}</p>
               </div>
             </div>
 
@@ -278,22 +276,22 @@ export default function Home() {
               <div className={`forms-slider show-${step}`}>
                 {/* 1. Login Form */}
                 <div className="form-content login-section">
-                  <h3> Welcome Back</h3>
-                  <p>Please enter your credentials to access your dashboard.</p>
+                  <h3>{t("login.title")}</h3>
+                  <p>{t("login.subtitle")}</p>
                   <div className="con-input">
-                    <label>Email Address</label>
+                    <label>{t("login.emailLabel")}</label>
                     <input
                       type="text"
-                      placeholder="name@company.com"
+                      placeholder={t("login.emailPlaceholder")}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
                     {errors.email && <span className="error-text">{errors.email[0]}</span>}
 
-                    <label>Password</label>
+                    <label>{t("login.passwordLabel")}</label>
                     <input
                       type="password"
-                      placeholder="••••••••"
+                      placeholder={t("login.passwordPlaceholder")}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
@@ -302,79 +300,77 @@ export default function Home() {
                     <div className="con-forgetcheck">
                       <span>
                         <input type="checkbox" />
-                        <label>Remember me</label>
+                        <label>{t("login.rememberMe")}</label>
                       </span>
-                      <Link onClick={() => setStep("forgot")}>forget Password ?</Link>
+                      <Link onClick={() => setStep("forgot")}>{t("login.forgetPassword")}</Link>
                     </div>
                     <div className="login-button-wrapper">
                       <button className="ptn-login" onClick={handleLogin} disabled={loading}>
-                        {loading ? "Processing..." : "Sign In to Dashboard"}
+                        {loading ? t("login.processing") : t("login.signInBtn")}
                       </button>
                     </div>
-
-
 
                   </div>
                 </div>
 
                 {/* 2. Forgot Password Form */}
                 <div className="form-content forgot-section">
-                  <h3> Reset Password</h3>
-                  <p>Enter your email to recover your account access.</p>
+                  <h3>{t("forgot.title")}</h3>
+                  <p>{t("forgot.subtitle")}</p>
                   <div className="con-input">
-                    <label>Email Address</label>
+                    <label>{t("forgot.emailLabel")}</label>
                     <input
                       type="email"
-                      placeholder="name@company.com"
+                      placeholder={t("forgot.emailPlaceholder")}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
                     {errors.email && <span className="error-text">{errors.email[0]}</span>}
                     <button className="ptn-login" onClick={handleForgotPassword} disabled={loading}>
-                      {loading ? "Processing..." : "Send Reset Link"}
+                      {loading ? t("login.processing") : t("forgot.sendBtn")}
                     </button>
 
                     <button className="ptn-back-to-login" onClick={() => setStep("login")}>
-                      <i className="fa-solid fa-arrow-left"></i> Back to Login
+                      <i className="fa-solid fa-arrow-left"></i> {t("forgot.backToLogin")}
                     </button>
                   </div>
                 </div>{/* 3. Verification Code Flow */}
                 <div className="form-content verify-section">
-                  <h3>Verify Your Email</h3>
-                  <p>Enter the 6-digit code sent to your email address.</p>
+                  <h3>{t("verify.title")}</h3>
+                  <p>{t("verify.subtitle")}</p>
                   <div className="con-input">
-                    <label>Verification Code</label>
+                    <label>{t("verify.codeLabel")}</label>
                     <input
                       type="text"
-                      placeholder="000000"
+                      placeholder={t("verify.codePlaceholder")}
                       maxLength="6"
                       value={verificationCode}
                       onChange={(e) => setVerificationCode(e.target.value)}
                     />
                     {errors.code && <span className="error-text">{errors.code[0]}</span>}
                     <button className="ptn-login" onClick={handleVerifyCode} disabled={loading}>
-                      Confirm Code
+                      {t("verify.confirmBtn")}
                     </button>
 
                     <button className="ptn-back-to-login" onClick={() => setStep("forgot")}>
-                      <i className="fa-solid fa-arrow-left"></i> Back
+                      <i className="fa-solid fa-arrow-left"></i> {t("verify.back")}
                     </button>
                   </div>
                 </div>
 
                 {/* 4. Reset Password Form */}
                 <div className="form-content reset-section">
-                  <h3>New Password</h3>
-                  <p>Please choose a strong and easy-to-remember password.</p>
+                  <h3>{t("reset.title")}</h3>
+                  <p>{t("reset.subtitle")}</p>
                   <div className="con-input">
-                    <label>New Password</label>
+                    <label>{t("reset.newPasswordLabel")}</label>
                     <input
                       type="password"
                       placeholder="********"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                     />
-                    <label>Confirm Password</label>
+                    <label>{t("reset.confirmPasswordLabel")}</label>
                     <input
                       type="password"
                       placeholder="********"
@@ -383,11 +379,11 @@ export default function Home() {
                     />
                     {errors.password && <span className="error-text">{errors.password[0]}</span>}
                     <button className="ptn-login" onClick={handleResetPassword} disabled={loading}>
-                      {loading ? "Processing..." : "Save and Update"}
+                      {loading ? t("login.processing") : t("reset.saveBtn")}
                     </button>
 
                     <button className="ptn-back-to-login" onClick={() => setStep("verify")}>
-                      <i className="fa-solid fa-arrow-left"></i> Back
+                      <i className="fa-solid fa-arrow-left"></i> {t("verify.back")}
                     </button>
                   </div>
                 </div>
@@ -396,110 +392,94 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="container3">
+      <div className={`container3 ${isRtl ? "rtl" : "ltr"}`}>
         <div className="con-tit">
-          <h3>Why Choose Our Platform</h3>
-          <p>
-            Discover the powerful tools and features designed to streamline your
-            HR processes.
-          </p>
+          <h3>{t("whyChoose.title")}</h3>
+          <p>{t("whyChoose.subtitle")}</p>
         </div>
         <div className="con_cart">
           <div>
             <span style={{ backgroundColor: "rgba(19, 131, 237, 0.1)" }}>
               <i className="material-icons" style={{ color: "#1383ed" }}>analytics</i>
             </span>
-            <h3>Advanced Analytics</h3>
-            <p>Gain insights into workforce trends with our comprehensive dashboard.</p>
+            <h3>{t("whyChoose.analyticsTitle")}</h3>
+            <p>{t("whyChoose.analyticsDesc")}</p>
           </div>
           <div>
             <span style={{ backgroundColor: "rgba(147, 51, 234, 0.1)" }}>
               <i className="material-icons" style={{ color: "#9333ea" }}>hub</i>
             </span>
-            <h3>Seamless Integration</h3>
-            <p>Connect easily with your favorite tools like Slack and Zoom.</p>
+            <h3>{t("whyChoose.integrationTitle")}</h3>
+            <p>{t("whyChoose.integrationDesc")}</p>
           </div>
           <div>
             <span style={{ backgroundColor: "rgba(13, 148, 136, 0.1)" }}>
               <i className="material-icons" style={{ color: "#0d9448" }}>security</i>
             </span>
-            <h3>Enterprise Security</h3>
-            <p>Bank-grade encryption keeps your sensitive data protected.</p>
+            <h3>{t("whyChoose.securityTitle")}</h3>
+            <p>{t("whyChoose.securityDesc")}</p>
           </div>
           <div>
             <span style={{ backgroundColor: "rgba(234, 88, 12, 0.1)" }}>
               <i className="material-icons" style={{ color: "#ea580c" }}>schedule</i>
             </span>
-            <h3>Time Management</h3>
-            <p>Automated attendance tracking and leave management systems.</p>
+            <h3>{t("whyChoose.timeTitle")}</h3>
+            <p>{t("whyChoose.timeDesc")}</p>
           </div>
           <div>
             <span style={{ backgroundColor: "rgba(219, 39, 119, 0.1)" }}>
               <i className="material-icons" style={{ color: "#db2777" }}>groups</i>
             </span>
-            <h3>Team Collaboration</h3>
-            <p>Foster a connected culture with built-in communication channels.</p>
+            <h3>{t("whyChoose.teamTitle")}</h3>
+            <p>{t("whyChoose.teamDesc")}</p>
           </div>
           <div>
             <span style={{ backgroundColor: "rgba(79, 70, 229, 0.1)" }}>
               <i className="material-icons" style={{ color: "#4f46e5" }}>psychology</i>
             </span>
-            <h3>AI Recruiting</h3>
-            <p>Leverage artificial intelligence to screen candidates faster.</p>
+            <h3>{t("whyChoose.aiTitle")}</h3>
+            <p>{t("whyChoose.aiDesc")}</p>
           </div>
         </div>
       </div>
-      <div className="container4">
+      <div className={`container4 ${isRtl ? "rtl" : "ltr"}`}>
         <h4>
-          <h3>Application Process</h3>
+          <h3>{t("process.title")}</h3>
         </h4>
         <div className="con_cart2">
           <div>
             <span>1</span>
-            <h3>Submit CV</h3>
-            <p>
-              Upload your resume directly to the opening. Our AI screening gives
-              instant feedback.
-            </p>
+            <h3>{t("process.step1Title")}</h3>
+            <p>{t("process.step1Desc")}</p>
           </div>
           <div>
             <span>2</span>
-            <h3>Review</h3>
-            <p>
-              Our HR team carefully reviews your profile against our
-              requirements.
-            </p>
+            <h3>{t("process.step2Title")}</h3>
+            <p>{t("process.step2Desc")}</p>
           </div>
           <div>
             <span>3</span>
-            <h3>Interview</h3>
-            <p>
-              Schedule a meeting with the team to discuss your future at Huma.
-            </p>
+            <h3>{t("process.step3Title")}</h3>
+            <p>{t("process.step3Desc")}</p>
           </div>
         </div>
         <div className="container5">
           <div>
-            <h2>Experience the Digital Workplace</h2>
-            <p>
-              Our internal platform streamlines everything from attendance to
-              analytics. Get a glimpse of the tools you'll use daily.
-            </p>
-            <button>Learn More</button>
+            <h2>{t("workplace.title")}</h2>
+            <p>{t("workplace.desc")}</p>
+            <button>{t("workplace.learnMore")}</button>
           </div>
           <div>
             <img src={ff} alt="er" width={"90%"} height={"85%"} />
           </div>
         </div>
-        {/* ww */}
         <h4>
-          <h3>Trusted by HR Teams</h3>
+          <h3>{t("testimonials.title")}</h3>
         </h4>
         <div className="con_cart2">
           <div>
             <p style={{ marginTop: "10px", fontSize: "16px" }}>
-              "The automated screening process has cut our recruitment time by
-              40%. It's a game-changer for our small HR team."
+              {t("testimonials.card1.quote")}
             </p>
 
             <p className="dd">
@@ -511,15 +491,14 @@ export default function Home() {
                   display: "inline-block",
                 }}
               >
-                Sarah Jenkins
+                {t("testimonials.card1.author")}
               </h4>
-              HR Director, TechFlow
+              {t("testimonials.card1.role")}
             </p>
           </div>
           <div>
             <p style={{ marginTop: "10px", fontSize: "16px" }}>
-              "The automated screening process has cut our recruitment time by
-              40%. It's a game-changer for our small HR team."
+              {t("testimonials.card2.quote")}
             </p>
 
             <p className="dd">
@@ -531,15 +510,14 @@ export default function Home() {
                   display: "inline-block",
                 }}
               >
-                Sarah Jenkins
+                {t("testimonials.card2.author")}
               </h4>
-              HR Director, TechFlow
+              {t("testimonials.card2.role")}
             </p>
           </div>
           <div>
             <p style={{ marginTop: "10px", fontSize: "16px" }}>
-              "The automated screening process has cut our recruitment time by
-              40%. It's a game-changer for our small HR team."
+              {t("testimonials.card3.quote")}
             </p>
 
             <p className="dd">
@@ -551,15 +529,16 @@ export default function Home() {
                   display: "inline-block",
                 }}
               >
-                Sarah Jenkins
+                {t("testimonials.card3.author")}
               </h4>
-              HR Director, TechFlow
+              {t("testimonials.card3.role")}
             </p>
           </div>
         </div>
-        </div>
+      </div>
       </div>
       <Footer />
     </>
   );
 }
+

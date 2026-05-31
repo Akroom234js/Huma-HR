@@ -1,0 +1,20 @@
+{
+  "brand": {
+    "desc": "Streamlining human resources for a digital world. Our platform connects talent with opportunity and simplifies workforce management."
+  },
+  "contact": {
+    "title": "Contact Us",
+    "location": "San Francisco, CA"
+  },
+  "newsletter": {
+    "title": "Newsletter",
+    "subtitle": "Subscribe to get the latest HR news and updates.",
+    "placeholder": "Enter your email",
+    "btn": "Subscribe"
+  },
+  "bottom": {
+    "rights": "© 2024 Huma. All Rights Reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use"
+  }
+}

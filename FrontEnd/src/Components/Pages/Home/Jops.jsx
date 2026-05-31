@@ -6,29 +6,43 @@ import logo from "../../../assets/logo.png";
 import ThemeToggle from "../../ThemeToggle/ThemeToggle";
 import ApplyModal from "../Recrutment/ApplyModal/ApplyModal";
 import { getJobPostings } from "../../../services/atsService";
+import { useTranslation } from "react-i18next";
+import LanSw from "../../LanSw";
+import Avatar from "../../Shared/Avatar/Avatar";
 
 export default function Jops() {
+  const { t, i18n } = useTranslation("Home/Jops");
+  const isRtl = i18n.language === "ar";
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [selectedJob, setSelectedJob] = useState(null); // job to apply for
+  const [search, setSearch] = useState("");
+  const [selectedJob, setSelectedJob] = useState(null);
   const [isApplyOpen, setIsApplyOpen] = useState(false);
+  const [showDemo, setShowDemo] = useState(true);
 
-  const userStr = localStorage.getItem('user');
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowDemo(false);
+    }, 6000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const userStr = localStorage.getItem("user");
   const user = userStr ? JSON.parse(userStr) : null;
 
   const getGoToWebsitePath = () => {
     if (!user) return "/";
     if (user.role === "hr") return "/dashboard/general";
-    if (user.role === "employee" || user.role === "department supervisor") return "/portal/dashboard";
+    if (user.role === "employee" || user.role === "department supervisor")
+      return "/portal/dashboard";
     return "/";
   };
 
   const handleGoToWebsite = (e) => {
     if (!user) {
       e.preventDefault();
-      alert("الرجاء تسجيل الدخول أولاً للوصول إلى لوحة التحكم.");
       window.location.href = "/";
     }
   };
@@ -37,11 +51,11 @@ export default function Jops() {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const res = await getJobPostings({ status: 'open' });
+        const res = await getJobPostings({ status: "open" });
         const data = res.data?.data ?? res.data ?? [];
         setJobs(Array.isArray(data) ? data : []);
       } catch (err) {
-        console.error('Failed to fetch jobs:', err);
+        console.error("Failed to fetch jobs:", err);
         setJobs([]);
       } finally {
         setLoading(false);
@@ -50,9 +64,10 @@ export default function Jops() {
     fetchJobs();
   }, []);
 
-  const filteredJobs = jobs.filter(job =>
-    job.title?.toLowerCase().includes(search.toLowerCase()) ||
-    job.department?.name?.toLowerCase().includes(search.toLowerCase())
+  const filteredJobs = jobs.filter(
+    (job) =>
+      job.title?.toLowerCase().includes(search.toLowerCase()) ||
+      job.department?.name?.toLowerCase().includes(search.toLowerCase())
   );
 
   const handleApplyClick = (job) => {
@@ -62,27 +77,28 @@ export default function Jops() {
 
   const formatSalary = (job) => {
     if (!job.salary_min && !job.salary_max) return null;
-    const currency = job.salary_currency || 'USD';
     if (job.salary_min && job.salary_max) {
-      return `$${(job.salary_min / 1000).toFixed(0)}k – $${(job.salary_max / 1000).toFixed(0)}k`;
+      return `$${(job.salary_min / 1000).toFixed(0)}k – $${(
+        job.salary_max / 1000
+      ).toFixed(0)}k`;
     }
     return `$${((job.salary_min || job.salary_max) / 1000).toFixed(0)}k`;
   };
 
   const timeAgo = (dateStr) => {
-    if (!dateStr) return '';
+    if (!dateStr) return "";
     const diff = Date.now() - new Date(dateStr).getTime();
     const days = Math.floor(diff / 86400000);
-    if (days === 0) return 'Today';
-    if (days === 1) return '1 day ago';
-    if (days < 30) return `${days} days ago`;
+    if (days === 0) return t("time.today");
+    if (days === 1) return t("time.oneDay");
+    if (days < 30) return t("time.days", { count: days });
     const weeks = Math.floor(days / 7);
-    return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
+    return weeks === 1 ? t("time.oneWeek") : t("time.weeks", { count: weeks });
   };
 
   return (
     <>
-      <div className="container1">
+      <div className={`container1 ${isRtl ? "rtl" : "ltr"}`}>
         <div className="navbar">
           <div className="logo-con">
             <Link to="/">
@@ -98,91 +114,132 @@ export default function Jops() {
               className="hamburger-menu"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
-              <i className={`fa-solid ${isMobileMenuOpen ? 'fa-xmark' : 'fa-bars'}`}></i>
+              <i
+                className={`fa-solid ${
+                  isMobileMenuOpen ? "fa-xmark" : "fa-bars"
+                }`}
+              ></i>
             </button>
-            <div className={`nav-links ${isMobileMenuOpen ? 'open' : ''}`}>
-              <NavLink to="/" end>Home</NavLink>
-              <NavLink to="/jops">Jobs</NavLink>
-              <NavLink to={getGoToWebsitePath()} onClick={handleGoToWebsite}>Go to website</NavLink>
+            <div className={`nav-links ${isMobileMenuOpen ? "open" : ""}`}>
+              <div className="nav-item-wrapper">
+                <NavLink to="/" end>
+                  {t("nav.home")}
+                </NavLink>
+              </div>
+              <div className="nav-item-wrapper">
+                <NavLink to="/jops">{t("nav.jobs")}</NavLink>
+              </div>
+              <div className="nav-item-wrapper">
+                <NavLink to={getGoToWebsitePath()} onClick={handleGoToWebsite}>
+                  {t("nav.goToWebsite")}
+                </NavLink>
+                {showDemo && (
+                  <div className="tour-cloud bottom">
+                    <span className="material-icons">directions</span>
+                    <p>{t("nav.demoTooltip")}</p>
+                  </div>
+                )}
+              </div>
+              <div className="nav-item-wrapper">
+                <LanSw />
+              </div>
               <ThemeToggle />
-              <div className="nav-profile"> </div>
+              <div className="nav-profile">
+                {user && <Avatar user={user} size="sm" />}
+              </div>
             </div>
           </div>
         </div>
         <div className="intro-box">
-          <span className="intro">Grow With Us</span>
-          <h2 className="title">Find Your <span>Dream</span> Job</h2>
-          <p className="description">
-            Explore exciting opportunities at Huma. We are always looking for
-            talented individuals to join our mission of revolutionizing HR.
-          </p>
+          <span className="intro">{t("hero.badge")}</span>
+          <h2 className="title">{t("hero.title")}</h2>
+          <p className="description">{t("hero.description")}</p>
         </div>
       </div>
 
-      <div className="main-content-sections">
+      <div className={`main-content-sections ${isRtl ? "rtl" : "ltr"}`}>
         <div className="container2">
           <div className="poop_jops">
             <div className="con_up">
               <div>
-                <h2>Open Positions</h2>
-                <p>Browse our latest job openings and apply today.</p>
+                <h2>{t("positions.title")}</h2>
+                <p>{t("positions.subtitle")}</p>
               </div>
               <div className="search-box-modern">
                 <span className="material-icons">search</span>
                 <input
-                  placeholder="Search by job title or department..."
+                  placeholder={t("positions.searchPlaceholder")}
                   value={search}
-                  onChange={e => setSearch(e.target.value)}
+                  onChange={(e) => setSearch(e.target.value)}
                 />
               </div>
             </div>
 
             <div className="container_carts">
               {/* Loading skeleton */}
-              {loading && (
+              {loading &&
                 Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="cart1 cart1--skeleton">
                     <div className="skeleton-line skeleton-title" />
                     <div className="skeleton-line" />
                     <div className="skeleton-line skeleton-sm" />
                   </div>
-                ))
-              )}
+                ))}
 
               {/* Real job cards */}
-              {!loading && filteredJobs.map(job => (
-                <div className="cart1" key={job.id}>
-                  <div className="gg">
-                    <div className="firstline">
-                      <span className="prod">{job.department?.name || job.experience_level || 'General'}</span>
-                      <span className="time">{timeAgo(job.posted_at || job.created_at)}</span>
+              {!loading &&
+                filteredJobs.map((job) => (
+                  <div className="cart1" key={job.id}>
+                    <div className="gg">
+                      <div className="firstline">
+                        <span className="prod">
+                          {job.department?.name ||
+                            job.experience_level ||
+                            "General"}
+                        </span>
+                        <span className="time">
+                          {timeAgo(job.posted_at || job.created_at)}
+                        </span>
+                      </div>
+                      <h4>{job.title}</h4>
+                      <p>
+                        {job.description?.length > 120
+                          ? job.description.slice(0, 120) + "…"
+                          : job.description}
+                      </p>
+                      <div className="con-salary">
+                        <span style={{ color: "var(--text-main)" }}>Huma</span>
+                        <span>
+                          {formatSalary(job) || job.employment_type || ""}
+                        </span>
+                      </div>
                     </div>
-                    <h4>{job.title}</h4>
-                    <p>
-                      {job.description?.length > 120
-                        ? job.description.slice(0, 120) + '…'
-                        : job.description}
-                    </p>
-                    <div className="con-salary">
-                      <span style={{ color: "var(--text-main)" }}>Huma</span>
-                      <span>{formatSalary(job) || (job.employment_type || '')}</span>
-                    </div>
+                    <button onClick={() => handleApplyClick(job)}>
+                      {t("positions.applyBtn")}
+                    </button>
                   </div>
-                  <button onClick={() => handleApplyClick(job)}>Apply Now</button>
-                </div>
-              ))}
+                ))}
 
               {/* Empty state */}
               {!loading && filteredJobs.length === 0 && (
                 <div className="jops-empty-state">
                   <span className="material-symbols-outlined">work_off</span>
-                  <p>{search ? 'No jobs match your search.' : 'No open positions at the moment. Check back soon!'}</p>
+                  <p>
+                    {search
+                      ? t("positions.noMatch")
+                      : t("positions.noJobs")}
+                  </p>
                 </div>
               )}
 
               {!loading && filteredJobs.length > 0 && (
-                <button className="ptn-more" onClick={() => window.scrollTo({ top: 9999, behavior: 'smooth' })}>
-                  Show more jobs
+                <button
+                  className="ptn-more"
+                  onClick={() =>
+                    window.scrollTo({ top: 9999, behavior: "smooth" })
+                  }
+                >
+                  {t("positions.showMore")}
                 </button>
               )}
             </div>
@@ -191,23 +248,23 @@ export default function Jops() {
 
         <div className="container41">
           <h4>
-            <h3>How to Apply</h3>
+            <h3>{t("howToApply.title")}</h3>
           </h4>
           <div className="con_cart2">
             <div>
               <span>1</span>
-              <h3>Submit Application</h3>
-              <p>Click apply on any listing. Upload your CV easily and get instant confirmation.</p>
+              <h3>{t("howToApply.step1Title")}</h3>
+              <p>{t("howToApply.step1Desc")}</p>
             </div>
             <div>
               <span>2</span>
-              <h3>Review</h3>
-              <p>Our HR team reviews applications daily to find the perfect fit.</p>
+              <h3>{t("howToApply.step2Title")}</h3>
+              <p>{t("howToApply.step2Desc")}</p>
             </div>
             <div>
               <span>3</span>
-              <h3>Interview</h3>
-              <p>If your profile matches, we will schedule a call to discuss your career.</p>
+              <h3>{t("howToApply.step3Title")}</h3>
+              <p>{t("howToApply.step3Desc")}</p>
             </div>
           </div>
         </div>
@@ -219,7 +276,10 @@ export default function Jops() {
       <ApplyModal
         isOpen={isApplyOpen}
         job={selectedJob}
-        onClose={() => { setIsApplyOpen(false); setSelectedJob(null); }}
+        onClose={() => {
+          setIsApplyOpen(false);
+          setSelectedJob(null);
+        }}
       />
     </>
   );

@@ -814,12 +814,14 @@
 .con_cart,
 .con_cart2 {
   display: flex;
-  justify-content: space-evenly;
-  align-items: center;
+  justify-content: center;
+  align-items: stretch;
   flex-wrap: wrap;
   gap: 30px;
-  justify-content: flex-start;
-  margin: 0px 0px 0px 30px;
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 0 20px;
+  width: 100%;
 }
 
 .con_cart div {
@@ -873,31 +875,35 @@
 
 .con_cart2 div {
   width: 30%;
-  height: 31vh;
-  background-color: var(--bg-card);
-  border-radius: 12px;
+  padding: 3rem 2rem;
+  background: var(--bg-card);
+  border-radius: 1.5rem;
   border: none;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
   flex-direction: column;
-  gap: 15px;
-  padding: 0px 20px;
+  gap: 1.5rem;
+  box-shadow: var(--shadow-sm);
   margin-top: 40px;
 }
 
+.con_cart2 div:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-color);
+}
+
 .con_cart2 span {
-  font-size: 30px;
-  text-align: center;
-  /* color: var(--text-accent); */
-  color: var(--text-on-primary);
-  font-weight: 600;
-  padding-top: 2px;
+  font-size: 1.5rem;
+  color: white;
+  font-weight: 700;
   width: 50px;
   height: 50px;
-  margin-top: 13px;
   background-color: var(--primary-color);
   border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .container5 {
@@ -1134,11 +1140,10 @@
 }
 
 .cart1 {
-  /* padding-top: 20px; */
-
   background: var(--bg-card);
   width: 90%;
-  height: 25vh;
+  height: auto;
+  padding: 2.5rem;
   border-radius: 12px;
   display: flex;
   justify-content: space-between;
@@ -1146,6 +1151,8 @@
   border: none;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
 }
 
 .cart1:hover {
@@ -1647,11 +1654,11 @@
 
   .con_cart div {
     width: 46%;
-    height: 18vh;
+    height: auto;
   }
 
   .con_cart2 div {
-    height: 16vh;
+    height: auto;
   }
 
   .container5 {
@@ -2082,3 +2089,96 @@
 [data-theme="dark"] .footer h3 {
   color: white;
 }
+
+/* ====================================================
+   RTL STYLE OVERRIDES FOR ARABIC LANGUAGE
+   ==================================================== */
+
+/* Left-side content alignment inside poop2 */
+.rtl .left-side {
+  text-align: right;
+}
+
+.rtl .left-side h2 {
+  margin: 0px 0px 16px 112px;
+  text-align: right;
+}
+
+.rtl .left-side p {
+  text-align: right;
+}
+
+/* Slider logic - we force LTR on right-side to keep horizontal slide animation working */
+.rtl .right-side {
+  direction: ltr !important;
+  border-bottom-left-radius: 24px;
+  border-top-left-radius: 24px;
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.rtl .form-content {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+.rtl .form-content h3,
+.rtl .form-content p,
+.rtl .form-content label,
+.rtl .form-content input {
+  text-align: right !important;
+}
+
+.rtl .con-forgetcheck {
+  flex-direction: row-reverse;
+}
+
+/* Nav profile avatar adjustment */
+.rtl .nav-profile {
+  margin-right: 12px;
+  margin-left: 0;
+}
+
+/* Search Box positioning in Jobs page */
+.rtl .search-box-modern .material-icons {
+  right: 1rem;
+  left: auto;
+}
+
+.rtl .search-box-modern input {
+  padding: 0.875rem 3.25rem 0.875rem 1rem !important;
+}
+
+/* Jobs Page card spacing adjustments in RTL */
+.rtl .gg {
+  margin-right: 30px;
+  margin-left: 0;
+  text-align: right;
+}
+
+.rtl .gg h4,
+.rtl .gg p,
+.rtl .gg span,
+.rtl .gg div {
+  text-align: right;
+}
+
+.rtl .cart1 button {
+  margin-left: 20px;
+  margin-right: 0;
+}
+
+.rtl .firstline .prod {
+  margin-left: 15px;
+  margin-right: 0;
+}
+
+.rtl .con-salary {
+  justify-content: flex-start;
+  flex-direction: row;
+}
+
+.rtl .con_up {
+  flex-direction: row;
+}
+
