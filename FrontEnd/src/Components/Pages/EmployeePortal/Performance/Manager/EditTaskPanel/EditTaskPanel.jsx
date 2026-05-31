@@ -1,12 +1,10 @@
-﻿import React from 'react';
-import './EditTaskPanel.css';
+import React from 'react';
+import AssignNewTask from '../AssignNewTask/AssignNewTask';
 
-const EditTaskPanel = () => {
-    return (
-        <div className="performance-container EditTaskPanel-container">
-            <h2>EditTaskPanel Page</h2>
-        </div>
-    );
+const EditTaskPanel = (props) => {
+    // This component is now a clean wrapper around the unified AssignNewTask form,
+    // which completely eliminates duplicate code and adheres to the DRY principle.
+    return <AssignNewTask isEdit={true} {...props} />;
 };
 
 export default EditTaskPanel;

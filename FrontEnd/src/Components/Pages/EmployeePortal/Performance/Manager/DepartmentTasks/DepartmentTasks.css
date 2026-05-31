@@ -1,4 +1,574 @@
-﻿/* CSS for DepartmentTasks component */
-.performance-container {
-    padding: 20px;
+/* ==========================================================================
+   Department Tasks Stylesheet - Manager Portal
+   Matches manager_performance_ui.html Design System Perfectly
+   ========================================================================== */
+
+.performance-department-tasks {
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 9999px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  padding: 2rem 35px;
+  box-sizing: border-box;
 }
+
+/* Base direction-based font matching */
+.performance-department-tasks.rtl {
+  font-family: 'Cairo', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.performance-department-tasks.ltr {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Header Bar */
+.performance-department-tasks .top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  gap: 16px;
+}
+
+.performance-department-tasks.rtl .top-header {
+  flex-direction: row;
+}
+
+.performance-department-tasks .page-title h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+
+.performance-department-tasks .page-title p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+/* Buttons */
+.performance-department-tasks .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-md, 12px);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  outline: none;
+  text-decoration: none;
+}
+
+.performance-department-tasks .btn-primary {
+  background: var(--primary-gradient);
+  color: var(--text-on-primary);
+  box-shadow: 0 4px 10px rgba(53, 158, 255, 0.2);
+}
+
+.performance-department-tasks .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(53, 158, 255, 0.35);
+  background: linear-gradient(135deg, #1d4ed8 0%, #2b8de8 50%, #1e3a8a 100%);
+}
+
+.performance-department-tasks .btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.performance-department-tasks .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+}
+
+.performance-department-tasks .btn-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.performance-department-tasks .btn-danger:hover {
+  background: rgba(239, 68, 68, 0.3);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.performance-department-tasks .btn-sm {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: var(--radius-sm, 6px);
+}
+
+/* Stats Cards Grid */
+.performance-department-tasks .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 1300px) {
+  .performance-department-tasks .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .performance-department-tasks .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .performance-department-tasks .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.performance-department-tasks .stat-card {
+  display: block !important;
+  min-height: 116px;
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 12px);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+}
+
+/* Stat Cards Individual Borders & Shadows matching status color */
+.performance-department-tasks .stat-card.total-tasks:hover {
+  border-color: rgba(53, 158, 255, 0.4);
+  box-shadow: 0 4px 20px rgba(53, 158, 255, 0.12);
+  transform: translateY(-4px);
+}
+.performance-department-tasks .stat-card.pending:hover {
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.12);
+  transform: translateY(-4px);
+}
+.performance-department-tasks .stat-card.progress:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.12);
+  transform: translateY(-4px);
+}
+.performance-department-tasks .stat-card.review:hover {
+  border-color: rgba(249, 115, 22, 0.4);
+  box-shadow: 0 4px 20px rgba(249, 115, 22, 0.12);
+  transform: translateY(-4px);
+}
+.performance-department-tasks .stat-card.revision:hover {
+  border-color: rgba(239, 68, 68, 0.4);
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.12);
+  transform: translateY(-4px);
+}
+.performance-department-tasks .stat-card.scored:hover {
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.12);
+  transform: translateY(-4px);
+}
+
+.performance-department-tasks .stat-card::after {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background: var(--border-color);
+}
+
+.performance-department-tasks.rtl .stat-card::after {
+  left: auto;
+  right: 0;
+}
+
+.performance-department-tasks .stat-card.pending::after { background: var(--color-pending); }
+.performance-department-tasks .stat-card.progress::after { background: var(--color-progress); }
+.performance-department-tasks .stat-card.review::after { background: var(--color-review); }
+.performance-department-tasks .stat-card.revision::after { background: var(--color-revision); }
+.performance-department-tasks .stat-card.scored::after { background: var(--color-scored); }
+.performance-department-tasks .stat-card.total-tasks::after { background: var(--primary-color); }
+
+.performance-department-tasks .stat-icon {
+  float: right;
+  font-size: 24px;
+  opacity: 0.2;
+  transition: opacity 0.3s ease;
+}
+
+.performance-department-tasks.rtl .stat-icon {
+  float: left;
+}
+
+.performance-department-tasks .stat-card:hover .stat-icon {
+  opacity: 0.6;
+}
+
+.performance-department-tasks .stat-card.pending .stat-icon { color: var(--color-pending); }
+.performance-department-tasks .stat-card.progress .stat-icon { color: var(--color-progress); }
+.performance-department-tasks .stat-card.review .stat-icon { color: var(--color-review); }
+.performance-department-tasks .stat-card.revision .stat-icon { color: var(--color-revision); }
+.performance-department-tasks .stat-card.scored .stat-icon { color: var(--color-scored); }
+.performance-department-tasks .stat-card.total-tasks .stat-icon { color: var(--primary-color); }
+
+.performance-department-tasks .stat-value {
+  font-size: 26px;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.performance-department-tasks .stat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Card layout container */
+.performance-department-tasks .card {
+  background: var(--bg-card);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 12px);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-md);
+}
+
+.performance-department-tasks .card-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 12px;
+}
+
+/* Filter Bar */
+.performance-department-tasks .filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid var(--border-light);
+  align-items: center;
+}
+
+.performance-department-tasks .search-wrapper {
+  position: relative;
+  flex-grow: 1;
+  min-width: 250px;
+}
+
+.performance-department-tasks .search-wrapper i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+.performance-department-tasks.rtl .search-wrapper i {
+  left: auto;
+  right: 14px;
+}
+
+/* Theme-aware input fields for search bar and select dropdowns */
+.performance-department-tasks .search-input,
+.performance-department-tasks .select-input {
+  width: 100%;
+  border-radius: var(--radius-sm, 6px);
+  font-size: 14px;
+  outline: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Light Theme - Premium Soft gray-slate background matching cards, border and text */
+[data-theme="light"] .performance-department-tasks .search-input,
+[data-theme="light"] .performance-department-tasks .select-input {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #1f2937 !important;
+}
+
+[data-theme="light"] .performance-department-tasks .search-input:focus,
+[data-theme="light"] .performance-department-tasks .select-input:focus {
+  background: #ffffff !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 10px rgba(53, 158, 255, 0.15) !important;
+}
+
+/* Dark Theme - Translucent dark blue background matching page styling */
+[data-theme="dark"] .performance-department-tasks .search-input,
+[data-theme="dark"] .performance-department-tasks .select-input {
+  background: rgba(15, 23, 42, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #f3f4f6 !important;
+}
+
+[data-theme="dark"] .performance-department-tasks .search-input:focus,
+[data-theme="dark"] .performance-department-tasks .select-input:focus {
+  background: rgba(15, 23, 42, 0.7) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 10px rgba(53, 158, 255, 0.25) !important;
+}
+
+.performance-department-tasks .search-input {
+  padding: 10px 14px 10px 40px;
+}
+
+.performance-department-tasks.rtl .search-input {
+  padding: 10px 40px 10px 14px;
+}
+
+.performance-department-tasks .select-input {
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.performance-department-tasks .filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.performance-department-tasks .filter-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+/* Interactive Table */
+.performance-department-tasks .table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.performance-department-tasks .custom-table {
+  width: 100%;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  text-align: left;
+}
+
+.performance-department-tasks.rtl .custom-table {
+  text-align: right;
+}
+
+/* Table Header Row Styling - Elegant gradient & rounded outer corners */
+.performance-department-tasks .custom-table thead tr {
+  transition: all 0.3s ease;
+}
+
+[data-theme="light"] .performance-department-tasks .custom-table thead tr {
+  background: linear-gradient(90deg, #f8fafc 0%, #f1f5f9 100%) !important;
+}
+
+[data-theme="dark"] .performance-department-tasks .custom-table thead tr {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%) !important;
+}
+
+.performance-department-tasks .custom-table th {
+  padding: 14px 16px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Rounded corners for thead first and last columns based on direction */
+.performance-department-tasks.ltr .custom-table th:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.performance-department-tasks.ltr .custom-table th:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.performance-department-tasks.rtl .custom-table th:first-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.performance-department-tasks.rtl .custom-table th:last-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.performance-department-tasks .custom-table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 14px;
+  color: var(--text-main);
+  vertical-align: middle;
+}
+
+.performance-department-tasks .custom-table tr {
+  transition: background-color 0.2s ease;
+}
+
+.performance-department-tasks .custom-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+/* User Avatars in Table */
+.performance-department-tasks .user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: #1e293b;
+  border: 2px solid var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.performance-department-tasks .user-avatar.btn-sm {
+  width: 26px;
+  height: 26px;
+  font-size: 10px;
+  border-color: #64748b;
+  color: var(--text-secondary);
+}
+
+/* Badges */
+.performance-department-tasks .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Status badges */
+.performance-department-tasks .badge-pending { 
+  background: rgba(245, 158, 11, 0.15); 
+  color: #fbbf24; 
+  border: 1px solid rgba(245, 158, 11, 0.2); 
+}
+.performance-department-tasks .badge-progress { 
+  background: rgba(59, 130, 246, 0.15); 
+  color: #60a5fa; 
+  border: 1px solid rgba(59, 130, 246, 0.2); 
+}
+.performance-department-tasks .badge-review { 
+  background: rgba(249, 115, 22, 0.15); 
+  color: #ff974d; 
+  border: 1px solid rgba(249, 115, 22, 0.2); 
+}
+.performance-department-tasks .badge-revision { 
+  background: rgba(239, 68, 68, 0.15); 
+  color: #f87171; 
+  border: 1px solid rgba(239, 68, 68, 0.2); 
+}
+.performance-department-tasks .badge-scored { 
+  background: rgba(16, 185, 129, 0.15); 
+  color: #34d399; 
+  border: 1px solid rgba(16, 185, 129, 0.2); 
+}
+
+/* Priority badges */
+.performance-department-tasks .badge-priority-low { 
+  background: rgba(156, 163, 175, 0.15); 
+  color: #d1d5db; 
+}
+.performance-department-tasks .badge-priority-medium { 
+  background: rgba(59, 130, 246, 0.15); 
+  color: #60a5fa; 
+}
+.performance-department-tasks .badge-priority-high { 
+  background: rgba(249, 115, 22, 0.15); 
+  color: #ff974d; 
+}
+.performance-department-tasks .badge-priority-urgent { 
+  background: rgba(239, 68, 68, 0.15); 
+  color: #f87171; 
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); 
+}
+
+/* Difficulty badges */
+.performance-department-tasks .badge-difficulty-easy { 
+  background: rgba(16, 185, 129, 0.1); 
+  color: #34d399; 
+}
+.performance-department-tasks .badge-difficulty-medium { 
+  background: rgba(251, 191, 36, 0.1); 
+  color: #fbbf24; 
+}
+.performance-department-tasks .badge-difficulty-hard { 
+  background: rgba(239, 68, 68, 0.1); 
+  color: #f87171; 
+}
+
+/* Reusable Modal Backdrop Overlay with blur effect */
+.performance-department-tasks .performance-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+/* Modal Content Panel */
+.performance-department-tasks .performance-modal-content {
+  background: var(--bg-page);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg, 18px);
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+

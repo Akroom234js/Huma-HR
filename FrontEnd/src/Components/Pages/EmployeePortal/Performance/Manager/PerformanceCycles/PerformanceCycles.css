@@ -1,4 +1,301 @@
-﻿/* CSS for PerformanceCycles component */
-.performance-container {
-    padding: 20px;
+/* ==========================================================================
+   Performance Cycles Management Stylesheet - Manager Portal
+   Matches manager_performance_ui.html Cycles & Job Worker Monitor Section
+   ========================================================================== */
+
+.performance-cycles-management {
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 9999px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  padding: 2rem 35px;
+  box-sizing: border-box;
+}
+
+/* Direction support */
+.performance-cycles-management.rtl {
+  font-family: 'Cairo', 'Inter', sans-serif;
+}
+
+.performance-cycles-management.ltr {
+  font-family: 'Inter', sans-serif;
+}
+
+.performance-cycles-management .top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 16px;
+}
+
+.performance-cycles-management .page-title h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+
+.performance-cycles-management .page-title p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+/* Card */
+.performance-cycles-management .card {
+  background: var(--bg-card);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 12px);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+}
+
+.performance-cycles-management .card-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 12px;
+}
+
+.performance-cycles-management .card-subtitle-small {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: normal;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.performance-cycles-management .font-green {
+  color: var(--color-scored);
+}
+
+/* Table */
+.performance-cycles-management .table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.performance-cycles-management .custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.performance-cycles-management.rtl .custom-table {
+  text-align: right;
+}
+
+.performance-cycles-management .custom-table th {
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.performance-cycles-management .custom-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 13px;
+  color: var(--text-main);
+  vertical-align: middle;
+}
+
+/* Badges */
+.performance-cycles-management .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.performance-cycles-management .badge-cycle-active {
+  background: rgba(53, 158, 255, 0.15);
+  color: var(--primary-color);
+  border: 1px solid rgba(53, 158, 255, 0.25);
+}
+
+.performance-cycles-management .badge-cycle-closed {
+  background: rgba(156, 163, 175, 0.1);
+  color: #9ca3af;
+  border: 1px solid rgba(156, 163, 175, 0.15);
+}
+
+.performance-cycles-management .badge-cycle-draft {
+  background: rgba(255, 255, 255, 0.05);
+  color: #d1d5db;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.performance-cycles-management .pulse-dot-active {
+  animation: pulse-live 1.5s infinite;
+  font-size: 8px;
+}
+
+@keyframes pulse-live {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.8); }
+}
+
+.performance-cycles-management .job-state-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.performance-cycles-management .state-indicator-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.performance-cycles-management .state-indicator-dot.active {
+  background: #3b82f6;
+  box-shadow: 0 0 8px #3b82f6;
+  animation: pulse-live 1.5s infinite;
+}
+
+.performance-cycles-management .state-indicator-dot.closed {
+  background: var(--color-scored);
+  box-shadow: 0 0 8px var(--color-scored);
+}
+
+.performance-cycles-management .state-indicator-dot.draft {
+  background: #9ca3af;
+}
+
+.performance-cycles-management .disabled-opacity {
+  opacity: 0.4;
+  cursor: not-allowed !important;
+}
+
+/* Workers Monitor Grid */
+.performance-cycles-management .workers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .performance-cycles-management .workers-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.performance-cycles-management .worker-monitor-card {
+  padding: 16px;
+  border-radius: var(--radius-md, 12px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+/* Theme-aware worker monitor cards */
+[data-theme="light"] .performance-cycles-management .worker-monitor-card {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="light"] .performance-cycles-management .worker-monitor-card:hover {
+  background: #f1f5f9 !important;
+  border-color: var(--primary-color) !important;
+}
+
+[data-theme="dark"] .performance-cycles-management .worker-monitor-card {
+  background: rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .performance-cycles-management .worker-monitor-card:hover {
+  border-color: rgba(53, 158, 255, 0.2) !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+}
+
+.performance-cycles-management .worker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.performance-cycles-management .worker-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.performance-cycles-management .worker-desc {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Reusable buttons matching site dashboard */
+.performance-cycles-management .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-md, 12px);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  outline: none;
+  text-decoration: none;
+}
+
+.performance-cycles-management .btn-primary {
+  background: var(--primary-gradient);
+  color: var(--text-on-primary);
+  box-shadow: 0 4px 10px rgba(53, 158, 255, 0.2);
+}
+
+.performance-cycles-management .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(53, 158, 255, 0.35);
+  background: linear-gradient(135deg, #1d4ed8 0%, #2b8de8 50%, #1e3a8a 100%);
+}
+
+.performance-cycles-management .btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.performance-cycles-management .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+}
+
+.performance-cycles-management .btn-sm {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: var(--radius-sm, 6px);
 }
