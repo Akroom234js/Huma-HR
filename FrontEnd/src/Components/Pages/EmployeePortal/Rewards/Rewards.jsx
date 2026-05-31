@@ -1,13 +1,70 @@
 import React from "react";
 import "./Rewards.css";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
+import { useEffect } from "react";
+import "../../EmployeePortal/MyRequests/Leaves.css"
+import { useState } from "react";
+import { getEmployeeRecognitions } from "../../../../services/RewardsBonusesService";
+import { getEmployeeRewards } from "../../../../services/RewardsBonusesService";
+// import SendRecognition from "./SendRecognition";
 
 export default function RewardsBonuses() {
+     const [rewards, setRewards] = useState([]);
+     const [recognitions, setRecognitions] = useState([]);
+    //  const [recognitionsSend, setRecognitionsSend] = useState([]);
+     const [totalAmount, setTotalAmount] = useState(0);
+     const [currentYear, setCurrentYear] = useState(0);
+     const [loading, setLoading] = useState(true);
+   useEffect(() => {
+      const fetchRewards = async () => {
+        try {
+          const res = await getEmployeeRewards();
+          const resRecognitions = await getEmployeeRecognitions();
+         const data = res.data?.data ?? res.data ?? [];
+         const dataRecognitions = res.data?.data ?? res.data ?? [];
+          setRewards(Array.isArray(data.bonuses) ? data.bonuses : []);
+          setRecognitions(Array.isArray(dataRecognitions.received) ? dataRecognitions.received : []);
+          // setRecognitionsSend(Array.isArray(dataRecognitions.sent) ? dataRecognitions.sent : []);
+          setCurrentYear(data.current_year)
+          setTotalAmount(data.total_amount)
+        } catch (err) {
+          console.error('Failed to fetch Rewards:', err);
+          setRewards([]);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchRewards();
+    }, []);
+//     const show=()=>{
+//       console.log('fdfdf')
+//                 const container = document.querySelector('.SendRecognition');
+//             if (container) {
+//                 document.body.style.overflow = 'hidden';
+//                 container.style.display = 'flex';
+//                 // container.style.visibility = 'hidden';
+//                 // if (container) container.style.display = 'none';
+//             }
+//     }
+//  const  red=['hh','yjhj','lll','llll','lll','hjjh','k','ll','lll','ll','k','jj','kkk']
   return (
     <div className="rewards-page">
-      <h1 className="page-title">Rewards & Bonuses</h1>
-
+      {/* <div className="SendRecognition">
+        <SendRecognition/>
+      </div> */}
+     <div>
+       <h1 className="page-title">Rewards & Bonuses</h1>
+           {/* <button 
+                            className={`premium-btn-primary `} 
+                            onClick={() => show()}
+                        >
+                          send Recognition
+                            <span className="material-symbols-outlined">{showPolicy ? 'visibility_off' : 'visibility'}</span> 
+                            {showPolicy ? (t('HidePolicy') || "Hide Policy") : (t('ShowPolicy') || "Show Policy")} 
+                        </button> */}
+     </div>
       <div className="sm-theme-toggle-wrapper">
+       
         <ThemeToggle />
       </div>
 
@@ -17,29 +74,31 @@ export default function RewardsBonuses() {
             <div className="rewards-total-content">
               <div className="reward-icon">💵</div>
               <div>
-                <p>Total Rewards/Bonuses (2024)</p>
-                <h2>$8,500.00</h2>
+                <p>Total Rewards/Bonuses ({currentYear})</p>
+                <h2>{totalAmount} $</h2>
               </div>
             </div>
           </div>
 
           <div className="card recognition-card">
-            <h2>Recent Recognition</h2>
+            <h2>Received  Recognition</h2>
 
-            <div className="recognition-box">
-              <img
-                src="https://i.pravatar.cc/100"
-                alt="employee"
-                className="recognition-avatar"
-              />
-              <div>
-                <p>
-                  "Alex has been a rockstar this quarter, consistently going
-                  above and beyond on the Alpha project. His positive attitude
-                  and problem-solving skills are a huge asset to the team!"
+            <div >
+          
+              <div className="recognition-con ">
+
+                 {
+                  recognitions.map((recognition)=>(
+                    // <div className="recognition-box">1</div>
+                    <div key={recognition.id} className="recognition-box brspan">
+                        <p>
+                         {recognition.message}
                 </p>
 
-                <span>- Jane Smith (Manager)</span>
+                <span>- {recognition.sender.full_name} ({recognition.sender.job_title})</span>
+                    </div>
+                  ))
+                 }
               </div>
             </div>
           </div>
@@ -61,50 +120,51 @@ export default function RewardsBonuses() {
               </thead>
 
               <tbody>
-                <tr>
-                  <td>July 15, 2024</td>
-                  <td>Performance Bonus</td>
-                  <td className="green">$2,500.00</td>
-                  <td>Exceeding Q2 project goals</td>
-                  <td>Jane Smith</td>
-                </tr>
-
-                <tr>
-                  <td>April 1, 2024</td>
-                  <td>Recognition Award</td>
-                  <td className="green">$500.00</td>
-                  <td>Peer-voted Employee of the Month</td>
-                  <td>Peer Recognition Program</td>
-                </tr>
-
-                <tr>
-                  <td>January 5, 2024</td>
-                  <td>Annual Bonus</td>
-                  <td className="green">$5,500.00</td>
-                  <td>Based on 2023 company performance</td>
-                  <td>Management</td>
-                </tr>
-
-                <tr>
-                  <td>October 20, 2023</td>
-                  <td>Spot Bonus</td>
-                  <td className="green">$250.00</td>
-                  <td>Exceptional handling of a client issue</td>
-                  <td>Jane Smith</td>
-                </tr>
-
-                <tr>
-                  <td>July 14, 2023</td>
-                  <td>Performance Bonus</td>
-                  <td className="green">$2,000.00</td>
-                  <td>Strong performance in Q2 2023</td>
-                  <td>Jane Smith</td>
-                </tr>
+            
+                {
+                  rewards.map((reward)=>(
+                  <tr key={reward.id}>
+                  <td>{reward.date_received}</td>
+                  <td>{reward.type}</td>
+                  <td className="green">{reward.amount}</td>
+                  <td>{reward.reason}</td>
+                  <td>{reward.awarded_by}</td>
+                </tr>))
+                }
+        
+            
               </tbody>
             </table>
           </div>
         </div>
+ {/* <div className="card rewards-history-card card-len">
+          <h2>Sent  Recognition</h2>
+          
+              <div className="recognition-con">
 
+                 {
+                  red.map((recognition)=>(
+                    <div className="recognition-box ">
+                      <div className="brspan"><p>ddjdfkf fnfnslkf nfkfslfsfs jfkjfsfssss</p>
+             
+                    <span className="brspan">dsdd</span></div>
+                    <div className="del-ed">
+                      <button>x</button>
+                      <button className="bi bi-pencil"></button>
+                      </div>
+                    </div> */}
+                    
+                    {/* <div key={recognition.id} className="recognition-box">
+                         <p>
+                         {recognition.message}
+                 </p>
+
+                 <span>- {recognition.sender.full_name} ({recognition.sender.job_title})</span>
+                    </div> */}
+                  {/* ))
+                 }
+              </div> */}
+{/* </div> */}
         {/* Policy */}
         <div className="card policy-card">
           <h2>📋 Policy Information</h2>
