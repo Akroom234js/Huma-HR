@@ -1,4 +1,72 @@
-﻿/* CSS for shared component ManagerNoteBox */
-.performance-shared-component {
-    display: inline-block;
+.performance-manager-remarks-box {
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-left: 4px solid var(--primary-color);
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.performance-manager-remarks-box:hover {
+  transform: translateY(-1px);
+}
+
+.remarks-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.remarks-icon {
+  font-size: 14px;
+}
+
+.remarks-title-text {
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.remarks-content-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-line;
+}
+
+/* Specific revision styling override */
+.highlight-revision {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.2);
+  border-left: 4px solid var(--color-revision);
+}
+
+.highlight-revision .remarks-icon {
+  color: var(--color-revision);
+}
+
+.highlight-revision .remarks-title-text {
+  color: var(--color-revision);
+}
+
+.standard-remarks {
+  background: rgba(53, 158, 255, 0.05);
+  border-color: rgba(53, 158, 255, 0.15);
+  border-left: 4px solid var(--primary-color);
+}
+
+.standard-remarks .remarks-icon {
+  color: var(--primary-color);
+}
+
+.standard-remarks .remarks-title-text {
+  color: var(--primary-color);
 }

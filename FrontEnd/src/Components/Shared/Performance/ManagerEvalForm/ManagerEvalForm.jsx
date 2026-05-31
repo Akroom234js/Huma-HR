@@ -1,11 +1,164 @@
-﻿import React from 'react';
+import React, { useState } from 'react';
 import './ManagerEvalForm.css';
 
-const ManagerEvalForm = () => {
+const ManagerEvalForm = ({ 
+    employeeName = '', 
+    onSubmit, 
+    isSubmitting = false, 
+    managerScore = 0, // Passed from parent/backend
+    lang 
+}) => {
+    const currentLang = lang || sessionStorage.getItem('lang') || 'en';
+    const isAr = currentLang === 'ar';
+
+    // State variables for form fields
+    const [professionalism, setProfessionalism] = useState(5);
+    const [responsibility, setResponsibility] = useState(5);
+    const [problemSolving, setProblemSolving] = useState(5);
+    const [notes, setNotes] = useState('');
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (onSubmit) {
+            onSubmit({
+                professionalism: professionalism,
+                responsibility: responsibility,
+                problem_solving: problemSolving,
+                notes: notes
+            });
+        }
+    };
+
     return (
-        <div className="performance-shared-component ManagerEvalForm-component">
-            <span>ManagerEvalForm Shared Component</span>
-        </div>
+        <form className="performance-manager-eval-form" onSubmit={handleSubmit}>
+            <h4 className="eval-form-title">
+                <i className="fa-solid fa-clipboard-check title-icon"></i>
+                <span>
+                    {isAr 
+                        ? `نموذج التقييم الدوري للموظف: ${employeeName}` 
+                        : `Supervisor Evaluation Form: ${employeeName}`
+                    }
+                </span>
+            </h4>
+
+            <div className="eval-sliders-section">
+                {/* Professionalism slider */}
+                <div className="eval-range-container">
+                    <div className="eval-range-header">
+                        <span className="eval-range-title">
+                            <i className="fa-solid fa-briefcase"></i> {isAr ? 'الاحترافية والمهنية (Professionalism)' : 'Professionalism'}
+                        </span>
+                        <span className="eval-range-val">{professionalism} / 10</span>
+                    </div>
+                    <input 
+                        type="range"
+                        min="0"
+                        max="10"
+                        step="1"
+                        className="eval-custom-range"
+                        value={professionalism}
+                        onChange={(e) => setProfessionalism(parseInt(e.target.value))}
+                    />
+                    <span className="slider-hint">
+                        {isAr ? 'مدى الالتزام بالمعايير المهنية والسلوك الوظيفي' : 'Commitment to professional ethics and job behavior'}
+                    </span>
+                </div>
+
+                {/* Responsibility slider */}
+                <div className="eval-range-container">
+                    <div className="eval-range-header">
+                        <span className="eval-range-title">
+                            <i className="fa-solid fa-circle-check"></i> {isAr ? 'المسؤولية والانضباط (Responsibility)' : 'Responsibility'}
+                        </span>
+                        <span className="eval-range-val">{responsibility} / 10</span>
+                    </div>
+                    <input 
+                        type="range"
+                        min="0"
+                        max="10"
+                        step="1"
+                        className="eval-custom-range"
+                        value={responsibility}
+                        onChange={(e) => setResponsibility(parseInt(e.target.value))}
+                    />
+                    <span className="slider-hint">
+                        {isAr ? 'مدى تحمل المسؤولية والالتزام بالتسليمات والمواعيد' : 'Accountability and commitment to deliverables and deadlines'}
+                    </span>
+                </div>
+
+                {/* Problem Solving slider */}
+                <div className="eval-range-container">
+                    <div className="eval-range-header">
+                        <span className="eval-range-title">
+                            <i className="fa-solid fa-lightbulb"></i> {isAr ? 'حل المشكلات والابتكار (Problem-Solving)' : 'Problem-Solving'}
+                        </span>
+                        <span className="eval-range-val">{problemSolving} / 10</span>
+                    </div>
+                    <input 
+                        type="range"
+                        min="0"
+                        max="10"
+                        step="1"
+                        className="eval-custom-range"
+                        value={problemSolving}
+                        onChange={(e) => setProblemSolving(parseInt(e.target.value))}
+                    />
+                    <span className="slider-hint">
+                        {isAr ? 'القدرة على مواجهة التحديات وابتكار حلول عملية' : 'Ability to address challenges and create practical solutions'}
+                    </span>
+                </div>
+            </div>
+
+            {/* Optional remarks */}
+            <div className="eval-form-group">
+                <label className="eval-form-label">
+                    {isAr ? 'ملاحظات وتوجيهات المدير' : 'Manager Feedback & Remarks'}
+                </label>
+                <textarea 
+                    className="eval-textarea-control"
+                    placeholder={isAr ? 'اكتب ملاحظاتك وتوجيهاتك للموظف...' : 'Write notes and directives for the employee...'}
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                />
+            </div>
+
+            {/* Live Preview Box (Value received from parent/backend calculations) */}
+            <div className="eval-live-preview-box">
+                <div className="preview-info">
+                    <span className="preview-label">{isAr ? 'درجة المدير الجزئية المعتمدة (25%):' : 'Consolidated Manager Score (25%):'}</span>
+                    <span className="preview-math">
+                        {isAr 
+                            ? 'الدرجة المحسوبة والمعتمدة في الخلفية' 
+                            : 'Consolidated grade computed in the backend'
+                        }
+                    </span>
+                </div>
+                <div className="preview-value-big">
+                    {managerScore.toFixed(1)} <span className="preview-max">/ 100</span>
+                </div>
+            </div>
+
+            {/* Form actions */}
+            <div className="eval-form-actions">
+                <button 
+                    type="submit" 
+                    className="eval-submit-btn" 
+                    disabled={isSubmitting}
+                >
+                    {isSubmitting ? (
+                        <>
+                            <i className="fa-solid fa-circle-notch fa-spin"></i>
+                            <span>{isAr ? 'جاري إرسال التقييم...' : 'Submitting Evaluation...'}</span>
+                        </>
+                    ) : (
+                        <>
+                            <i className="fa-solid fa-circle-check"></i>
+                            <span>{isAr ? 'اعتماد وإرسال التقييم' : 'Approve & Submit Evaluation'}</span>
+                        </>
+                    )}
+                </button>
+            </div>
+        </form>
     );
 };
 

@@ -1,4 +1,184 @@
-﻿/* CSS for shared component ActionReviewCard */
-.performance-shared-component {
-    display: inline-block;
+.performance-action-review-card {
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.performance-action-review-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(53, 158, 255, 0.2);
+  box-shadow: var(--shadow-md);
+}
+
+.action-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 12px;
+}
+
+.employee-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.employee-name-label {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.employee-dept-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.action-card-body {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+@media (max-width: 576px) {
+  .action-card-body {
+    flex-direction: column;
+    gap: 14px;
+  }
+}
+
+.grade-display-box {
+  background: rgba(53, 158, 255, 0.05);
+  border: 1px solid rgba(53, 158, 255, 0.15);
+  border-radius: var(--radius-md);
+  padding: 10px 18px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+  flex-shrink: 0;
+}
+
+.grade-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.grade-value-bold {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--primary-color);
+  text-shadow: 0 0 10px rgba(53, 158, 255, 0.25);
+  margin-top: 2px;
+}
+
+.recommendation-text-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-grow: 1;
+}
+
+.rec-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.rec-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+  font-weight: 500;
+}
+
+.action-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border-light);
+  padding-top: 14px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.creation-date-text {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.review-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.review-action-buttons button {
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  transition: all 0.2s;
+}
+
+.btn-review-defer {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  border: 1px solid var(--glass-border) !important;
+}
+
+.btn-review-defer:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+}
+
+.btn-review-reject {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.2) !important;
+}
+
+.btn-review-reject:hover:not(:disabled) {
+  background: var(--color-revision);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.btn-review-approve {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.2) !important;
+}
+
+.btn-review-approve:hover:not(:disabled) {
+  background: var(--color-scored);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.review-action-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }

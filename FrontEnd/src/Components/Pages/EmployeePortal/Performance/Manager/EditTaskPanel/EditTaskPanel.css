@@ -1,4 +1,232 @@
-﻿/* CSS for EditTaskPanel component */
-.performance-container {
-    padding: 20px;
+/* ==========================================================================
+   Edit Task Panel Stylesheet - Manager Portal
+   Matches manager_performance_ui.html Edit Form Components
+   ========================================================================== */
+
+.performance-edit-task-panel {
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 9999px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  padding: 2rem 35px;
+  box-sizing: border-box;
+}
+
+/* Direction support */
+.performance-edit-task-panel.rtl {
+  font-family: 'Cairo', 'Inter', sans-serif;
+}
+
+.performance-edit-task-panel.ltr {
+  font-family: 'Inter', sans-serif;
+}
+
+.performance-edit-task-panel .top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 16px;
+}
+
+.performance-edit-task-panel .page-title h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+
+.performance-edit-task-panel .page-title p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+/* Card */
+.performance-edit-task-panel .card {
+  background: var(--bg-card);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 12px);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+}
+
+.performance-edit-task-panel .card-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 12px;
+}
+
+.performance-edit-task-panel .card-subtitle-small {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: normal;
+}
+
+.performance-edit-task-panel .task-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.performance-edit-task-panel .form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .performance-edit-task-panel .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.performance-edit-task-panel .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.performance-edit-task-panel .form-group.full-width {
+  grid-column: span 2;
+}
+
+@media (max-width: 768px) {
+  .performance-edit-task-panel .form-group.full-width {
+    grid-column: span 1;
+  }
+}
+
+.performance-edit-task-panel .form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.performance-edit-task-panel .form-label .req {
+  color: var(--color-revision);
+}
+
+/* Theme-aware Form Control overrides */
+.performance-edit-task-panel .form-control {
+  padding: 12px 16px;
+  border-radius: var(--radius-md, 12px);
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+  width: 100%;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="light"] .performance-edit-task-panel .form-control {
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  color: #1f2937 !important;
+}
+
+[data-theme="light"] .performance-edit-task-panel .form-control:focus:not(:disabled) {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 8px rgba(53, 158, 255, 0.2) !important;
+}
+
+[data-theme="light"] .performance-edit-task-panel .form-control:disabled {
+  background: #f3f4f6 !important;
+  color: #9ca3af !important;
+  cursor: not-allowed;
+  border-color: #e5e7eb !important;
+}
+
+[data-theme="dark"] .performance-edit-task-panel .form-control {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #f3f4f6 !important;
+}
+
+[data-theme="dark"] .performance-edit-task-panel .form-control:focus:not(:disabled) {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 10px rgba(53, 158, 255, 0.3) !important;
+}
+
+[data-theme="dark"] .performance-edit-task-panel .form-control:disabled {
+  background: rgba(255, 255, 255, 0.02) !important;
+  color: var(--text-muted) !important;
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+.performance-edit-task-panel .form-control option {
+  background: #0f172a;
+  color: var(--text-main);
+}
+
+.performance-edit-task-panel textarea.form-control {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Form actions */
+.performance-edit-task-panel .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  border-top: 1px solid var(--border-light);
+  padding-top: 20px;
+  margin-top: 10px;
+}
+
+.performance-edit-task-panel.rtl .form-actions {
+  justify-content: flex-start;
+}
+
+/* Reusable buttons matching site dashboard */
+.performance-edit-task-panel .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-md, 12px);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  outline: none;
+  text-decoration: none;
+}
+
+.performance-edit-task-panel .btn-primary {
+  background: var(--primary-gradient);
+  color: var(--text-on-primary);
+  box-shadow: 0 4px 10px rgba(53, 158, 255, 0.2);
+}
+
+.performance-edit-task-panel .btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(53, 158, 255, 0.35);
+  background: linear-gradient(135deg, #1d4ed8 0%, #2b8de8 50%, #1e3a8a 100%);
+}
+
+.performance-edit-task-panel .btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.performance-edit-task-panel .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
 }

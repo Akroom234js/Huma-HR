@@ -1,4 +1,77 @@
-﻿/* CSS for PeriodicEvaluation component */
-.performance-container {
-    padding: 20px;
+/* ==========================================================================
+   Periodic Evaluation Stylesheet - Manager Portal
+   Matches manager_performance_ui.html Periodic Evaluation Section
+   ========================================================================== */
+
+.performance-periodic-evaluation {
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 9999px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  padding: 2rem 35px;
+  box-sizing: border-box;
+}
+
+/* Direction support */
+.performance-periodic-evaluation.rtl {
+  font-family: 'Cairo', 'Inter', sans-serif;
+}
+
+.performance-periodic-evaluation.ltr {
+  font-family: 'Inter', sans-serif;
+}
+
+.performance-periodic-evaluation .top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 16px;
+}
+
+.performance-periodic-evaluation .page-title h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+
+.performance-periodic-evaluation .page-title p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+/* Reusable buttons matching site dashboard */
+.performance-periodic-evaluation .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-md, 12px);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  outline: none;
+  text-decoration: none;
+}
+
+.performance-periodic-evaluation .btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.performance-periodic-evaluation .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
 }

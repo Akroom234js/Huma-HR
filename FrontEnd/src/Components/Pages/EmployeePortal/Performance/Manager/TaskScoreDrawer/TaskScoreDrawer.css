@@ -1,4 +1,305 @@
-﻿/* CSS for TaskScoreDrawer component */
-.performance-container {
-    padding: 20px;
+/* ==========================================================================
+   Task Score Drawer Stylesheet - Manager Portal
+   Matches manager_performance_ui.html Drawer Section
+   ========================================================================== */
+
+.performance-task-score-drawer {
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 9999px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  padding: 2rem 35px;
+  box-sizing: border-box;
+}
+
+/* Direction support */
+.performance-task-score-drawer.rtl {
+  font-family: 'Cairo', 'Inter', sans-serif;
+}
+
+.performance-task-score-drawer.ltr {
+  font-family: 'Inter', sans-serif;
+}
+
+.performance-task-score-drawer .top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 16px;
+}
+
+.performance-task-score-drawer .page-title h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+
+.performance-task-score-drawer .page-title p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+/* Split layout */
+.performance-task-score-drawer .split-layout {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 992px) {
+  .performance-task-score-drawer .split-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Card */
+.performance-task-score-drawer .card {
+  background: var(--bg-card);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 12px);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+}
+
+.performance-task-score-drawer .card-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 12px;
+}
+
+.performance-task-score-drawer .deliverable-card {
+  margin-bottom: 24px;
+}
+
+.performance-task-score-drawer .task-specs-section {
+  margin-bottom: 20px;
+}
+
+.performance-task-score-drawer .task-title-bold {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.performance-task-score-drawer .task-specs-meta {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.performance-task-score-drawer .green-text {
+  color: var(--color-scored);
+  font-weight: 600;
+}
+
+.performance-task-score-drawer .specs-description {
+  margin-top: 10px;
+  background: rgba(255, 255, 255, 0.01);
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--primary-color);
+}
+
+.performance-task-score-drawer.rtl .specs-description {
+  border-left: none;
+  border-right: 3px solid var(--primary-color);
+}
+
+/* Theme-aware employee notes box */
+.performance-task-score-drawer .employee-notes-box {
+  padding: 16px;
+  border-radius: var(--radius-sm, 6px);
+  transition: all 0.3s ease;
+}
+
+[data-theme="light"] .performance-task-score-drawer .employee-notes-box {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="dark"] .performance-task-score-drawer .employee-notes-box {
+  background: rgba(15, 23, 42, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.performance-task-score-drawer .notes-header-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--primary-color);
+  margin-bottom: 8px;
+}
+
+.performance-task-score-drawer .notes-content {
+  font-size: 13px;
+  color: var(--text-main);
+  font-style: italic;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Timeline component */
+.performance-task-score-drawer .timeline {
+  position: relative;
+  padding-left: 24px;
+  margin-top: 15px;
+}
+
+.performance-task-score-drawer.rtl .timeline {
+  padding-left: 0;
+  padding-right: 24px;
+}
+
+.performance-task-score-drawer .timeline::before {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.performance-task-score-drawer.rtl .timeline::before {
+  left: auto;
+  right: 7px;
+}
+
+.performance-task-score-drawer .timeline-item {
+  position: relative;
+  padding-bottom: 24px;
+}
+
+.performance-task-score-drawer .timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.performance-task-score-drawer .timeline-icon {
+  position: absolute;
+  left: -24px;
+  top: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #1e293b;
+  border: 3px solid #64748b;
+  box-shadow: 0 0 0 4px rgba(15, 23, 42, 1);
+  z-index: 1;
+}
+
+.performance-task-score-drawer.rtl .timeline-icon {
+  left: auto;
+  right: -24px;
+}
+
+.performance-task-score-drawer .timeline-item.completed .timeline-icon {
+  border-color: var(--color-scored);
+  background: var(--color-scored);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+
+.performance-task-score-drawer .timeline-item.active .timeline-icon {
+  border-color: var(--primary-color);
+  background: #0f172a;
+  box-shadow: 0 0 8px rgba(53, 158, 255, 0.5);
+}
+
+.performance-task-score-drawer .timeline-content {
+  padding-left: 10px;
+}
+
+.performance-task-score-drawer.rtl .timeline-content {
+  padding-left: 0;
+  padding-right: 10px;
+}
+
+.performance-task-score-drawer .timeline-time {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.performance-task-score-drawer .timeline-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.performance-task-score-drawer .timeline-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.performance-task-score-drawer .rules-info-card {
+  margin-top: 24px;
+}
+
+.performance-task-score-drawer .rules-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.performance-task-score-drawer .rules-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.performance-task-score-drawer .rules-list i {
+  color: var(--primary-color);
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+/* Reusable buttons matching site dashboard */
+.performance-task-score-drawer .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-md, 12px);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  outline: none;
+  text-decoration: none;
+}
+
+.performance-task-score-drawer .btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.performance-task-score-drawer .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
 }

@@ -161,47 +161,26 @@ const EmpSidebar = () => {
                                         {t('Peer-Review-Form') || 'Peer Review Form'}
                                     </NavLink>
                                 </div>
-                            </div>
-
-                            {/* Department Performance Accordion - Conditional for Supervisor */}
+                            </div>                            {/* Department Performance - Flat items for Supervisor to match employee portal flat style */}
                             {isSupervisor && (
-                                <div className="nav-section">
-                                    <button
-                                        className={`nav-item nav-toggle ${isManagerPerformanceActive ? 'active' : ''}`}
-                                        onClick={() => handleSectionToggle('manager_performance', '/portal/manager/tasks')}
+                                <>
+                                    <NavLink 
+                                        to="/portal/manager/tasks" 
+                                        className={({ isActive }) => `nav-item ${isActive || (location.pathname.startsWith('/portal/manager') && !location.pathname.startsWith('/portal/manager/cycles')) ? 'active' : ''}`}
                                     >
-                                        <div className="nav-item-content">
-                                            <span className="nav-icon material-symbols-outlined">manage_accounts</span>
-                                            <p>{t('Department-Performance') || 'Department Performance'}</p>
-                                        </div>
-                                        <span className={`material-symbols-outlined expand-icon ${openMenu === 'manager_performance' ? 'expanded' : ''}`}>
-                                            expand_more
-                                        </span>
-                                    </button>
-                                    <div className={`sub-menu ${openMenu === 'manager_performance' ? 'open' : ''}`}>
-                                        <NavLink to="/portal/manager/tasks" className="sub-nav-item">
-                                            {t('Department-Tasks') || 'Department Tasks'}
-                                        </NavLink>
-                                        <NavLink to="/portal/manager/tasks/new" className="sub-nav-item">
-                                            {t('Assign-New-Task') || 'Assign New Task'}
-                                        </NavLink>
-                                        <NavLink to="/portal/manager/tasks/edit/active" className="sub-nav-item">
-                                            {t('Edit-Task-Panel') || 'Edit Task Panel'}
-                                        </NavLink>
-                                        <NavLink to="/portal/manager/tasks/score/active" className="sub-nav-item">
-                                            {t('Task-Score-Drawer') || 'Task Score Drawer'}
-                                        </NavLink>
-                                        <NavLink to="/portal/manager/evaluate/active" className="sub-nav-item">
-                                            {t('Periodic-Evaluation') || 'Periodic Evaluation'}
-                                        </NavLink>
-                                        <NavLink to="/portal/manager/cycles" className="sub-nav-item">
-                                            {t('Performance-Cycles') || 'Performance Cycles'}
-                                        </NavLink>
-                                    </div>
-                                </div>
+                                        <span className="nav-icon material-symbols-outlined">manage_accounts</span>
+                                        <p>{t('Department-Tasks') || 'Department Tasks'}</p>
+                                    </NavLink>
+
+                                    <NavLink 
+                                        to="/portal/manager/cycles" 
+                                        className={({ isActive }) => `nav-item ${isActive || location.pathname.startsWith('/portal/manager/cycles') ? 'active' : ''}`}
+                                    >
+                                        <span className="nav-icon material-symbols-outlined">published_with_changes</span>
+                                        <p>{t('Performance-Cycles') || 'Performance Cycles'}</p>
+                                    </NavLink>
+                                </>
                             )}
-
-
                             {/* Rewards & Bonuses */}
                             <NavLink to="/portal/rewards" className="nav-item">
                                 <span className="nav-icon material-symbols-outlined">military_tech</span>
