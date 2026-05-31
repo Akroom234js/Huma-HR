@@ -1,0 +1,24 @@
+div.send-rec{
+    width: 50%;
+       border: 2px solid var(--border-color);
+    padding: 20px;
+    background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1) 1);
+    background-color: var(--bg-page);
+    height: 50vb;
+    border-radius: 8px;
+    /* margin: auto; */
+    /* width: 42%; */
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+div.send-rec div{
+    width: 100%;
+}
+div.send-rec div select{
+    width: 100%;
+    margin-bottom: 10px;
+}
+div.send-rec textarea{
+    background-color: var(--bg-card);
+    color: var(--text-main);
+}
