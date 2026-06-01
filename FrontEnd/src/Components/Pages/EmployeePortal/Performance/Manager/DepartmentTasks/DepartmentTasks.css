@@ -572,3 +572,155 @@
   to { opacity: 1; }
 }
 
+@media (max-width: 576px) {
+  .performance-department-tasks .performance-modal-backdrop {
+    padding: 8px !important;
+  }
+  .performance-department-tasks .performance-modal-content {
+    max-height: 96vh !important;
+    border-radius: var(--radius-md, 12px) !important;
+  }
+}
+
+/* Tablet Scroll Responsiveness (769px to 992px) */
+@media (min-width: 769px) and (max-width: 992px) {
+  .performance-department-tasks .table-wrapper {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-sm, 6px);
+  }
+  .performance-department-tasks .custom-table {
+    width: auto !important;
+    min-width: 950px !important;
+  }
+}
+
+/* Mobile Card Transformation Layout (under 768px) */
+@media (max-width: 768px) {
+  /* Make the parent card transparent and flat on mobile to avoid duplicate cards and background repetition */
+  .performance-department-tasks .card,
+  section.performance-department-tasks div.card {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    margin-bottom: 16px !important;
+  }
+
+  .performance-department-tasks .table-wrapper,
+  .performance-department-tasks table.custom-table {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    overflow-x: visible !important;
+  }
+  
+  .performance-department-tasks .custom-table {
+    min-width: 100% !important;
+    display: block !important;
+    width: 100% !important;
+  }
+  
+  .performance-department-tasks .custom-table thead {
+    display: none !important;
+  }
+  
+  .performance-department-tasks .custom-table tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    width: 100% !important;
+  }
+  
+  .performance-department-tasks .custom-table tr {
+    display: flex !important;
+    flex-direction: column !important;
+    background: rgba(30, 41, 59, 0.35) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-md, 12px) !important;
+    padding: 16px !important;
+    box-shadow: var(--shadow-sm) !important;
+    transition: all 0.25s ease !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  .performance-department-tasks .custom-table tr:hover {
+    transform: translateY(-2px) !important;
+    border-color: rgba(53, 158, 255, 0.35) !important;
+    background: rgba(30, 41, 59, 0.5) !important;
+    box-shadow: var(--shadow-md) !important;
+  }
+  
+  [data-theme="light"] .performance-department-tasks .custom-table tr {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+  }
+
+  [data-theme="light"] .performance-department-tasks .custom-table tr:hover {
+    background: #f8fafc !important;
+    border-color: var(--primary-color) !important;
+  }
+  
+  .performance-department-tasks .custom-table td {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 10px 0 !important;
+    border: none !important;
+    border-bottom: none !important; /* Completely remove duplicate backgrounds and dividing lines */
+    width: 100% !important;
+    box-sizing: border-box !important;
+    font-size: 13.5px !important;
+  }
+  
+  [data-theme="light"] .performance-department-tasks .custom-table td {
+    border-bottom: none !important;
+  }
+
+  /* Task title styling - make it prominent and borderless */
+  .performance-department-tasks .custom-table td[data-label="Task"],
+  .performance-department-tasks .custom-table td[data-label="المهمة"] {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: var(--text-main) !important;
+    border-bottom: 1px solid var(--border-color) !important; /* A single clean line under task title */
+    padding-bottom: 12px !important;
+    margin-bottom: 12px !important;
+    display: block !important;
+    text-align: inherit !important;
+  }
+  
+  /* Add label prefix to cells on mobile */
+  .performance-department-tasks .custom-table td::before {
+    content: attr(data-label);
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: var(--text-muted) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  /* Hide prefix label on title and actions cells */
+  .performance-department-tasks .custom-table td[data-label="Task"]::before,
+  .performance-department-tasks .custom-table td[data-label="المهمة"]::before,
+  .performance-department-tasks .custom-table td:last-child::before {
+    display: none !important;
+  }
+  
+  /* Action buttons styling on mobile */
+  .performance-department-tasks .custom-table td:last-child {
+    border-bottom: none !important;
+    padding-top: 12px !important;
+    margin-top: 4px !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+  }
+}
+
+
+
