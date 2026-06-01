@@ -303,3 +303,141 @@
   background: rgba(255, 255, 255, 0.1);
   color: var(--text-main);
 }
+
+/* ==========================================================================
+   Employee Selection Slider Styles
+   ========================================================================== */
+.performance-task-score-drawer .employee-slider-container {
+  background: var(--bg-card);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 12px);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 24px;
+}
+
+.performance-task-score-drawer .slider-section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 16px;
+}
+
+.performance-task-score-drawer .employee-slider {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 4px 4px 12px;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+.performance-task-score-drawer .employee-slider::-webkit-scrollbar {
+  height: 6px;
+}
+
+.performance-task-score-drawer .employee-slider::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-full);
+}
+
+.performance-task-score-drawer .employee-slider::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+}
+
+.performance-task-score-drawer .employee-slider::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.performance-task-score-drawer .employee-slide-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.01);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 280px;
+  max-width: 320px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.performance-task-score-drawer .employee-slide-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: var(--shadow-md);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Selected state - glowing active theme styling */
+.performance-task-score-drawer .employee-slide-card.active {
+  transform: translateY(-2px);
+  border-color: var(--primary-color) !important;
+  background: rgba(53, 158, 255, 0.08) !important;
+  box-shadow: 0 0 15px rgba(53, 158, 255, 0.18) !important;
+}
+
+[data-theme="light"] .performance-task-score-drawer .employee-slide-card.active {
+  background: rgba(53, 158, 255, 0.05) !important;
+}
+
+[data-theme="light"] .performance-task-score-drawer .employee-slide-card {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .performance-task-score-drawer .employee-slide-card:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.performance-task-score-drawer .employee-slide-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(53, 158, 255, 0.1);
+  border: 2px solid var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--primary-color);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.performance-task-score-drawer .employee-slide-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex-grow: 1;
+}
+
+.performance-task-score-drawer .employee-slide-name {
+  font-size: 14px;
+  font-weight: 750;
+  color: var(--text-main);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.performance-task-score-drawer .employee-slide-task-title {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin: 2px 0 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.performance-task-score-drawer .employee-slide-badge-wrapper {
+  display: flex;
+}

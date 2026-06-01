@@ -260,7 +260,9 @@ function App() {
             <Route path="manager/tasks" element={<DepartmentTasks />} />
             <Route path="manager/tasks/new" element={<AssignNewTask />} />
             <Route path="manager/tasks/edit/:id" element={<EditTaskPanel />} />
+            <Route path="manager/tasks/score" element={<TaskScoreDrawer />} />
             <Route path="manager/tasks/score/:id" element={<TaskScoreDrawer />} />
+            <Route path="manager/evaluate" element={<PeriodicEvaluation />} />
             <Route path="manager/evaluate/:employee_id" element={<PeriodicEvaluation />} />
             <Route path="manager/cycles" element={<PerformanceCycles />} />
 
