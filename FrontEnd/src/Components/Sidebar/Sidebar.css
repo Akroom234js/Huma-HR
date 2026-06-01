@@ -577,3 +577,61 @@ div.translation p {
         z-index: 100;
     }
 }
+
+/* =====================================================================
+   AI INDICATOR BADGE FOR SIDEBAR (ICON OVERLAY)
+   ===================================================================== */
+.ai-indicator-sparkle {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 14px;
+    height: 14px;
+    background: linear-gradient(135deg, #a855f7 0%, #359EFF 100%) !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 0 6px rgba(168, 85, 247, 0.6) !important;
+    z-index: 5 !important;
+    pointer-events: none !important;
+    animation: sparkle-glow 2s infinite ease-in-out !important;
+}
+
+.ai-indicator-sparkle i {
+    color: #fbbf24 !important; /* gold sparkle */
+    font-size: 8px !important;
+    display: block !important;
+    line-height: 1 !important;
+    animation: sparkle-rotate 3s infinite linear !important;
+}
+
+/* Color theme for AI-enhanced navigation items */
+.nav-item:has(.ai-indicator-sparkle) .nav-icon {
+    color: #a855f7 !important; /* glowing violet/indigo color to indicate smart AI features */
+    filter: drop-shadow(0 0 2px rgba(168, 85, 247, 0.3));
+}
+
+.nav-item.active:has(.ai-indicator-sparkle) .nav-icon {
+    color: var(--primary-color) !important;
+    filter: drop-shadow(0 0 4px rgba(53, 158, 255, 0.4));
+}
+
+@keyframes sparkle-glow {
+    0%, 100% { 
+        transform: scale(1); 
+        box-shadow: 0 0 6px rgba(168, 85, 247, 0.6); 
+        border-color: rgba(255, 255, 255, 0.4); 
+    }
+    50% { 
+        transform: scale(1.2); 
+        box-shadow: 0 0 14px rgba(53, 158, 255, 0.9); 
+        border-color: rgba(255, 255, 255, 0.8); 
+    }
+}
+
+@keyframes sparkle-rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
