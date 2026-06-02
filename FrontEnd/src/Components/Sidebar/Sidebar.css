@@ -608,11 +608,13 @@ div.translation p {
 }
 
 /* Color theme for AI-enhanced navigation items */
+.nav-item.ai-colored .nav-icon,
 .nav-item:has(.ai-indicator-sparkle) .nav-icon {
     color: #a855f7 !important; /* glowing violet/indigo color to indicate smart AI features */
     filter: drop-shadow(0 0 2px rgba(168, 85, 247, 0.3));
 }
 
+.nav-item.ai-colored.active .nav-icon,
 .nav-item.active:has(.ai-indicator-sparkle) .nav-icon {
     color: var(--primary-color) !important;
     filter: drop-shadow(0 0 4px rgba(53, 158, 255, 0.4));
