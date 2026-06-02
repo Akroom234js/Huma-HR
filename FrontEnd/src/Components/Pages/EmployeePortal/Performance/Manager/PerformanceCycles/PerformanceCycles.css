@@ -15,6 +15,7 @@
   width: 100%;
   padding: 2rem 35px;
   box-sizing: border-box;
+  color: var(--text-main);
 }
 
 /* Direction support */

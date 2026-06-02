@@ -44,9 +44,7 @@
   --amber-400: #fbbf24;
   --amber-500: #f59e0b;
   --red-500: #ef4444;
-  --blue-500: #3b82f6;
-  --purple-500: #a855f7;
-  --pink-500: #ec4899;
+
   /* Score backgrounds */
   --score-bg: rgba(239, 246, 255, 0.5);
   --score-border: #dbeafe;
@@ -61,8 +59,6 @@
   --radius-lg: 0.5rem;
   --radius-xl: 0.75rem;
   --radius-full: 9999px;
-  --radius-md: 12px;
-  --radius-sm: 6px;
   font-family: 'Plus Jakarta Sans', sans-serif;
 
   /* Performance Module Theme Colors */
@@ -185,8 +181,8 @@ body::before {
 .modal-backdrop,
 .AddMovement-modal,
 .salary-adjustment-modal {
-  backdrop-filter: blur(25px) !important;
-  -webkit-backdrop-filter: blur(25px) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
 }
 
 /* Ensure container transparency so the blur of the content behind them is visible */
@@ -251,8 +247,8 @@ div.interview,
 
 /* Also ensure that the sidebar itself has the glassmorphism blur applied on desktop */
 .sidebar {
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 /* Make sidebar completely integrated in dark mode (no separating line, shadow, or blur boundary) */

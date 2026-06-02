@@ -1,0 +1,87 @@
+.cycle-results-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cycle-results-modal {
+    width: 90%;
+    max-width: 1000px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+    color: var(--text-main);
+}
+
+.cycle-results-modal .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.cycle-results-modal .modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: var(--text-main);
+}
+
+.cycle-results-modal .close-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.cycle-results-modal .close-btn:hover {
+    color: var(--text-main);
+}
+
+.cycle-results-modal .modal-body {
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.cycle-results-modal .decision-badge {
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--color-scored);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.cycle-results-modal .decision-badge.promotion {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--decision-promo);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.cycle-results-modal .decision-badge.bonus {
+    background: rgba(59, 130, 246, 0.15);
+    color: var(--decision-bonus);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.cycle-results-modal .decision-badge.training {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--decision-training);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+.cycle-results-modal .decision-badge.warning {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--decision-warning);
+    border-color: rgba(239, 68, 68, 0.3);
+}
