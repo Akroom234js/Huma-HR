@@ -181,8 +181,8 @@ body::before {
 .modal-backdrop,
 .AddMovement-modal,
 .salary-adjustment-modal {
-  backdrop-filter: blur(25px) !important;
-  -webkit-backdrop-filter: blur(25px) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
 }
 
 /* Ensure container transparency so the blur of the content behind them is visible */
@@ -247,8 +247,8 @@ div.interview,
 
 /* Also ensure that the sidebar itself has the glassmorphism blur applied on desktop */
 .sidebar {
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 /* Make sidebar completely integrated in dark mode (no separating line, shadow, or blur boundary) */
@@ -321,4 +321,4 @@ div.interview,
 }
 .ltr {
   direction: ltr;
-}
+}

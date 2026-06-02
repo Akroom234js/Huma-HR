@@ -227,7 +227,7 @@ const Sidebar = () => {
                             {/* Performance Hub */}
                             <div className="nav-section">
                                 <button
-                                    className={`nav-item nav-toggle ${isPerformanceActive ? 'active' : ''}`}
+                                    className={`nav-item nav-toggle ai-colored ${isPerformanceActive ? 'active' : ''}`}
                                     onClick={() => handleSectionToggle('performance', '/performance')}
                                 >
                                     <div className="nav-item-content">

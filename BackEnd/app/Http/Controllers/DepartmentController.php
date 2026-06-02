@@ -169,4 +169,15 @@ class DepartmentController extends Controller
             message: 'Department statistics retrieved successfully.'
         );
     }
+
+    // ── GET /api/my-department ────────────────────────────────────────────────
+    public function myDepartment(): JsonResponse
+    {
+        $employee = auth()->user()->employeeProfile;
+        if (!$employee || !$employee->department_id) {
+            return $this->errorResponse('Department not found for this user.', null, 404);
+        }
+        $department = Department::with(['head:id,full_name'])->withCount('employees')->find($employee->department_id);
+        return $this->successResponse($department, 'My department retrieved successfully.');
+    }
 }

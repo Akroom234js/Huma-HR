@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import TaskFormModal from '../../../../../Shared/Performance/TaskFormModal/TaskFormModal';
+import { getDepartmentEmployees, createTask, updateTask } from '../../../../../../services/performanceService';
 
 const AssignNewTask = ({ isModal = false, isEdit = false, taskData, onClose, onSuccess }) => {
     const navigate = useNavigate();
@@ -10,69 +11,75 @@ const AssignNewTask = ({ isModal = false, isEdit = false, taskData, onClose, onS
     const currentLang = sessionStorage.getItem('lang') || 'en';
     const isAr = currentLang === 'ar';
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [employeesList, setEmployeesList] = useState([]);
 
-    // Mock Employees List matching department employees
-    const employeesList = [
-        { id: '1', name: isAr ? 'جون دو' : 'John Doe', department: isAr ? 'مهندس برمجيات' : 'Software Engineer' },
-        { id: '2', name: isAr ? 'أليس سميث' : 'Alice Smith', department: isAr ? 'مطور أول' : 'Senior Developer' },
-        { id: '3', name: isAr ? 'روبرت كينج' : 'Robert King', department: isAr ? 'محلل نظم' : 'System Analyst' }
-    ];
+    useEffect(() => {
+        const loadEmployees = async () => {
+            try {
+                const res = await getDepartmentEmployees();
+                const rawEmployees = res.data?.data || [];
+                const formattedEmployees = rawEmployees.map(emp => ({
+                    id: emp.id.toString(),
+                    name: emp.full_name || emp.name || '',
+                    department: emp.department?.name || emp.job_title || ''
+                }));
+                setEmployeesList(formattedEmployees);
+            } catch (error) {
+                console.error("Failed to load department employees for assignment:", error);
+            }
+        };
+        loadEmployees();
+    }, []);
 
-    // Helper to translate employee name to their mock ID
-    const getEmployeeId = (name) => {
-        if (!name) return '1';
-        if (name.includes('John') || name.includes('جون')) return '1';
-        if (name.includes('Alice') || name.includes('أليس')) return '2';
-        if (name.includes('Robert') || name.includes('روبرت')) return '3';
-        return '1';
-    };
-
-    const handleFormSubmit = (formData) => {
+    const handleFormSubmit = async (formData) => {
         setIsSubmitting(true);
-
-        setTimeout(() => {
-            setIsSubmitting(false);
+        try {
             if (isEdit) {
+                const payload = {
+                    title: formData.title,
+                    description: formData.description,
+                    due_date: formData.due_date,
+                    difficulty: formData.difficulty,
+                    priority: formData.priority,
+                    late_penalty_per_day: Number(formData.late_penalty_per_day)
+                };
+                const res = await updateTask(taskData?.id || id, payload);
                 alert(isAr ? 'تم تعديل بيانات التكليف بنجاح!' : 'Task assignment updated successfully!');
                 if (isModal) {
-                    if (onSuccess) {
-                        onSuccess({
-                            id: taskData?.id,
-                            title: formData.title,
-                            employee_name: taskData?.employee_name,
-                            employee_avatar: taskData?.employee_avatar || 'JD',
-                            due_date: new Date(formData.due_date).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-                            difficulty: formData.difficulty,
-                            priority: formData.priority,
-                            status: taskData?.status || 'pending'
-                        });
+                    if (onSuccess && res.data?.data) {
+                        onSuccess(res.data.data);
                     }
                     if (onClose) onClose();
                 } else {
                     navigate('/portal/manager/tasks');
                 }
             } else {
+                const payload = {
+                    employee_profile_id: Number(formData.employee_id),
+                    title: formData.title,
+                    description: formData.description,
+                    due_date: formData.due_date,
+                    difficulty: formData.difficulty,
+                    priority: formData.priority,
+                    late_penalty_per_day: Number(formData.late_penalty_per_day)
+                };
+                const res = await createTask(payload);
                 alert(isAr ? 'تم إسناد التكليف بنجاح وإشعار الموظف!' : 'Task assigned successfully and employee notified!');
                 if (isModal) {
-                    const selectedEmp = employeesList.find(emp => emp.id === formData.employee_id);
-                    if (onSuccess) {
-                        onSuccess({
-                            id: Date.now(),
-                            title: formData.title,
-                            employee_name: selectedEmp ? selectedEmp.name : 'John Doe',
-                            employee_avatar: selectedEmp ? selectedEmp.name.charAt(0) + selectedEmp.name.split(' ')[1]?.charAt(0) : 'JD',
-                            due_date: new Date(formData.due_date).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-                            difficulty: formData.difficulty,
-                            priority: formData.priority,
-                            status: 'pending'
-                        });
+                    if (onSuccess && res.data?.data) {
+                        onSuccess(res.data.data);
                     }
                     if (onClose) onClose();
                 } else {
                     navigate('/portal/manager/tasks');
                 }
             }
-        }, 1000);
+        } catch (error) {
+            console.error("Failed to submit task form:", error);
+            alert(isAr ? 'حدث خطأ أثناء حفظ التكليف.' : 'An error occurred while saving task.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleClose = () => {
@@ -86,8 +93,8 @@ const AssignNewTask = ({ isModal = false, isEdit = false, taskData, onClose, onS
     // Format taskData to match the expected format in TaskFormModal
     const mappedTask = taskData ? {
         ...taskData,
-        employee_id: getEmployeeId(taskData.employee_name),
-        late_penalty_per_day: taskData.late_penalty || 2
+        employee_id: taskData.employee_id || taskData.employee?.id?.toString() || '',
+        late_penalty_per_day: taskData.late_penalty_per_day || taskData.late_penalty || 0
     } : null;
 
     return (
@@ -104,3 +111,4 @@ const AssignNewTask = ({ isModal = false, isEdit = false, taskData, onClose, onS
 };
 
 export default AssignNewTask;
+

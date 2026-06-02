@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PerformanceCycles.css';
+import CycleResultsModal from './CycleResultsModal';
 
 const PerformanceCycles = () => {
     const navigate = useNavigate();
@@ -9,7 +10,7 @@ const PerformanceCycles = () => {
     const currentLang = sessionStorage.getItem('lang') || 'en';
     const isAr = currentLang === 'ar';
 
-    const [isConsolidating, setIsConsolidating] = useState(false);
+    const [selectedCycle, setSelectedCycle] = useState(null);
 
     // Mock Cycles
     const [cycles, setCycles] = useState([
@@ -47,20 +48,6 @@ const PerformanceCycles = () => {
             jobStateAr: 'غير مفتوحة بعد'
         }
     ]);
-
-    const handleRunCalc = () => {
-        setIsConsolidating(true);
-        alert(isAr 
-            ? 'بدأ حساب وتجميع درجات الأداء في الخلفية (ProcessPerformanceJob)...' 
-            : 'Consolidated performance scores calculation started in the background (ProcessPerformanceJob)...');
-        
-        setTimeout(() => {
-            setIsConsolidating(false);
-            alert(isAr 
-                ? 'اكتمل الحساب وتنشيط تحليل الذكاء الاصطناعي بنجاح!' 
-                : 'Consolidation calculation and AI analysis completed successfully!');
-        }, 2000);
-    };
 
     return (
         <div className={`performance-cycles-management ${isAr ? 'rtl' : 'ltr'}`}>
@@ -101,7 +88,7 @@ const PerformanceCycles = () => {
                         <tbody>
                             {cycles.map((c) => (
                                 <tr key={c.id}>
-                                    <td style={{ fontWeight: 700, color: c.status === 'active' ? 'var(--primary-color)' : 'inherit' }}>
+                                    <td style={{ fontWeight: 700, color: c.status === 'active' ? 'var(--primary-color)' : 'var(--text-main)' }}>
                                         {isAr ? c.nameAr : c.nameEn}
                                     </td>
                                     <td>{isAr ? c.periodAr : c.periodEn}</td>
@@ -138,12 +125,12 @@ const PerformanceCycles = () => {
                                     </td>
                                     <td style={{ textAlign: 'right' }}>
                                         {c.status === 'active' ? (
-                                            <button className="btn btn-primary btn-sm" onClick={handleRunCalc} disabled={isConsolidating}>
-                                                <i className="fa-solid fa-calculator"></i>
-                                                <span>{isAr ? 'حساب تجريبي' : 'Run Mock Calc'}</span>
+                                            <button className="btn btn-secondary btn-sm disabled-opacity" disabled>
+                                                <i className="fa-solid fa-clock"></i>
+                                                <span>{isAr ? 'سيتم الحساب عند الإغلاق' : 'Calculated upon closure'}</span>
                                             </button>
                                         ) : c.status === 'closed' ? (
-                                            <button className="btn btn-secondary btn-sm" onClick={() => alert(isAr ? 'عرض نتائج وتفاصيل تجميع درجات دورة Q4 25...' : 'Displaying consolidated analytical dashboard for Q4 2025...')}>
+                                            <button className="btn btn-secondary btn-sm" onClick={() => setSelectedCycle(c)}>
                                                 <i className="fa-solid fa-chart-line"></i>
                                                 <span>{isAr ? 'عرض النتائج' : 'View Results'}</span>
                                             </button>
@@ -204,6 +191,12 @@ const PerformanceCycles = () => {
                     </div>
                 </div>
             </div>
+
+            <CycleResultsModal 
+                isOpen={!!selectedCycle} 
+                onClose={() => setSelectedCycle(null)} 
+                cycle={selectedCycle} 
+            />
         </div>
     );
 };

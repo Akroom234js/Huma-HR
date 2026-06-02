@@ -10,7 +10,8 @@ import { useTranslation } from 'react-i18next';
 const EmpSidebar = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { t } = useTranslation('Sidebar/Sidebar'); // We can reuse or create specific one
+    const { t, i18n } = useTranslation('Sidebar/Sidebar');
+    const isAr = i18n ? i18n.language === 'ar' : false;
     const [isOpen, setIsOpen] = useState(false);
 
     // Retrieve user and role from local storage to check for department supervisor privileges
@@ -136,7 +137,7 @@ const EmpSidebar = () => {
                             {/* My Performance (Accordion) */}
                             <div className="nav-section">
                                 <button
-                                    className={`nav-item nav-toggle ${isMyPerformanceActive ? 'active' : ''}`}
+                                    className={`nav-item nav-toggle ai-colored ${isMyPerformanceActive ? 'active' : ''}`}
                                     onClick={() => handleSectionToggle('my_performance', '/portal/performance')}
                                 >
                                     <div className="nav-item-content">
@@ -167,20 +168,17 @@ const EmpSidebar = () => {
                                     <NavLink 
                                         to="/portal/manager/tasks" 
                                         end
-                                        className={({ isActive }) => `nav-item ${isActive || (location.pathname.startsWith('/portal/manager/tasks') && !location.pathname.includes('/score')) ? 'active' : ''}`}
+                                        className={({ isActive }) => `nav-item ai-colored ${isActive || (location.pathname.startsWith('/portal/manager/tasks') && !location.pathname.includes('/score')) ? 'active' : ''}`}
                                     >
-                                        <span className="nav-icon material-symbols-outlined" style={{ position: 'relative' }}>
+                                        <span className="nav-icon material-symbols-outlined">
                                             manage_accounts
-                                            <span className="ai-indicator-sparkle">
-                                                <i className="fa-solid fa-sparkles"></i>
-                                            </span>
                                         </span>
                                         <p>{t('Department-Tasks') || (isAr ? 'مهام القسم' : 'Department Tasks')}</p>
                                     </NavLink>
 
                                     <NavLink 
                                         to="/portal/manager/tasks/score" 
-                                        className={({ isActive }) => `nav-item ${isActive || location.pathname.startsWith('/portal/manager/tasks/score') ? 'active' : ''}`}
+                                        className={({ isActive }) => `nav-item ai-colored ${isActive || location.pathname.startsWith('/portal/manager/tasks/score') ? 'active' : ''}`}
                                     >
                                         <span className="nav-icon material-symbols-outlined">rate_review</span>
                                         <p>{t('Task-Evaluation') || (isAr ? 'تقييم التكليفات' : 'Task Evaluation & Details')}</p>
@@ -188,7 +186,7 @@ const EmpSidebar = () => {
 
                                     <NavLink 
                                         to="/portal/manager/evaluate" 
-                                        className={({ isActive }) => `nav-item ${isActive || location.pathname.startsWith('/portal/manager/evaluate') ? 'active' : ''}`}
+                                        className={({ isActive }) => `nav-item ai-colored ${isActive || location.pathname.startsWith('/portal/manager/evaluate') ? 'active' : ''}`}
                                     >
                                         <span className="nav-icon material-symbols-outlined">fact_check</span>
                                         <p>{t('Periodic-Evaluation') || (isAr ? 'التقييم الدوري' : 'Periodic Evaluation')}</p>

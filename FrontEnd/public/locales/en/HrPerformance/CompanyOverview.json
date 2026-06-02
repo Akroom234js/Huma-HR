@@ -1,0 +1,36 @@
+{
+    "title":"Company Performance Overview",
+    "des":"Monitor quality benchmarks and evaluate department performance metrics",
+    "card":{
+        "Departments":"Total Monitored Departments",
+        "Score":"Company Avg Score",
+        "Tasks":"Tasks Active Pool",
+        "Requires":"Requires Critical Training",
+        "supervisor":"Across all supervisor queues",
+        "gaps":"Flagged with performance gaps",
+        "Task":"Tasks",
+        "Employees":"Employees"
+    },
+    "bartitle":"Average Performance Score by Department",
+    "pie":{
+        "StatusPool":"Global Task Status Pool",
+        "Scored":"Scored",
+        "Progress":"In Progress",
+        "Review":"Pending Review",
+        "Unstarted":"Pending Unstarted",
+        "Revision":"Needs Revision"
+    },
+    "table":{
+     "Tasks":"Global Active Tasks (Read-Only)",
+     "view":"HR View Only &bull; API: GET /tasks",
+     "title":"Search by title or employee name...",
+     "Department":"Department",
+     "Task":"Task Title",
+     "Employee":"Employee Name",
+     "Supervisor":"Supervisor Manager",
+     "Date":"Due Date",
+     "Status":"Status",
+     "Grade":"Final Grade"
+    }
+
+}
