@@ -1,10 +1,24 @@
 .container1 {
-  background: var(--primary-gradient);
+  background: linear-gradient(-45deg, #1e3a8a, #1383ed, #1d4ed8, #3b82f6, #1e40af);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
   width: 100%;
   height: 90vh;
   margin-top: 0px;
   position: relative;
   overflow: hidden;
+}
+
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .container1::before {
@@ -771,12 +785,18 @@
 
 /* this for the thrid section  */
 .container2,
-.container3,
 .container4,
 .container41 {
   width: 100%;
   height: auto;
   background-color: var(--bg-page);
+}
+
+.container3 {
+  width: 100%;
+  height: auto;
+  background-color: var(--bg-page);
+  padding-top: 120px !important;
 }
 
 .container4 {
@@ -793,7 +813,18 @@
   align-items: center;
 }
 
-.con-tit h3,
+.con-tit h3 {
+  font-size: 38px !important;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--primary-color) 0%, #a855f7 50%, #db2777 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+  text-align: center;
+  margin: 0px 0px 16px 0px;
+  display: inline-block;
+}
+
 .container4 h3,
 .container41 h3 {
   font-size: 30px;
@@ -806,8 +837,12 @@
 }
 
 .con-tit p {
-  font-size: 16px;
+  font-size: 18px !important;
   color: var(--text-secondary);
+  max-width: 600px;
+  text-align: center;
+  line-height: 1.6;
+  opacity: 0.9;
   margin: 0px 0px 40px 0px;
 }
 
@@ -911,7 +946,8 @@
   min-height: 500px;
   margin: 6rem auto;
   border-radius: 2.5rem;
-  background: var(--primary-gradient);
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(19, 131, 237, 0.05) 100%);
+  border: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -929,7 +965,7 @@
   width: 100%;
   height: 100%;
   background-image: url("https://www.transparenttextures.com/patterns/cubes.png");
-  opacity: 0.1;
+  opacity: 0.05;
   pointer-events: none;
 }
 
@@ -942,48 +978,49 @@
 .container5 h2 {
   font-size: 2.5rem;
   font-weight: 800;
-  max-width: 400px;
-  color: white;
+  max-width: 450px;
+  color: var(--text-main);
   margin-bottom: 1.5rem;
   line-height: 1.2;
 }
 
 .container5 p {
-  font-size: 1.25rem;
-  color: #bfdbfe;
+  font-size: 1.2rem;
+  color: var(--text-secondary);
   margin-bottom: 2.5rem;
   line-height: 1.6;
 }
 
 .container5 button {
   padding: 1rem 2.5rem;
-  background: white;
-  color: var(--primary-color);
+  background: var(--primary-gradient);
+  color: white;
   border: none;
   border-radius: 1rem;
   font-weight: 700;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(19, 131, 237, 0.2);
 }
 
 .container5 button:hover {
-  background: #eff6ff;
+  background: var(--primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 25px rgba(19, 131, 237, 0.3);
 }
 
 .container5 img {
   width: 100%;
   height: auto;
   border-radius: 1.5rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  border: none;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+  transition: transform 0.5s ease;
 }
 
-.container5 img {
-  border-radius: 14px;
+.container5 img:hover {
+  transform: scale(1.02);
 }
 
 .footer {
@@ -1994,9 +2031,9 @@
   }
 }
 
-[data-theme="dark"] .container1 {
+/* [data-theme="dark"] .container1 {
   background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
-}
+} */
 
 [data-theme="dark"] .poop2 {
   background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
@@ -2009,7 +2046,7 @@
 }
 
 [data-theme="dark"] .main-content-sections {
-  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+  background: linear-gradient(to bottom, #0f172a 0%, #1e3a8a 100%);
 }
 
 [data-theme="dark"] .container2,
@@ -2181,4 +2218,936 @@
 .rtl .con_up {
   flex-direction: row;
 }
+
+/* ==========================================================================
+   WAVE HEADER & PREMIUM ANIMATIONS
+   ========================================================================== */
+
+/* 1. Sea Wave Bottom of Header */
+.wave-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.waves {
+  position: relative;
+  width: 100%;
+  height: 12vh;
+  min-height: 80px;
+  max-height: 150px;
+  display: block;
+}
+
+.parallax > use {
+  animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite;
+}
+.parallax > use:nth-child(1) {
+  animation-delay: -2s;
+  animation-duration: 7s;
+}
+.parallax > use:nth-child(2) {
+  animation-delay: -3s;
+  animation-duration: 10s;
+}
+.parallax > use:nth-child(3) {
+  animation-delay: -4s;
+  animation-duration: 13s;
+}
+.parallax > use:nth-child(4) {
+  animation-delay: -5s;
+  animation-duration: 20s;
+}
+
+@keyframes move-forever {
+  0% {
+    transform: translate3d(-90px,0,0);
+  }
+  100% { 
+    transform: translate3d(85px,0,0);
+  }
+}
+
+.wave-use1 {
+  fill: rgba(53, 158, 255, 0.25);
+}
+.wave-use2 {
+  fill: rgba(19, 131, 237, 0.4);
+}
+.wave-use3 {
+  fill: rgba(30, 58, 138, 0.15);
+}
+.wave-use4 {
+  fill: var(--bg-page);
+}
+
+/* Floating Bubbles */
+.bubbles-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bubble {
+  position: absolute;
+  bottom: -50px;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 70%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: floatBubble 15s infinite linear;
+}
+
+@keyframes floatBubble {
+  0% {
+    transform: translateY(0) scale(1) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-95vh) scale(1.2) translateX(var(--bubble-drift, 40px));
+    opacity: 0;
+  }
+}
+
+/* 2. Hero Staggered Entrance Animations */
+.animate-fade-in-up {
+  opacity: 0;
+  animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 3. Login Box slide-up animation */
+.poop2 {
+  opacity: 0;
+  animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+}
+
+/* 4. Why Choose Cards - Premium Hover Glow Effects & Staggered Entry */
+.con_cart div {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.con_cart div::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(800px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), rgba(255, 255, 255, 0.06), transparent 40%);
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.con_cart div:hover::before {
+  opacity: 1;
+}
+
+/* Individual card glow colors on hover */
+.con_cart div:nth-child(1):hover {
+  border-color: #1383ed;
+  box-shadow: 0 10px 30px rgba(19, 131, 237, 0.15);
+}
+.con_cart div:nth-child(2):hover {
+  border-color: #9333ea;
+  box-shadow: 0 10px 30px rgba(147, 51, 234, 0.15);
+}
+.con_cart div:nth-child(3):hover {
+  border-color: #0d9448;
+  box-shadow: 0 10px 30px rgba(13, 148, 72, 0.15);
+}
+.con_cart div:nth-child(4):hover {
+  border-color: #ea580c;
+  box-shadow: 0 10px 30px rgba(234, 88, 12, 0.15);
+}
+.con_cart div:nth-child(5):hover {
+  border-color: #db2777;
+  box-shadow: 0 10px 30px rgba(219, 39, 119, 0.15);
+}
+.con_cart div:nth-child(6):hover {
+  border-color: #4f46e5;
+  box-shadow: 0 10px 30px rgba(79, 70, 233, 0.15);
+}
+
+/* Why choose icons bounce/rotate on card hover */
+.con_cart div:hover span i {
+  transform: scale(1.2) rotate(8deg);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.con_cart div span i {
+  transition: transform 0.4s ease;
+}
+
+/* 5. Process Step Numbers bounce on hover */
+.con_cart2 div {
+  border: 1px solid var(--border-color);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 1.5rem;
+  padding: 2.5rem 2rem;
+}
+
+.con_cart2 div:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  border-color: var(--primary-color);
+}
+
+.con_cart2 div span {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.con_cart2 div:hover span {
+  transform: scale(1.15) translateY(-4px);
+  background-color: var(--primary-color) !important;
+  color: white !important;
+  box-shadow: 0 8px 20px rgba(53, 158, 255, 0.3);
+}
+
+/* 6. Workplace Slow Float Image & Premium Button */
+.container5 {
+  border-radius: 2rem;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  padding: 3rem !important;
+}
+
+.container5 img {
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow-lg);
+  animation: floatImage 6s ease-in-out infinite;
+  transition: transform 0.5s ease;
+}
+
+.container5 img:hover {
+  transform: scale(1.02);
+}
+
+@keyframes floatImage {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.container5 button {
+  position: relative;
+  overflow: hidden;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 14px 28px;
+  cursor: pointer;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.container5 button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: all 0.6s ease;
+  z-index: -1;
+}
+
+.container5 button:hover::after {
+  left: 100%;
+}
+
+.container5 button:hover {
+  background: var(--primary-hover);
+  box-shadow: 0 8px 25px rgba(53, 158, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+/* 7. Testimonials Hover animations */
+.container4 .con_cart2 div {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.container4 .con_cart2 div:hover {
+  border-color: var(--primary-color);
+  transform: scale(1.03) translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* 8. Search Input expansion on focus */
+.search-box-modern {
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+  border-radius: 9999px;
+  background: var(--bg-card);
+}
+
+.search-box-modern:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(53, 158, 255, 0.15);
+  transform: scale(1.02);
+}
+
+.search-box-modern .material-icons {
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.search-box-modern:focus-within .material-icons {
+  color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+/* 9. Jobs Cart1 (Job Cards) Entry & Hover Animations */
+.container_carts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  padding: 1rem 0;
+}
+
+.cart1 {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  opacity: 0;
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Stagger job cards entrance */
+.cart1:nth-child(1) { animation-delay: 0.1s; }
+.cart1:nth-child(2) { animation-delay: 0.2s; }
+.cart1:nth-child(3) { animation-delay: 0.3s; }
+.cart1:nth-child(4) { animation-delay: 0.4s; }
+.cart1:nth-child(5) { animation-delay: 0.5s; }
+.cart1:nth-child(n+6) { animation-delay: 0.6s; }
+
+.cart1:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  border-color: var(--primary-color);
+}
+
+.cart1 button {
+  width: calc(100% - 40px);
+  height: 48px;
+  background: transparent;
+  color: var(--primary-color);
+  border: 1.5px solid var(--primary-color);
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1.5rem;
+}
+
+.cart1:hover button {
+  background: var(--primary-color);
+  color: white;
+  box-shadow: 0 8px 20px rgba(53, 158, 255, 0.25);
+  border-color: var(--primary-color);
+}
+
+.cart1 button:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+/* Skeleton Loading Animation Pulse */
+.cart1--skeleton {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  animation: skeletonPulse 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes skeletonPulse {
+  0% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   MOBILE UX/UI RESPONSIVE DESIGN (768px & below)
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* 1. Header & Waves */
+  .container1 {
+    min-height: 80vh !important;
+    padding-bottom: 60px !important;
+  }
+  
+  .waves {
+    height: 50px !important;
+    min-height: 50px !important;
+  }
+  
+  .bubble {
+    transform: scale(0.6);
+    opacity: 0.25 !important;
+  }
+
+  .logo-con .sidebar-logo {
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  .logo-con .sidebar-title {
+    font-size: 1.4rem !important;
+  }
+
+  .intro-box {
+    padding-top: 30px !important;
+    width: 90% !important;
+    gap: 1rem !important;
+  }
+
+  .title {
+    font-size: 2.2rem !important;
+  }
+
+  .description {
+    font-size: 0.95rem !important;
+    padding: 0 10px !important;
+  }
+
+  /* 2. Login Portal Layout Card */
+  .poop2 {
+    transform: translateY(-40px) !important;
+    border-radius: 1.75rem !important;
+    margin: 10px auto !important;
+    width: 92% !important;
+  }
+
+  /* 3. Why Choose Us Section */
+  .con_cart {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.25rem !important;
+    padding: 0 1rem !important;
+  }
+
+  .con_cart div {
+    width: 100% !important;
+    margin: 0 !important;
+    border-radius: 1.25rem !important;
+    padding: 1.5rem !important;
+  }
+
+  /* 4. Process Steps & Testimonials */
+  .con_cart2 {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.25rem !important;
+    margin: 0 !important;
+    padding: 0 1rem !important;
+  }
+
+  .con_cart2 div {
+    width: 100% !important;
+    margin: 0 !important;
+    border-radius: 1.25rem !important;
+    padding: 1.75rem 1.5rem !important;
+  }
+
+  .container4 .con_cart2 div {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* 5. Workplace Section */
+  .container5 {
+    width: 92% !important;
+    margin: 20px auto !important;
+    padding: 2rem 1.5rem !important;
+    border-radius: 1.5rem !important;
+  }
+
+  .container5 img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* 6. Jobs Page layout */
+  .poop_jops {
+    width: 92% !important;
+    margin: 20px auto !important;
+    padding: 1.5rem !important;
+    border-radius: 1.5rem !important;
+  }
+
+  .con_up {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 1.25rem !important;
+    text-align: center !important;
+  }
+
+  .con_up div {
+    text-align: center !important;
+  }
+
+  .search-box-modern {
+    width: 100% !important;
+    margin: 0 auto !important;
+  }
+
+  .container_carts {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.25rem !important;
+    padding: 1rem 0 !important;
+  }
+
+  .cart1 {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 1.5rem !important;
+    border-radius: 1.25rem !important;
+  }
+
+  .cart1 button {
+    width: 100% !important;
+    margin: 1rem 0 0 0 !important;
+  }
+
+  .container41 {
+    padding: 0 1rem !important;
+  }
+}
+
+/* ==========================================================================
+   PERFORMANCE SHOWCASE SECTION
+   ========================================================================== */
+.performance-showcase-section {
+  width: 100%;
+  padding-top: 100px;
+  background-color: var(--bg-page);
+  position: relative;
+  overflow: hidden;
+}
+
+.perf-container {
+  width: 90vw;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+}
+
+/* Performance Stats Grid */
+.perf-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.perf-stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 1.5rem;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--shadow-sm);
+}
+
+.perf-stat-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--purple-ai);
+  box-shadow: 0 15px 30px rgba(168, 85, 247, 0.15);
+}
+
+.perf-stat-number {
+  font-size: 3.5rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--purple-ai) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.perf-stat-label {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+.perf-stat-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Performance Pillars Grid */
+.perf-pillars-grid {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.perf-pillars-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.perf-pillar-progress-wrapper {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 1.5rem 2rem;
+  border-radius: 1.25rem;
+  transition: all 0.3s ease;
+}
+
+.perf-pillar-progress-wrapper:hover {
+  border-color: var(--primary-color);
+  transform: scale(1.02);
+}
+
+.perf-pillar-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.perf-pillar-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.perf-pillar-name i {
+  color: var(--primary-color);
+}
+
+.perf-pillar-weight {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--primary-color);
+}
+
+.perf-pillar-bar {
+  width: 100%;
+  height: 10px;
+  background: var(--border-color);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.perf-pillar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, var(--primary-color) 0%, var(--purple-ai) 100%);
+  width: 0%;
+  transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* AI recommendations card styling */
+.perf-ai-card {
+  background: linear-gradient(135deg, rgba(53, 158, 255, 0.05) 0%, rgba(168, 85, 247, 0.05) 100%);
+  border: 1px dashed var(--purple-ai);
+  border-radius: 2rem;
+  padding: 3rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.perf-ai-card::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.05) 0%, transparent 60%);
+  pointer-events: none;
+  animation: rotateAiGlow 20s linear infinite;
+}
+
+@keyframes rotateAiGlow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.perf-ai-icon {
+  font-size: 3rem;
+  color: var(--purple-ai);
+  margin-bottom: 1.5rem;
+  display: inline-block;
+  animation: pulseAiIcon 3s ease-in-out infinite;
+}
+
+@keyframes pulseAiIcon {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0px rgba(168, 85, 247, 0));
+  }
+  50% {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.4));
+  }
+}
+
+.perf-ai-card h3 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 1rem;
+}
+
+.perf-ai-card p {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.perf-ai-features {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  text-align: right;
+}
+
+.perf-ai-feature {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.perf-ai-feature i {
+  color: var(--emerald-500);
+}
+
+@media (max-width: 768px) {
+  .perf-stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+
+  .perf-pillars-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2.5rem !important;
+  }
+
+  .perf-ai-card {
+    padding: 2rem 1.5rem !important;
+  }
+}
+
+
+/* Testimonial Spotlight Cards */
+.testimonial-cards-grid {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 0 20px;
+  width: 100%;
+}
+
+.testimonial-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  border-radius: 1.5rem;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  width: 30%;
+  margin-top: 40px;
+}
+
+.testimonial-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(800px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), rgba(255, 255, 255, 0.06), transparent 40%);
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.testimonial-card:hover::before {
+  opacity: 1;
+}
+
+.testimonial-card:nth-child(1):hover {
+  border-color: #1383ed;
+  box-shadow: 0 10px 30px rgba(19, 131, 237, 0.15);
+}
+
+.testimonial-card:nth-child(2):hover {
+  border-color: #9333ea;
+  box-shadow: 0 10px 30px rgba(147, 51, 234, 0.15);
+}
+
+.testimonial-card:nth-child(3):hover {
+  border-color: #ea580c;
+  box-shadow: 0 10px 30px rgba(234, 88, 12, 0.15);
+}
+
+.testimonial-quote-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.testimonial-card:hover .testimonial-quote-icon {
+  transform: scale(1.15) rotate(5deg);
+}
+
+.testimonial-quote {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-style: italic;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.testimonial-footer {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1.5rem;
+}
+
+.testimonial-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 0.9rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s ease;
+}
+
+.testimonial-card:hover .testimonial-avatar {
+  transform: scale(1.1);
+}
+
+.testimonial-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.testimonial-author {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.testimonial-role {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .testimonial-card {
+    width: 94%;
+    height: auto;
+    margin: 0px 15px 3px -2px;
+    padding-bottom: 20px;
+  }
+}
+
+
 

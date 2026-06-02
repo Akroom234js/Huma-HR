@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import "./Home.css";
 import Footer from "./Footer";
 import logo from "../../../assets/logo.png";
-import ff from "../../../assets/dd.jpg";
+import dashboardMockup from "../../../assets/hr_dashboard_mockup.png";
 import ThemeToggle from "../../ThemeToggle/ThemeToggle";
 import apiClient from "../../../apiConfig";
 import Notification from "../../Notification/Notification";
@@ -11,9 +11,94 @@ import Avatar from "../../Shared/Avatar/Avatar";
 import { useTranslation } from "react-i18next";
 import LanSw from "../../LanSw";
 
+function CountUp({
+  from = 0,
+  to = 100,
+  separator = ",",
+  duration = 2, // in seconds
+  className = "count-up-text",
+  delay = 0,
+}) {
+  const [count, setCount] = useState(from);
+  const startTimeRef = useRef(null);
+  const isStarted = useRef(false);
+
+  useEffect(() => {
+    let animationFrameId;
+
+    const startAnimation = () => {
+      const step = (timestamp) => {
+        if (!startTimeRef.current) startTimeRef.current = timestamp;
+        const progress = Math.min((timestamp - startTimeRef.current) / (duration * 1000), 1);
+        
+        // Easing: easeOutQuad
+        const easeProgress = progress * (2 - progress);
+        
+        const currentValue = from + (to - from) * easeProgress;
+        setCount(currentValue);
+
+        if (progress < 1) {
+          animationFrameId = requestAnimationFrame(step);
+        } else {
+          setCount(to);
+        }
+      };
+
+      animationFrameId = requestAnimationFrame(step);
+    };
+
+    const timer = setTimeout(() => {
+      if (!isStarted.current) {
+        isStarted.current = true;
+        startAnimation();
+      }
+    }, delay * 1000);
+
+    return () => {
+      clearTimeout(timer);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [from, to, duration, delay]);
+
+  const formatNumber = (num) => {
+    const rounded = Math.round(num);
+    return rounded.toString().replace(/\B(?=(\d{3})+(?!\d))/g, separator);
+  };
+
+  return <span className={className}>{formatNumber(count)}</span>;
+}
+
 export default function Home() {
   const { t, i18n } = useTranslation('Home/Home');
   const isRtl = i18n.language === "ar";
+
+  const handleMouseMove = (e) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    card.style.setProperty("--mouse-x", `${x}px`);
+    card.style.setProperty("--mouse-y", `${y}px`);
+  };
+
+  const [bubbles, setBubbles] = useState([]);
+  useEffect(() => {
+    const bubbleArray = Array.from({ length: 5 }).map((_, i) => ({
+      id: i,
+      size: Math.random() * 25 + 8,
+      left: Math.random() * 100,
+      delay: Math.random() * 25,
+      duration: Math.random() * 20 + 25,
+      drift: Math.random() * 60 - 30,
+    }));
+    setBubbles(bubbleArray);
+  }, []);
+
+  const [animatePillars, setAnimatePillars] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setAnimatePillars(true), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const [step, setStep] = useState("login"); // login, forgot, verify, reset
   const [email, setEmail] = useState("");
@@ -249,9 +334,39 @@ export default function Home() {
           </div>
         </div>
         <div className="intro-box">
-          <span className="intro">{t("intro.badge")}</span>
-          <h2 className="title">{t("intro.title")}</h2>
-          <p className="description">{t("intro.description")}</p>
+          <span className="intro animate-fade-in-up delay-100">{t("intro.badge")}</span>
+          <h2 className="title animate-fade-in-up delay-200">{t("intro.title")}</h2>
+          <p className="description animate-fade-in-up delay-300">{t("intro.description")}</p>
+        </div>
+        <div className="wave-container">
+          <svg className="waves" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
+            viewBox="0 24 150 28" preserveAspectRatio="none" shapeRendering="auto">
+            <defs>
+              <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s58 18 88 18 58-18 88-18 58 18 88 18v44h-352z" />
+            </defs>
+            <g className="parallax">
+              <use xlinkHref="#gentle-wave" x="48" y="0" className="wave-use1" />
+              <use xlinkHref="#gentle-wave" x="48" y="3" className="wave-use2" />
+              <use xlinkHref="#gentle-wave" x="48" y="5" className="wave-use3" />
+              <use xlinkHref="#gentle-wave" x="48" y="7" className="wave-use4" />
+            </g>
+          </svg>
+        </div>
+        <div className="bubbles-container">
+          {bubbles.map((b) => (
+            <div
+              key={b.id}
+              className="bubble"
+              style={{
+                width: `${b.size}px`,
+                height: `${b.size}px`,
+                left: `${b.left}%`,
+                animationDelay: `${b.delay}s`,
+                animationDuration: `${b.duration}s`,
+                "--bubble-drift": `${b.drift}px`,
+              }}
+            />
+          ))}
         </div>
       </div >
       <div className={`main-content-sections ${isRtl ? "rtl" : "ltr"}`}>
@@ -398,42 +513,42 @@ export default function Home() {
           <p>{t("whyChoose.subtitle")}</p>
         </div>
         <div className="con_cart">
-          <div>
+          <div onMouseMove={handleMouseMove}>
             <span style={{ backgroundColor: "rgba(19, 131, 237, 0.1)" }}>
               <i className="material-icons" style={{ color: "#1383ed" }}>analytics</i>
             </span>
             <h3>{t("whyChoose.analyticsTitle")}</h3>
             <p>{t("whyChoose.analyticsDesc")}</p>
           </div>
-          <div>
+          <div onMouseMove={handleMouseMove}>
             <span style={{ backgroundColor: "rgba(147, 51, 234, 0.1)" }}>
               <i className="material-icons" style={{ color: "#9333ea" }}>hub</i>
             </span>
             <h3>{t("whyChoose.integrationTitle")}</h3>
             <p>{t("whyChoose.integrationDesc")}</p>
           </div>
-          <div>
+          <div onMouseMove={handleMouseMove}>
             <span style={{ backgroundColor: "rgba(13, 148, 136, 0.1)" }}>
               <i className="material-icons" style={{ color: "#0d9448" }}>security</i>
             </span>
             <h3>{t("whyChoose.securityTitle")}</h3>
             <p>{t("whyChoose.securityDesc")}</p>
           </div>
-          <div>
+          <div onMouseMove={handleMouseMove}>
             <span style={{ backgroundColor: "rgba(234, 88, 12, 0.1)" }}>
               <i className="material-icons" style={{ color: "#ea580c" }}>schedule</i>
             </span>
             <h3>{t("whyChoose.timeTitle")}</h3>
             <p>{t("whyChoose.timeDesc")}</p>
           </div>
-          <div>
+          <div onMouseMove={handleMouseMove}>
             <span style={{ backgroundColor: "rgba(219, 39, 119, 0.1)" }}>
               <i className="material-icons" style={{ color: "#db2777" }}>groups</i>
             </span>
             <h3>{t("whyChoose.teamTitle")}</h3>
             <p>{t("whyChoose.teamDesc")}</p>
           </div>
-          <div>
+          <div onMouseMove={handleMouseMove}>
             <span style={{ backgroundColor: "rgba(79, 70, 229, 0.1)" }}>
               <i className="material-icons" style={{ color: "#4f46e5" }}>psychology</i>
             </span>
@@ -442,10 +557,159 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <div className={`performance-showcase-section ${isRtl ? "rtl" : "ltr"}`}>
+        <div className="perf-container">
+          <div className="con-tit animate-fade-in-up delay-200">
+            <h3>{isRtl ? "إدارة الأداء الذكي بالذكاء الاصطناعي" : "Smart AI-Powered Performance Management"}</h3>
+            <p>
+              {isRtl 
+                ? "نظام تقييم متكامل من 5 ركائز أساسية مع تحليلات ذكية وتوصيات تدريبية فورية لتطوير كفاءات موظفيك." 
+                : "An integrated 5-pillar evaluation system with smart analytics and instant training recommendations to grow employee skills."
+              }
+            </p>
+          </div>
+
+          <div className="perf-stats-grid">
+            <div className="perf-stat-card animate-fade-in-up delay-100">
+              <span className="perf-stat-number">
+                <CountUp from={0} to={98} duration={2.5} />%
+              </span>
+              <div className="perf-stat-label">{isRtl ? "دقة تحليل الكفاءة" : "Competency Accuracy"}</div>
+              <div className="perf-stat-desc">{isRtl ? "يقوم الذكاء الاصطناعي بتحليل الأداء بدقة متناهية مقارنة بالتقييمات اليدوية" : "AI evaluates competencies with high precision compared to manual ratings."}</div>
+            </div>
+
+            <div className="perf-stat-card animate-fade-in-up delay-200">
+              <span className="perf-stat-number">
+                <CountUp from={0} to={5} duration={1.5} />
+              </span>
+              <div className="perf-stat-label">{isRtl ? "مؤشرات قياس مرجحة" : "Weighted Indicators"}</div>
+              <div className="perf-stat-desc">{isRtl ? "توزيع نسبي ذكي للأوزان يغطي كافة جوانب أداء الموظف المهنية والسلوكية" : "Smart weight distribution covering all professional and behavioral aspects."}</div>
+            </div>
+
+            <div className="perf-stat-card animate-fade-in-up delay-300">
+              <span className="perf-stat-number">
+                <CountUp from={0} to={10000} separator="," duration={3} />+
+              </span>
+              <div className="perf-stat-label">{isRtl ? "عملية تقييم منجزة" : "Processed Evaluations"}</div>
+              <div className="perf-stat-desc">{isRtl ? "تمت معالجتها واحتساب نتائجها في الخلفية تلقائياً وبسرعة فائقة" : "Successfully processed and snapshot calculations run in background."}</div>
+            </div>
+
+            <div className="perf-stat-card animate-fade-in-up delay-400">
+              <span className="perf-stat-number">
+                <CountUp from={0} to={3} duration={1.2} />s
+              </span>
+              <div className="perf-stat-label">{isRtl ? "توليد التوصيات الذكية" : "AI Recommendations"}</div>
+              <div className="perf-stat-desc">{isRtl ? "متوسط سرعة استدعاء OpenAI لتقديم خطط تدريب مخصصة لسد فجوات الأداء" : "Average response time to generate personal training recommendations."}</div>
+            </div>
+          </div>
+
+          <div className="perf-pillars-grid">
+            <div className="perf-pillars-list animate-fade-in-up delay-200">
+              <h4 style={{ fontSize: "1.5rem", fontWeight: "800", color: "var(--text-main)", marginBottom: "1rem" }}>
+                {isRtl ? "توزيع أوزان التقييم الشامل" : "Comprehensive Evaluation Weights"}
+              </h4>
+              
+              <div className="perf-pillar-progress-wrapper">
+                <div className="perf-pillar-info">
+                  <span className="perf-pillar-name">
+                    <i className="fa-solid fa-list-check"></i>
+                    {isRtl ? "درجة المهام والمخرجات" : "Tasks & Output Score"}
+                  </span>
+                  <span className="perf-pillar-weight">40%</span>
+                </div>
+                <div className="perf-pillar-bar">
+                  <div className="perf-pillar-fill" style={{ width: animatePillars ? "40%" : "0%" }}></div>
+                </div>
+              </div>
+
+              <div className="perf-pillar-progress-wrapper">
+                <div className="perf-pillar-info">
+                  <span className="perf-pillar-name">
+                    <i className="fa-solid fa-user-tie"></i>
+                    {isRtl ? "درجة تقييم المدير المباشر" : "Direct Manager Score"}
+                  </span>
+                  <span className="perf-pillar-weight">25%</span>
+                </div>
+                <div className="perf-pillar-bar">
+                  <div className="perf-pillar-fill" style={{ width: animatePillars ? "25%" : "0%" }}></div>
+                </div>
+              </div>
+
+              <div className="perf-pillar-progress-wrapper">
+                <div className="perf-pillar-info">
+                  <span className="perf-pillar-name">
+                    <i className="fa-solid fa-users"></i>
+                    {isRtl ? "درجة تقييم الزملاء (360°)" : "Peer Feedback Score (360°)"}
+                  </span>
+                  <span className="perf-pillar-weight">15%</span>
+                </div>
+                <div className="perf-pillar-bar">
+                  <div className="perf-pillar-fill" style={{ width: animatePillars ? "15%" : "0%" }}></div>
+                </div>
+              </div>
+
+              <div className="perf-pillar-progress-wrapper">
+                <div className="perf-pillar-info">
+                  <span className="perf-pillar-name">
+                    <i className="fa-solid fa-calendar-check"></i>
+                    {isRtl ? "درجة الحضور والالتزام" : "Attendance & Compliance Score"}
+                  </span>
+                  <span className="perf-pillar-weight">10%</span>
+                </div>
+                <div className="perf-pillar-bar">
+                  <div className="perf-pillar-fill" style={{ width: animatePillars ? "10%" : "0%" }}></div>
+                </div>
+              </div>
+
+              <div className="perf-pillar-progress-wrapper">
+                <div className="perf-pillar-info">
+                  <span className="perf-pillar-name">
+                    <i className="fa-solid fa-clock-rotate-left"></i>
+                    {isRtl ? "درجة العمل الإضافي والانتاجية" : "Overtime & Extra Productivity"}
+                  </span>
+                  <span className="perf-pillar-weight">10%</span>
+                </div>
+                <div className="perf-pillar-bar">
+                  <div className="perf-pillar-fill" style={{ width: animatePillars ? "10%" : "0%" }}></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="perf-ai-card animate-fade-in-up delay-400">
+              <span className="perf-ai-icon">
+                <i className="fa-solid fa-robot"></i>
+              </span>
+              <h3>{isRtl ? "القرارات المؤتمتة بالذكاء الاصطناعي" : "Automated AI-Driven Decisions"}</h3>
+              <p>
+                {isRtl 
+                  ? "يقوم محرك الذكاء الاصطناعي برصد وتحليل فجوات الأداء تلقائياً بعد كل دورة تقييم لتوليد التوصيات والقرارات التلقائية."
+                  : "The AI engine tracks performance gaps and generates training suggestions, alerts, or performance-based decisions automatically."}
+              </p>
+              
+              <div className="perf-ai-features">
+                <div className="perf-ai-feature">
+                  <i className="fa-solid fa-circle-check"></i>
+                  <span><strong>{isRtl ? "ترقية ومكافأة تلقائية" : "Automatic Promotion & Bonus"}:</strong> {isRtl ? "للموظفين الحاصلين على درجة 90 فما فوق" : "For employees scoring 90 and above."}</span>
+                </div>
+                <div className="perf-ai-feature">
+                  <i className="fa-solid fa-circle-check"></i>
+                  <span><strong>{isRtl ? "توصية بمسار تدريب مخصص" : "Tailored Training Recommendations"}:</strong> {isRtl ? "لسد فجوات المهارات بناءً على درجات المدير والزملاء" : "To close skill gaps based on Manager and Peer scores."}</span>
+                </div>
+                <div className="perf-ai-feature">
+                  <i className="fa-solid fa-circle-check"></i>
+                  <span><strong>{isRtl ? "تنبيهات وتأديب تلقائي" : "Automatic Warnings & Snapshots"}:</strong> {isRtl ? "في حال انخفاض المعدل التراكمي عن 60% لحماية الجودة" : "To flag underperforming accounts and recommend warning letters."}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className={`container4 ${isRtl ? "rtl" : "ltr"}`}>
-        <h4>
+        <div className="con-tit">
           <h3>{t("process.title")}</h3>
-        </h4>
+        </div>
         <div className="con_cart2">
           <div>
             <span>1</span>
@@ -470,69 +734,67 @@ export default function Home() {
             <button>{t("workplace.learnMore")}</button>
           </div>
           <div>
-            <img src={ff} alt="er" width={"90%"} height={"85%"} />
+            <img src={dashboardMockup} alt="HR Dashboard Mockup" />
           </div>
         </div>
-        <h4>
+        
+        <div className="con-tit">
           <h3>{t("testimonials.title")}</h3>
-        </h4>
-        <div className="con_cart2">
-          <div>
-            <p style={{ marginTop: "10px", fontSize: "16px" }}>
+        </div>
+        
+        <div className="testimonial-cards-grid">
+          <div className="testimonial-card spotlight-card" onMouseMove={handleMouseMove}>
+            <span className="testimonial-quote-icon" style={{ backgroundColor: "rgba(19, 131, 237, 0.1)" }}>
+              <i className="fa-solid fa-quote-left" style={{ color: "#1383ed" }}></i>
+            </span>
+            <p className="testimonial-quote">
               {t("testimonials.card1.quote")}
             </p>
-
-            <p className="dd">
-              <span className="user1"> </span>
-              <h4
-                style={{
-                  fontSize: "14px",
-                  color: "var(--text-main)",
-                  display: "inline-block",
-                }}
-              >
-                {t("testimonials.card1.author")}
-              </h4>
-              {t("testimonials.card1.role")}
-            </p>
+            <div className="testimonial-footer">
+              <div className="testimonial-avatar" style={{ background: "linear-gradient(135deg, #1383ed, #1d4ed8)" }}>
+                MT
+              </div>
+              <div className="testimonial-meta">
+                <h4 className="testimonial-author">{t("testimonials.card1.author")}</h4>
+                <p className="testimonial-role">{t("testimonials.card1.role")}</p>
+              </div>
+            </div>
           </div>
-          <div>
-            <p style={{ marginTop: "10px", fontSize: "16px" }}>
+
+          <div className="testimonial-card spotlight-card" onMouseMove={handleMouseMove}>
+            <span className="testimonial-quote-icon" style={{ backgroundColor: "rgba(147, 51, 234, 0.1)" }}>
+              <i className="fa-solid fa-quote-left" style={{ color: "#9333ea" }}></i>
+            </span>
+            <p className="testimonial-quote">
               {t("testimonials.card2.quote")}
             </p>
-
-            <p className="dd">
-              <span className="user1"> </span>
-              <h4
-                style={{
-                  fontSize: "14px",
-                  color: "var(--text-main)",
-                  display: "inline-block",
-                }}
-              >
-                {t("testimonials.card2.author")}
-              </h4>
-              {t("testimonials.card2.role")}
-            </p>
+            <div className="testimonial-footer">
+              <div className="testimonial-avatar" style={{ background: "linear-gradient(135deg, #9333ea, #7e22ce)" }}>
+                ER
+              </div>
+              <div className="testimonial-meta">
+                <h4 className="testimonial-author">{t("testimonials.card2.author")}</h4>
+                <p className="testimonial-role">{t("testimonials.card2.role")}</p>
+              </div>
+            </div>
           </div>
-          <div>
-            <p style={{ marginTop: "10px", fontSize: "16px" }}>
+
+          <div className="testimonial-card spotlight-card" onMouseMove={handleMouseMove}>
+            <span className="testimonial-quote-icon" style={{ backgroundColor: "rgba(234, 88, 12, 0.1)" }}>
+              <i className="fa-solid fa-quote-left" style={{ color: "#ea580c" }}></i>
+            </span>
+            <p className="testimonial-quote">
               {t("testimonials.card3.quote")}
             </p>
-
-            <p className="dd">
-              <span className="user1"> </span>
-              <h4
-                style={{
-                  fontSize: "14px",
-                  color: "var(--text-main)",
-                  display: "inline-block",
-                }}
-              >
-                {t("testimonials.card3.author")}
-              </h4>
-              {t("testimonials.card3.role")}
-            </p>
+            <div className="testimonial-footer">
+              <div className="testimonial-avatar" style={{ background: "linear-gradient(135deg, #ea580c, #c2410c)" }}>
+                DC
+              </div>
+              <div className="testimonial-meta">
+                <h4 className="testimonial-author">{t("testimonials.card3.author")}</h4>
+                <p className="testimonial-role">{t("testimonials.card3.role")}</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
