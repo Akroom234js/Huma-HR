@@ -46,6 +46,8 @@ const ScoreFormPanel = ({
         }
     };
 
+    const isPendingReview = task?.status === 'pending_review';
+
     return (
         <div className="performance-score-form-panel">
             <h4 className="score-panel-title">
@@ -164,8 +166,30 @@ const ScoreFormPanel = ({
                     </button>
                 </div>
             </form>
+
+            {!isPendingReview && (
+                <div className="score-panel-overlay">
+                    <div className="score-panel-overlay-card">
+                        <i className="fa-solid fa-lock overlay-lock-icon"></i>
+                        <h3>{isAr ? 'التقييم غير متاح' : 'Evaluation Unavailable'}</h3>
+                        <p style={{ marginTop: '8px' }}>
+                            {task?.status === 'scored' 
+                                ? (isAr ? 'تم رصد التقييم النهائي لهذه المهمة واعتماد الدرجة مسبقاً، ولا يمكن تعديلها.' : 'The final evaluation for this task has already been completed and approved. It cannot be modified.')
+                                : task?.status === 'pending'
+                                ? (isAr ? 'هذه المهمة معلقة ولم يبدأ الموظف بالعمل عليها بعد، لذا لا يمكن تقييمها حالياً.' : 'This task is pending and has not been started by the employee yet. It cannot be evaluated yet.')
+                                : task?.status === 'in_progress'
+                                ? (isAr ? 'المهمة قيد العمل حالياً لدى الموظف ولم يتم تسليمها للمراجعة بعد.' : 'This task is currently in progress by the employee and has not been submitted for review yet.')
+                                : task?.status === 'needs_revision'
+                                ? (isAr ? 'تمت إعادة المهمة للموظف للتعديل وبانتظار تسليمها مجدداً للمراجعة.' : 'The task was returned to the employee for revision and is awaiting resubmission for review.')
+                                : (isAr ? 'هذه المهمة غير جاهزة للمراجعة والتقييم حالياً.' : 'This task is not ready for review and evaluation currently.')
+                            }
+                        </p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
 
 export default ScoreFormPanel;
+

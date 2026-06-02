@@ -3,6 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import './TaskScoreDrawer.css';
 import StatusBadge from '../../../../../Shared/Performance/StatusBadge/StatusBadge'
 import ScoreFormPanel from '../../../../../Shared/Performance/ScoreFormPanel/ScoreFormPanel';
+import { 
+    getTaskDetails, 
+    getDepartmentTasks, 
+    scoreTask, 
+    requestRevision 
+} from '../../../../../../services/performanceService';
 
 const TaskScoreDrawer = () => {
     const navigate = useNavigate();
@@ -13,129 +19,207 @@ const TaskScoreDrawer = () => {
     const isAr = currentLang === 'ar';
 
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [task, setTask] = useState(null);
+    const [allTasks, setAllTasks] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    // Mock Task Data representing all department evaluation candidates
-    const allTasks = [
-        {
-            id: 1,
-            title: isAr ? 'تحسين نقاط اتصال REST API' : 'Optimize REST API Endpoints',
-            employee_name: isAr ? 'جون دو' : 'John Doe',
-            employee_avatar: 'JD',
-            due_date: 'May 30, 2026',
-            submission_date: 'May 29, 2026',
-            status: 'pending_review',
-            days_late: 0,
-            late_penalty_per_day: 5,
-            scope: isAr 
-                ? 'إعادة هيكلة نقاط الاتصال الأساسية داخل RecognitionController وتطبيق تحسينات استعلام قاعدة بيانات Eloquent. قياس أوقات الاستجابة قبل وبعد لإثبات تقليل زمن الانتقال بنسبة 30٪ على الأقل.'
-                : 'Refactoring the primary endpoints inside the RecognitionController and implementing Eloquent database query optimizations. Benchmark response times before and after to prove at least 30% latency reduction.',
-            submission_notes: isAr 
-                ? 'لقد قمت بتحسين التحميل المسبق في نقاط فهرسة وتخزين RecognitionController، مما أدى إلى تقليل الاستعلامات من 14 إلى 3. تم إرفاق ناتج القياس المرئي في مستودع الويكي الخاص بنا والذي يوضح انخفاض وقت الاستجابة بنسبة 37٪. جاهز للمراجعة.'
-                : 'I optimized the eager-loading in the RecognitionController index and store endpoints, reducing queries from 14 to 3. Visual benchmarking output is attached in our wiki repository showing a 37% response time reduction. Ready for review.',
-            timeline: [
-                { time: 'May 26, 2026 10:15 AM', title: isAr ? 'تم إنشاء التكليف' : 'Task Assigned & Created', desc: isAr ? 'تم تكليف الموظف جون دو بواسطة إميلي ميتشل' : 'Assigned to John Doe by Emily Mitchell', completed: true },
-                { time: 'May 26, 2026 02:40 PM', title: isAr ? 'الحالة: قيد العمل' : 'Status: In Progress', desc: isAr ? 'أشار جون دو إلى بدء العمل على المهمة' : 'John Doe flagged this task as started', completed: true },
-                { time: 'May 29, 2026 04:12 PM', title: isAr ? 'تم تسليم العمل للمراجعة' : 'Submitted for Review', desc: isAr ? 'بانتظار إجراء المدير وتقييم مخرجات العمل' : 'Pending review and grading action', active: true }
-            ]
-        },
-        {
-            id: 2,
-            title: isAr ? 'ترحيل قاعدة البيانات القديمة إلى PostgreSQL' : 'Migrate Legacy Database to PostgreSQL',
-            employee_name: isAr ? 'أليس سميث' : 'Alice Smith',
-            employee_avatar: 'AS',
-            due_date: 'Jun 04, 2026',
-            submission_date: 'Jun 03, 2026',
-            status: 'in_progress',
-            days_late: 0,
-            late_penalty_per_day: 5,
-            scope: isAr
-                ? 'ترحيل جميع جداول قاعدة بيانات MySQL القديمة إلى جداول PostgreSQL مع فحص التكامل الهيكلي والبياني للتأكد من نجاح العملية بنسبة 100٪.'
-                : 'Migrate all old MySQL schemas to PostgreSQL tables, update all indices and run data seeding checks.',
-            submission_notes: isAr
-                ? 'تم نقل الجداول بالكامل، ونجحت اختبارات الترحيل والتأكد بنسبة 100٪ من سلامة البيانات.'
-                : 'Fully migrated schemas, seeding checks passed successfully with 100% data integrity verified.',
-            timeline: [
-                { time: 'Jun 01, 2026 09:00 AM', title: isAr ? 'تم إنشاء التكليف' : 'Task Assigned & Created', desc: isAr ? 'تم تكليف الموظفة أليس سميث بواسطة إميلي ميتشل' : 'Assigned to Alice Smith by Emily Mitchell', completed: true },
-                { time: 'Jun 02, 2026 11:30 AM', title: isAr ? 'الحالة: قيد العمل' : 'Status: In Progress', desc: isAr ? 'أشارت أليس إلى بدء كتابة الأكواد والتعديل' : 'Alice flagged task as started and in progress', active: true }
-            ]
-        },
-        {
-            id: 3,
-            title: isAr ? 'صياغة مستندات التكامل البرمجي' : 'Draft Integration Documentation',
-            employee_name: isAr ? 'روبرت كينج' : 'Robert King',
-            employee_avatar: 'RK',
-            due_date: 'May 28, 2026',
-            submission_date: 'May 27, 2026',
-            status: 'needs_revision',
-            days_late: 0,
-            late_penalty_per_day: 5,
-            scope: isAr
-                ? 'كتابة مستند تفصيلي يوضح كيفية تكامل الأنظمة وربطها برمجياً مع مراجعة المعايير الأمنية.'
-                : 'Draft complete API and system integration documentation for review.',
-            submission_notes: isAr
-                ? 'تمت صياغة المستند الأولي، لكن يحتاج لمراجعة إضافية على القسم الثالث (بروتوكولات الأمان).'
-                : 'Drafted documentation, needs a second look on section 3 (security protocols).',
-            timeline: [
-                { time: 'May 24, 2026 08:15 AM', title: isAr ? 'تم إنشاء التكليف' : 'Task Assigned & Created', desc: isAr ? 'تم تكليف الموظف روبرت كينج بواسطة إميلي ميتشل' : 'Assigned to Robert King by Emily Mitchell', completed: true },
-                { time: 'May 25, 2026 10:45 AM', title: isAr ? 'الحالة: قيد العمل' : 'Status: In Progress', desc: isAr ? 'أشار روبرت لبدء صياغة متطلبات التكامل' : 'Robert King flagged task as in progress', completed: true },
-                { time: 'May 27, 2026 03:00 PM', title: isAr ? 'تم تسليم المسودة للمراجعة' : 'Submitted Draft for Review', desc: isAr ? 'تم تسليم المسودة الأولى للتكامل والمراجعة' : 'First system draft submitted for review', completed: true },
-                { time: 'May 28, 2026 09:20 AM', title: isAr ? 'تم طلب التعديل وإرجاع المهمة' : 'Revisions Requested', desc: isAr ? 'طلب المدير تعديل المعايير الأمنية في القسم الثالث' : 'Emily Mitchell requested revisions on security controls', active: true }
-            ]
+    const buildTimeline = (t, isAr) => {
+        const timeline = [];
+        
+        timeline.push({
+            time: t.created_at ? new Date(t.created_at).toLocaleDateString() : '',
+            title: isAr ? 'تم إنشاء التكليف' : 'Task Assigned & Created',
+            desc: isAr 
+                ? `تم تكليف الموظف بواسطة ${t.assigned_by?.name || 'المدير'}` 
+                : `Assigned by ${t.assigned_by?.name || 'Supervisor'}`,
+            completed: true
+        });
+        
+        if (t.status !== 'pending') {
+            timeline.push({
+                time: '',
+                title: isAr ? 'الحالة: قيد العمل' : 'Status: In Progress',
+                desc: isAr ? 'بدأ الموظف العمل على المهمة' : 'Employee started working on the task',
+                completed: true
+            });
         }
-    ];
-
-    const getInitialTask = () => {
-        if (id) {
-            const found = allTasks.find(t => t.id === parseInt(id));
-            if (found) return found;
+        
+        if (t.completed_at || t.status === 'pending_review' || t.status === 'scored') {
+            timeline.push({
+                time: t.completed_at ? new Date(t.completed_at).toLocaleString() : '',
+                title: isAr ? 'تم تسليم العمل للمراجعة' : 'Submitted for Review',
+                desc: isAr ? 'بانتظار إجراء المدير وتقييم مخرجات العمل' : 'Pending review and grading action',
+                completed: t.status === 'scored',
+                active: t.status === 'pending_review'
+            });
         }
-        return allTasks[0]; // John Doe as default
+        
+        if (t.scored_at || t.status === 'scored') {
+            timeline.push({
+                time: t.scored_at ? new Date(t.scored_at).toLocaleString() : '',
+                title: isAr ? 'تم رصد التقييم النهائي' : 'Final Grade Approved',
+                desc: isAr 
+                    ? `الدرجة المحسوبة والمعتمدة: ${t.task_score ?? 0}` 
+                    : `Grade computed and approved: ${t.task_score ?? 0}`,
+                active: true
+            });
+        }
+        
+        return timeline;
     };
 
-    const [task, setTask] = useState(getInitialTask());
-
-    // Sync task state if id URL parameter changes
     useEffect(() => {
-        if (id) {
-            const found = allTasks.find(t => t.id === parseInt(id));
-            if (found) {
-                setTask(found);
+        const init = async () => {
+            try {
+                setIsLoading(true);
+                // 1. Fetch all tasks for the department
+                const resTasks = await getDepartmentTasks();
+                const rawTasks = resTasks.data?.data || [];
+                
+                // Format all tasks for the slider
+                const formattedTasks = rawTasks.map(t => {
+                    const empName = t.employee?.name || t.employee?.full_name || (isAr ? 'موظف غير معروف' : 'Unknown Employee');
+                    const avatar = empName
+                        ? empName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+                        : '??';
+                    return {
+                        id: t.id,
+                        title: t.title,
+                        employee_name: empName,
+                        employee_avatar: avatar,
+                        status: t.status
+                    };
+                });
+                setAllTasks(formattedTasks);
+
+                // 2. Determine target task
+                let targetTaskId = null;
+                if (id) {
+                    targetTaskId = parseInt(id);
+                } else if (rawTasks.length > 0) {
+                    targetTaskId = rawTasks[0].id;
+                }
+
+                if (targetTaskId) {
+                    // Fetch details of target task
+                    const resDetails = await getTaskDetails(targetTaskId);
+                    if (resDetails.data?.data) {
+                        const fetchedTask = resDetails.data.data;
+                        const empName = fetchedTask.employee?.name || fetchedTask.employee?.full_name || (isAr ? 'موظف غير معروف' : 'Unknown Employee');
+                        const avatar = empName
+                            ? empName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+                            : '??';
+
+                        const formatted = {
+                            id: fetchedTask.id,
+                            title: fetchedTask.title,
+                            employee_name: empName,
+                            employee_avatar: avatar,
+                            due_date: fetchedTask.due_date,
+                            submission_date: fetchedTask.completed_at ? fetchedTask.completed_at.split(' ')[0] : (isAr ? 'لم تسلم بعد' : 'Not submitted yet'),
+                            status: fetchedTask.status,
+                            days_late: fetchedTask.days_late || 0,
+                            late_penalty_per_day: fetchedTask.late_penalty_per_day || 0,
+                            scope: fetchedTask.description || (isAr ? 'لا يوجد وصف للمهمة' : 'No description provided'),
+                            submission_notes: fetchedTask.manager_note || (isAr ? 'لا توجد ملاحظات حالية' : 'No notes provided yet'),
+                            task_score: fetchedTask.task_score || 0,
+                            timeline: buildTimeline(fetchedTask, isAr)
+                        };
+                        setTask(formatted);
+                    }
+                } else {
+                    setTask(null);
+                }
+            } catch (error) {
+                console.error("Error initializing task evaluation screen:", error);
+            } finally {
+                setIsLoading(false);
             }
-        }
+        };
+
+        init();
     }, [id]);
 
     // Handle selecting task from horizontal slider
     const handleSelectTask = (selectedTask) => {
-        setTask(selectedTask);
         navigate(`/portal/manager/tasks/score/${selectedTask.id}`);
     };
 
     // Handle submissions
-    const handleScoreSubmit = (data) => {
+    const handleScoreSubmit = async (data) => {
         setIsSubmitting(true);
-        // Simulate sending to backend
-        setTimeout(() => {
-            setIsSubmitting(false);
-            alert(isAr 
-                ? `تم اعتماد تقييم المهمة بنجاح!` 
-                : `Task scored successfully!`);
+        try {
+            await scoreTask(task.id, {
+                completion_score: data.completion_score,
+                quality_score: data.quality_score,
+                manager_note: data.notes
+            });
+            alert(isAr ? 'تم اعتماد تقييم المهمة بنجاح!' : 'Task scored successfully!');
             navigate('/portal/manager/tasks');
-        }, 1000);
+        } catch (error) {
+            console.error("Failed to score task:", error);
+            alert(isAr ? 'فشل إرسال التقييم.' : 'Failed to submit score.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
-    const handleRevisionRequest = (data) => {
+    const handleRevisionRequest = async (data) => {
         setIsSubmitting(true);
-        // Simulate sending to backend
-        setTimeout(() => {
-            setIsSubmitting(false);
+        try {
+            await requestRevision(task.id, {
+                manager_note: data.notes
+            });
             alert(isAr 
                 ? 'تم إرجاع المهمة للموظف للتعديل مع الملاحظات.' 
                 : 'Task sent back for revision with supervisor instructions.');
             navigate('/portal/manager/tasks');
-        }, 1000);
+        } catch (error) {
+            console.error("Failed to request revision:", error);
+            alert(isAr ? 'فشل طلب التعديل.' : 'Failed to request revision.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const [liveScore, setLiveScore] = useState(88.0);
+
+    if (isLoading) {
+        return (
+            <div style={{ padding: '80px 40px', textAlign: 'center', color: 'var(--text-color)' }}>
+                <i className="fa-solid fa-circle-notch fa-spin" style={{ fontSize: '32px', marginBottom: '16px', color: 'var(--color-primary)' }}></i>
+                <div>{isAr ? 'جاري تحميل تفاصيل المهمة...' : 'Loading task details...'}</div>
+            </div>
+        );
+    }
+
+    if (!task) {
+        return (
+            <div className={`performance-task-score-drawer ${isAr ? 'rtl' : 'ltr'}`} style={{ padding: '40px 35px' }}>
+                <div className="top-header">
+                    <div className="page-title">
+                        <h1>{isAr ? 'لوحة تفاصيل وتقييم المهمة' : 'Task Evaluation & Details'}</h1>
+                        <p>{isAr ? 'لا توجد أي مهام مسندة في القسم لمراجعتها حالياً.' : 'There are no assigned tasks in this department to evaluate currently.'}</p>
+                    </div>
+                    <button className="btn btn-secondary" onClick={() => navigate('/portal/manager/tasks')}>
+                        <i className="fa-solid fa-arrow-left"></i>
+                        <span>{isAr ? 'العودة للوحة التحكم' : 'Back to Dashboard'}</span>
+                    </button>
+                </div>
+                <div className="card" style={{ textAlign: 'center', padding: '60px 20px', marginTop: '20px' }}>
+                    <i className="fa-solid fa-list-check" style={{ fontSize: '48px', color: 'var(--text-muted)', marginBottom: '16px' }}></i>
+                    <h3>{isAr ? 'قائمة المهام فارغة' : 'Tasks List is Empty'}</h3>
+                    <p style={{ color: 'var(--text-secondary)', marginTop: '8px' }}>
+                        {isAr ? 'لم تقم بإسناد أي مهمة لموظفي قسمك بعد.' : 'You have not assigned any tasks to your department employees yet.'}
+                    </p>
+                    <button className="btn btn-primary" style={{ marginTop: '20px' }} onClick={() => navigate('/portal/manager/tasks')}>
+                        <i className="fa-solid fa-plus"></i>
+                        <span>{isAr ? 'إسناد تكليف جديد' : 'Assign New Task'}</span>
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={`performance-task-score-drawer ${isAr ? 'rtl' : 'ltr'}`}>
@@ -213,7 +297,7 @@ const TaskScoreDrawer = () => {
                         task={task} 
                         onSubmitScore={handleScoreSubmit} 
                         onSubmitRevision={handleRevisionRequest} 
-                        calculatedTaskScore={liveScore}
+                        calculatedTaskScore={task.task_score || 0}
                         isSubmitting={isSubmitting}
                         lang={currentLang}
                     />

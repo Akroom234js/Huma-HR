@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './DepartmentTasks.css';
 import DifficultyBadge from '../../../../../Shared/Performance/DifficultyBadge/DifficultyBadge';
 import PriorityBadge from '../../../../../Shared/Performance/PriorityBadge/PriorityBadge';
 import StatusBadge from '../../../../../Shared/Performance/StatusBadge/StatusBadge';
 import TaskFormModal from '../../../../../Shared/Performance/TaskFormModal/TaskFormModal';
+import { 
+    getDepartmentTasks, 
+    getDepartmentEmployees, 
+    createTask, 
+    updateTask, 
+    deleteTask 
+} from '../../../../../../services/performanceService';
 
 const DepartmentTasks = () => {
     const navigate = useNavigate();
@@ -14,6 +21,64 @@ const DepartmentTasks = () => {
 
     const [showAssignModal, setShowAssignModal] = useState(false);
     const [editingTask, setEditingTask] = useState(null);
+    const [tasks, setTasks] = useState([]);
+    const [employeesList, setEmployeesList] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Check language
+    const currentLang = sessionStorage.getItem('lang') || 'en';
+    const isAr = currentLang === 'ar';
+
+    const formatTaskForFrontend = (backendTask) => {
+        const empName = backendTask.employee?.name || backendTask.employee?.full_name || (isAr ? 'موظف غير معروف' : 'Unknown Employee');
+        const avatar = empName
+            ? empName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+            : '??';
+            
+        return {
+            id: backendTask.id,
+            title: backendTask.title,
+            description: backendTask.description || '',
+            employee_name: empName,
+            employee_avatar: avatar,
+            due_date: backendTask.due_date, // Keep backend format YYYY-MM-DD
+            difficulty: backendTask.difficulty || 'medium',
+            priority: backendTask.priority || 'medium',
+            status: backendTask.status || 'pending',
+            employee_id: backendTask.employee?.id ? backendTask.employee.id.toString() : '',
+            late_penalty_per_day: backendTask.late_penalty_per_day || 0
+        };
+    };
+
+    const loadData = async () => {
+        try {
+            setIsLoading(true);
+            const [tasksRes, employeesRes] = await Promise.all([
+                getDepartmentTasks(),
+                getDepartmentEmployees()
+            ]);
+            
+            const rawTasks = tasksRes.data?.data || [];
+            const formattedTasks = rawTasks.map(t => formatTaskForFrontend(t));
+            setTasks(formattedTasks);
+            
+            const rawEmployees = employeesRes.data?.data || [];
+            const formattedEmployees = rawEmployees.map(emp => ({
+                id: emp.id.toString(),
+                name: emp.full_name || emp.name || '',
+                department: emp.department?.name || emp.job_title || ''
+            }));
+            setEmployeesList(formattedEmployees);
+        } catch (error) {
+            console.error("Failed to load department performance data:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadData();
+    }, []);
 
     // Success handlers
     const handleAssignSuccess = (newTask) => {
@@ -24,90 +89,22 @@ const DepartmentTasks = () => {
         setTasks(tasks.map(t => t.id === updatedTask.id ? { ...t, ...updatedTask } : t));
     };
 
-    // Check language
-    const currentLang = sessionStorage.getItem('lang') || 'en';
-    const isAr = currentLang === 'ar';
-
-    // Mock Employees List matching department employees
-    const employeesList = [
-        { id: '1', name: isAr ? 'جون دو' : 'John Doe', department: isAr ? 'مهندس برمجيات' : 'Software Engineer' },
-        { id: '2', name: isAr ? 'أليس سميث' : 'Alice Smith', department: isAr ? 'مطور أول' : 'Senior Developer' },
-        { id: '3', name: isAr ? 'روبرت كينج' : 'Robert King', department: isAr ? 'محلل نظم' : 'System Analyst' }
-    ];
-
-    const getEmployeeId = (name) => {
-        if (!name) return '1';
-        if (name.includes('John') || name.includes('جون')) return '1';
-        if (name.includes('Alice') || name.includes('أليس')) return '2';
-        if (name.includes('Robert') || name.includes('روبرت')) return '3';
-        return '1';
-    };
-
-
-
-    // Mock Tasks Data representing Department tasks (directly matching mockup entries)
-    const [tasks, setTasks] = useState([
-        {
-            id: 1,
-            title: 'Optimize REST API Endpoints',
-            employee_name: 'John Doe',
-            employee_avatar: 'JD',
-            due_date: 'May 30, 2026',
-            difficulty: 'hard',
-            priority: 'high',
-            status: 'pending_review'
-        },
-        {
-            id: 2,
-            title: 'Migrate Legacy Database to PostgreSQL',
-            employee_name: 'Alice Smith',
-            employee_avatar: 'AS',
-            due_date: 'Jun 04, 2026',
-            difficulty: 'medium',
-            priority: 'urgent',
-            status: 'in_progress'
-        },
-        {
-            id: 3,
-            title: 'Draft Integration Documentation',
-            employee_name: 'Robert King',
-            employee_avatar: 'RK',
-            due_date: 'May 28, 2026',
-            difficulty: 'easy',
-            priority: 'medium',
-            status: 'needs_revision'
-        },
-        {
-            id: 4,
-            title: 'Clean Up Deprecated Frontend Assets',
-            employee_name: 'John Doe',
-            employee_avatar: 'JD',
-            due_date: 'May 25, 2026',
-            difficulty: 'easy',
-            priority: 'low',
-            status: 'scored'
-        },
-        {
-            id: 5,
-            title: 'Design Identity Provider Microservice',
-            employee_name: 'Alice Smith',
-            employee_avatar: 'AS',
-            due_date: 'Jun 10, 2026',
-            difficulty: 'hard',
-            priority: 'high',
-            status: 'pending'
-        }
-    ]);
-
     // Handle delete
-    const handleDelete = (id) => {
+    const handleDelete = async (id) => {
         const confirmMsg = isAr 
             ? 'هل أنت متأكد من رغبتك في حذف هذه المهمة نهائياً؟' 
             : 'Are you sure you want to delete this task? This action is irreversible.';
         if (window.confirm(confirmMsg)) {
-            setTasks(tasks.filter(t => t.id !== id));
+            try {
+                await deleteTask(id);
+                setTasks(tasks.filter(t => t.id !== id));
+            } catch (error) {
+                console.error("Failed to delete task:", error);
+                alert(isAr ? 'فشل حذف المهمة.' : 'Failed to delete task.');
+            }
         }
     };
+
 
     // Filters
     const filteredTasks = tasks.filter(task => {
@@ -348,19 +345,29 @@ const DepartmentTasks = () => {
             <TaskFormModal 
                 isOpen={showAssignModal}
                 onClose={() => setShowAssignModal(false)}
-                onSubmit={(formData) => {
-                    const selectedEmp = employeesList.find(emp => emp.id === formData.employee_id);
-                    handleAssignSuccess({
-                        id: Date.now(),
-                        title: formData.title,
-                        employee_name: selectedEmp ? selectedEmp.name : 'John Doe',
-                        employee_avatar: selectedEmp ? selectedEmp.name.charAt(0) + selectedEmp.name.split(' ')[1]?.charAt(0) : 'JD',
-                        due_date: new Date(formData.due_date).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-                        difficulty: formData.difficulty,
-                        priority: formData.priority,
-                        status: 'pending'
-                    });
-                    setShowAssignModal(false);
+                onSubmit={async (formData) => {
+                    try {
+                        const payload = {
+                            employee_profile_id: Number(formData.employee_id),
+                            title: formData.title,
+                            description: formData.description,
+                            due_date: formData.due_date,
+                            difficulty: formData.difficulty,
+                            priority: formData.priority,
+                            late_penalty_per_day: Number(formData.late_penalty_per_day)
+                        };
+                        const res = await createTask(payload);
+                        if (res.data?.data) {
+                            const newTaskFormatted = formatTaskForFrontend(res.data.data);
+                            handleAssignSuccess(newTaskFormatted);
+                        }
+                        setShowAssignModal(false);
+                    } catch (error) {
+                        console.error("Failed to create task:", error);
+                        alert(isAr 
+                            ? 'فشل إنشاء المهمة. يرجى التحقق من المدخلات وأن تاريخ الاستحقاق في المستقبل.' 
+                            : 'Failed to create task. Please check input values and ensure due date is in the future.');
+                    }
                 }}
                 employees={employeesList}
                 lang={currentLang}
@@ -370,22 +377,30 @@ const DepartmentTasks = () => {
             <TaskFormModal 
                 isOpen={!!editingTask}
                 onClose={() => setEditingTask(null)}
-                onSubmit={(formData) => {
-                    handleEditSuccess({
-                        id: editingTask.id,
-                        title: formData.title,
-                        employee_name: editingTask.employee_name,
-                        employee_avatar: editingTask.employee_avatar,
-                        due_date: new Date(formData.due_date).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-                        difficulty: formData.difficulty,
-                        priority: formData.priority,
-                        status: editingTask.status
-                    });
-                    setEditingTask(null);
+                onSubmit={async (formData) => {
+                    try {
+                        const payload = {
+                            title: formData.title,
+                            description: formData.description,
+                            due_date: formData.due_date,
+                            difficulty: formData.difficulty,
+                            priority: formData.priority,
+                            late_penalty_per_day: Number(formData.late_penalty_per_day)
+                        };
+                        const res = await updateTask(editingTask.id, payload);
+                        if (res.data?.data) {
+                            const updatedTaskFormatted = formatTaskForFrontend(res.data.data);
+                            handleEditSuccess(updatedTaskFormatted);
+                        }
+                        setEditingTask(null);
+                    } catch (error) {
+                        console.error("Failed to update task:", error);
+                        alert(isAr ? 'فشل تعديل المهمة.' : 'Failed to update task.');
+                    }
                 }}
                 task={editingTask ? {
                     ...editingTask,
-                    employee_id: getEmployeeId(editingTask.employee_name)
+                    employee_id: editingTask.employee_id
                 } : null}
                 employees={employeesList}
                 lang={currentLang}
@@ -395,3 +410,4 @@ const DepartmentTasks = () => {
 };
 
 export default DepartmentTasks;
+

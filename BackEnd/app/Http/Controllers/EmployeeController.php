@@ -255,4 +255,25 @@ class EmployeeController extends Controller
             message: 'My profile updated successfully.'
         );
     }
+
+    // ── GET /api/my-department/employees ──────────────────────────────────────
+    public function myTeam(): JsonResponse
+    {
+        $manager = auth()->user()->employeeProfile;
+
+        if (!$manager) {
+            return $this->errorResponse('Profile not found.', null, 404);
+        }
+
+        $team = EmployeeProfile::with(['user', 'department'])
+            ->where('department_id', $manager->department_id)
+            ->where('id', '!=', $manager->id)
+            ->get();
+
+        return $this->successResponse(
+            data: EmployeeResource::collection($team)->resolve(),
+            message: 'Team members retrieved successfully.'
+        );
+    }
 }
+
