@@ -44,7 +44,9 @@
   --amber-400: #fbbf24;
   --amber-500: #f59e0b;
   --red-500: #ef4444;
-
+  --blue-500: #3b82f6;
+  --purple-500: #a855f7;
+  --pink-500: #ec4899;
   /* Score backgrounds */
   --score-bg: rgba(239, 246, 255, 0.5);
   --score-border: #dbeafe;
@@ -59,6 +61,8 @@
   --radius-lg: 0.5rem;
   --radius-xl: 0.75rem;
   --radius-full: 9999px;
+  --radius-md: 12px;
+  --radius-sm: 6px;
   font-family: 'Plus Jakarta Sans', sans-serif;
 
   /* Performance Module Theme Colors */
@@ -321,4 +325,4 @@ div.interview,
 }
 .ltr {
   direction: ltr;
-}
+}
