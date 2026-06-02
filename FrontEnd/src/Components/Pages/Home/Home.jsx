@@ -1,16 +1,73 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import "./Home.css";
 import Footer from "./Footer";
 import logo from "../../../assets/logo.png";
-import ff from "../../../assets/dd.jpg";
+import dashboardMockup from "../../../assets/hr_dashboard_mockup.png";
 import ThemeToggle from "../../ThemeToggle/ThemeToggle";
 import apiClient from "../../../apiConfig";
 import Notification from "../../Notification/Notification";
 import Avatar from "../../Shared/Avatar/Avatar";
 import { useTranslation } from "react-i18next";
 import LanSw from "../../LanSw";
-import CountUp from "./CountUp";
+
+function CountUp({
+  from = 0,
+  to = 100,
+  separator = ",",
+  duration = 2, // in seconds
+  className = "count-up-text",
+  delay = 0,
+}) {
+  const [count, setCount] = useState(from);
+  const startTimeRef = useRef(null);
+  const isStarted = useRef(false);
+
+  useEffect(() => {
+    let animationFrameId;
+
+    const startAnimation = () => {
+      const step = (timestamp) => {
+        if (!startTimeRef.current) startTimeRef.current = timestamp;
+        const progress = Math.min((timestamp - startTimeRef.current) / (duration * 1000), 1);
+        
+        // Easing: easeOutQuad
+        const easeProgress = progress * (2 - progress);
+        
+        const currentValue = from + (to - from) * easeProgress;
+        setCount(currentValue);
+
+        if (progress < 1) {
+          animationFrameId = requestAnimationFrame(step);
+        } else {
+          setCount(to);
+        }
+      };
+
+      animationFrameId = requestAnimationFrame(step);
+    };
+
+    const timer = setTimeout(() => {
+      if (!isStarted.current) {
+        isStarted.current = true;
+        startAnimation();
+      }
+    }, delay * 1000);
+
+    return () => {
+      clearTimeout(timer);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [from, to, duration, delay]);
+
+  const formatNumber = (num) => {
+    const rounded = Math.round(num);
+    return rounded.toString().replace(/\B(?=(\d{3})+(?!\d))/g, separator);
+  };
+
+  return <span className={className}>{formatNumber(count)}</span>;
+}
+
 export default function Home() {
   const { t, i18n } = useTranslation('Home/Home');
   const isRtl = i18n.language === "ar";
@@ -650,9 +707,9 @@ export default function Home() {
       </div>
 
       <div className={`container4 ${isRtl ? "rtl" : "ltr"}`}>
-        <h4>
+        <div className="con-tit">
           <h3>{t("process.title")}</h3>
-        </h4>
+        </div>
         <div className="con_cart2">
           <div>
             <span>1</span>
@@ -677,69 +734,67 @@ export default function Home() {
             <button>{t("workplace.learnMore")}</button>
           </div>
           <div>
-            <img src={ff} alt="er" width={"90%"} height={"85%"} />
+            <img src={dashboardMockup} alt="HR Dashboard Mockup" />
           </div>
         </div>
-        <h4>
+        
+        <div className="con-tit">
           <h3>{t("testimonials.title")}</h3>
-        </h4>
-        <div className="con_cart2">
-          <div>
-            <p style={{ marginTop: "10px", fontSize: "16px" }}>
+        </div>
+        
+        <div className="testimonial-cards-grid">
+          <div className="testimonial-card spotlight-card" onMouseMove={handleMouseMove}>
+            <span className="testimonial-quote-icon" style={{ backgroundColor: "rgba(19, 131, 237, 0.1)" }}>
+              <i className="fa-solid fa-quote-left" style={{ color: "#1383ed" }}></i>
+            </span>
+            <p className="testimonial-quote">
               {t("testimonials.card1.quote")}
             </p>
-
-            <p className="dd">
-              <span className="user1"> </span>
-              <h4
-                style={{
-                  fontSize: "14px",
-                  color: "var(--text-main)",
-                  display: "inline-block",
-                }}
-              >
-                {t("testimonials.card1.author")}
-              </h4>
-              {t("testimonials.card1.role")}
-            </p>
+            <div className="testimonial-footer">
+              <div className="testimonial-avatar" style={{ background: "linear-gradient(135deg, #1383ed, #1d4ed8)" }}>
+                MT
+              </div>
+              <div className="testimonial-meta">
+                <h4 className="testimonial-author">{t("testimonials.card1.author")}</h4>
+                <p className="testimonial-role">{t("testimonials.card1.role")}</p>
+              </div>
+            </div>
           </div>
-          <div>
-            <p style={{ marginTop: "10px", fontSize: "16px" }}>
+
+          <div className="testimonial-card spotlight-card" onMouseMove={handleMouseMove}>
+            <span className="testimonial-quote-icon" style={{ backgroundColor: "rgba(147, 51, 234, 0.1)" }}>
+              <i className="fa-solid fa-quote-left" style={{ color: "#9333ea" }}></i>
+            </span>
+            <p className="testimonial-quote">
               {t("testimonials.card2.quote")}
             </p>
-
-            <p className="dd">
-              <span className="user1"> </span>
-              <h4
-                style={{
-                  fontSize: "14px",
-                  color: "var(--text-main)",
-                  display: "inline-block",
-                }}
-              >
-                {t("testimonials.card2.author")}
-              </h4>
-              {t("testimonials.card2.role")}
-            </p>
+            <div className="testimonial-footer">
+              <div className="testimonial-avatar" style={{ background: "linear-gradient(135deg, #9333ea, #7e22ce)" }}>
+                ER
+              </div>
+              <div className="testimonial-meta">
+                <h4 className="testimonial-author">{t("testimonials.card2.author")}</h4>
+                <p className="testimonial-role">{t("testimonials.card2.role")}</p>
+              </div>
+            </div>
           </div>
-          <div>
-            <p style={{ marginTop: "10px", fontSize: "16px" }}>
+
+          <div className="testimonial-card spotlight-card" onMouseMove={handleMouseMove}>
+            <span className="testimonial-quote-icon" style={{ backgroundColor: "rgba(234, 88, 12, 0.1)" }}>
+              <i className="fa-solid fa-quote-left" style={{ color: "#ea580c" }}></i>
+            </span>
+            <p className="testimonial-quote">
               {t("testimonials.card3.quote")}
             </p>
-
-            <p className="dd">
-              <span className="user1"> </span>
-              <h4
-                style={{
-                  fontSize: "14px",
-                  color: "var(--text-main)",
-                  display: "inline-block",
-                }}
-              >
-                {t("testimonials.card3.author")}
-              </h4>
-              {t("testimonials.card3.role")}
-            </p>
+            <div className="testimonial-footer">
+              <div className="testimonial-avatar" style={{ background: "linear-gradient(135deg, #ea580c, #c2410c)" }}>
+                DC
+              </div>
+              <div className="testimonial-meta">
+                <h4 className="testimonial-author">{t("testimonials.card3.author")}</h4>
+                <p className="testimonial-role">{t("testimonials.card3.role")}</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
