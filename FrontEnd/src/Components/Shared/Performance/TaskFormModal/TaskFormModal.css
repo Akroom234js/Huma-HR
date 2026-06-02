@@ -1,7 +1,7 @@
 .task-form-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   z-index: 1000;
@@ -12,14 +12,20 @@
 }
 
 .task-form-modal-box {
-  background: linear-gradient(145deg, #111827 0%, #0f172a 100%);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl, 12px);
   padding: 30px;
   width: 100%;
   max-width: 600px;
-  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow: var(--shadow-lg);
   animation: modalEnter 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+[data-theme="dark"] .task-form-modal-box {
+  background: rgba(15, 23, 42, 0.95);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
 }
 
 @keyframes modalEnter {
@@ -73,8 +79,8 @@
 }
 
 .task-modal-close-btn {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--border-light);
+  border: 1px solid var(--border-color);
   width: 28px;
   height: 28px;
   border-radius: 6px;
@@ -95,7 +101,7 @@
 
 .task-modal-divider {
   height: 1px;
-  background: linear-gradient(to right, transparent, var(--glass-border), transparent);
+  background: var(--border-color);
   margin: 20px 0;
 }
 
@@ -133,21 +139,22 @@
 
 .task-form-control {
   padding: 10px 14px;
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-md);
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 12px);
   color: var(--text-main);
   font-size: 13px;
   outline: none;
   font-family: inherit;
   width: 100%;
+  transition: all 0.2s ease;
 }
 
 .task-form-control:disabled {
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--border-light);
   color: var(--text-muted);
   cursor: not-allowed;
-  border-color: rgba(255, 255, 255, 0.04);
+  border-color: var(--border-color);
 }
 
 .task-form-control:focus:not(:disabled) {
@@ -156,7 +163,8 @@
 }
 
 .task-form-control option {
-  background: #0f172a;
+  background: var(--bg-card);
+  color: var(--text-main);
 }
 
 textarea.task-form-control {
@@ -176,16 +184,16 @@ textarea.task-form-control {
   justify-content: flex-end;
   gap: 12px;
   margin-top: 20px;
-  border-top: 1px solid var(--border-light);
+  border-top: 1px solid var(--border-color);
   padding-top: 16px;
 }
 
 .task-btn-cancel {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--border-light);
+  border: 1px solid var(--border-color);
   color: var(--text-secondary);
   padding: 9px 20px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-md, 12px);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -193,16 +201,16 @@ textarea.task-form-control {
 }
 
 .task-btn-cancel:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--border-color);
   color: var(--text-main);
 }
 
 .task-btn-submit {
   background: var(--primary-gradient);
-  color: #fff;
+  color: var(--text-on-primary, #fff);
   border: none;
   padding: 9px 24px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-md, 12px);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
