@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './DepartmentTasks.css';
-import AssignNewTask from '../AssignNewTask/AssignNewTask';
-import EditTaskPanel from '../EditTaskPanel/EditTaskPanel';
+import DifficultyBadge from '../../../../../Shared/Performance/DifficultyBadge/DifficultyBadge';
+import PriorityBadge from '../../../../../Shared/Performance/PriorityBadge/PriorityBadge';
+import StatusBadge from '../../../../../Shared/Performance/StatusBadge/StatusBadge';
+import TaskFormModal from '../../../../../Shared/Performance/TaskFormModal/TaskFormModal';
 
 const DepartmentTasks = () => {
     const navigate = useNavigate();
@@ -25,6 +27,23 @@ const DepartmentTasks = () => {
     // Check language
     const currentLang = sessionStorage.getItem('lang') || 'en';
     const isAr = currentLang === 'ar';
+
+    // Mock Employees List matching department employees
+    const employeesList = [
+        { id: '1', name: isAr ? 'جون دو' : 'John Doe', department: isAr ? 'مهندس برمجيات' : 'Software Engineer' },
+        { id: '2', name: isAr ? 'أليس سميث' : 'Alice Smith', department: isAr ? 'مطور أول' : 'Senior Developer' },
+        { id: '3', name: isAr ? 'روبرت كينج' : 'Robert King', department: isAr ? 'محلل نظم' : 'System Analyst' }
+    ];
+
+    const getEmployeeId = (name) => {
+        if (!name) return '1';
+        if (name.includes('John') || name.includes('جون')) return '1';
+        if (name.includes('Alice') || name.includes('أليس')) return '2';
+        if (name.includes('Robert') || name.includes('روبرت')) return '3';
+        return '1';
+    };
+
+
 
     // Mock Tasks Data representing Department tasks (directly matching mockup entries)
     const [tasks, setTasks] = useState([
@@ -232,8 +251,8 @@ const DepartmentTasks = () => {
                             ) : (
                                 filteredTasks.map((task) => (
                                     <tr key={task.id}>
-                                        <td style={{ fontWeight: 600 }}>{task.title}</td>
-                                        <td>
+                                        <td data-label={isAr ? "المهمة" : "Task"} style={{ fontWeight: 600 }}>{task.title}</td>
+                                        <td data-label={isAr ? "الموظف" : "Assigned To"}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                 <div className="user-avatar btn-sm" style={{ width: '26px', height: '26px', fontSize: '10px', borderColor: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                     {task.employee_avatar}
@@ -241,30 +260,15 @@ const DepartmentTasks = () => {
                                                 <span>{task.employee_name}</span>
                                             </div>
                                         </td>
-                                        <td>{task.due_date}</td>
-                                        <td>
-                                            <span className={`badge badge-difficulty-${task.difficulty}`}>
-                                                {task.difficulty === 'easy' && (isAr ? 'سهل' : 'Easy')}
-                                                {task.difficulty === 'medium' && (isAr ? 'متوسط' : 'Medium')}
-                                                {task.difficulty === 'hard' && (isAr ? 'صعب' : 'Hard')}
-                                            </span>
+                                        <td data-label={isAr ? "تاريخ الاستحقاق" : "Due Date"}>{task.due_date}</td>
+                                        <td data-label={isAr ? "الصعوبة" : "Difficulty"}>
+                                            <DifficultyBadge difficulty={task.difficulty} lang={isAr ? 'ar' : 'en'} />
                                         </td>
-                                        <td>
-                                            <span className={`badge badge-priority-${task.priority}`}>
-                                                {task.priority === 'low' && (isAr ? 'منخفضة' : 'Low')}
-                                                {task.priority === 'medium' && (isAr ? 'متوسطة' : 'Medium')}
-                                                {task.priority === 'high' && (isAr ? 'عالية' : 'High')}
-                                                {task.priority === 'urgent' && (isAr ? 'عاجلة' : 'Urgent')}
-                                            </span>
+                                        <td data-label={isAr ? "الأولوية" : "Priority"}>
+                                            <PriorityBadge priority={task.priority} lang={isAr ? 'ar' : 'en'} />
                                         </td>
-                                        <td>
-                                            <span className={`badge badge-${task.status === 'in_progress' ? 'progress' : task.status === 'pending_review' ? 'review' : task.status === 'needs_revision' ? 'revision' : task.status}`}>
-                                                {task.status === 'pending' && (isAr ? 'معلقة' : 'Pending')}
-                                                {task.status === 'in_progress' && (isAr ? 'قيد التنفيذ' : 'In Progress')}
-                                                {task.status === 'pending_review' && (isAr ? 'بانتظار المراجعة' : 'Pending Review')}
-                                                {task.status === 'needs_revision' && (isAr ? 'تحتاج تعديل' : 'Needs Revision')}
-                                                {task.status === 'scored' && (isAr ? 'مقيّمة' : 'Scored')}
-                                            </span>
+                                        <td data-label={isAr ? "الحالة" : "Status"}>
+                                            <StatusBadge status={task.status} lang={isAr ? 'ar' : 'en'} />
                                         </td>
                                         <td style={{ textAlign: isAr ? 'left' : 'right' }}>
                                             <div style={{ display: 'flex', gap: '8px', justifyContent: isAr ? 'flex-start' : 'flex-end' }}>
@@ -341,31 +345,51 @@ const DepartmentTasks = () => {
             </div>
 
             {/* Assign Task Modal */}
-            {showAssignModal && (
-                <div className="performance-modal-backdrop" onClick={() => setShowAssignModal(false)}>
-                    <div className="performance-modal-content" onClick={(e) => e.stopPropagation()}>
-                        <AssignNewTask 
-                            isModal={true} 
-                            onClose={() => setShowAssignModal(false)} 
-                            onSuccess={handleAssignSuccess} 
-                        />
-                    </div>
-                </div>
-            )}
+            <TaskFormModal 
+                isOpen={showAssignModal}
+                onClose={() => setShowAssignModal(false)}
+                onSubmit={(formData) => {
+                    const selectedEmp = employeesList.find(emp => emp.id === formData.employee_id);
+                    handleAssignSuccess({
+                        id: Date.now(),
+                        title: formData.title,
+                        employee_name: selectedEmp ? selectedEmp.name : 'John Doe',
+                        employee_avatar: selectedEmp ? selectedEmp.name.charAt(0) + selectedEmp.name.split(' ')[1]?.charAt(0) : 'JD',
+                        due_date: new Date(formData.due_date).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+                        difficulty: formData.difficulty,
+                        priority: formData.priority,
+                        status: 'pending'
+                    });
+                    setShowAssignModal(false);
+                }}
+                employees={employeesList}
+                lang={currentLang}
+            />
 
             {/* Edit Task Modal */}
-            {editingTask && (
-                <div className="performance-modal-backdrop" onClick={() => setEditingTask(null)}>
-                    <div className="performance-modal-content" onClick={(e) => e.stopPropagation()}>
-                        <EditTaskPanel 
-                            isModal={true} 
-                            taskData={editingTask} 
-                            onClose={() => setEditingTask(null)} 
-                            onSuccess={handleEditSuccess} 
-                        />
-                    </div>
-                </div>
-            )}
+            <TaskFormModal 
+                isOpen={!!editingTask}
+                onClose={() => setEditingTask(null)}
+                onSubmit={(formData) => {
+                    handleEditSuccess({
+                        id: editingTask.id,
+                        title: formData.title,
+                        employee_name: editingTask.employee_name,
+                        employee_avatar: editingTask.employee_avatar,
+                        due_date: new Date(formData.due_date).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+                        difficulty: formData.difficulty,
+                        priority: formData.priority,
+                        status: editingTask.status
+                    });
+                    setEditingTask(null);
+                }}
+                task={editingTask ? {
+                    ...editingTask,
+                    employee_id: getEmployeeId(editingTask.employee_name)
+                } : null}
+                employees={employeesList}
+                lang={currentLang}
+            />
         </section>
     );
 };

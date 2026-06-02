@@ -166,18 +166,45 @@ const EmpSidebar = () => {
                                 <>
                                     <NavLink 
                                         to="/portal/manager/tasks" 
-                                        className={({ isActive }) => `nav-item ${isActive || (location.pathname.startsWith('/portal/manager') && !location.pathname.startsWith('/portal/manager/cycles')) ? 'active' : ''}`}
+                                        end
+                                        className={({ isActive }) => `nav-item ${isActive || (location.pathname.startsWith('/portal/manager/tasks') && !location.pathname.includes('/score')) ? 'active' : ''}`}
                                     >
-                                        <span className="nav-icon material-symbols-outlined">manage_accounts</span>
-                                        <p>{t('Department-Tasks') || 'Department Tasks'}</p>
+                                        <span className="nav-icon material-symbols-outlined" style={{ position: 'relative' }}>
+                                            manage_accounts
+                                            <span className="ai-indicator-sparkle">
+                                                <i className="fa-solid fa-sparkles"></i>
+                                            </span>
+                                        </span>
+                                        <p>{t('Department-Tasks') || (isAr ? 'مهام القسم' : 'Department Tasks')}</p>
+                                    </NavLink>
+
+                                    <NavLink 
+                                        to="/portal/manager/tasks/score" 
+                                        className={({ isActive }) => `nav-item ${isActive || location.pathname.startsWith('/portal/manager/tasks/score') ? 'active' : ''}`}
+                                    >
+                                        <span className="nav-icon material-symbols-outlined">rate_review</span>
+                                        <p>{t('Task-Evaluation') || (isAr ? 'تقييم التكليفات' : 'Task Evaluation & Details')}</p>
+                                    </NavLink>
+
+                                    <NavLink 
+                                        to="/portal/manager/evaluate" 
+                                        className={({ isActive }) => `nav-item ${isActive || location.pathname.startsWith('/portal/manager/evaluate') ? 'active' : ''}`}
+                                    >
+                                        <span className="nav-icon material-symbols-outlined">fact_check</span>
+                                        <p>{t('Periodic-Evaluation') || (isAr ? 'التقييم الدوري' : 'Periodic Evaluation')}</p>
                                     </NavLink>
 
                                     <NavLink 
                                         to="/portal/manager/cycles" 
                                         className={({ isActive }) => `nav-item ${isActive || location.pathname.startsWith('/portal/manager/cycles') ? 'active' : ''}`}
                                     >
-                                        <span className="nav-icon material-symbols-outlined">published_with_changes</span>
-                                        <p>{t('Performance-Cycles') || 'Performance Cycles'}</p>
+                                        <span className="nav-icon material-symbols-outlined" style={{ position: 'relative' }}>
+                                            published_with_changes
+                                            <span className="ai-indicator-sparkle">
+                                                <i className="fa-solid fa-sparkles"></i>
+                                            </span>
+                                        </span>
+                                        <p>{t('Performance-Cycles') || (isAr ? 'دورات الأداء' : 'Performance Cycles')}</p>
                                     </NavLink>
                                 </>
                             )}
