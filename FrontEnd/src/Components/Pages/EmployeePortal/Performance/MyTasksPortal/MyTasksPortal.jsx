@@ -5,6 +5,7 @@ import './MyTasksPortal.css';
 import StatusBadge from "../../../../Shared/Performance/StatusBadge/StatusBadge";
 import ManagerNoteBox from "../../../../Shared/Performance/ManagerNoteBox/ManagerNoteBox";
 import DeadlineAlert from "../../../../Shared/Performance/DeadlineAlert/DeadlineAlert";
+import ThemeToggle from '../../../../ThemeToggle/ThemeToggle';
 
 const MyTasksPortal = () => {
     const navigate = useNavigate();
@@ -108,7 +109,9 @@ const statusMap = {
                     <h1>{t.title}</h1>
                     <p>{t.subtitle}</p>
                 </div>
-            </section>
+            </section><div className="sm-theme-toggle-wrapper">
+                    <ThemeToggle />
+                  </div>
 
             <div className="stats-grid">
                 <div className="stat-card total"
