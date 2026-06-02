@@ -151,9 +151,23 @@ export default function Jops() {
           </div>
         </div>
         <div className="intro-box">
-          <span className="intro">{t("hero.badge")}</span>
-          <h2 className="title">{t("hero.title")}</h2>
-          <p className="description">{t("hero.description")}</p>
+          <span className="intro animate-fade-in-up delay-100">{t("hero.badge")}</span>
+          <h2 className="title animate-fade-in-up delay-200">{t("hero.title")}</h2>
+          <p className="description animate-fade-in-up delay-300">{t("hero.description")}</p>
+        </div>
+        <div className="wave-container">
+          <svg className="waves" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
+            viewBox="0 24 150 28" preserveAspectRatio="none" shapeRendering="auto">
+            <defs>
+              <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s58 18 88 18 58-18 88-18 58 18 88 18v44h-352z" />
+            </defs>
+            <g className="parallax">
+              <use xlinkHref="#gentle-wave" x="48" y="0" className="wave-use1" />
+              <use xlinkHref="#gentle-wave" x="48" y="3" className="wave-use2" />
+              <use xlinkHref="#gentle-wave" x="48" y="5" className="wave-use3" />
+              <use xlinkHref="#gentle-wave" x="48" y="7" className="wave-use4" />
+            </g>
+          </svg>
         </div>
       </div>
 
