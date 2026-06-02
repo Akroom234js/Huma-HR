@@ -5,72 +5,87 @@ namespace App\Http\Controllers;
 use App\Models\PerformanceCycle;
 use App\Models\EmployeeProfile;
 use App\Services\PeerEvaluationService;
+use App\Traits\ApiResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-use Symfony\Component\HttpFoundation\Response;
 
 class PeerEvaluationController extends Controller
 {
-    protected $service;
+    use ApiResponse;
 
-    public function __construct(PeerEvaluationService $service)
-    {
-        $this->service = $service;
-    }
+    public function __construct(private PeerEvaluationService $service) {}
 
-    /**
-     * Store a new peer evaluation.
-     */
-    public function store(Request $request)
+    // ─────────────────────────────────────────────────────────────
+    // موظف يقيّم زميله
+    // POST /performance/peer-evaluations
+    // أي موظف مسجّل دخول
+    // ─────────────────────────────────────────────────────────────
+    public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'performance_cycle_id' => 'required|integer|exists:performance_cycles,id',
-            'employee_profile_id'  => 'required|integer|exists:employee_profiles,id',
-            'collaboration_score' => ['required', 'integer', 'between:0,10'],
-            'teamwork_score'      => ['required', 'integer', 'between:0,10'],
-            'comment'              => 'required|string|max:2000',
+            'performance_cycle_id' => ['required', 'integer', 'exists:performance_cycles,id'],
+            'employee_profile_id'  => ['required', 'integer', 'exists:employee_profiles,id'],
+            'collaboration_score'  => ['required', 'integer', 'between:0,10'],
+            'teamwork_score'       => ['required', 'integer', 'between:0,10'],
+            'comment'              => ['required', 'string', 'max:2000'],
         ]);
 
-        $evaluatorId = auth()->id();
+        // التأكد من أن الدورة نشطة
+        $cycle = PerformanceCycle::find($validated['performance_cycle_id']);
+        if ($cycle->status !== 'active') {
+            return $this->errorResponse('Peer evaluations can only be submitted for active cycles.', null, 422);
+        }
 
-        $evaluation = $this->service->storeEvaluation(
-            $validated['performance_cycle_id'],
-            $validated['employee_profile_id'],
-            $evaluatorId,
-            $validated['collaboration_score'],
-            $validated['teamwork_score'],
-            $validated['comment']
-        );
+        // الموظف لا يقيّم نفسه
+        $evaluatorProfile = auth()->user()->employeeProfile;
+        if ($evaluatorProfile && $evaluatorProfile->id === $validated['employee_profile_id']) {
+            return $this->errorResponse('You cannot evaluate yourself.', null, 422);
+        }
 
-        return response()->json([
-            'message' => 'تم حفظ تقييم الزميل بنجاح.',
-            'evaluation_id' => $evaluation->id,
-        ], Response::HTTP_CREATED);
+        try {
+            $evaluation = $this->service->storeEvaluation(
+                cycleId:           $validated['performance_cycle_id'],
+                employeeProfileId: $validated['employee_profile_id'],
+                evaluatorUserId:   auth()->id(),
+                collaborationScore:$validated['collaboration_score'],
+                teamworkScore:     $validated['teamwork_score'],
+                comment:           $validated['comment']
+            );
+
+            return $this->successResponse(
+                ['evaluation_id' => $evaluation->id],
+                'Peer evaluation submitted successfully.',
+                201
+            );
+
+        } catch (\RuntimeException $e) {
+            return $this->errorResponse($e->getMessage(), null, 409);
+        }
     }
 
-    /**
-     * Show aggregated peer score for an employee in a given cycle.
-     * Optional query param `include_comments=1` returns decrypted comments (HR only).
-     */
-    public function show($cycleId, $employeeProfileId, Request $request)
+    // ─────────────────────────────────────────────────────────────
+    // HR يشوف درجة زملاء موظف + التعليقات (اختياري)
+    // GET /performance/peer-evaluations/{cycleId}/{employeeProfileId}
+    // HR فقط
+    // ─────────────────────────────────────────────────────────────
+    public function show(int $cycleId, int $employeeProfileId, Request $request): JsonResponse
     {
-        // تأكيد وجود الدورة والموظف
         PerformanceCycle::findOrFail($cycleId);
         EmployeeProfile::findOrFail($employeeProfileId);
 
-        $score = $this->service->calculateWeightedPeerScore($cycleId, $employeeProfileId);
+        $rawScore = $this->service->calculateRawPeerScore($cycleId, $employeeProfileId);
 
-        $response = [
-            'peer_score' => $score, // من 0 إلى 100
-            'component_weight' => config('peer_evaluation.weight'),
+        $data = [
+            'employee_profile_id' => $employeeProfileId,
+            'cycle_id'            => $cycleId,
+            'peer_raw_score'      => $rawScore, // من 0 إلى 100
         ];
 
+        // HR يطلب التعليقات → يفكها
         if ($request->boolean('include_comments')) {
-            // عرض التعليقات تحتاج صلاحية HR فقط (middleware already applied)
-            $response['comments'] = $this->service->getDecryptedComments($cycleId, $employeeProfileId);
+            $data['comments'] = $this->service->getDecryptedComments($cycleId, $employeeProfileId);
         }
 
-        return response()->json($response);
+        return $this->successResponse($data, 'Peer evaluation score retrieved successfully.');
     }
 }
-?>

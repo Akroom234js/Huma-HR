@@ -20,6 +20,7 @@ class PerformanceEvaluation extends Model
         'manager_score',
         'peer_score',
         'attendance_score',
+        'overtime_score',      // ✅ أُضيف
         'self_score',
         'final_score',
         'status',
@@ -33,6 +34,7 @@ class PerformanceEvaluation extends Model
         'manager_score'      => 'decimal:2',
         'peer_score'         => 'decimal:2',
         'attendance_score'   => 'decimal:2',
+        'overtime_score'     => 'decimal:2',  // ✅ أُضيف
         'self_score'         => 'decimal:2',
         'final_score'        => 'decimal:2',
         'ai_recommendations' => 'array',
@@ -41,25 +43,21 @@ class PerformanceEvaluation extends Model
 
     // ─── Relationships ────────────────────────────────────────────
 
-    // الدورة التي ينتمي إليها التقييم
     public function performanceCycle(): BelongsTo
     {
         return $this->belongsTo(PerformanceCycle::class, 'performance_cycle_id');
     }
 
-    // الموظف صاحب التقييم
     public function employee(): BelongsTo
     {
         return $this->belongsTo(EmployeeProfile::class, 'employee_profile_id');
     }
 
-    // القسم الذي كان الموظف فيه وقت التقييم
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class, 'department_id');
     }
 
-    // القرارات الإدارية المرتبطة بهذا التقييم
     public function actions(): HasMany
     {
         return $this->hasMany(PerformanceAction::class, 'performance_evaluation_id');
@@ -67,19 +65,16 @@ class PerformanceEvaluation extends Model
 
     // ─── Scopes ───────────────────────────────────────────────────
 
-    // الموظفون المؤهلون للتقييم (ولم يتم استثناؤهم)
     public function scopeEligible(Builder $query): Builder
     {
         return $query->where('status', 'eligible');
     }
 
-    // الموظفون المستثنون بسبب الإجازة
     public function scopeExcludedByVacation(Builder $query): Builder
     {
         return $query->where('status', 'excluded_vacation');
     }
 
-    // الموظفون الذين تم إنهاء تقييمهم بنجاح
     public function scopeEvaluated(Builder $query): Builder
     {
         return $query->where('status', 'evaluated');
@@ -88,7 +83,7 @@ class PerformanceEvaluation extends Model
     // ─── Calculations ─────────────────────────────────────────────
 
     /**
-     * حساب الدرجة الكلية للأداء من 100 بناءً على أوزان المكونات الديناميكية المفعلة
+     * حساب الدرجة النهائية من المكونات الديناميكية المفعلة
      */
     public function calculateFinalScore(): float
     {
@@ -97,41 +92,31 @@ class PerformanceEvaluation extends Model
         }
 
         $cycle = $this->performanceCycle;
-        if (!$cycle) {
+        if (! $cycle) {
             return 0.00;
         }
 
-        // جلب المكونات المفعلة للدورة الحالية
         $components = $cycle->components()->where('is_active', true)->get();
-        
+
+        $scoreMap = [
+            'tasks'           => floatval($this->tasks_score      ?? 0),
+            'manager'         => floatval($this->manager_score    ?? 0),
+            'peer'            => floatval($this->peer_score       ?? 0),
+            'attendance'      => floatval($this->attendance_score ?? 0),
+            'overtime'        => floatval($this->overtime_score   ?? 0), // ✅
+            'self_assessment' => floatval($this->self_score       ?? 0),
+            'self'            => floatval($this->self_score       ?? 0),
+        ];
+
         $totalScore = 0.00;
-        
+
         foreach ($components as $component) {
-            $score = 0.00;
-            switch ($component->component_key) {
-                case 'tasks':
-                    $score = floatval($this->tasks_score ?? 0);
-                    break;
-                case 'manager':
-                    $score = floatval($this->manager_score ?? 0);
-                    break;
-                case 'peer':
-                    $score = floatval($this->peer_score ?? 0);
-                    break;
-                case 'attendance':
-                    $score = floatval($this->attendance_score ?? 0);
-                    break;
-                case 'self_assessment':
-                case 'self':
-                    $score = floatval($this->self_score ?? 0);
-                    break;
-            }
-            
+            $score       = $scoreMap[$component->component_key] ?? 0.00;
             $totalScore += ($score * floatval($component->weight)) / 100;
         }
-        
+
         $this->final_score = round($totalScore, 2);
-        
+
         return $this->final_score;
     }
 }
