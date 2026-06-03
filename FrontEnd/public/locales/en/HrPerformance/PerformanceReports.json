@@ -1,0 +1,21 @@
+{
+    "title":"Employee Performance Reports",
+    "des":"Inspect final consolidated cycle grades, view AI recommended gaps, and export reports",
+    "Export":"Export Report (CSV)",
+    "Consolidated":"Consolidated Evaluation Scorecard",
+    "Selection":"Cycle Selection",
+    "First":"First Quarter",
+    "Fourth":"Fourth Quarter",
+    "table":{
+        "Employee":"Employee Name",
+        "Department":"Department",
+        "Task":"Task",
+        "Manager":"Manager",
+        "Peers":"Peers",
+        "Attend":"Attend",
+        "Overtime":"Overtime",
+        "Grade":"Final Grade",
+        "Decision":"Auto Decision"
+    },
+    "Gaps":"Identified Competency Gaps"
+}

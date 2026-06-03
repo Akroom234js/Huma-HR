@@ -2,3 +2,98 @@
 .performance-container {
     padding: 20px;
 }
+ /* Score weights preview elements */
+    .weights-grid-hr {
+      display: grid;
+      /* grid-template-columns: repeat(5, 1fr); */
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .weight-metric-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--glass-border);
+      padding: 12px;
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+
+    .weight-metric-title {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .weight-metric-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-top: 6px;
+    }
+
+    .weight-metric-weight {
+      font-size: 10px;
+      color: var(--primary-color);
+      margin-top: 2px;
+    }
+
+    /* AI recommendation tags inside expandable rows */
+    .expand-ai-section {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.05) 0%, rgba(53, 158, 255, 0.02) 100%);
+      border: 1px solid rgba(168, 85, 247, 0.15);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-top: 16px;
+    }
+
+    .gap-pill {
+      background: rgba(239, 68, 68, 0.08);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .rec-item {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-top: 6px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .rec-item i {
+      color: var(--purple-500);
+      margin-top: 3px;
+    }
+    .fl-per{
+      display: flex;
+      padding-inline-end: 50px;
+      justify-content: space-between;
+    }
+    button.pos-per{
+     height: fit-content;
+    }
+    .detail-row.expanded {
+    display: table-row;
+}
+
+.detail-row {
+    display: none;
+    background: rgba(0, 0, 0, 0.15);
+}
+.fl-per-re{
+  display: flex;
+  justify-content: space-between;
+}
+.AIRecommendationCard{
+  width: 50%;
+}
