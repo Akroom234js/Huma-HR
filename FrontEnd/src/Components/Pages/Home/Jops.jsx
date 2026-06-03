@@ -282,6 +282,53 @@ export default function Jops() {
             </div>
           </div>
         </div>
+
+        {/* Smart Recruitment System Section */}
+        <div className={`hiring-system-section ${isRtl ? "rtl" : "ltr"}`}>
+          <div className="con-tit">
+            <h3>{isRtl ? "نظام التوظيف الذكي" : "Smart Recruitment System"}</h3>
+            <p>
+              {isRtl
+                ? "نحن نستخدم تقنيات الذكاء الاصطناعي لتبسيط عمليات التوظيف وجعلها سريعة وشفافة."
+                : "We utilize advanced AI technology to streamline the application process and track candidates with full transparency."}
+            </p>
+          </div>
+          <div className="hiring-cards">
+            <div className="hiring-card">
+              <span className="hiring-icon-wrapper" style={{ backgroundColor: "rgba(19, 131, 237, 0.1)" }}>
+                <i className="material-icons" style={{ color: "#1383ed" }}>auto_awesome</i>
+              </span>
+              <h3>{isRtl ? "تقييم السير الذاتية بالذكاء الاصطناعي" : "AI CV Screening"}</h3>
+              <p>
+                {isRtl
+                  ? "يقوم النظام بتحليل خبراتك وربطها بالوظيفة الأنسب بشكل عادل وسريع لتسريع عملية التقييم الأولية."
+                  : "Our system analyzes your skills and matches them with the ideal position quickly and fairly to accelerate initial screening."}
+              </p>
+            </div>
+            <div className="hiring-card">
+              <span className="hiring-icon-wrapper" style={{ backgroundColor: "rgba(147, 51, 234, 0.1)" }}>
+                <i className="material-icons" style={{ color: "#9333ea" }}>track_changes</i>
+              </span>
+              <h3>{isRtl ? "تتبع مباشر وشفاف لحالة الطلب" : "Real-Time Tracking"}</h3>
+              <p>
+                {isRtl
+                  ? "كن على علم بكل خطوة! يمكنك تتبع حالة طلبك ومرحلته الحالية مباشرة من خلال لوحة المتابعة."
+                  : "Stay informed! Track your application status and see which recruitment stage you are in, in real-time."}
+              </p>
+            </div>
+            <div className="hiring-card">
+              <span className="hiring-icon-wrapper" style={{ backgroundColor: "rgba(234, 88, 12, 0.1)" }}>
+                <i className="material-icons" style={{ color: "#ea580c" }}>calendar_today</i>
+              </span>
+              <h3>{isRtl ? "جدولة فورية للمقابلات" : "Automated Interviewing"}</h3>
+              <p>
+                {isRtl
+                  ? "إذا تم قبول ملفك الأولي، ستصلك دعوة فورية لتحديد موعد المقابلة المناسب لك تلقائياً."
+                  : "If shortlisted, you will receive an automated invitation to select the interview slot that fits you best."}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <Footer />
