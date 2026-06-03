@@ -2,6 +2,12 @@ import React from 'react';
 import './AIRecommendationCard.css';
 
 const AIRecommendationCard = ({
+    // programName = '',
+    // reason = '',
+    // suitability = 100,
+    // learningSequence = [],
+    // lang
+     recommendation,
     programName = '',
     reason = '',
     suitability = 100,
@@ -10,6 +16,15 @@ const AIRecommendationCard = ({
 }) => {
     const currentLang = lang || sessionStorage.getItem('lang') || 'en';
     const isAr = currentLang === 'ar';
+
+    const title =
+        recommendation?.courseName || programName;
+
+    const description =
+        recommendation?.reason || reason;
+
+    const fit =
+        recommendation?.matchingScore || suitability;
 
     return (
         <div className="performance-ai-rec-card">
@@ -21,15 +36,22 @@ const AIRecommendationCard = ({
             <div className="ai-rec-header">
                 <h4 className="ai-rec-title">
                     <i className="fa-solid fa-graduation-cap header-icon"></i>
-                    <span>{programName}</span>
+                    {/* <span>{programName}</span> */}
+                    <span>{title}</span>
                 </h4>
                 <div className="ai-suitability-badge">
                     <span className="suitability-label">{isAr ? 'الملائمة:' : 'Fit:'}</span>
-                    <span className="suitability-val">{suitability}%</span>
+                    <span className="suitability-val">
+                      {/* {suitability}% */}
+                      {fit}%
+                      </span>
                 </div>
             </div>
 
-            <p className="ai-rec-reason">{reason}</p>
+            <p className="ai-rec-reason">
+              {/* {reason} */}
+               {description}
+              </p>
 
             {learningSequence && learningSequence.length > 0 && (
                 <div className="learning-sequence-section">

@@ -1,4 +1,251 @@
-﻿/* CSS for PerformanceReport component */
-.performance-container {
-    padding: 20px;
+﻿.performance-report-container {
+  box-sizing: border-box;
+  padding: 20px;
+}
+
+.top-header {
+  margin-bottom: 32px;
+}
+
+.page-title h1 {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.page-title p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+
+
+.score-radial-progress {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+    background: conic-gradient(
+    var(--border-light, #2a2d3d) 0% 100-
+  );
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.score-radial-progress::before {
+  content: "";
+  position: absolute;
+  inset: 0; 
+  border-radius: 50%;
+  
+  background: conic-gradient(
+    var(--color-success, #10b981) 0% calc(var(--score) * 1%),
+    transparent calc(var(--score) * 1%) 100%
+  );
+  
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 10px),
+    #000 calc(100% - 10px)
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 10px),
+    #000 calc(100% - 10px)
+  );
+  z-index: 1;
+}
+
+
+.radial-inner {
+  position: relative;
+  z-index: 2; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.big-score-number {
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--color-success, #10b981);
+}
+
+.score-max-text {
+  font-size: 11px;
+  color: var(--text-muted, #888);
+  margin-top: 5px;
+}
+
+.report-grid-layout {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 1024px) {
+  .report-grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.left-report-column, .right-report-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.main-card {
+  background: var(--bg-card, #1e1e2f);
+  border: 1px solid var(--border-color, #2d2d44);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.card-header-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-light, #2a2d3d);
+  padding-bottom: 12px;
+}
+
+.consolidated-flex-content {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .consolidated-flex-content {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.decision-info-block {
+  flex: 1;
+}
+
+.decision-mini-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.decision-paragraph-desc {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.weighting-rules-footer {
+  border-top: 1px solid var(--border-light, #2a2d3d);
+  padding-top: 16px;
+}
+
+.weighting-rules-footer p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+.meta-encryption-tag, .meta-engine-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.meta-encryption-tag {
+  color: var(--text-muted);
+}
+
+.meta-engine-tag {
+  color: var(--purple-ai, #a78bfa);
+}
+
+.purple-text {
+  color: var(--purple-ai, #a78bfa);
+}
+
+.section-intro {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+.comments-quotes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.peer-comment-quote-box {
+  background: var(--border-light, #2a2d3d);
+  border: 1px solid var(--border-color, #2d2d44);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.peer-comment-quote-box p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.8;
+  font-style: italic;
+  color: var(--text-main);
+}
+
+.gaps-tags-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ai-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.components-bars-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sm-theme-toggle-wrapper {
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .main-card {
+    padding: 18px;
+  }
+  
+  .card-header-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .big-score-number {
+    font-size: 28px;
+  }
+  
+  .score-radial-progress {
+    width: 120px;
+    height: 120px;
+  }
 }
