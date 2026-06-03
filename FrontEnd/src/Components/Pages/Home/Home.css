@@ -1,6 +1,7 @@
 .container1 {
   background: linear-gradient(-45deg, #1e3a8a, #1383ed, #1d4ed8, #3b82f6, #1e40af);
   background-size: 400% 400%;
+  background-repeat: no-repeat;
   animation: gradientBG 15s ease infinite;
   width: 100%;
   height: 90vh;
@@ -1025,29 +1026,29 @@
 
 .footer {
   width: 100%;
-  height: 55vh;
+  height: auto;
+  min-height: 45vh;
   background: var(--primary-gradient);
   display: flex;
-  justify-content: space-evenly;
-  padding: 0px 0px 0px 30px;
-  align-items: center;
+  justify-content: space-between;
+  padding: 60px 8% 80px 8%;
+  align-items: flex-start;
   color: var(--text-on-primary);
 }
 
 .footer .one {
-  width: 30%;
-  height: 30vh;
-  margin-right: 140px;
+  width: 28%;
+  height: auto;
 }
 
 .footer .two {
-  width: 30%;
-  height: 30vh;
+  width: 22%;
+  height: auto;
 }
 
 .footer .three {
-  width: 30%;
-  height: 30vh;
+  width: 38%;
+  height: auto;
 }
 
 .footer p {
@@ -1072,31 +1073,14 @@
 }
 
 .three {
-  margin-left: 30px;
+  margin-left: 0;
 }
 
-.three input {
-  width: 75%;
-  height: 40px;
-  display: block;
-  border-radius: 12px;
-  background-color: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  color: var(--text-on-primary);
-  padding: 0 10px;
-}
-
+.three input,
 .three button {
-  width: 75%;
-  height: 40px;
-  color: var(--primary-color);
-  /* margin-top: 10px; */
-  border: none;
-  background-color: var(--text-on-primary);
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 16px;
-  cursor: pointer;
+  display: unset;
+  width: unset;
+  height: 45px;
 }
 
 .end {
@@ -1813,7 +1797,7 @@
 }
 
 .footer-links-bottom a {
-  color: #64748b;
+  color: #ffffff;
   text-decoration: none;
   font-size: 0.875rem;
 }
@@ -2037,6 +2021,8 @@
 
 [data-theme="dark"] .poop2 {
   background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
   border-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -2046,20 +2032,25 @@
 }
 
 [data-theme="dark"] .main-content-sections {
-  background: linear-gradient(to bottom, #0f172a 0%, #1e3a8a 100%);
+  background: transparent;
 }
 
 [data-theme="dark"] .container2,
 [data-theme="dark"] .container3,
 [data-theme="dark"] .container4,
 [data-theme="dark"] .container41,
-[data-theme="dark"] .poop_jops {
+[data-theme="dark"] .poop_jops,
+[data-theme="dark"] .performance-showcase-section {
   background: transparent;
 }
 
-[data-theme="dark"] .footer,
+[data-theme="dark"] .footer {
+  background: #090d16;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
 [data-theme="dark"] .end {
-  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+  background: #090d16;
 }
 
 [data-theme="dark"] .nav-links a.active {
@@ -3147,6 +3138,72 @@
     margin: 0px 15px 3px -2px;
     padding-bottom: 20px;
   }
+}
+
+/* Custom Header & Footer Improvements */
+
+/* 1. Make translation (globe) and theme toggle icons always white on the home navbar */
+.nav-links .translation,
+.nav-links .translation i,
+.nav-links .translation p,
+.nav-links .theme-toggle,
+.nav-links .theme-toggle .material-symbols-outlined,
+.nav-links .theme-toggle span {
+  color: #ffffff;
+}
+
+.nav-links .translation:hover,
+.nav-links .translation:hover i,
+.nav-links .translation:hover p,
+.nav-links .theme-toggle:hover,
+.nav-links .theme-toggle:hover .material-symbols-outlined,
+.nav-links .theme-toggle:hover span {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* 2. Make all footer text always white */
+.footer,
+.footer p,
+.footer h3,
+.footer .contact-item,
+.footer .contact-item span,
+.footer .brand-logo,
+.footer .brand-logo h3,
+.footer .brand-logo span {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .footer p,
+[data-theme="dark"] .footer h3,
+[data-theme="dark"] .footer .contact-item,
+[data-theme="dark"] .footer .contact-item span {
+  color: #ffffff;
+}
+
+/* 3. Make the email input field in the footer larger with white text */
+.newsletter-box input {
+  flex: 2;
+  min-width: 280px !important;
+  padding: 1rem 1.25rem !important;
+  font-size: 1rem;
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 0.75rem;
+}
+
+.newsletter-box input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.newsletter-box button {
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 
