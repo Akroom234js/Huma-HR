@@ -261,24 +261,27 @@ export default function Jops() {
         </div>
 
         <div className="container41">
-          <h4>
+          <div className="con-tit">
             <h3>{t("howToApply.title")}</h3>
-          </h4>
+          </div>
           <div className="con_cart2">
             <div>
               <span>1</span>
               <h3>{t("howToApply.step1Title")}</h3>
               <p>{t("howToApply.step1Desc")}</p>
+              <i className="material-icons card-watermark">upload_file</i>
             </div>
             <div>
               <span>2</span>
               <h3>{t("howToApply.step2Title")}</h3>
               <p>{t("howToApply.step2Desc")}</p>
+              <i className="material-icons card-watermark">find_in_page</i>
             </div>
             <div>
               <span>3</span>
               <h3>{t("howToApply.step3Title")}</h3>
               <p>{t("howToApply.step3Desc")}</p>
+              <i className="material-icons card-watermark">forum</i>
             </div>
           </div>
         </div>
@@ -306,8 +309,8 @@ export default function Jops() {
               </p>
             </div>
             <div className="hiring-card">
-              <span className="hiring-icon-wrapper" style={{ backgroundColor: "rgba(147, 51, 234, 0.1)" }}>
-                <i className="material-icons" style={{ color: "#9333ea" }}>track_changes</i>
+              <span className="hiring-icon-wrapper" style={{ backgroundColor: "rgba(19, 131, 237, 0.1)" }}>
+                <i className="material-icons" style={{ color: "#1383ed" }}>track_changes</i>
               </span>
               <h3>{isRtl ? "تتبع مباشر وشفاف لحالة الطلب" : "Real-Time Tracking"}</h3>
               <p>
@@ -317,8 +320,8 @@ export default function Jops() {
               </p>
             </div>
             <div className="hiring-card">
-              <span className="hiring-icon-wrapper" style={{ backgroundColor: "rgba(234, 88, 12, 0.1)" }}>
-                <i className="material-icons" style={{ color: "#ea580c" }}>calendar_today</i>
+              <span className="hiring-icon-wrapper" style={{ backgroundColor: "rgba(19, 131, 237, 0.1)" }}>
+                <i className="material-icons" style={{ color: "#1383ed" }}>calendar_today</i>
               </span>
               <h3>{isRtl ? "جدولة فورية للمقابلات" : "Automated Interviewing"}</h3>
               <p>

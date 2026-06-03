@@ -817,7 +817,7 @@
 .con-tit h3 {
   font-size: 38px !important;
   font-weight: 900;
-  background: linear-gradient(135deg, var(--primary-color) 0%, #a855f7 50%, #db2777 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, #1383ed 50%, #1e3a8a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent !important;
   color: transparent !important;
@@ -911,35 +911,81 @@
 
 .con_cart2 div {
   width: 30%;
-  padding: 3rem 2rem;
+  min-width: 280px;
+  padding: 3.5rem 2.5rem;
   background: var(--bg-card);
-  border-radius: 1.5rem;
-  border: none;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border-radius: 2rem;
+  border: 1px solid var(--border-color);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   box-shadow: var(--shadow-sm);
   margin-top: 40px;
+  position: relative;
+  overflow: hidden;
 }
 
 .con_cart2 div:hover {
   transform: translateY(-8px);
-  box-shadow: var(--shadow-lg);
   border-color: var(--primary-color);
+  box-shadow: 0 20px 40px rgba(53, 158, 255, 0.12);
 }
 
 .con_cart2 span {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   color: white;
-  font-weight: 700;
-  width: 50px;
-  height: 50px;
-  background-color: var(--primary-color);
+  font-weight: 800;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--primary-color) 0%, #1d4ed8 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 0 0 4px rgba(53, 158, 255, 0.15);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 2;
+}
+
+.con_cart2 div:hover span {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(53, 158, 255, 0.35), 0 0 0 5px rgba(53, 158, 255, 0.25);
+}
+
+.con_cart2 h3 {
+  z-index: 2;
+}
+
+/* Watermark styles inside cards */
+.card-watermark {
+  position: absolute;
+  bottom: -20px;
+  inset-inline-end: -20px;
+  font-size: 9rem !important;
+  color: rgba(53, 158, 255, 0.04);
+  pointer-events: none;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: rotate(-15deg);
+  z-index: 1;
+}
+
+.con_cart2 div:hover .card-watermark {
+  transform: rotate(0deg) scale(1.1);
+  color: rgba(53, 158, 255, 0.08);
+}
+
+[data-theme="dark"] .con_cart2 div {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .card-watermark {
+  color: rgba(255, 255, 255, 0.02);
+}
+
+[data-theme="dark"] .con_cart2 div:hover .card-watermark {
+  color: rgba(255, 255, 255, 0.04);
 }
 
 .container5 {
@@ -2379,29 +2425,14 @@
 }
 
 /* Individual card glow colors on hover */
-.con_cart div:nth-child(1):hover {
+.con_cart div:nth-child(1):hover,
+.con_cart div:nth-child(2):hover,
+.con_cart div:nth-child(3):hover,
+.con_cart div:nth-child(4):hover,
+.con_cart div:nth-child(5):hover,
+.con_cart div:nth-child(6):hover {
   border-color: #1383ed;
   box-shadow: 0 10px 30px rgba(19, 131, 237, 0.15);
-}
-.con_cart div:nth-child(2):hover {
-  border-color: #9333ea;
-  box-shadow: 0 10px 30px rgba(147, 51, 234, 0.15);
-}
-.con_cart div:nth-child(3):hover {
-  border-color: #0d9448;
-  box-shadow: 0 10px 30px rgba(13, 148, 72, 0.15);
-}
-.con_cart div:nth-child(4):hover {
-  border-color: #ea580c;
-  box-shadow: 0 10px 30px rgba(234, 88, 12, 0.15);
-}
-.con_cart div:nth-child(5):hover {
-  border-color: #db2777;
-  box-shadow: 0 10px 30px rgba(219, 39, 119, 0.15);
-}
-.con_cart div:nth-child(6):hover {
-  border-color: #4f46e5;
-  box-shadow: 0 10px 30px rgba(79, 70, 233, 0.15);
 }
 
 /* Why choose icons bounce/rotate on card hover */
@@ -2806,14 +2837,14 @@
 
 .perf-stat-card:hover {
   transform: translateY(-8px);
-  border-color: var(--purple-ai);
-  box-shadow: 0 15px 30px rgba(168, 85, 247, 0.15);
+  border-color: var(--primary-color);
+  box-shadow: 0 15px 30px rgba(53, 158, 255, 0.15);
 }
 
 .perf-stat-number {
   font-size: 3.5rem;
   font-weight: 900;
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--purple-ai) 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, #1e3a8a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 0.5rem;
@@ -2898,15 +2929,15 @@
 .perf-pillar-fill {
   height: 100%;
   border-radius: var(--radius-full);
-  background: linear-gradient(90deg, var(--primary-color) 0%, var(--purple-ai) 100%);
+  background: linear-gradient(90deg, var(--primary-color) 0%, #1e3a8a 100%);
   width: 0%;
   transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* AI recommendations card styling */
 .perf-ai-card {
-  background: linear-gradient(135deg, rgba(53, 158, 255, 0.05) 0%, rgba(168, 85, 247, 0.05) 100%);
-  border: 1px dashed var(--purple-ai);
+  background: linear-gradient(135deg, rgba(53, 158, 255, 0.05) 0%, rgba(30, 58, 138, 0.05) 100%);
+  border: 1px dashed var(--primary-color);
   border-radius: 2rem;
   padding: 3rem;
   text-align: center;
@@ -2922,7 +2953,7 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.05) 0%, transparent 60%);
+  background: radial-gradient(circle, rgba(53, 158, 255, 0.05) 0%, transparent 60%);
   pointer-events: none;
   animation: rotateAiGlow 20s linear infinite;
 }
@@ -2938,7 +2969,7 @@
 
 .perf-ai-icon {
   font-size: 3rem;
-  color: var(--purple-ai);
+  color: var(--primary-color);
   margin-bottom: 1.5rem;
   display: inline-block;
   animation: pulseAiIcon 3s ease-in-out infinite;
@@ -2947,11 +2978,11 @@
 @keyframes pulseAiIcon {
   0%, 100% {
     transform: scale(1);
-    filter: drop-shadow(0 0 0px rgba(168, 85, 247, 0));
+    filter: drop-shadow(0 0 0px rgba(53, 158, 255, 0));
   }
   50% {
     transform: scale(1.1);
-    filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.4));
+    filter: drop-shadow(0 0 15px rgba(53, 158, 255, 0.4));
   }
 }
 
@@ -3053,19 +3084,11 @@
   opacity: 1;
 }
 
-.testimonial-card:nth-child(1):hover {
+.testimonial-card:nth-child(1):hover,
+.testimonial-card:nth-child(2):hover,
+.testimonial-card:nth-child(3):hover {
   border-color: #1383ed;
   box-shadow: 0 10px 30px rgba(19, 131, 237, 0.15);
-}
-
-.testimonial-card:nth-child(2):hover {
-  border-color: #9333ea;
-  box-shadow: 0 10px 30px rgba(147, 51, 234, 0.15);
-}
-
-.testimonial-card:nth-child(3):hover {
-  border-color: #ea580c;
-  box-shadow: 0 10px 30px rgba(234, 88, 12, 0.15);
 }
 
 .testimonial-quote-icon {

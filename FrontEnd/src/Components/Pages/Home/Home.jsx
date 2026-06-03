@@ -521,36 +521,36 @@ export default function Home() {
             <p>{t("whyChoose.analyticsDesc")}</p>
           </div>
           <div onMouseMove={handleMouseMove}>
-            <span style={{ backgroundColor: "rgba(147, 51, 234, 0.1)" }}>
-              <i className="material-icons" style={{ color: "#9333ea" }}>hub</i>
+            <span style={{ backgroundColor: "rgba(19, 131, 237, 0.1)" }}>
+              <i className="material-icons" style={{ color: "#1383ed" }}>hub</i>
             </span>
             <h3>{t("whyChoose.integrationTitle")}</h3>
             <p>{t("whyChoose.integrationDesc")}</p>
           </div>
           <div onMouseMove={handleMouseMove}>
-            <span style={{ backgroundColor: "rgba(13, 148, 136, 0.1)" }}>
-              <i className="material-icons" style={{ color: "#0d9448" }}>security</i>
+            <span style={{ backgroundColor: "rgba(19, 131, 237, 0.1)" }}>
+              <i className="material-icons" style={{ color: "#1383ed" }}>security</i>
             </span>
             <h3>{t("whyChoose.securityTitle")}</h3>
             <p>{t("whyChoose.securityDesc")}</p>
           </div>
           <div onMouseMove={handleMouseMove}>
-            <span style={{ backgroundColor: "rgba(234, 88, 12, 0.1)" }}>
-              <i className="material-icons" style={{ color: "#ea580c" }}>schedule</i>
+            <span style={{ backgroundColor: "rgba(19, 131, 237, 0.1)" }}>
+              <i className="material-icons" style={{ color: "#1383ed" }}>schedule</i>
             </span>
             <h3>{t("whyChoose.timeTitle")}</h3>
             <p>{t("whyChoose.timeDesc")}</p>
           </div>
           <div onMouseMove={handleMouseMove}>
-            <span style={{ backgroundColor: "rgba(219, 39, 119, 0.1)" }}>
-              <i className="material-icons" style={{ color: "#db2777" }}>groups</i>
+            <span style={{ backgroundColor: "rgba(19, 131, 237, 0.1)" }}>
+              <i className="material-icons" style={{ color: "#1383ed" }}>groups</i>
             </span>
             <h3>{t("whyChoose.teamTitle")}</h3>
             <p>{t("whyChoose.teamDesc")}</p>
           </div>
           <div onMouseMove={handleMouseMove}>
-            <span style={{ backgroundColor: "rgba(79, 70, 229, 0.1)" }}>
-              <i className="material-icons" style={{ color: "#4f46e5" }}>psychology</i>
+            <span style={{ backgroundColor: "rgba(19, 131, 237, 0.1)" }}>
+              <i className="material-icons" style={{ color: "#1383ed" }}>psychology</i>
             </span>
             <h3>{t("whyChoose.aiTitle")}</h3>
             <p>{t("whyChoose.aiDesc")}</p>
@@ -762,14 +762,14 @@ export default function Home() {
           </div>
 
           <div className="testimonial-card spotlight-card" onMouseMove={handleMouseMove}>
-            <span className="testimonial-quote-icon" style={{ backgroundColor: "rgba(147, 51, 234, 0.1)" }}>
-              <i className="fa-solid fa-quote-left" style={{ color: "#9333ea" }}></i>
+            <span className="testimonial-quote-icon" style={{ backgroundColor: "rgba(19, 131, 237, 0.1)" }}>
+              <i className="fa-solid fa-quote-left" style={{ color: "#1383ed" }}></i>
             </span>
             <p className="testimonial-quote">
               {t("testimonials.card2.quote")}
             </p>
             <div className="testimonial-footer">
-              <div className="testimonial-avatar" style={{ background: "linear-gradient(135deg, #9333ea, #7e22ce)" }}>
+              <div className="testimonial-avatar" style={{ background: "linear-gradient(135deg, #1383ed, #1d4ed8)" }}>
                 ER
               </div>
               <div className="testimonial-meta">
@@ -780,14 +780,14 @@ export default function Home() {
           </div>
 
           <div className="testimonial-card spotlight-card" onMouseMove={handleMouseMove}>
-            <span className="testimonial-quote-icon" style={{ backgroundColor: "rgba(234, 88, 12, 0.1)" }}>
-              <i className="fa-solid fa-quote-left" style={{ color: "#ea580c" }}></i>
+            <span className="testimonial-quote-icon" style={{ backgroundColor: "rgba(19, 131, 237, 0.1)" }}>
+              <i className="fa-solid fa-quote-left" style={{ color: "#1383ed" }}></i>
             </span>
             <p className="testimonial-quote">
               {t("testimonials.card3.quote")}
             </p>
             <div className="testimonial-footer">
-              <div className="testimonial-avatar" style={{ background: "linear-gradient(135deg, #ea580c, #c2410c)" }}>
+              <div className="testimonial-avatar" style={{ background: "linear-gradient(135deg, #1383ed, #1d4ed8)" }}>
                 DC
               </div>
               <div className="testimonial-meta">
