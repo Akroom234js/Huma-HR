@@ -97,3 +97,6 @@
 .AIRecommendationCard{
   width: 50%;
 }
+  td.grade-hr,th.grade-hr{
+          color: var(--primary-color);
+    }

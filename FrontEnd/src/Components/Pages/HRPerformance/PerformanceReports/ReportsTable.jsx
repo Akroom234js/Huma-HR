@@ -35,7 +35,7 @@ export default function ReportsTable(){
                 <td>{num[2]}</td>
                 <td>{num[3]}</td>
                 <td>{num[4]}</td>
-                <td >{num[5]}</td>
+                <td className='grade-hr'>{num[5]}</td>
                 <td><span ><DecisionBadge decision="bonus"/></span></td>
               
               </tr>

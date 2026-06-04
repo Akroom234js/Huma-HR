@@ -48,7 +48,7 @@ const PerformanceReports = () => {
                 <th>{t("table.Peers")} (15%)</th>
                 <th>{t("table.Attend")} (10%)</th>
                 <th>{t("table.Overtime")} (10%)</th>
-                <th >{t("table.Grade")}</th>
+                <th className='grade-hr'>{t("table.Grade")}</th>
                 <th>{t("table.Decision")}</th>
               </tr>
             </thead>
