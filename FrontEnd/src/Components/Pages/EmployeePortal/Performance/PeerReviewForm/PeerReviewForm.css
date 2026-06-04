@@ -1,4 +1,253 @@
-﻿/* CSS for PeerReviewForm component */
-.performance-container {
-    padding: 20px;
+﻿
+.peer-review-portal-container {
+    background: var(--bg-card);
+    color: var(--text-main);
+    padding: 24px;
+    min-height: 100vh;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
 }
+
+.peer-review-portal-container.rtl {
+    direction: rtl;
+    text-align: right;
+}
+
+.peer-review-portal-container.ltr {
+    direction: ltr;
+    text-align: left;
+}
+
+.peer-header-section h1 {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0 0 6px 0;
+}
+
+.peer-header-section .subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0 0 24px 0;
+}
+
+
+.privacy-guarantee-banner {
+    background: rgba(168, 85, 247, 0.08);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.privacy-icon-wrapper {
+    font-size: 22px;
+    color: var(--color-progress);
+}
+
+.privacy-text-content {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+.privacy-text-content strong {
+    color: var(--color-progress);
+}
+
+.peer-card-body {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.peer-card-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+}
+
+.card-inner-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+}
+
+
+.salt-status-badge {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+
+.peer-form-group {
+    margin-bottom: 18px;
+}
+
+.peer-form-group label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: var(--text-secondary);
+}
+
+.peer-required-label::after {
+    content: " *";
+    color: var(--color-revision);
+}
+
+
+.peer-select-input {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    color: var(--text-main);
+    font-size: 14px;
+    outline: none;
+}
+
+
+.slider-box-wrap {
+    background: var(--border-light);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.slider-label-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.slider-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.slider-counter-badge {
+    background: rgba(168, 85, 247, 0.12);
+    color: var(--color-progress);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+.peer-range-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    background: var(--border-color);
+    height: 6px;
+    border-radius: 3px;
+    outline: none;
+    margin: 12px 0;
+}
+
+.peer-range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--color-progress);
+    cursor: pointer;
+}
+
+.peer-textarea-field {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 14px;
+    color: var(--text-main);
+    font-size: 14px;
+    resize: vertical;
+}
+
+.peer-textarea-field:focus {
+    border-color: var(--color-progress);
+    outline: none;
+}
+.anonymous-validation-footer-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--border-light);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 24px;
+}
+
+.validation-meta-text h4 {
+    font-size: 14px;
+    margin: 0 0 4px 0;
+}
+
+.validation-meta-text p {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.hash-secured-badge {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--color-success);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.peer-form-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.rtl .peer-form-actions {
+    justify-content: flex-end;
+}
+
+.ltr .peer-form-actions {
+    justify-content: flex-start;
+}
+
+.btn-peer-clear {
+    background: var(--border-light);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-peer-clear:hover {
+    opacity: 0.9;
+}
+
+.btn-peer-submit {
+    background: var(--color-progress);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-peer-submit:hover {
+    opacity: 0.9;
+}
+
