@@ -1,0 +1,22 @@
+{
+    "title":"Automated Performance Actions",
+    "des":"Review, authorize, or defer action triggers queued by Huma-HR's calculation engines",
+    "pending":{
+        "Pending":"Pending Actions Pool",
+        "Type":"Action Type",
+        "Employee":"Employee Name",
+        "Department":"Department",
+        "Grade":"Final Grade",           
+        "Recommendation":"System Recommendation",
+        "Date":"Created Date",
+        "Operations":"Operations"
+    },
+    "log":{
+        "title":"Completed & Processed Actions Log (Audit Trail)",
+        "Action":"Action",
+        "Employee":"Target Employee",
+        "Date":"Date Decided",
+        "Decided":"Decided By",
+        "Status":"Status"
+    }
+}

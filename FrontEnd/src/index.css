@@ -59,6 +59,8 @@
   --radius-lg: 0.5rem;
   --radius-xl: 0.75rem;
   --radius-full: 9999px;
+    --radius-sm: 6px;
+      --radius-md: 12px;
   font-family: 'Plus Jakarta Sans', sans-serif;
 
   /* Performance Module Theme Colors */

@@ -6,6 +6,7 @@ import PerformanceDepartment from './PerformanceDepartment';
 import Card from './Card';
 import TaskStatusPool from './TaskStatusPool';
 import TasksTable from './TastsTable';
+
 const CompanyOverview = () => {
     const {t}=useTranslation("HrPerformance/CompanyOverview")
     return (
@@ -21,6 +22,7 @@ const CompanyOverview = () => {
          <TaskStatusPool/>
       </div>
       <TasksTable/>
+ 
         </div>
     );
 };

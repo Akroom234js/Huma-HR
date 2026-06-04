@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+import StatusBadge from "../../../Shared/Performance/StatusBadge/StatusBadge";
 export default function TasksTable(){
     const {t}=useTranslation("HrPerformance/CompanyOverview")
     const department=["All Departments","IT Department","Sales Division","HR Department"];
@@ -14,7 +15,10 @@ export default function TasksTable(){
                 <td>IT Department</td>
                 <td>Emily Mitchell</td>
                 <td>May 30, 2026</td>
-                <td><span className={`badge ${status[i]==="Scored"?"badge-scored":status[i]==="Pending Review"?"badge-review":status[i]==="Revision"?"badge-revision":status[i]==="Unstarted"?"badge-pending":"badge-progress"}`} >{status[i]}</span></td>
+                <td>
+                  {/* <span><StatusBadge status="Scored"/></span> */}
+                  <span className={`badge ${status[i]==="Scored"?"badge-scored":status[i]==="Pending Review"?"badge-review":status[i]==="Revision"?"badge-revision":status[i]==="Unstarted"?"badge-pending":"badge-progress"}`} >{status[i]}</span>
+                  </td>
                 <td className={`${status[i]==="Scored"?"Scored-text":"gray-text"}`}>{grad[i]}</td>
               </tr>)
     }
