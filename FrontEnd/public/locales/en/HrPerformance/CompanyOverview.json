@@ -4,7 +4,7 @@
     "card":{
         "Departments":"Total Monitored Departments",
         "Score":"Company Avg Score",
-        "Tasks":"Tasks Active Pool",
+        "Pool":"Tasks Active Pool",
         "Requires":"Requires Critical Training",
         "supervisor":"Across all supervisor queues",
         "gaps":"Flagged with performance gaps",
@@ -31,6 +31,16 @@
      "Date":"Due Date",
      "Status":"Status",
      "Grade":"Final Grade"
+    },
+    "cycle":{
+        "Cycle":"Cycle Name",
+        "Duration":"Duration Period",
+        "Tracked":"Tracked Employees",
+        "Status":"Status",
+        "Background":"Background Job Score State",
+        "Operations":"Operations",
+        "Active":"Active & Historical Cycles",
+        "Job":"Job Queue Engine Online"
     }
 
 }

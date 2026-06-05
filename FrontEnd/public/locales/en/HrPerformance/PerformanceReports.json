@@ -17,5 +17,26 @@
         "Grade":"Final Grade",
         "Decision":"Auto Decision"
     },
-    "Gaps":"Identified Competency Gaps"
+    "Gaps":"Identified Competency Gaps",
+    "new":{
+       "Start":"Start New Performance Cycle",
+       "Define":"Define the evaluation period and scope",
+       "Name":"Cycle Name",
+       "Period":"Evaluation Period",
+       "Date":"Start Date",
+       "End":"End Date" ,
+       "Scope":"Cycle Scope",
+       "Entire":"Entire Company",
+       "departments":"All departments",
+       "Specific":"Specific Dept.",
+       "Single":"Single department",
+       "PREVIEW":"CYCLE PREVIEW",
+       "Select":"Select Department",
+       "Cancel":"Cancel",
+       "Launch":"Launch Cycle"
+    },
+    "edit":"edit",
+    "delete":"delete",
+    "message":"Are you sure you want to delete?",
+    "ok":"ok"
 }
