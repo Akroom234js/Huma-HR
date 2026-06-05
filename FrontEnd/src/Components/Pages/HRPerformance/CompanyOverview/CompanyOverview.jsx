@@ -6,6 +6,7 @@ import PerformanceDepartment from './PerformanceDepartment';
 import Card from './Card';
 import TaskStatusPool from './TaskStatusPool';
 import TasksTable from './TastsTable';
+import CycleTable from './CycleTable';
 
 const CompanyOverview = () => {
     const {t}=useTranslation("HrPerformance/CompanyOverview")
@@ -21,6 +22,8 @@ const CompanyOverview = () => {
          <PerformanceDepartment/>
          <TaskStatusPool/>
       </div>
+      <CycleTable/>
+      <br/>
       <TasksTable/>
  
         </div>

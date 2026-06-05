@@ -248,7 +248,12 @@ background: var(--color-pending);
       font-size: 14px;
       outline: none;
     }
-
+.hidden-hr{
+  visibility: hidden;
+}
+.none-hr{
+  display: none !important;
+}
     .filter-group {
       display: flex;
       align-items: center;

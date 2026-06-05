@@ -70,8 +70,7 @@ const PerformanceReports = () => {
             </select>
           </div></div>
           <div>
-            <button className='btn btn-start-cycle btn-edit-cycle' onClick={()=>show()}>{t("edit")}</button>
-            <button className='btn btn-start-cycle btn-del-cycle' onClick={()=>message()}>{t("delete")}</button>
+           {/* <button className='btn btn-start-cycle btn-del-cycle' onClick={()=>message()}>{t("delete")}</button> */}
           </div>
         </div>
 
