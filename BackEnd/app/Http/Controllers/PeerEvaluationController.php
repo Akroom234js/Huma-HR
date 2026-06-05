@@ -16,9 +16,8 @@ class PeerEvaluationController extends Controller
     public function __construct(private PeerEvaluationService $service) {}
 
     // ─────────────────────────────────────────────────────────────
-    // موظف يقيّم زميله
+    // موظف يقيّم زميله في نفس القسم
     // POST /performance/peer-evaluations
-    // أي موظف مسجّل دخول
     // ─────────────────────────────────────────────────────────────
     public function store(Request $request): JsonResponse
     {
@@ -30,26 +29,41 @@ class PeerEvaluationController extends Controller
             'comment'              => ['required', 'string', 'max:2000'],
         ]);
 
-        // التأكد من أن الدورة نشطة
+        // الدورة لازم تكون active
         $cycle = PerformanceCycle::find($validated['performance_cycle_id']);
         if ($cycle->status !== 'active') {
-            return $this->errorResponse('Peer evaluations can only be submitted for active cycles.', null, 422);
+            return $this->errorResponse(
+                'Peer evaluations can only be submitted for active cycles.',
+                null,
+                422
+            );
         }
 
-        // الموظف لا يقيّم نفسه
         $evaluatorProfile = auth()->user()->employeeProfile;
-        if ($evaluatorProfile && $evaluatorProfile->id === $validated['employee_profile_id']) {
+        $targetEmployee   = EmployeeProfile::find($validated['employee_profile_id']);
+
+        // الموظف لا يقيّم نفسه
+        if ($evaluatorProfile && $evaluatorProfile->id === $targetEmployee->id) {
             return $this->errorResponse('You cannot evaluate yourself.', null, 422);
+        }
+
+        // ✅ الموظف يقيّم زملاء قسمه فقط
+        if ($evaluatorProfile && $evaluatorProfile->department_id !== $targetEmployee->department_id) {
+            return $this->errorResponse(
+                'You can only evaluate colleagues in your own department.',
+                null,
+                403
+            );
         }
 
         try {
             $evaluation = $this->service->storeEvaluation(
-                cycleId:           $validated['performance_cycle_id'],
-                employeeProfileId: $validated['employee_profile_id'],
-                evaluatorUserId:   auth()->id(),
-                collaborationScore:$validated['collaboration_score'],
-                teamworkScore:     $validated['teamwork_score'],
-                comment:           $validated['comment']
+                cycleId:            $validated['performance_cycle_id'],
+                employeeProfileId:  $validated['employee_profile_id'],
+                evaluatorUserId:    auth()->id(),
+                collaborationScore: $validated['collaboration_score'],
+                teamworkScore:      $validated['teamwork_score'],
+                comment:            $validated['comment']
             );
 
             return $this->successResponse(
@@ -78,10 +92,12 @@ class PeerEvaluationController extends Controller
         $data = [
             'employee_profile_id' => $employeeProfileId,
             'cycle_id'            => $cycleId,
-            'peer_raw_score'      => $rawScore, // من 0 إلى 100
+            'peer_raw_score'      => $rawScore,
+            'evaluations_count'   => \App\Models\PeerEvaluation::where('performance_cycle_id', $cycleId)
+                ->where('employee_profile_id', $employeeProfileId)
+                ->count(),
         ];
 
-        // HR يطلب التعليقات → يفكها
         if ($request->boolean('include_comments')) {
             $data['comments'] = $this->service->getDecryptedComments($cycleId, $employeeProfileId);
         }

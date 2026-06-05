@@ -22,6 +22,7 @@ use App\Http\Controllers\PerformanceCycleController;
 use App\Http\Controllers\ManagerEvaluationController;
 use App\Http\Controllers\PeerEvaluationController;
 use App\Http\Controllers\PerformanceActionController;
+use App\Http\Controllers\PerformanceEvaluationController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
@@ -147,11 +148,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/cycles/{cycle}', [PerformanceCycleController::class, 'show']);
 
         // ── Cycles — HR فقط ───────────────────────────────────────────────
+        // ⚠️ process-expired لازم قبل {cycle} لتجنب التعارض في الـ Route
         Route::middleware('role:hr')->group(function () {
+            Route::post('/cycles/process-expired',       [PerformanceCycleController::class, 'processExpired']);
             Route::post('/cycles',                       [PerformanceCycleController::class, 'store']);
             Route::put('/cycles/{cycle}',                [PerformanceCycleController::class, 'update']);
             Route::post('/cycles/{cycle}/activate',      [PerformanceCycleController::class, 'activate']);
-            Route::post('/cycles/process-expired',       [PerformanceCycleController::class, 'processExpired']);
+            Route::post('/cycles/{cycle}/close',         [PerformanceCycleController::class, 'close']);
+
+            // Evaluations — HR يشوف نتائج الموظفين
+            Route::get('/evaluations/{cycleId}',                   [PerformanceEvaluationController::class, 'index']);
+            Route::get('/evaluations/{cycleId}/{employeeId}',      [PerformanceEvaluationController::class, 'show']);
 
             // Actions
             Route::get('/actions',                       [PerformanceActionController::class, 'index']);

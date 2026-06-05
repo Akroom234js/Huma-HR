@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\PerformanceCycle;
+use App\Models\PerformanceTemplate;
 use App\Models\EmployeeProfile;
 use App\Models\PerformanceEvaluation;
 use App\Models\PerformanceAction;
@@ -29,11 +30,21 @@ class ProcessPerformanceJob implements ShouldQueue
     {
         Log::info("ProcessPerformanceJob: Starting for cycle #{$this->cycle->id} — {$this->cycle->title}");
 
-        $components = $this->cycle->components()
-            ->where('is_active', true)
-            ->pluck('weight', 'component_key');
+        // جلب القالب المرتبط بالدورة
+        $template = $this->cycle->template ?: PerformanceTemplate::find($this->cycle->performance_template_id);
+        if (!$template) {
+            Log::error("ProcessPerformanceJob: Template not found for cycle #{$this->cycle->id}");
+            $this->cycle->update(['status' => 'active']);
+            return;
+        }
 
-        $employees = EmployeeProfile::where('employment_status', 'active')->get();
+        $config = $template->config;
+        $components = collect($config['components'] ?? [])->filter(fn($c) => !empty($c['is_active']));
+
+        // جلب جميع الموظفين النشطين مع التحميل المسبق للعلاقات لتفادي N+1
+        $employees = EmployeeProfile::where('employment_status', 'active')
+            ->with(['department'])
+            ->get();
 
         foreach ($employees as $employee) {
             try {
@@ -58,11 +69,10 @@ class ProcessPerformanceJob implements ShouldQueue
         $startDate = Carbon::parse($this->cycle->start_date);
         $endDate   = Carbon::parse($this->cycle->end_date);
 
-        // ── الدرجات الفرعية ───────────────────────────────────────
         $taskScore = null;
         if ($components->has('tasks')) {
             $taskScore = $taskService->calculateAggregateScoreForEmployee(
-                $employee->id, $startDate, $endDate
+                $employee->id, $startDate, $endDate, $components->get('tasks')
             ) ?? 0;
         }
 
@@ -71,7 +81,21 @@ class ProcessPerformanceJob implements ShouldQueue
             $managerEval = \App\Models\ManagerEvaluation::where('performance_cycle_id', $this->cycle->id)
                 ->where('employee_profile_id', $employee->id)
                 ->first();
-            $managerScore = $managerEval?->final_score ?? 0;
+            
+            if ($managerEval) {
+                $subWeights = $components->get('manager')['sub_components'] ?? [];
+                $wProf = floatval($subWeights['professionalism']['weight'] ?? 33.33);
+                $wResp = floatval($subWeights['responsibility']['weight'] ?? 33.33);
+                $wProb = floatval($subWeights['problem_solving']['weight'] ?? 33.34);
+
+                $weightedScore = ($managerEval->professionalism * ($wProf / 100))
+                               + ($managerEval->responsibility * ($wResp / 100))
+                               + ($managerEval->problem_solving * ($wProb / 100));
+                
+                $managerScore = round($weightedScore * 10, 2);
+            } else {
+                $managerScore = 0;
+            }
         }
 
         $peerScore = null;
@@ -89,17 +113,16 @@ class ProcessPerformanceJob implements ShouldQueue
 
         $attendanceScore = null;
         if ($components->has('attendance')) {
-            $attendanceScore = $this->calculateAttendanceScore($employee->id, $startDate, $endDate);
+            $attendanceScore = $this->calculateAttendanceScore($employee->id, $startDate, $endDate, $components->get('attendance'));
         }
 
         $overtimeScore = null;
         if ($components->has('overtime')) {
-            $overtimeScore = $this->calculateOvertimeScore($employee->id, $startDate, $endDate);
+            $overtimeScore = $this->calculateOvertimeScore($employee->id, $startDate, $endDate, $components->get('overtime'));
         }
 
         $selfScore = null;
 
-        // ── الدرجة النهائية المرجحة ───────────────────────────────
         $scoreMap = [
             'tasks'           => $taskScore,
             'manager'         => $managerScore,
@@ -110,15 +133,15 @@ class ProcessPerformanceJob implements ShouldQueue
         ];
 
         $finalScore = 0.0;
-        foreach ($components as $key => $weight) {
+        foreach ($components as $key => $component) {
             $score       = floatval($scoreMap[$key] ?? 0);
-            $finalScore += ($score * $weight) / 100;
+            $finalScore += ($score * floatval($component['weight'])) / 100;
         }
         $finalScore = round($finalScore, 2);
 
         $decision = $this->determineDecision($finalScore);
 
-        // ── حفظ الـ snapshot ──────────────────────────────────────
+        // حفظ التقييم النهائي
         $evaluation = PerformanceEvaluation::updateOrCreate(
             [
                 'performance_cycle_id' => $this->cycle->id,
@@ -139,10 +162,8 @@ class ProcessPerformanceJob implements ShouldQueue
             ]
         );
 
-        // ── إنشاء الإجراء التلقائي المقترح لـ HR ─────────────────
-        // يُنشأ فقط مرة واحدة لكل تقييم
+        // إنشاء الإجراء التلقائي المقترح لـ HR
         if (! PerformanceAction::where('performance_evaluation_id', $evaluation->id)->exists()) {
-
             $hrProfile = EmployeeProfile::whereHas('user', function ($q) {
                 $q->whereHas('roles', fn($r) => $r->where('name', 'hr')->where('guard_name', 'api'));
             })->first();
@@ -155,14 +176,9 @@ class ProcessPerformanceJob implements ShouldQueue
                 'created_by'                => $hrProfile?->id ?? $employee->manager_id,
             ]);
         }
-
-        Log::info("ProcessPerformanceJob: Employee #{$employee->id} — final_score: {$finalScore} — decision: {$decision}");
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // حساب درجة الحضور
-    // ─────────────────────────────────────────────────────────────
-    private function calculateAttendanceScore(int $employeeId, Carbon $start, Carbon $end): float
+    private function calculateAttendanceScore(int $employeeId, Carbon $start, Carbon $end, array $attendanceConfig): float
     {
         $records = \App\Models\AttendanceRecord::where('employee_profile_id', $employeeId)
             ->whereBetween('date', [$start->toDateString(), $end->toDateString()])
@@ -172,24 +188,27 @@ class ProcessPerformanceJob implements ShouldQueue
             return 0;
         }
 
+        $sub = $attendanceConfig['sub_components'] ?? [];
+        $ptsFull = intval($sub['points_full_attendance'] ?? 10);
+        $ptsMinor = intval($sub['points_minor_late'] ?? 7);
+        $ptsRepeated = intval($sub['points_repeated_late'] ?? 4);
+        $ptsAbsent = intval($sub['points_absent'] ?? 0);
+
         $totalPoints = 0;
         foreach ($records as $record) {
             $totalPoints += match ($record->status) {
-                'present'       => 10,
-                'late'          => 7,
-                'repeated_late' => 4,
-                'absent'        => 0,
-                default         => 5,
+                'present'       => $ptsFull,
+                'late'          => $ptsMinor,
+                'repeated_late' => $ptsRepeated,
+                'absent'        => $ptsAbsent,
+                default         => round($ptsFull / 2),
             };
         }
 
-        return round(($totalPoints / ($records->count() * 10)) * 100, 2);
+        return round(($totalPoints / ($records->count() * $ptsFull)) * 100, 2);
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // حساب درجة العمل الإضافي
-    // ─────────────────────────────────────────────────────────────
-    private function calculateOvertimeScore(int $employeeId, Carbon $start, Carbon $end): float
+    private function calculateOvertimeScore(int $employeeId, Carbon $start, Carbon $end, array $overtimeConfig): float
     {
         $employee    = EmployeeProfile::find($employeeId);
         $deptHours   = \App\Models\DepartmentHour::where('dept', $employee?->department?->name)->first();
@@ -210,12 +229,13 @@ class ProcessPerformanceJob implements ShouldQueue
             $totalOvertimeHours += max(0, floatval($record->hours_worked) - $standardHrs);
         }
 
-        return min(100, round($totalOvertimeHours * 2, 2));
+        $sub = $overtimeConfig['sub_components'] ?? [];
+        $multiplier = floatval($sub['multiplier'] ?? 2.00);
+        $maxCap     = floatval($sub['max_score_cap'] ?? 100.00);
+
+        return min($maxCap, round($totalOvertimeHours * $multiplier, 2));
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // تحديد القرار بناءً على الدرجة
-    // ─────────────────────────────────────────────────────────────
     private function determineDecision(float $score): string
     {
         return match (true) {
@@ -226,15 +246,12 @@ class ProcessPerformanceJob implements ShouldQueue
         };
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // تحويل القرار إلى action_type
-    // ─────────────────────────────────────────────────────────────
     private function decisionToActionType(string $decision): string
     {
         return match ($decision) {
             'promotion_bonus'  => 'promotion',
             'bonus'            => 'bonus',
-            'training_required'=> 'warning', // يُقترح warning + training plan
+            'training_required'=> 'training', // تم تحسينها إلى training بدلاً من warning
             default            => 'warning',
         };
     }
@@ -245,3 +262,4 @@ class ProcessPerformanceJob implements ShouldQueue
         $this->cycle->update(['status' => 'active']);
     }
 }
+

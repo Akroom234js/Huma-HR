@@ -12,6 +12,7 @@ class PerformanceCycle extends Model
 {
     protected $fillable = [
         'title',
+        'performance_template_id',
         'start_date',
         'end_date',
         'status',
@@ -40,7 +41,13 @@ class PerformanceCycle extends Model
         return $this->belongsTo(EmployeeProfile::class, 'approved_by');
     }
 
-    // مكونات الدورة والأوزان المرتبطة بها
+    // القالب المرتبط بالدورة
+    public function template(): BelongsTo
+    {
+        return $this->belongsTo(PerformanceTemplate::class, 'performance_template_id');
+    }
+
+    // المكونات والأوزان المرتبطة بها (للإبقاء على التوافقية القديمة إن لزم الأمر)
     public function components(): HasMany
     {
         return $this->hasMany(PerformanceCycleComponent::class, 'performance_cycle_id');
@@ -102,11 +109,38 @@ class PerformanceCycle extends Model
     }
 
     /**
-     * التحقق من أن مجموع أوزان المكونات المفعلة يساوي تماماً 100%
+     * التحقق ديناميكياً من أن مجموع أوزان المكونات المفعلة يساوي تماماً 100%
      */
     public function areWeightsValid(): bool
     {
-        $total = $this->components()->where('is_active', true)->sum('weight');
+        $template = $this->template ?: PerformanceTemplate::find($this->performance_template_id);
+        if (!$template) {
+            return false;
+        }
+
+        $config = $template->config;
+        if (!isset($config['components'])) {
+            return false;
+        }
+
+        $total = 0.0;
+        foreach ($config['components'] as $key => $component) {
+            if (!empty($component['is_active'])) {
+                $total += floatval($component['weight']);
+                
+                // التأكد من أن المكونات الفرعية للمدير تساوي 100% أيضاً
+                if ($key === 'manager' && isset($component['sub_components'])) {
+                    $subTotal = 0.0;
+                    foreach ($component['sub_components'] as $sub) {
+                        $subTotal += floatval($sub['weight']);
+                    }
+                    if (round($subTotal, 2) !== 100.00) {
+                        return false;
+                    }
+                }
+            }
+        }
+
         return round($total, 2) === 100.00;
     }
 }
