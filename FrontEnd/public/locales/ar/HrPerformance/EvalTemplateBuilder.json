@@ -1,0 +1,85 @@
+{
+  "title": "منشئ قالب التقييم",
+  "subtitle": "حدّد مكونات التقييم وأوزانها ونسبها قبل فتح دورة أداء جديدة",
+  "save_template": "حفظ القالب",
+  "saved": "تم الحفظ!",
+  "template_name": "اسم القالب",
+  "default_template_name": "القالب الافتراضي للشركة",
+  "tabs": {
+    "components": "المكونات والأوزان",
+    "decisions": "عتبات القرارات",
+    "preview": "معاينة المعادلة"
+  },
+  "total_weight": "مجموع الأوزان:",
+  "must_equal_100": "يجب أن يساوي 100%",
+  "auto_distribute": "توزيع تلقائي",
+  "internal_settings": "الإعدادات الداخلية",
+  "total_internal_weight": "مجموع الأوزان الداخلية:",
+  "must_equal_100_internal": " — يجب أن يساوي 100%",
+  "active": "مفعَّل",
+  "inactive": "معطَّل",
+  "represents_pct": "يُشكّل {{weight}}% من الدرجة النهائية",
+  "disabled_hint": "مُعطَّل — لن يُحسب في الدرجة النهائية",
+  "weight": "الوزن",
+  "decisions_info": "عتبات القرارات تُحدّد الإجراء التلقائي الذي يقترحه النظام بعد حساب الدرجة النهائية لكل موظف.",
+  "min": "الحد الأدنى",
+  "max": "الحد الأقصى",
+  "point": "نقطة",
+  "point_plural": "نقاط",
+  "decision_timeline": "الجدول الزمني للقرارات",
+  "final_score_formula": "معادلة الدرجة النهائية",
+  "final_score": "الدرجة النهائية",
+  "days_late": "أيام التأخير",
+  "max_cap": "حد أقصى",
+  "auto_decisions_table": "جدول القرارات التلقائية",
+  "json_payload": "JSON المُرسَل للباك اند",
+  "copy": "نسخ",
+  "components": {
+    "tasks": {
+      "label": "درجة المهام",
+      "sub_components": {
+        "completion_weight": "وزن الاكتمال",
+        "quality_weight": "وزن الجودة",
+        "late_penalty_per_day_percent": "خصم التأخير اليومي",
+        "max_late_penalty_percent": "الحد الأقصى للخصم"
+      }
+    },
+    "manager": {
+      "label": "درجة المدير",
+      "sub_components": {
+        "professionalism": "الاحترافية",
+        "responsibility": "المسؤولية",
+        "problem_solving": "حل المشكلات"
+      }
+    },
+    "peer": {
+      "label": "درجة الزملاء",
+      "sub_components": {
+        "teamwork": "العمل الجماعي",
+        "cooperation": "التعاون"
+      }
+    },
+    "attendance": {
+      "label": "درجة الحضور",
+      "sub_components": {
+        "points_full_attendance": "حضور كامل",
+        "points_minor_late": "تأخير بسيط",
+        "points_repeated_late": "تأخير متكرر",
+        "points_absent": "غياب"
+      }
+    },
+    "overtime": {
+      "label": "العمل الإضافي",
+      "sub_components": {
+        "multiplier": "معامل الحساب",
+        "max_score_cap": "الحد الأقصى"
+      }
+    }
+  },
+  "decision_thresholds": {
+    "promotion_bonus": "ترقية + مكافأة",
+    "bonus": "مكافأة",
+    "training_required": "يتطلب تدريباً",
+    "warning": "إنذار"
+  }
+}
