@@ -61,6 +61,7 @@ import Chat from './Components/Pages/EmployeePortal/Chat/Chat';
 import CompanyOverview from './Components/Pages/HRPerformance/CompanyOverview/CompanyOverview';
 import HRPerformanceReports from './Components/Pages/HRPerformance/PerformanceReports/PerformanceReports';
 import AutoActionsHub from './Components/Pages/HRPerformance/AutoActionsHub/AutoActionsHub';
+import EvalTemplateBuilder from './Components/Pages/HRPerformance/EvalTemplateBuilder/EvalTemplateBuilder';
 
 // Employee Performance Portal Pages
 import MyTasksPortal from './Components/Pages/EmployeePortal/Performance/MyTasksPortal/MyTasksPortal';
@@ -233,6 +234,7 @@ function App() {
                     <Route path="/" element={<CompanyOverview />} />
                     <Route path="reports" element={<HRPerformanceReports />} />
                     <Route path="actions" element={<AutoActionsHub />} />
+                    <Route path="template-builder" element={<EvalTemplateBuilder />} />
                   </Routes>
                 </main>
               </div>

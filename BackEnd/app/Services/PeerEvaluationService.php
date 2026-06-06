@@ -3,134 +3,98 @@
 namespace App\Services;
 
 use App\Models\PeerEvaluation;
-use App\Models\PerformanceCycleComponent;
-use Illuminate\Support\Facades\Config;
+use App\Models\PerformanceCycle;
+use App\Models\EmployeeProfile;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class PeerEvaluationService
 {
-    // ─────────────────────────────────────────────────────────────
-    // توليد anonymous token (حتمي — نفس المدخلات = نفس الـ token)
-    // ─────────────────────────────────────────────────────────────
-    public function generateAnonymousToken(int $evaluatorUserId, int $employeeProfileId, int $cycleId): string
+    /**
+     * Generate a deterministic anonymous token for a given evaluator and cycle.
+     * Uses HMAC‑SHA256 with the secret salt stored in env('PEER_EVAL_SALT').
+     */
+    public function generateAnonymousToken(int $evaluatorId, int $cycleId): string
     {
-        $payload = $evaluatorUserId . ':' . $employeeProfileId . ':' . $cycleId . ':' . Config::get('peer_evaluation.salt');
-        return hash_hmac('sha256', $payload, config('app.key'));
+        $salt = config('peer_eval.salt');
+        $data = $evaluatorId . ':' . $cycleId;
+        return hash('sha256', $data . ':' . $salt);
     }
 
-    public function hashToken(string $token): string
-    {
-        return hash('sha256', $token);
-    }
-
-    // ─────────────────────────────────────────────────────────────
-    // تشفير التعليق
-    // ─────────────────────────────────────────────────────────────
+    /**
+     * Encrypt a plain‑text comment using AES‑256‑CBC.
+     * Returns an array with `encrypted` (base64) and `iv` (binary stored as base64).
+     */
     public function encryptComment(string $plain): array
     {
-        $key       = base64_decode(Config::get('peer_evaluation.aes_key'));
-        $iv        = random_bytes(16);
-        $encrypted = openssl_encrypt($plain, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
-
+        $key = hash('sha256', config('peer_eval.salt'), true); // 32‑byte key
+        $iv = random_bytes(openssl_cipher_iv_length('aes-256-cbc'));
+        $encrypted = openssl_encrypt($plain, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
         return [
-            'encrypted' => base64_encode($encrypted),
-            'iv'        => $iv,
+                        'encrypted' => base64_encode($encrypted),
+            'iv'        => base64_encode($iv),
         ];
     }
 
-    public function decryptComment(string $encryptedBase64, string $iv): string
+    /**
+     * Decrypt the stored comment.
+     */
+    public function decryptComment(string $encryptedBase64, string $ivBase64): string
     {
-        $key       = base64_decode(Config::get('peer_evaluation.aes_key'));
+        $key = hash('sha256', config('peer_eval.salt'), true);
+        $iv = base64_decode($ivBase64);
         $encrypted = base64_decode($encryptedBase64);
-        return openssl_decrypt($encrypted, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
+        $decrypted = openssl_decrypt($encrypted, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+        return $decrypted ?: '';
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // حفظ تقييم زميل جديد
-    // ─────────────────────────────────────────────────────────────
-    public function storeEvaluation(
-        int    $cycleId,
-        int    $employeeProfileId,
-        int    $evaluatorUserId,
-        int    $collaborationScore,
-        int    $teamworkScore,
-        string $comment
-    ): PeerEvaluation {
+    /**
+     * Store a peer evaluation ensuring one‑time submission per evaluator per cycle.
+     */
+    public function storeEvaluation(int $cycleId, int $evaluatorId, int $evaluateeId, int $collaborationScore, int $teamworkScore, string $comment): PeerEvaluation
+    {
+        // Generate token hash (unique per evaluator+cycle)
+        $token = $this->generateAnonymousToken($evaluatorId, $cycleId);
 
-        $token = $this->generateAnonymousToken($evaluatorUserId, $employeeProfileId, $cycleId);
-        $hash  = $this->hashToken($token);
-
-        // منع التقييم المكرر
-        if (PeerEvaluation::where('token_hash', $hash)->exists()) {
-            throw new \RuntimeException('You have already evaluated this employee in this cycle.');
+        // Prevent duplicate submission
+        $exists = PeerEvaluation::where('performance_cycle_id', $cycleId)
+            ->where('employee_profile_id', $evaluateeId)
+            ->where('token_hash', $token)
+            ->exists();
+        if ($exists) {
+            throw new \Exception('Evaluator has already submitted for this employee in this cycle.');
         }
 
+        // Encrypt comment
         $enc = $this->encryptComment($comment);
 
         return PeerEvaluation::create([
             'performance_cycle_id' => $cycleId,
-            'employee_profile_id'  => $employeeProfileId,
-            'token_hash'           => $hash,
-            'collaboration_score'  => $collaborationScore,
-            'teamwork_score'       => $teamworkScore,
-            'encrypted_comment'    => $enc['encrypted'],
-            'iv'                   => $enc['iv'],
+            'employee_profile_id' => $evaluateeId,
+            'token_hash'          => $token,
+            'collaboration_score' => $collaborationScore,
+            'teamwork_score'      => $teamworkScore,
+            'encrypted_comment'   => $enc['encrypted'],
+                        'iv'                  => base64_decode($enc['iv']), // store binary
         ]);
-
-        // ✅ حُذف syncAggregatedPeerScore — الحساب يصير في ProcessPerformanceJob
-        // عند إغلاق الدورة وليس عند كل تقييم
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // حساب متوسط تقييمات الزملاء لموظف في دورة (0-10)
-    // ─────────────────────────────────────────────────────────────
-    public function calculateEmployeePeerAverage(int $cycleId, int $employeeProfileId): float
+    /**
+     * Aggregate average score per evaluatee for a given cycle.
+     */
+    public function aggregateScores(int $cycleId): array
     {
-        $evaluations = PeerEvaluation::where('performance_cycle_id', $cycleId)
-            ->where('employee_profile_id', $employeeProfileId)
-            ->get();
-
-        if ($evaluations->isEmpty()) {
-            return 0.0;
-        }
-
-        $sum = $evaluations->sum(fn($e) => ($e->collaboration_score + $e->teamwork_score) / 2);
-
-        return round($sum / $evaluations->count(), 2);
-    }
-
-    // ─────────────────────────────────────────────────────────────
-    // تحويل المتوسط (0-10) إلى درجة من 100
-    // ─────────────────────────────────────────────────────────────
-    public function calculateRawPeerScore(int $cycleId, int $employeeProfileId): float
-    {
-        return round($this->calculateEmployeePeerAverage($cycleId, $employeeProfileId) * 10, 2);
-    }
-
-    // ─────────────────────────────────────────────────────────────
-    // جلب التعليقات المفككة لـ HR
-    // ─────────────────────────────────────────────────────────────
-    public function getDecryptedComments(int $cycleId, int $employeeProfileId): array
-    {
-        return PeerEvaluation::where('performance_cycle_id', $cycleId)
-            ->where('employee_profile_id', $employeeProfileId)
+        $results = PeerEvaluation::where('performance_cycle_id', $cycleId)
             ->get()
-            ->map(fn($e) => [
-                'collaboration_score' => $e->collaboration_score,
-                'teamwork_score'      => $e->teamwork_score,
-                'comment'             => $this->decryptComment($e->encrypted_comment, $e->iv),
-            ])
+            ->groupBy('employee_profile_id')
+            ->map(function ($group) {
+                $avgCollab = $group->avg('collaboration_score');
+                $avgTeam   = $group->avg('teamwork_score');
+                $avg = round(($avgCollab + $avgTeam) / 2, 2);
+                return round($avg * 10, 2);
+            })
             ->toArray();
-    }
-
-    // ─────────────────────────────────────────────────────────────
-    // جلب وزن مكوّن peer من الدورة
-    // ─────────────────────────────────────────────────────────────
-    public function getPeerComponentWeight(int $cycleId): float
-    {
-        $component = PerformanceCycleComponent::where('performance_cycle_id', $cycleId)
-            ->where('component_key', 'peer')
-            ->first();
-
-        return $component ? (float) $component->weight : 15.0;
+        return $results; // [employeeId => avgScore]
     }
 }
+?>

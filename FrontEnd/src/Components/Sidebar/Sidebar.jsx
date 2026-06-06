@@ -248,6 +248,9 @@ const Sidebar = () => {
                                     <NavLink to="/performance/actions" className="sub-nav-item">
                                         {t('Auto-Actions-Hub') || 'Auto-Actions Hub'}
                                     </NavLink>
+                                    <NavLink to="/performance/template-builder" className="sub-nav-item">
+                                        {t('Eval-Template-Builder') || 'منشئ قالب التقييم'}
+                                    </NavLink>
                                 </div>
                             </div>
 

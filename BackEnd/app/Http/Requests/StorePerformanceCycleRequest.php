@@ -17,10 +17,10 @@ class StorePerformanceCycleRequest extends FormRequest
             'title'                      => ['required', 'string', 'max:100'],
             'start_date'                 => ['required', 'date', 'after_or_equal:today'],
             'end_date'                   => ['required', 'date', 'after:start_date'],
-
-            'components'                 => ['required', 'array', 'min:1'],
-            'components.*.component_key' => ['required', 'string', 'in:tasks,manager,peer,attendance,overtime,self_assessment'],
-            'components.*.weight'        => ['required', 'numeric', 'min:1', 'max:100'],
+            'performance_template_id'    => ['nullable', 'exists:performance_templates,id'],
+            'components'                 => ['nullable', 'array'],
+            'components.*.component_key' => ['required_with:components', 'string', 'in:tasks,manager,peer,attendance,overtime,self_assessment'],
+            'components.*.weight'        => ['required_with:components', 'numeric', 'min:1', 'max:100'],
         ];
     }
 
@@ -50,7 +50,12 @@ class StorePerformanceCycleRequest extends FormRequest
                 }
             }
 
-            // ── 2. مجموع الأوزان = 100 بالضبط ──────────────────────────
+            // ── 2. التحقق من وجود قالب أو مكونات مخصصة ──────────────────
+            if (!$this->performance_template_id && !$this->components) {
+                $validator->errors()->add('components', 'Either a performance template or custom components must be provided.');
+            }
+
+            // ── 3. مجموع الأوزان = 100 بالضبط ──────────────────────────
             if ($this->components && is_array($this->components)) {
                 $total = collect($this->components)->sum('weight');
 
@@ -58,7 +63,7 @@ class StorePerformanceCycleRequest extends FormRequest
                     $validator->errors()->add('components', "Component weights must sum to exactly 100. Current sum: {$total}.");
                 }
 
-                // ── 3. لا يمكن تكرار نفس component_key ─────────────────
+                // ── 4. لا يمكن تكرار نفس component_key ─────────────────
                 $keys = collect($this->components)->pluck('component_key');
 
                 if ($keys->count() !== $keys->unique()->count()) {

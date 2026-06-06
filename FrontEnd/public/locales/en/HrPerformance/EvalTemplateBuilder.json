@@ -1,0 +1,85 @@
+{
+  "title": "Evaluation Template Builder",
+  "subtitle": "Define evaluation components, weights, and ratios before starting a new performance cycle",
+  "save_template": "Save Template",
+  "saved": "Saved!",
+  "template_name": "Template Name",
+  "default_template_name": "Company Default Template",
+  "tabs": {
+    "components": "Components & Weights",
+    "decisions": "Decision Thresholds",
+    "preview": "Formula Preview"
+  },
+  "total_weight": "Total Weight:",
+  "must_equal_100": "Must equal 100%",
+  "auto_distribute": "Auto Distribute",
+  "internal_settings": "Internal Settings",
+  "total_internal_weight": "Total Internal Weight:",
+  "must_equal_100_internal": " — Must equal 100%",
+  "active": "Active",
+  "inactive": "Inactive",
+  "represents_pct": "Represents {{weight}}% of the final grade",
+  "disabled_hint": "Disabled — Will not be calculated in the final score",
+  "weight": "Weight",
+  "decisions_info": "Decision thresholds determine the automatic action proposed by the system after calculating the final score for each employee.",
+  "min": "Min",
+  "max": "Max",
+  "point": "point",
+  "point_plural": "points",
+  "decision_timeline": "Decisions Timeline",
+  "final_score_formula": "Final Score Formula",
+  "final_score": "Final Score",
+  "days_late": "Days Late",
+  "max_cap": "Max Cap",
+  "auto_decisions_table": "Automatic Decisions Table",
+  "json_payload": "JSON Sent to Backend",
+  "copy": "Copy",
+  "components": {
+    "tasks": {
+      "label": "Tasks Score",
+      "sub_components": {
+        "completion_weight": "Completion Weight",
+        "quality_weight": "Quality Weight",
+        "late_penalty_per_day_percent": "Daily Late Penalty",
+        "max_late_penalty_percent": "Max Late Penalty Cap"
+      }
+    },
+    "manager": {
+      "label": "Manager Score",
+      "sub_components": {
+        "professionalism": "Professionalism",
+        "responsibility": "Responsibility",
+        "problem_solving": "Problem Solving"
+      }
+    },
+    "peer": {
+      "label": "Peer Score",
+      "sub_components": {
+        "teamwork": "Teamwork",
+        "cooperation": "Cooperation"
+      }
+    },
+    "attendance": {
+      "label": "Attendance Score",
+      "sub_components": {
+        "points_full_attendance": "Full Attendance",
+        "points_minor_late": "Minor Lateness",
+        "points_repeated_late": "Repeated Lateness",
+        "points_absent": "Absence"
+      }
+    },
+    "overtime": {
+      "label": "Overtime Score",
+      "sub_components": {
+        "multiplier": "Calculation Multiplier",
+        "max_score_cap": "Max Score Cap"
+      }
+    }
+  },
+  "decision_thresholds": {
+    "promotion_bonus": "Promotion + Bonus",
+    "bonus": "Bonus",
+    "training_required": "Requires Training",
+    "warning": "Warning"
+  }
+}

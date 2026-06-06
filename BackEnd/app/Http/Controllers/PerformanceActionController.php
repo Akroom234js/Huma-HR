@@ -65,6 +65,13 @@ class PerformanceActionController extends Controller
         ]);
 
         $hrProfile = auth()->user()->employeeProfile;
+        if (!$hrProfile) {
+            return $this->errorResponse(
+                'Authenticated user does not have an employee profile to perform this action.',
+                null,
+                403
+            );
+        }
 
         $action->update([
             'status'      => 'approved',
@@ -98,6 +105,13 @@ class PerformanceActionController extends Controller
         ]);
 
         $hrProfile = auth()->user()->employeeProfile;
+        if (!$hrProfile) {
+            return $this->errorResponse(
+                'Authenticated user does not have an employee profile to perform this action.',
+                null,
+                403
+            );
+        }
 
         $action->update([
             'status'      => 'rejected',

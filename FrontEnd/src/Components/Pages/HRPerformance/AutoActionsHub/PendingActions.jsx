@@ -28,7 +28,7 @@ export default function PendingActions(){
       <div className="card">
         <div className="card-title">
           <span>{t("pending.Pending")} </span>
-          <span >API: GET /performance/actions</span>
+          {/* <span >API: GET /performance/actions</span> */}
         </div>
 
         <div className="table-wrapper">
