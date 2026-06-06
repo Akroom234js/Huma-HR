@@ -23,6 +23,7 @@ use App\Http\Controllers\ManagerEvaluationController;
 use App\Http\Controllers\PeerEvaluationController;
 use App\Http\Controllers\PerformanceActionController;
 use App\Http\Controllers\PerformanceEvaluationController;
+use App\Http\Controllers\PerformanceStatsController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
@@ -150,6 +151,9 @@ Route::middleware('auth:sanctum')->group(function () {
         // ── Cycles — HR فقط ───────────────────────────────────────────────
         // ⚠️ process-expired لازم قبل {cycle} لتجنب التعارض في الـ Route
         Route::middleware('role:hr')->group(function () {
+            // ── Stats (Company Overview) ────────────────────────────────
+            Route::get('/stats',                         [PerformanceStatsController::class, 'index']);
+
             Route::post('/cycles/process-expired',       [PerformanceCycleController::class, 'processExpired']);
             Route::post('/cycles',                       [PerformanceCycleController::class, 'store']);
             Route::put('/cycles/{cycle}',                [PerformanceCycleController::class, 'update']);
