@@ -2,29 +2,25 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PerformanceTemplate extends Model
 {
-    protected $table = 'performance_templates';
+    use HasFactory;
 
     protected $fillable = [
         'name',
-        'is_active',
-        'config',
+        'components', // JSON column
     ];
 
     protected $casts = [
-        'config'    => 'array',
-        'is_active' => 'boolean',
+        'components' => 'array',
     ];
 
-    /**
-     * الدورات التي تم إنشاؤها باستخدام هذا القالب
-     */
-    public function cycles(): HasMany
+    public function performanceCycles()
     {
-        return $this->hasMany(PerformanceCycle::class, 'performance_template_id');
+        return $this->hasMany(PerformanceCycle::class);
     }
 }
+?>

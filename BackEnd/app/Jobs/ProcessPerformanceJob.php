@@ -8,11 +8,13 @@ use App\Models\EmployeeProfile;
 use App\Models\PerformanceEvaluation;
 use App\Models\PerformanceAction;
 use App\Services\TaskPerformanceService;
+use App\Services\PeerEvaluationService;
+use App\Services\ManagerEvaluationService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\SerializersModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
@@ -26,7 +28,7 @@ class ProcessPerformanceJob implements ShouldQueue
 
     public function __construct(private readonly PerformanceCycle $cycle) {}
 
-    public function handle(TaskPerformanceService $taskService): void
+    public function handle(TaskPerformanceService $taskService, PeerEvaluationService $peerService, ManagerEvaluationService $managerService): void
     {
         Log::info("ProcessPerformanceJob: Starting for cycle #{$this->cycle->id} — {$this->cycle->title}");
 
@@ -48,8 +50,8 @@ class ProcessPerformanceJob implements ShouldQueue
 
         foreach ($employees as $employee) {
             try {
-                DB::transaction(function () use ($employee, $components, $taskService) {
-                    $this->processEmployee($employee, $components, $taskService);
+                DB::transaction(function () use ($employee, $components, $taskService, $peerService, $managerService) {
+                    $this->processEmployee($employee, $components, $taskService, $peerService, $managerService);
                 });
             } catch (\Exception $e) {
                 Log::error("ProcessPerformanceJob: Failed for employee #{$employee->id}: " . $e->getMessage());
@@ -64,7 +66,9 @@ class ProcessPerformanceJob implements ShouldQueue
     private function processEmployee(
         EmployeeProfile $employee,
         \Illuminate\Support\Collection $components,
-        TaskPerformanceService $taskService
+        TaskPerformanceService $taskService,
+        PeerEvaluationService $peerService,
+        ManagerEvaluationService $managerService
     ): void {
         $startDate = Carbon::parse($this->cycle->start_date);
         $endDate   = Carbon::parse($this->cycle->end_date);
@@ -78,37 +82,12 @@ class ProcessPerformanceJob implements ShouldQueue
 
         $managerScore = null;
         if ($components->has('manager')) {
-            $managerEval = \App\Models\ManagerEvaluation::where('performance_cycle_id', $this->cycle->id)
-                ->where('employee_profile_id', $employee->id)
-                ->first();
-            
-            if ($managerEval) {
-                $subWeights = $components->get('manager')['sub_components'] ?? [];
-                $wProf = floatval($subWeights['professionalism']['weight'] ?? 33.33);
-                $wResp = floatval($subWeights['responsibility']['weight'] ?? 33.33);
-                $wProb = floatval($subWeights['problem_solving']['weight'] ?? 33.34);
-
-                $weightedScore = ($managerEval->professionalism * ($wProf / 100))
-                               + ($managerEval->responsibility * ($wResp / 100))
-                               + ($managerEval->problem_solving * ($wProb / 100));
-                
-                $managerScore = round($weightedScore * 10, 2);
-            } else {
-                $managerScore = 0;
-            }
+            $managerScore = $managerService->calculateManagerScore($this->cycle->id, $employee->id, $components->get('manager'));
         }
 
         $peerScore = null;
         if ($components->has('peer')) {
-            $peerEvals = \App\Models\PeerEvaluation::where('performance_cycle_id', $this->cycle->id)
-                ->where('employee_profile_id', $employee->id)
-                ->get();
-            if ($peerEvals->isNotEmpty()) {
-                $avg = $peerEvals->avg(fn($p) => ($p->collaboration_score + $p->teamwork_score) / 2);
-                $peerScore = round($avg * 10, 2);
-            } else {
-                $peerScore = 0;
-            }
+            $peerScore = $peerService->aggregateScores($this->cycle->id)[$employee->id] ?? 0;
         }
 
         $attendanceScore = null;

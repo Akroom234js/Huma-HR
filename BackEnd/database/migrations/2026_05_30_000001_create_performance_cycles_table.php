@@ -12,11 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
 
-            // ربط الدورة بالقالب المرجعي
-            $table->foreignId('performance_template_id')
-                  ->nullable()
-                  ->constrained('performance_templates')
-                  ->onDelete('restrict');
+            
 
             $table->date('start_date');
             $table->date('end_date');

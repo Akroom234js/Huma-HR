@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,9 +12,9 @@ return new class extends Migration
     {
         Schema::create('performance_templates', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->default('Default Company Template');
-            $table->boolean('is_active')->default(true);
-            $table->json('config'); // سيحمل المكونات والفرعيات وأوزانها كـ JSON
+            $table->string('name')->unique();
+            // components stored as JSON, e.g. {"tasks":40,"manager":25,"peer":15,"attendance":10,"overtime":10,"self":0,"hr":0}
+            $table->json('components');
             $table->timestamps();
         });
     }
@@ -28,3 +27,4 @@ return new class extends Migration
         Schema::dropIfExists('performance_templates');
     }
 };
+?>
