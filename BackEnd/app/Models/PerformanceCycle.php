@@ -12,10 +12,10 @@ class PerformanceCycle extends Model
 {
     protected $fillable = [
         'title',
-        'performance_template_id',
         'start_date',
         'end_date',
         'status',
+        'performance_template_id',
         'created_by',
         'approved_by',
         'approved_at',
@@ -29,31 +29,21 @@ class PerformanceCycle extends Model
 
     // ─── Relationships ────────────────────────────────────────────
 
-    // من أنشأ الدورة (موظف الـ HR)
-    public function creator(): BelongsTo
-    {
-        return $this->belongsTo(EmployeeProfile::class, 'created_by');
-    }
-
-    // من وافق على تفعيل الدورة (مدير النظام)
-    public function approver(): BelongsTo
-    {
-        return $this->belongsTo(EmployeeProfile::class, 'approved_by');
-    }
-
-    // القالب المرتبط بالدورة
     public function template(): BelongsTo
     {
         return $this->belongsTo(PerformanceTemplate::class, 'performance_template_id');
     }
 
-    // المكونات والأوزان المرتبطة بها (للإبقاء على التوافقية القديمة إن لزم الأمر)
-    public function components(): HasMany
+    public function creator(): BelongsTo
     {
-        return $this->hasMany(PerformanceCycleComponent::class, 'performance_cycle_id');
+        return $this->belongsTo(EmployeeProfile::class, 'created_by');
     }
 
-    // التقييمات المرتبطة بهذه الدورة
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(EmployeeProfile::class, 'approved_by');
+    }
+
     public function evaluations(): HasMany
     {
         return $this->hasMany(PerformanceEvaluation::class, 'performance_cycle_id');
@@ -61,86 +51,69 @@ class PerformanceCycle extends Model
 
     // ─── Scopes ───────────────────────────────────────────────────
 
-    // الدورات النشطة حالياً
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('status', 'active');
     }
 
-    // الدورات المكتملة
     public function scopeCompleted(Builder $query): Builder
     {
         return $query->where('status', 'completed');
     }
 
-    // ─── Domain Methods & Helpers ─────────────────────────────────
+    // ─── Helpers ──────────────────────────────────────────────────
 
     /**
-     * التحقق من أن مدة الدورة بين 3 أشهر وسنة، وبالشهور الكاملة
+     * التحقق من مدة الدورة — بين 3 و 12 شهر بالشهور الكاملة
      */
     public function isValidDuration(): bool
     {
-        if (!$this->start_date || !$this->end_date) {
+        if (! $this->start_date || ! $this->end_date) {
             return false;
         }
 
-        $start = Carbon::parse($this->start_date);
-        $end = Carbon::parse($this->end_date)->copy()->addDay(); // إضافة يوم واحد لحساب الشهور الكاملة بدقة
-
-        // حساب الفرق بالشهور الكاملة بدقة
+        $start        = Carbon::parse($this->start_date);
+        $end          = Carbon::parse($this->end_date)->addDay();
         $diffInMonths = $start->diffInMonths($end);
-        
-        // التحقق من الشرط: لا تقل عن 3 أشهر ولا تزيد عن 12 شهراً
+        $diffInDays   = $start->diffInDays($end);
+
         if ($diffInMonths < 3 || $diffInMonths > 12) {
             return false;
         }
 
-        // للتحقق من عدم وجود كسور شهور (مثل 3 أشهر ونصف)
-        // يجب أن تتوافق الأيام الإجمالية مع نطاق الشهور المتوقعة
-        $diffInDays = $start->diffInDays($end);
-        $expectedDaysMin = $diffInMonths * 28;
-        $expectedDaysMax = $diffInMonths * 31 + 1;
-        
-        if ($diffInDays < $expectedDaysMin || $diffInDays > $expectedDaysMax) {
-            return false;
-        }
+        $minDays = $diffInMonths * 28;
+        $maxDays = $diffInMonths * 31 + 1;
 
-        return true;
+        return $diffInDays >= $minDays && $diffInDays <= $maxDays;
     }
 
     /**
-     * التحقق ديناميكياً من أن مجموع أوزان المكونات المفعلة يساوي تماماً 100%
+     * التحقق من أن القالب صالح وأوزانه = 100
      */
     public function areWeightsValid(): bool
     {
-        $template = $this->template ?: PerformanceTemplate::find($this->performance_template_id);
-        if (!$template) {
-            return false;
-        }
+        return $this->template?->areWeightsValid() ?? false;
+    }
 
-        $config = $template->config;
-        if (!isset($config['components'])) {
-            return false;
-        }
+    /**
+     * التفعيل والإغلاق التلقائي
+     * يُستدعى في كل request على الـ cycles
+     */
+    public static function autoUpdateCycles(): void
+    {
+        // draft → active عند وصول start_date
+        self::where('status', 'draft')
+            ->whereDate('start_date', '<=', now()->toDateString())
+            ->update(['status' => 'active']);
 
-        $total = 0.0;
-        foreach ($config['components'] as $key => $component) {
-            if (!empty($component['is_active'])) {
-                $total += floatval($component['weight']);
-                
-                // التأكد من أن المكونات الفرعية للمدير تساوي 100% أيضاً
-                if ($key === 'manager' && isset($component['sub_components'])) {
-                    $subTotal = 0.0;
-                    foreach ($component['sub_components'] as $sub) {
-                        $subTotal += floatval($sub['weight']);
-                    }
-                    if (round($subTotal, 2) !== 100.00) {
-                        return false;
-                    }
-                }
-            }
-        }
+        // active → processing عند انتهاء end_date
+        $expired = self::where('status', 'active')
+            ->whereDate('end_date', '<', now()->toDateString())
+            ->get();
 
-        return round($total, 2) === 100.00;
+        foreach ($expired as $cycle) {
+            $cycle->update(['status' => 'processing']);
+            \App\Jobs\ProcessPerformanceJob::dispatch($cycle);
+        }
     }
 }

@@ -2,156 +2,112 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Department;
-use App\Models\EmployeeProfile;
 use App\Models\PerformanceCycle;
 use App\Models\PerformanceEvaluation;
+use App\Models\PerformanceAction;
 use App\Models\Task;
+use App\Models\Department;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 
 class PerformanceStatsController extends Controller
 {
     use ApiResponse;
 
     // ─────────────────────────────────────────────────────────────
-    // HR يجلب إحصائيات عامة عن الشركة (Company Overview)
-    // GET /api/performance/stats
+    // إحصائيات عامة للـ HR Dashboard
+    // GET /performance/stats
     // HR فقط
-    // يُعيد:
-    //   - إجمالي الموظفين
-    //   - معلومات الدورة النشطة (اسمها + نسبة الإنجاز)
-    //   - إحصائيات المهام (حالاتها)
-    //   - معدل تقييم كل قسم (لرسم PerformanceDepartment)
-    //   - نسبة حالات المهام (لرسم TaskStatusPool)
-    //   - ملخص الدورات (الحالية والسابقة) لجدول CycleTable
     // ─────────────────────────────────────────────────────────────
     public function index(): JsonResponse
     {
-        // ── 1. الدورة النشطة حالياً ──────────────────────────────
-        $activeCycle = PerformanceCycle::with('template')
-            ->where('status', 'active')
+        // ── الدورة النشطة ─────────────────────────────────────────
+        $activeCycle = PerformanceCycle::where('status', 'active')
+            ->with('template')
             ->latest()
             ->first();
 
-        // ── 2. إجمالي الموظفين النشطين ───────────────────────────
-        $totalEmployees = EmployeeProfile::where('employment_status', 'active')->count();
-
-        // ── 3. إحصائيات المهام ────────────────────────────────────
-        $taskStats = Task::select('status', DB::raw('count(*) as count'))
-            ->groupBy('status')
-            ->pluck('count', 'status')
-            ->toArray();
-
-        $totalTasks     = array_sum($taskStats);
-        $completedTasks = ($taskStats['scored'] ?? 0) + ($taskStats['completed'] ?? 0);
-        $completionRate = $totalTasks > 0
-            ? round(($completedTasks / $totalTasks) * 100, 1)
-            : 0;
-
-        // تنسيق حالات المهام لرسم TaskStatusPool (الدائري)
-        $taskStatusPool = [
-            ['label' => 'مقيّمة',          'key' => 'scored',         'count' => $taskStats['scored']         ?? 0],
-            ['label' => 'مكتملة',          'key' => 'completed',      'count' => $taskStats['completed']      ?? 0],
-            ['label' => 'بانتظار المراجعة','key' => 'pending_review', 'count' => $taskStats['pending_review'] ?? 0],
-            ['label' => 'قيد التنفيذ',     'key' => 'in_progress',    'count' => $taskStats['in_progress']    ?? 0],
-            ['label' => 'معلقة',           'key' => 'pending',        'count' => $taskStats['pending']        ?? 0],
-            ['label' => 'بحاجة مراجعة',   'key' => 'revision',       'count' => $taskStats['revision']       ?? 0],
+        // ── إحصائيات الدورات ──────────────────────────────────────
+        $cycleStats = [
+            'active'     => PerformanceCycle::where('status', 'active')->count(),
+            'processing' => PerformanceCycle::where('status', 'processing')->count(),
+            'completed'  => PerformanceCycle::where('status', 'completed')->count(),
+            'draft'      => PerformanceCycle::where('status', 'draft')->count(),
         ];
 
-        // ── 4. معدل تقييم الأقسام (لرسم PerformanceDepartment) ──
-        $departmentAverages = [];
+        // ── إحصائيات المهام ───────────────────────────────────────
+        $taskStats = [
+            'pending'        => Task::where('status', 'pending')->count(),
+            'in_progress'    => Task::where('status', 'in_progress')->count(),
+            'pending_review' => Task::where('status', 'pending_review')->count(),
+            'needs_revision' => Task::where('status', 'needs_revision')->count(),
+            'scored'         => Task::where('status', 'scored')->count(),
+            'overdue'        => Task::where('status', 'overdue')->count(),
+        ];
 
-        if ($activeCycle) {
-            // نجلب متوسط final_score لكل قسم في الدورة النشطة
-            $deptScores = PerformanceEvaluation::select(
-                    'department_id',
-                    DB::raw('ROUND(AVG(final_score), 2) as avg_score'),
-                    DB::raw('COUNT(*) as employee_count')
-                )
-                ->where('performance_cycle_id', $activeCycle->id)
-                ->whereNotNull('final_score')
-                ->groupBy('department_id')
-                ->get();
+        // ── إحصائيات الإجراءات المعلقة ───────────────────────────
+        $pendingActions = PerformanceAction::where('status', 'pending_approval')->count();
 
-            // جلب أسماء الأقسام
-            $deptIds   = $deptScores->pluck('department_id')->filter()->unique()->values();
-            $deptNames = Department::whereIn('id', $deptIds)->pluck('name', 'id');
+        // ── متوسط الدرجات النهائية (آخر دورة مكتملة) ────────────
+        $avgScore = null;
+        $lastCompleted = PerformanceCycle::where('status', 'completed')->latest()->first();
 
-            foreach ($deptScores as $row) {
-                $departmentAverages[] = [
-                    'department_id'   => $row->department_id,
-                    'department_name' => $deptNames[$row->department_id] ?? 'غير محدد',
-                    'avg_score'       => (float) $row->avg_score,
-                    'employee_count'  => $row->employee_count,
-                ];
-            }
+        if ($lastCompleted) {
+            $avgScore = PerformanceEvaluation::where('performance_cycle_id', $lastCompleted->id)
+                ->where('status', 'evaluated')
+                ->avg('final_score');
+            $avgScore = $avgScore ? round($avgScore, 2) : null;
         }
 
-        // ── 5. ملخص الدورات لجدول CycleTable ─────────────────────
-        $cycles = PerformanceCycle::select(
-                'id', 'title', 'status', 'start_date', 'end_date'
-            )
-            ->orderByDesc('created_at')
-            ->limit(10)
-            ->get()
-            ->map(function ($c) {
-                // نسبة الإنجاز = عدد الموظفين اللي اتقيّموا / الكل
-                $totalEvals   = PerformanceEvaluation::where('performance_cycle_id', $c->id)->count();
-                $scoredEvals  = PerformanceEvaluation::where('performance_cycle_id', $c->id)
-                    ->whereNotNull('final_score')
-                    ->count();
-                $cycleCompletion = $totalEvals > 0
-                    ? round(($scoredEvals / $totalEvals) * 100, 1)
-                    : 0;
+        // ── متوسط تقييم الأقسام (آخر دورة مكتملة) ───────────────
+        $departmentAverages = [];
+        if ($lastCompleted) {
+            $deptScores = PerformanceEvaluation::where('performance_cycle_id', $lastCompleted->id)
+                ->where('status', 'evaluated')
+                ->with('department')
+                ->get()
+                ->groupBy('department_id')
+                ->map(function ($evals) {
+                    $dept = $evals->first()->department;
+                    return [
+                        'department_id'   => $dept?->id,
+                        'department_name' => $dept?->name,
+                        'avg_score'       => round($evals->avg('final_score'), 2),
+                        'employees_count' => $evals->count(),
+                    ];
+                })
+                ->values();
 
-                return [
-                    'id'              => $c->id,
-                    'title'           => $c->title,
-                    'status'          => $c->status,
-                    'start_date'      => $c->start_date?->format('Y-m-d'),
-                    'end_date'        => $c->end_date?->format('Y-m-d'),
-                    'total_employees' => $totalEvals,
-                    'completion_rate' => $cycleCompletion,
-                ];
-            });
+            $departmentAverages = $deptScores;
+        }
 
-        // ── 6. إحصائيات الدورة النشطة للـ Cards ──────────────────
-        $activeCycleStats = null;
+        // ── نسبة الإنجاز في الدورة النشطة ────────────────────────
+        $completionRate = null;
         if ($activeCycle) {
-            $totalInCycle  = PerformanceEvaluation::where('performance_cycle_id', $activeCycle->id)->count();
-            $scoredInCycle = PerformanceEvaluation::where('performance_cycle_id', $activeCycle->id)
-                ->whereNotNull('final_score')
+            $totalEvals    = PerformanceEvaluation::where('performance_cycle_id', $activeCycle->id)->count();
+            $evaluatedEvals = PerformanceEvaluation::where('performance_cycle_id', $activeCycle->id)
+                ->where('status', 'evaluated')
                 ->count();
 
-            $activeCycleStats = [
-                'id'              => $activeCycle->id,
-                'title'           => $activeCycle->title,
-                'template_name'   => $activeCycle->template?->name,
-                'start_date'      => $activeCycle->start_date?->format('Y-m-d'),
-                'end_date'        => $activeCycle->end_date?->format('Y-m-d'),
-                'total_employees' => $totalInCycle,
-                'scored'          => $scoredInCycle,
-                'completion_rate' => $totalInCycle > 0
-                    ? round(($scoredInCycle / $totalInCycle) * 100, 1)
-                    : 0,
-            ];
+            $completionRate = $totalEvals > 0
+                ? round(($evaluatedEvals / $totalEvals) * 100, 2)
+                : 0;
         }
 
-        // ── Build Response ────────────────────────────────────────
         return $this->successResponse([
-            // Cards
-            'total_employees'    => $totalEmployees,
-            'active_cycle'       => $activeCycleStats,
-            'task_completion_rate' => $completionRate,
-
-            // Charts
-            'task_status_pool'   => $taskStatusPool,        // TaskStatusPool.jsx
-            'department_averages'=> $departmentAverages,    // PerformanceDepartment.jsx
-
-            // Tables
-            'cycles'             => $cycles,                // CycleTable.jsx
-        ], 'Performance stats retrieved successfully.');
+            'active_cycle' => $activeCycle ? [
+                'id'         => $activeCycle->id,
+                'title'      => $activeCycle->title,
+                'start_date' => $activeCycle->start_date?->format('Y-m-d'),
+                'end_date'   => $activeCycle->end_date?->format('Y-m-d'),
+                'status'     => $activeCycle->status,
+            ] : null,
+            'cycles'              => $cycleStats,
+            'tasks'               => $taskStats,
+            'pending_actions'     => $pendingActions,
+            'avg_score'           => $avgScore,
+            'completion_rate'     => $completionRate,
+            'department_averages' => $departmentAverages,
+        ], 'Performance statistics retrieved successfully.');
     }
 }
