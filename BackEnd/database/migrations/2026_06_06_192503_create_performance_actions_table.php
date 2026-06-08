@@ -10,17 +10,21 @@ return new class extends Migration
     {
         Schema::create('performance_actions', function (Blueprint $table) {
             $table->id();
-            
+
             $table->foreignId('performance_evaluation_id')
                   ->constrained('performance_evaluations')
-                  ->onDelete('cascade');
+                  ->cascadeOnDelete();
 
+            // نوع الإجراء المقترح تلقائياً بناءً على الدرجة
             $table->enum('action_type', ['promotion', 'bonus', 'warning', 'dismissal']);
-            $table->text('details');
-            
-            $table->enum('status', ['pending_approval', 'approved', 'rejected'])->default('pending_approval');
 
-            $table->foreignId('created_by')->constrained('employee_profiles');
+            $table->text('details')->nullable();
+
+            // الحالة — pending حتى يوافق HR أو يرفض
+            $table->enum('status', ['pending_approval', 'approved', 'rejected'])
+                  ->default('pending_approval');
+
+            $table->foreignId('created_by')->nullable()->constrained('employee_profiles');
             $table->foreignId('approved_by')->nullable()->constrained('employee_profiles');
             $table->timestamp('approved_at')->nullable();
 
