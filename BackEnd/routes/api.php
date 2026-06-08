@@ -24,6 +24,7 @@ use App\Http\Controllers\PeerEvaluationController;
 use App\Http\Controllers\PerformanceActionController;
 use App\Http\Controllers\PerformanceEvaluationController;
 use App\Http\Controllers\PerformanceStatsController;
+use App\Http\Controllers\PerformanceTemplateController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
@@ -140,53 +141,64 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/tasks/{task}/complete', [TaskController::class, 'complete']);
 
     // ══════════════════════════════════════════════════════════════════════
-    // ✅ Performance Module — Cycles, Evaluations, Actions
+    // ✅ Performance Module
     // ══════════════════════════════════════════════════════════════════════
     Route::prefix('performance')->group(function () {
 
-        // ── Cycles — HR + Manager Read ────────────────────────────────────
-        Route::get('/cycles',      [PerformanceCycleController::class, 'index']);
+        // ── أي موظف — نتيجته هو بس ───────────────────────────────────────
+        // ⚠️ my-evaluation لازم قبل أي route فيه {id} لتجنب التعارض
+        Route::get('/my-evaluation', [PerformanceEvaluationController::class, 'myEvaluation']);
+
+        // ── HR + Manager — عرض الدورات ────────────────────────────────────
+        Route::get('/cycles',         [PerformanceCycleController::class, 'index']);
         Route::get('/cycles/{cycle}', [PerformanceCycleController::class, 'show']);
 
-        // ── Cycles — HR فقط ───────────────────────────────────────────────
-        // ⚠️ process-expired لازم قبل {cycle} لتجنب التعارض في الـ Route
-        Route::middleware('role:hr')->group(function () {
-            // ── Stats (Company Overview) ────────────────────────────────
-            Route::get('/stats',                         [PerformanceStatsController::class, 'index']);
-
-            Route::post('/cycles/process-expired',       [PerformanceCycleController::class, 'processExpired']);
-            Route::post('/cycles',                       [PerformanceCycleController::class, 'store']);
-            Route::put('/cycles/{cycle}',                [PerformanceCycleController::class, 'update']);
-            Route::post('/cycles/{cycle}/activate',      [PerformanceCycleController::class, 'activate']);
-            Route::post('/cycles/{cycle}/close',         [PerformanceCycleController::class, 'close']);
-
-            // Evaluations — HR يشوف نتائج الموظفين
-            Route::get('/evaluations/{cycleId}',                   [PerformanceEvaluationController::class, 'index']);
-            Route::get('/evaluations/{cycleId}/{employeeId}',      [PerformanceEvaluationController::class, 'show']);
-
-            // Actions
-            Route::get('/actions',                       [PerformanceActionController::class, 'index']);
-            Route::put('/actions/{action}/approve',      [PerformanceActionController::class, 'approve']);
-            Route::put('/actions/{action}/reject',       [PerformanceActionController::class, 'reject']);
-
-            // Manager Evaluation — HR يشوف تقييم موظف
-            Route::get('/manager-evaluations/{cycleId}/{employeeId}', [ManagerEvaluationController::class, 'show']);
-
-            // Peer Evaluation — HR يشوف درجة + تعليقات
-            Route::get('/peer-evaluations/{cycleId}/{employeeId}', [PeerEvaluationController::class, 'show']);
-        });
-
-        // ── Manager Evaluation — Manager + boss ───────────────────────────
-        // ⚠️ my-team لازم قبل {managerEvaluation}
-        Route::middleware('role:manager|department_manager|boss|hr')->group(function () {
-            Route::get('/manager-evaluations/my-team/{cycleId}', [ManagerEvaluationController::class, 'myTeam']);
-            Route::post('/manager-evaluations',                   [ManagerEvaluationController::class, 'store']);
-            Route::put('/manager-evaluations/{managerEvaluation}',[ManagerEvaluationController::class, 'update']);
-        });
-
-        // ── Peer Evaluation — أي موظف مسجّل دخول ─────────────────────────
+        // ── أي موظف — تقييم زميل ─────────────────────────────────────────
         Route::post('/peer-evaluations', [PeerEvaluationController::class, 'store']);
 
+        // ── Manager + boss — تقييم الفريق ────────────────────────────────
+        // ⚠️ my-team لازم قبل {managerEvaluation}
+        Route::middleware('role:manager|department_manager|boss|hr')->group(function () {
+            Route::get('/manager-evaluations/my-team/{cycleId}',  [ManagerEvaluationController::class, 'myTeam']);
+            Route::post('/manager-evaluations',                    [ManagerEvaluationController::class, 'store']);
+            Route::put('/manager-evaluations/{managerEvaluation}', [ManagerEvaluationController::class, 'update']);
+        });
+
+        // ── HR فقط ────────────────────────────────────────────────────────
+        Route::middleware('role:hr')->group(function () {
+
+            // Stats
+            Route::get('/stats', [PerformanceStatsController::class, 'index']);
+
+            // Templates
+            Route::get('/templates',             [PerformanceTemplateController::class, 'index']);
+            Route::post('/templates',            [PerformanceTemplateController::class, 'store']);
+            Route::put('/templates/{template}',  [PerformanceTemplateController::class, 'update']);
+            Route::delete('/templates/{template}',[PerformanceTemplateController::class, 'destroy']);
+
+            // Cycles CRUD
+            // ⚠️ process-expired لازم قبل {cycle}
+            Route::post('/cycles/process-expired', [PerformanceCycleController::class, 'processExpired']);
+            Route::post('/cycles',                 [PerformanceCycleController::class, 'store']);
+            Route::put('/cycles/{cycle}',          [PerformanceCycleController::class, 'update']);
+            Route::post('/cycles/{cycle}/activate',[PerformanceCycleController::class, 'activate']);
+            Route::post('/cycles/{cycle}/close',   [PerformanceCycleController::class, 'close']);
+
+            // Evaluations — HR يشوف النتائج
+            Route::get('/evaluations/{cycleId}',              [PerformanceEvaluationController::class, 'byCycle']);
+            Route::get('/evaluations/{cycleId}/{employeeId}', [PerformanceEvaluationController::class, 'show']);
+
+            // Actions
+            Route::get('/actions',                  [PerformanceActionController::class, 'index']);
+            Route::put('/actions/{action}/approve', [PerformanceActionController::class, 'approve']);
+            Route::put('/actions/{action}/reject',  [PerformanceActionController::class, 'reject']);
+
+            // Manager Evaluation — HR يشوف
+            Route::get('/manager-evaluations/{cycleId}/{employeeId}', [ManagerEvaluationController::class, 'show']);
+
+            // Peer Evaluation — HR يشوف + تعليقات
+            Route::get('/peer-evaluations/{cycleId}/{employeeId}', [PeerEvaluationController::class, 'show']);
+        });
     });
 
     // ── HR + Manager — عرض فقط ──────────────────────────────────────────
@@ -310,3 +322,4 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 });
+
