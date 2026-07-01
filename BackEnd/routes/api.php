@@ -25,6 +25,7 @@ use App\Http\Controllers\PerformanceActionController;
 use App\Http\Controllers\PerformanceEvaluationController;
 use App\Http\Controllers\PerformanceStatsController;
 use App\Http\Controllers\PerformanceTemplateController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
@@ -182,11 +183,18 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/cycles',                 [PerformanceCycleController::class, 'store']);
             Route::put('/cycles/{cycle}',          [PerformanceCycleController::class, 'update']);
             Route::post('/cycles/{cycle}/activate',[PerformanceCycleController::class, 'activate']);
-            
+
 
             // Evaluations — HR يشوف النتائج
             Route::get('/evaluations/{cycleId}',              [PerformanceEvaluationController::class, 'byCycle']);
             Route::get('/evaluations/{cycleId}/{employeeId}', [PerformanceEvaluationController::class, 'show']);
+
+            // ══════════════════════════════════════════════════════════════════════════════
+            // ✅ Dashboard General Stats
+            // ══════════════════════════════════════════════════════════════════════════════
+            Route::get('/dashboard/general-stats', [DashboardController::class, 'generalStats']);
+
+
 
             // Actions
             Route::get('/actions',                  [PerformanceActionController::class, 'index']);
