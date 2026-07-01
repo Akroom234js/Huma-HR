@@ -20,7 +20,6 @@ class PerformanceTemplate extends Model
 
     // ─── Relationships ────────────────────────────────────────────
 
-    // الدورات التي استخدمت هذا القالب
     public function cycles(): HasMany
     {
         return $this->hasMany(PerformanceCycle::class, 'performance_template_id');
@@ -28,39 +27,39 @@ class PerformanceTemplate extends Model
 
     // ─── Helpers ──────────────────────────────────────────────────
 
-    /**
-     * جلب القالب النشط الحالي
-     */
     public static function getActive(): ?self
     {
         return self::where('is_active', true)->first();
     }
 
     /**
-     * التحقق من أن مجموع الأوزان = 100
+     * مجموع أوزان المكونات المفعلة فقط = 100
      */
     public function areWeightsValid(): bool
     {
-        $components = $this->components ?? [];
-        $total = collect($components)->sum('weight');
+        $components = collect($this->components ?? [])->filter(fn($c) => !empty($c['is_active']));
+        $total = $components->sum('weight');
         return round($total, 2) === 100.00;
     }
 
-    /**
-     * جلب وزن مكوّن معين
-     */
     public function getComponentWeight(string $key): float
     {
         $components = $this->components ?? [];
         return floatval($components[$key]['weight'] ?? 0);
     }
 
-    /**
-     * هل المكوّن موجود في هذا القالب؟
-     */
     public function hasComponent(string $key): bool
     {
         $components = $this->components ?? [];
-        return isset($components[$key]);
+        return isset($components[$key]) && !empty($components[$key]['is_active']);
+    }
+
+    /**
+     * جلب sub_components لمكوّن معين (الاسم الموحّد في كل المشروع)
+     */
+    public function getSubComponents(string $key): array
+    {
+        $components = $this->components ?? [];
+        return $components[$key]['sub_components'] ?? [];
     }
 }

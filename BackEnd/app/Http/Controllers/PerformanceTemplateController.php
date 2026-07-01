@@ -44,8 +44,8 @@ class PerformanceTemplateController extends Controller
             'components'              => ['required', 'array', 'min:1'],
             'components.*.key'        => ['required', 'string', 'in:tasks,manager,peer,attendance,overtime,self_assessment'],
             'components.*.weight'     => ['required', 'numeric', 'min:1', 'max:100'],
-            // أوزان المكونات الفرعية — اختيارية
-            'components.*.sub_weights'=> ['sometimes', 'array'],
+            // المكونات الفرعية — اختيارية
+            'components.*.sub_components'=> ['sometimes', 'array'],
         ]);
 
         // التحقق من أن مجموع الأوزان = 100
@@ -72,8 +72,8 @@ class PerformanceTemplateController extends Controller
             $components = [];
             foreach ($validated['components'] as $comp) {
                 $components[$comp['key']] = [
-                    'weight'      => $comp['weight'],
-                    'sub_weights' => $comp['sub_weights'] ?? $this->defaultSubWeights($comp['key']),
+                    'weight'         => $comp['weight'],
+                    'sub_components' => $comp['sub_components'] ?? $this->defaultSubWeights($comp['key']),
                 ];
             }
 
@@ -99,11 +99,11 @@ class PerformanceTemplateController extends Controller
     public function update(Request $request, PerformanceTemplate $template): JsonResponse
     {
         $validated = $request->validate([
-            'name'                    => ['sometimes', 'string', 'max:100'],
-            'components'              => ['sometimes', 'array', 'min:1'],
-            'components.*.key'        => ['required_with:components', 'string', 'in:tasks,manager,peer,attendance,overtime,self_assessment'],
-            'components.*.weight'     => ['required_with:components', 'numeric', 'min:1', 'max:100'],
-            'components.*.sub_weights'=> ['sometimes', 'array'],
+            'name'                      => ['sometimes', 'string', 'max:100'],
+            'components'                => ['sometimes', 'array', 'min:1'],
+            'components.*.key'          => ['required_with:components', 'string', 'in:tasks,manager,peer,attendance,overtime,self_assessment'],
+            'components.*.weight'       => ['required_with:components', 'numeric', 'min:1', 'max:100'],
+            'components.*.sub_components'=> ['sometimes', 'array'],
         ]);
 
         // التحقق من الأوزان إذا أُرسلت مكونات
@@ -133,8 +133,8 @@ class PerformanceTemplateController extends Controller
             $components = [];
             foreach ($validated['components'] as $comp) {
                 $components[$comp['key']] = [
-                    'weight'      => $comp['weight'],
-                    'sub_weights' => $comp['sub_weights'] ?? $this->defaultSubWeights($comp['key']),
+                    'weight'         => $comp['weight'],
+                    'sub_components' => $comp['sub_components'] ?? $this->defaultSubWeights($comp['key']),
                 ];
             }
             $updateData['components'] = $components;
@@ -194,9 +194,9 @@ class PerformanceTemplateController extends Controller
         $formatted = [];
         foreach ($components as $key => $data) {
             $formatted[] = [
-                'key'         => $key,
-                'weight'      => $data['weight'],
-                'sub_weights' => $data['sub_weights'] ?? [],
+                'key'            => $key,
+                'weight'         => $data['weight'],
+                'sub_components' => $data['sub_components'] ?? [],
             ];
         }
 

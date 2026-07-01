@@ -16,7 +16,7 @@ return new class extends Migration
                   ->cascadeOnDelete();
 
             // نوع الإجراء المقترح تلقائياً بناءً على الدرجة
-            $table->enum('action_type', ['promotion', 'bonus', 'warning', 'dismissal']);
+            $table->enum('action_type', ['promotion', 'bonus', 'training', 'warning', 'dismissal']);
 
             $table->text('details')->nullable();
 
