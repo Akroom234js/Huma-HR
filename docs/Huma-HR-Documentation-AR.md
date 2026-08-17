@@ -157,7 +157,7 @@ flowchart TD
 ```mermaid
 flowchart LR
   U[Users: HR / Manager / Employee / Candidate] --> FE[FrontEnd - React + Vite]
-  FE -->|REST API + ****** BE[BackEnd - Laravel 12]
+  FE -->|REST API + Auth Header| BE[BackEnd - Laravel 12]
   BE --> AUTH[Sanctum + Spatie Roles]
   BE --> SRV[Business Services\nATS/Payroll/Performance]
   SRV --> DB[(MySQL/SQLite عبر Eloquent)]
