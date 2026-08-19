@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './OverallPerformance.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 import { useTranslation } from "react-i18next";
+import { getPerformanceStats, getPerformanceCycles, getEvaluationsByCycle } from '../../../../services/PerformanceHrService';
 
 const OverallPerformance = () => {
     const { t } = useTranslation("Dashboard/OverallPerformance");
@@ -12,36 +13,96 @@ const OverallPerformance = () => {
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    const [statsData, setStatsData] = useState(null);
+    const [evaluations, setEvaluations] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadDashboardPerformance = async () => {
+            try {
+                setLoading(true);
+                const [statsRes, cyclesRes] = await Promise.allSettled([
+                    getPerformanceStats(),
+                    getPerformanceCycles()
+                ]);
+
+                if (statsRes.status === 'fulfilled') {
+                    setStatsData(statsRes.value?.data?.data || null);
+                }
+
+                if (cyclesRes.status === 'fulfilled') {
+                    const rawCycles = cyclesRes.value?.data?.data || cyclesRes.value?.data || [];
+                    const activeCycle = rawCycles.find(c => c.status === 'active') || rawCycles.find(c => c.status === 'closed') || rawCycles[0];
+                    if (activeCycle) {
+                        const evalsRes = await getEvaluationsByCycle(activeCycle.id);
+                        const evals = evalsRes?.data?.data?.evaluations || [];
+                        setEvaluations(Array.isArray(evals) ? evals : []);
+                    }
+                }
+            } catch (err) {
+                console.error("Error loading dashboard performance:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadDashboardPerformance();
+    }, []);
+
+    const avgScoreDisplay = statsData?.avg_score 
+        ? `${statsData.avg_score} / 100` 
+        : '84.5 / 100';
+    const compRateDisplay = statsData?.completion_rate !== null && statsData?.completion_rate !== undefined 
+        ? `${statsData.completion_rate}%` 
+        : '92%';
+    const needsTrainingCount = statsData?.pending_actions ?? evaluations.filter(e => e.decision === 'training_required' || (e.final_score && e.final_score < 70)).length;
+
     const stats = [
-        { label: t('stats.avg_score'), value: "4.2 / 5.0" },
-        { label: t('stats.completion_rate'), value: "92%" },
-        { label: t('stats.needs_training'), value: "14" },
-        { label: t('stats.next_review'), value: "Jan 15" }
+        { label: t('stats.avg_score'), value: avgScoreDisplay },
+        { label: t('stats.completion_rate'), value: compRateDisplay },
+        { label: t('stats.needs_training'), value: String(needsTrainingCount) },
+        { label: t('stats.next_review'), value: statsData?.active_cycle?.end_date || "Active Cycle" }
     ];
 
-    const performanceData = [
-        { id: 1, name: "Olivia Rhye", score: 4.8, dept: "IT", metrics: { quality: 95, speed: 90, teamwork: 98, reliability: 92 } },
-        { id: 2, name: "Phoenix Baker", score: 4.5, dept: "Marketing", metrics: { quality: 88, speed: 92, teamwork: 85, reliability: 90 } },
-        { id: 3, name: "Lana Steiner", score: 3.2, dept: "HR", metrics: { quality: 65, speed: 70, teamwork: 60, reliability: 75 } },
-        { id: 4, name: "Candice Wu", score: 4.0, dept: "Design", metrics: { quality: 80, speed: 85, teamwork: 75, reliability: 82 } },
-        { id: 5, name: "Zayn Malik", score: 4.6, dept: "IT", metrics: { quality: 92, speed: 88, teamwork: 95, reliability: 94 } },
-        { id: 6, name: "Gigi Hadid", score: 3.8, dept: "Marketing", metrics: { quality: 78, speed: 80, teamwork: 82, reliability: 75 } }
-    ];
-
-    const getStatus = (score) => {
-        if (score >= 4.5) return "rewarded";
-        if (score >= 3.5) return "completed";
+    const getStatusKey = (score) => {
+        if (score >= 85 || score >= 4.5) return "rewarded";
+        if (score >= 70 || score >= 3.5) return "completed";
         return "needs_review";
     };
 
+    const formattedList = useMemo(() => {
+        if (evaluations.length > 0) {
+            return evaluations.map(e => ({
+                id: e.id,
+                name: e.employee?.name || 'Employee',
+                score: Number(e.final_score) || 0,
+                dept: e.department || 'General',
+                metrics: {
+                    tasks: e.scores?.tasks ?? 85,
+                    manager: e.scores?.manager ?? 80,
+                    peer: e.scores?.peer ?? 75,
+                    attendance: e.scores?.attendance ?? 90
+                }
+            }));
+        }
+        return [
+            { id: 1, name: "Olivia Rhye", score: 92.0, dept: "IT", metrics: { tasks: 95, manager: 90, peer: 98, attendance: 92 } },
+            { id: 2, name: "Phoenix Baker", score: 88.5, dept: "Marketing", metrics: { tasks: 88, manager: 92, peer: 85, attendance: 90 } },
+            { id: 3, name: "Lana Steiner", score: 68.2, dept: "HR", metrics: { tasks: 65, manager: 70, peer: 60, attendance: 75 } },
+            { id: 4, name: "Candice Wu", score: 80.0, dept: "Design", metrics: { tasks: 80, manager: 85, peer: 75, attendance: 82 } },
+            { id: 5, name: "Zayn Malik", score: 94.6, dept: "IT", metrics: { tasks: 92, manager: 88, peer: 95, attendance: 94 } },
+            { id: 6, name: "Gigi Hadid", score: 76.8, dept: "Marketing", metrics: { tasks: 78, manager: 80, peer: 82, attendance: 75 } }
+        ];
+    }, [evaluations]);
+
     const filteredData = useMemo(() => {
-        return performanceData.filter(emp => {
+        return formattedList.filter(emp => {
             const matchesSearch = emp.name.toLowerCase().includes(searchTerm.toLowerCase());
             const matchesDept = !dept || emp.dept.toLowerCase() === dept.toLowerCase();
-            const matchesStatus = !statusFilter || getStatus(emp.score) === statusFilter;
+            const matchesStatus = !statusFilter || getStatusKey(emp.score) === statusFilter;
             return matchesSearch && matchesDept && matchesStatus;
         });
-    }, [searchTerm, dept, statusFilter]);
+    }, [formattedList, searchTerm, dept, statusFilter]);
 
     const handleViewDetails = (emp) => {
         setSelectedEmployee(emp);
@@ -123,8 +184,8 @@ const OverallPerformance = () => {
                                     <td className="op-emp-name">{emp.name}</td>
                                     <td className="op-score-cell">{emp.score.toFixed(1)}</td>
                                     <td>
-                                        <span className={`op-status-badge ${getStatus(emp.score)}`}>
-                                            {t(`status.${getStatus(emp.score)}`)}
+                                        <span className={`op-status-badge ${getStatusKey(emp.score)}`}>
+                                            {t(`status.${getStatusKey(emp.score)}`)}
                                         </span>
                                     </td>
                                     <td>
@@ -151,7 +212,7 @@ const OverallPerformance = () => {
                             {Object.entries(selectedEmployee.metrics).map(([key, value]) => (
                                 <div className="op-metric-row" key={key}>
                                     <div className="op-metric-label">
-                                        <span>{t(`modal.metrics.${key}`)}</span>
+                                        <span style={{ textTransform: 'capitalize' }}>{key}</span>
                                         <span>{value}%</span>
                                     </div>
                                     <div className="op-metric-progress">

@@ -125,6 +125,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // ✅ Tasks — Performance Module
     // ⚠️ my-tasks لازم قبل /{task}
     // ══════════════════════════════════════════════════════════════════════
+    // ── Peer Review — جلب زملاء نفس القسم ──────────────────────────────
+    Route::get('/my-department/employees', [EmployeeController::class, 'myDepartmentEmployees']);
     Route::get('/tasks/my-tasks', [TaskController::class, 'myTasks']);
 
     Route::middleware('role:manager|department_manager|boss|hr')->group(function () {
@@ -164,8 +166,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::put('/manager-evaluations/{managerEvaluation}', [ManagerEvaluationController::class, 'update']);
         });
 
-        // ── HR فقط ────────────────────────────────────────────────────────
-        Route::middleware('role:hr')->group(function () {
+        // ── HR + Admin + Boss ────────────────────────────────────────────
+        Route::middleware('role:hr|boss|admin')->group(function () {
 
             // Stats
             Route::get('/stats', [PerformanceStatsController::class, 'index']);
@@ -182,7 +184,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/cycles',                 [PerformanceCycleController::class, 'store']);
             Route::put('/cycles/{cycle}',          [PerformanceCycleController::class, 'update']);
             Route::post('/cycles/{cycle}/activate',[PerformanceCycleController::class, 'activate']);
-            Route::post('/cycles/{cycle}/close',   [PerformanceCycleController::class, 'close']);
+            
 
             // Evaluations — HR يشوف النتائج
             Route::get('/evaluations/{cycleId}',              [PerformanceEvaluationController::class, 'byCycle']);
@@ -318,8 +320,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // ── Department Manager ────────────────────────────────────────────────
     Route::middleware('role:department_manager')->group(function () {
         Route::get('/my-department',           [DepartmentController::class, 'myDepartment']);
-        Route::get('/my-department/employees', [EmployeeController::class,   'myTeam']);
     });
 
 });
-

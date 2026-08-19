@@ -13,51 +13,37 @@ class PerformanceTemplateSeeder extends Seeder
      */
     public function run(): void
     {
-        // Delete existing templates to avoid duplicates (optional)
-        PerformanceTemplate::truncate();
-
         $defaultTemplate = [
-            'name'   => 'Default Company Template',
-            'is_active' => true,
+            'name'       => 'Default Company Template',
+            'is_active'  => true,
             'components' => [
                 'tasks' => [
-                    'is_active' => true,
-                    'weight'    => 40,
-                    'sub_components' => [
-                        // Example sub‑components (can be extended via UI later)
-                        'task_completion' => ['weight' => 70],
-                        'quality'         => ['weight' => 30],
-                    ],
+                    'weight'      => 40,
+                    'sub_weights' => ['completion' => 60, 'quality' => 40],
                 ],
                 'manager' => [
-                    'is_active' => true,
-                    'weight'    => 25,
-                    'sub_components' => [
-                        'professionalism' => ['weight' => 33.33],
-                        'responsibility'  => ['weight' => 33.33],
-                        'problem_solving' => ['weight' => 33.34],
-                    ],
+                    'weight'      => 25,
+                    'sub_weights' => ['professionalism' => 34, 'responsibility' => 33, 'problem_solving' => 33],
                 ],
                 'peer' => [
-                    'is_active' => true,
-                    'weight'    => 15,
+                    'weight'      => 15,
+                    'sub_weights' => ['collaboration' => 50, 'teamwork' => 50],
                 ],
                 'attendance' => [
-                    'is_active' => true,
-                    'weight'    => 10,
+                    'weight'      => 10,
+                    'sub_weights' => [],
                 ],
                 'overtime' => [
-                    'is_active' => true,
-                    'weight'    => 10,
-                ],
-                'self_assessment' => [
-                    'is_active' => false,
-                    'weight'    => 0,
+                    'weight'      => 10,
+                    'sub_weights' => [],
                 ],
             ],
         ];
 
-        PerformanceTemplate::create($defaultTemplate);
+        PerformanceTemplate::updateOrCreate(
+            ['name' => 'Default Company Template'],
+            $defaultTemplate
+        );
     }
 }
 ?>

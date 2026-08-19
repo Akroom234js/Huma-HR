@@ -28,10 +28,8 @@ class PerformanceOrchestrationService
         $cycle    = PerformanceCycle::findOrFail($cycleId);
         $employee = EmployeeProfile::findOrFail($employeeProfileId);
 
-        // جلب القالب المرتبط بالدورة
         $template = $cycle->template ?: PerformanceTemplate::findOrFail($cycle->performance_template_id);
-        $config   = $template->config;
-        $components = $config['components'] ?? [];
+        $components = $template->components ?? [];
 
         $startDate = Carbon::parse($cycle->start_date);
         $endDate   = Carbon::parse($cycle->end_date);

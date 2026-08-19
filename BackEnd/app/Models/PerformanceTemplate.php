@@ -20,47 +20,32 @@ class PerformanceTemplate extends Model
 
     // ─── Relationships ────────────────────────────────────────────
 
-    // الدورات التي استخدمت هذا القالب
     public function cycles(): HasMany
     {
         return $this->hasMany(PerformanceCycle::class, 'performance_template_id');
     }
 
-    // ─── Helpers ──────────────────────────────────────────────────
+    // ─── Helpers ─────────────────────────────────────────────────
 
     /**
-     * جلب القالب النشط الحالي
+     * إرجاع إعدادات القالب بشكل موحّد
      */
-    public static function getActive(): ?self
+    public function getConfigAttribute(): array
     {
-        return self::where('is_active', true)->first();
+        return ['components' => $this->components ?? []];
     }
 
     /**
-     * التحقق من أن مجموع الأوزان = 100
+     * التحقق من أن مجموع أوزان المكونات النشطة = 100
      */
     public function areWeightsValid(): bool
     {
         $components = $this->components ?? [];
-        $total = collect($components)->sum('weight');
-        return round($total, 2) === 100.00;
-    }
 
-    /**
-     * جلب وزن مكوّن معين
-     */
-    public function getComponentWeight(string $key): float
-    {
-        $components = $this->components ?? [];
-        return floatval($components[$key]['weight'] ?? 0);
-    }
+        $total = collect($components)
+            ->filter(fn($c) => is_array($c) ? !empty($c['is_active']) : true)
+            ->sum(fn($c) => is_array($c) ? floatval($c['weight'] ?? 0) : floatval($c));
 
-    /**
-     * هل المكوّن موجود في هذا القالب؟
-     */
-    public function hasComponent(string $key): bool
-    {
-        $components = $this->components ?? [];
-        return isset($components[$key]);
+        return abs($total - 100) <= 0.05;
     }
 }

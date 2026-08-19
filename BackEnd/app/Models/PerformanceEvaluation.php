@@ -38,6 +38,7 @@ class PerformanceEvaluation extends Model
         'overtime_score'     => 'decimal:2',
         'self_score'         => 'decimal:2',
         'final_score'        => 'decimal:2',
+        'ai_analysis'        => 'array',
         'ai_recommendations' => 'array',
         'evaluated_at'       => 'datetime',
     ];
@@ -110,7 +111,7 @@ class PerformanceEvaluation extends Model
             return 0.00;
         }
 
-        $config = $template->config;
+        $config = $template->components;
         $components = $config['components'] ?? [];
 
         $scoreMap = [

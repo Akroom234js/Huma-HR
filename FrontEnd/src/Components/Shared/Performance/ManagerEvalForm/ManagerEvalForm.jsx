@@ -29,6 +29,9 @@ const ManagerEvalForm = ({
         }
     };
 
+    // Calculate live composite score (out of 100) from the 3 sliders
+    const currentScore = ((professionalism + responsibility + problemSolving) / 30) * 100;
+
     return (
         <form className="performance-manager-eval-form" onSubmit={handleSubmit}>
             <h4 className="eval-form-title">
@@ -122,19 +125,19 @@ const ManagerEvalForm = ({
                 />
             </div>
 
-            {/* Live Preview Box (Value received from parent/backend calculations) */}
+            {/* Live Preview Box */}
             <div className="eval-live-preview-box">
                 <div className="preview-info">
-                    <span className="preview-label">{isAr ? 'درجة المدير الجزئية المعتمدة (25%):' : 'Consolidated Manager Score (25%):'}</span>
+                    <span className="preview-label">{isAr ? 'الدرجة المحسوبة (من 100):' : 'Calculated Score (out of 100):'}</span>
                     <span className="preview-math">
                         {isAr 
-                            ? 'الدرجة المحسوبة والمعتمدة في الخلفية' 
-                            : 'Consolidated grade computed in the backend'
+                            ? 'متوسط معايير التقييم الثلاثة' 
+                            : 'Average of the 3 evaluation metrics'
                         }
                     </span>
                 </div>
                 <div className="preview-value-big">
-                    {managerScore.toFixed(1)} <span className="preview-max">/ 100</span>
+                    {currentScore.toFixed(1)} <span className="preview-max">/ 100</span>
                 </div>
             </div>
 

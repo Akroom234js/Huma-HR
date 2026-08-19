@@ -1,11 +1,10 @@
-﻿
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './MyTasksPortal.css';
 import StatusBadge from "../../../../Shared/Performance/StatusBadge/StatusBadge";
 import ManagerNoteBox from "../../../../Shared/Performance/ManagerNoteBox/ManagerNoteBox";
-import DeadlineAlert from "../../../../Shared/Performance/DeadlineAlert/DeadlineAlert";
 import ThemeToggle from '../../../../ThemeToggle/ThemeToggle';
+import { getMyTasks, startTask } from '../../../../../services/performanceService';
 
 const MyTasksPortal = () => {
     const navigate = useNavigate();
@@ -22,85 +21,85 @@ const MyTasksPortal = () => {
         requiresRevision: isAr ? 'تتطلب إعادة صياغة' : 'Requires Revision',
         avgScore: isAr ? 'متوسط درجاتي' : 'My Avg Task Score',
         currentDeliverables: isAr ? 'مخرجات المهام الحالية' : 'My Current Task Deliverables',
-        cycleText: isAr ? 'الدورة الموحدة للربع الأول 2026' : 'Consolidated Q1 2026 Cycle',
+        cycleText: isAr ? 'دورة الأداء الحالية' : 'Current Performance Cycle',
         searchPlaceholder: isAr ? 'ابحث عن طريق عنوان المهمة...' : 'Search by task title...',
         supervisorRemark: isAr ? 'ملاحظة المشرف:' : 'Supervisor Remark:',
         due: isAr ? 'تاريخ الاستحقاق:' : 'Due:',
         completedDate: isAr ? 'تم الإنجاز في:' : 'Completed:',
-        penaltyActive: isAr ? 'الجزاء نشط' : 'Penalty Active',
-        awaitingSupervisor: isAr ? 'بانتظار المشرف...' : 'Awaiting supervisor...',
+        penaltyActive: isAr ? 'الجزاء نشط (تأخير)' : 'Penalty Active',
+        awaitingSupervisor: isAr ? 'بانتظار مراجعة المشرف...' : 'Awaiting supervisor review...',
         btnResubmit: isAr ? 'إعادة تسليم' : 'Re-Submit',
         btnDetails: isAr ? 'التفاصيل' : 'Details',
         btnStart: isAr ? 'ابدأ العمل' : 'Start Task',
         btnViewGrade: isAr ? 'عرض الدرجة' : 'View Grade',
         statusScored: isAr ? 'تم رصد الدرجة' : 'Scored',
-        excellentWork: isAr ? 'عمل ممتاز' : 'Excellent Work'
+        excellentWork: isAr ? 'عمل ممتاز' : 'Excellent Work',
+        noTasks: isAr ? 'لا توجد مهام مسندة إليك حالياً.' : 'No tasks currently assigned to you.',
+        loading: isAr ? 'جاري تحميل المهام...' : 'Loading tasks...',
+        startSuccess: isAr ? 'تم بدء المهمة بنجاح!' : 'Task started successfully!'
     };
-    const [searchTerm, setSearchTerm] = useState('');
-    const [tasks, setTasks] = useState([
-        {
-            id: 1,
-            title: isAr ? 'صياغة وثائق التكامل والربط' : 'Draft Integration Documentation',
-            desc: isAr ? 'تأليف صفحات ويكي الخاصة بالتكامل لتوضيح تدفق المصادقة وخطافات الأحداث مع مخططات تسلسل واضحة.' : 'Author integration wiki pages detailing auth flow and event hooks with clear sequence diagrams.',
-            status: 'revision', 
-            dueDate: 'May 28',
-            remark: isAr ? '"المخططات ممتازة ولكنك نسيت صياغة المخطط الهيكلي لبيانات الويب هوك الواردة."' : '"Diagrams are fine but you missed the webhook payload schemas."',
-            penaltyActive: true,
-            score: null
-        },
-        {
-            id: 2,
-            title: isAr ? 'تحسين نقاط نهاية واجهة برمجة التطبيقات REST' : 'Optimize REST API Endpoints',
-            desc: isAr ? 'تحليل وإعادة هيكلة الاستعلامات داخل متحكم التقييم (RecognitionController) لتقليل زمن الاستجابة بنسبة 30%.' : 'Analyze and refactor queries inside the RecognitionController to reduce average response latencies by 30%.',
-            status: 'review',
-            dueDate: 'May 30, 2026',
-            remark: null,
-            penaltyActive: false,
-            score: null
-        },
-        {
-            id: 3,
-            title: isAr ? 'تنظيف ملفات وأصول الواجهة الأمامية' : 'Clean Up Frontend Assets',
-            desc: isAr ? 'إزالة مكتبات الموردين الفائضة وحزم CSS غير المستخدمة من تكوينات البناء لتحسين سرعات التحميل.' : 'Remove redundant vendor libraries and unused CSS bundles from build configurations to improve load speeds.',
-            status: 'scored',
-            dueDate: 'May 24',
-            remark: isAr ? 'ممتاز جداً! تم تقليص حجم الحزمة النهائية بنسبة 40%.' : 'Excellent Work!',
-            penaltyActive: false,
-            score: '92/100'
-        },{
-    id: 4,
-    title: isAr ? 'دمج Stripe Checkout' : 'Integrate Stripe Checkouts',
-    desc: isAr
-        ? 'تنفيذ تكامل Stripe Checkout في الواجهة الأمامية ومعالجة Webhooks الخاصة بالفوترة الدورية الديناميكية على الخادم.'
-        : 'Implement frontend Stripe payment hooks and handle dynamic recurring billing webhooks on the server side.',
-    status: 'pending',
-    dueDate: 'Jun 08, 2026',
-    remark: null,
-    penaltyActive: false,
-    score: null
-}
-    ]);
 
-    const handleStartTask = (taskId) => {
-        setTasks(prevTasks =>
-            prevTasks.map(task =>
-                task.id === taskId ? { ...task, status: 'progress' } : task
-            )
-        );
+    const [tasks, setTasks] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [actionLoadingId, setActionLoadingId] = useState(null);
+
+    const fetchTasks = async () => {
+        try {
+            setLoading(true);
+            const response = await getMyTasks();
+            const data = response?.data?.data || response?.data || [];
+            setTasks(Array.isArray(data) ? data : []);
+        } catch (error) {
+            console.error("Error fetching my tasks:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchTasks();
+    }, []);
+
+    const handleStart = async (taskId) => {
+        try {
+            setActionLoadingId(taskId);
+            await startTask(taskId);
+            await fetchTasks();
+        } catch (error) {
+            console.error("Failed to start task:", error);
+            alert(isAr ? 'تعذر بدء المهمة، يرجى المحاولة لاحقاً.' : 'Failed to start task, please try again.');
+        } finally {
+            setActionLoadingId(null);
+        }
+    };
+
+    const normalizeStatus = (backendStatus) => {
+        switch (backendStatus) {
+            case 'pending': return 'pending';
+            case 'in_progress': return 'in_progress';
+            case 'pending_review': return 'pending_review';
+            case 'needs_revision': return 'needs_revision';
+            case 'completed':
+            case 'scored': return 'scored';
+            default: return backendStatus || 'pending';
+        }
     };
 
     const filteredTasks = tasks.filter(task =>
-        task.title.toLowerCase().includes(searchTerm.toLowerCase())
+        (task.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (task.description || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const countByStatus = (status) => tasks.filter(t => t.status === status).length;
-const statusMap = {
-    pending: 'pending',
-    progress: 'in_progress',
-    review: 'pending_review',
-    revision: 'needs_revision',
-    scored: 'scored'
-};
+    const countByNormStatus = (status) => 
+        tasks.filter(t => normalizeStatus(t.status) === status).length;
+
+    // Calculate Average Score
+    const scoredTasks = tasks.filter(t => t.final_score !== null && t.final_score !== undefined);
+    const avgScore = scoredTasks.length > 0
+        ? (scoredTasks.reduce((acc, t) => acc + Number(t.final_score), 0) / scoredTasks.length).toFixed(1)
+        : '0.0';
+
     return (
         <div className={`my-tasks-portal-container ${isAr ? 'rtl' : 'ltr'}`}>
             {/* Header */}
@@ -109,15 +108,14 @@ const statusMap = {
                     <h1>{t.title}</h1>
                     <p>{t.subtitle}</p>
                 </div>
-            </section><div className="sm-theme-toggle-wrapper">
-                    <ThemeToggle />
-                  </div>
+            </section>
+            
+            <div className="sm-theme-toggle-wrapper">
+                <ThemeToggle />
+            </div>
 
             <div className="stats-grid">
-                <div className="stat-card total"
-          
-                >
-                  
+                <div className="stat-card total">
                     <i className="fa-solid fa-briefcase stat-icon"></i>
                     <div className="stat-label">{t.assignedTasks}</div>
                     <div className="stat-value">{tasks.length}</div>
@@ -125,27 +123,27 @@ const statusMap = {
                 <div className="stat-card pending">
                     <i className="fa-solid fa-circle-pause stat-icon"></i>
                     <div className="stat-label">{t.unstarted}</div>
-                    <div className="stat-value">{countByStatus('pending')}</div>
+                    <div className="stat-value">{countByNormStatus('pending')}</div>
                 </div>
                 <div className="stat-card progress">
                     <i className="fa-solid fa-spinner stat-icon"></i>
                     <div className="stat-label">{t.activeProgress}</div>
-                    <div className="stat-value">{countByStatus('progress')}</div>
+                    <div className="stat-value">{countByNormStatus('in_progress')}</div>
                 </div>
                 <div className="stat-card review">
                     <i className="fa-solid fa-paper-plane stat-icon"></i>
                     <div className="stat-label">{t.submittedReview}</div>
-                    <div className="stat-value">{countByStatus('review')}</div>
+                    <div className="stat-value">{countByNormStatus('pending_review')}</div>
                 </div>
                 <div className="stat-card revision">
                     <i className="fa-solid fa-circle-exclamation stat-icon"></i>
                     <div className="stat-label" style={{ color: '#f87171' }}>{t.requiresRevision}</div>
-                    <div className="stat-value" style={{ color: 'var(--color-revision)' }}>{countByStatus('revision')}</div>
+                    <div className="stat-value" style={{ color: 'var(--color-revision)' }}>{countByNormStatus('needs_revision')}</div>
                 </div>
                 <div className="stat-card average">
                     <i className="fa-solid fa-trophy stat-icon"></i>
                     <div className="stat-label">{t.avgScore}</div>
-                    <div className="stat-value">84.5</div>
+                    <div className="stat-value">{avgScore}</div>
                 </div>
             </div>
 
@@ -168,91 +166,118 @@ const statusMap = {
                     </div>
                 </div>
 
-                <div className="task-card-grid">
-                    {filteredTasks.map(task => (
-                        <div 
-                            key={task.id} 
-                            className={`task-item-card ${task.status === 'revision' ? 'highlight-revision' : ''} ${task.status === 'scored' ? 'highlight-scored' : ''}`}
-                        >
-                            <div>
-                                <div className="task-card-header">
-                                    <h3 className="task-card-title">{task.title}</h3>
-                                    <div className="task-status-wrapper">
-    <StatusBadge status={statusMap[task.status]} />
+                {loading ? (
+                    <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
+                        <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', marginBottom: '12px', display: 'block' }}></i>
+                        {t.loading}
+                    </div>
+                ) : filteredTasks.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
+                        <i className="fa-solid fa-clipboard-check" style={{ fontSize: '2.5rem', marginBottom: '12px', display: 'block', color: '#cbd5e1' }}></i>
+                        {t.noTasks}
+                    </div>
+                ) : (
+                    <div className="task-card-grid">
+                        {filteredTasks.map(task => {
+                            const normStatus = normalizeStatus(task.status);
+                            const isLate = task.is_late || (task.penalty_points > 0);
 
-    {task.status === 'scored' && (
-        <span className="score-text">
-            {task.score}
-        </span>
-    )}
-</div>
+                            return (
+                                <div 
+                                    key={task.id} 
+                                    className={`task-item-card ${normStatus === 'needs_revision' ? 'highlight-revision' : ''} ${normStatus === 'scored' ? 'highlight-scored' : ''}`}
+                                >
+                                    <div>
+                                        <div className="task-card-header">
+                                            <h3 className="task-card-title">{task.title}</h3>
+                                            <div className="task-status-wrapper">
+                                                <StatusBadge status={normStatus} />
+                                                {normStatus === 'scored' && task.final_score !== null && (
+                                                    <span className="score-text">
+                                                        {task.final_score}/100
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <p className="task-card-desc">{task.description}</p>
+                                        
+                                        {task.manager_note && (
+                                            <ManagerNoteBox
+                                                notes={task.manager_note}
+                                                isRevision={normStatus === 'needs_revision'}
+                                            />
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <div className="task-meta-list">
+                                            <span>
+                                                <i className="fa-solid fa-calendar"></i>
+                                                {normStatus === 'scored' && task.completed_at
+                                                    ? ` ${t.completedDate} ${task.completed_at.substring(0, 10)}`
+                                                    : ` ${t.due} ${task.due_date || '-'}`}
+                                            </span>
+                                            {task.difficulty && (
+                                                <span style={{ marginInlineStart: '12px', fontSize: '0.8rem', color: '#64748b' }}>
+                                                    <i className="fa-solid fa-layer-group"></i> {task.difficulty}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <div className="task-card-actions">
+                                            {isLate ? (
+                                                <span className="penalty-text">
+                                                    <i className="fa-solid fa-triangle-exclamation"></i> {t.penaltyActive} (-{task.penalty_points || 0})
+                                                </span>
+                                            ) : (
+                                                <span className="placeholder-text">
+                                                    {normStatus === 'pending_review' && t.awaitingSupervisor}
+                                                    {normStatus === 'scored' && Number(task.final_score) >= 85 && (
+                                                        <span className="excellent-badge"><i className="fa-solid fa-star"></i> {t.excellentWork}</span>
+                                                    )}
+                                                </span>
+                                            )}
+
+                                            {normStatus === 'needs_revision' && (
+                                                <button 
+                                                    className="btn btn-primary"
+                                                    onClick={() => navigate(`/portal/performance/tasks/${task.id}`)}
+                                                >
+                                                    {t.btnResubmit}
+                                                </button>
+                                            )}
+                                            {(normStatus === 'pending_review' || normStatus === 'in_progress') && (
+                                                <button 
+                                                    className="btn btn-secondary" 
+                                                    onClick={() => navigate(`/portal/performance/tasks/${task.id}`)}
+                                                >
+                                                    {t.btnDetails}
+                                                </button>
+                                            )}
+                                            {normStatus === 'pending' && (
+                                                <button 
+                                                    className="btn btn-primary" 
+                                                    disabled={actionLoadingId === task.id}
+                                                    onClick={() => handleStart(task.id)}
+                                                >
+                                                    {actionLoadingId === task.id ? <i className="fa-solid fa-spinner fa-spin"></i> : t.btnStart}
+                                                </button>
+                                            )}
+                                            {normStatus === 'scored' && (
+                                                <button 
+                                                    className="btn btn-secondary"
+                                                    onClick={() => navigate(`/portal/performance/tasks/${task.id}`)}
+                                                >
+                                                    {t.btnViewGrade}
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
-                                <p className="task-card-desc">{task.desc}</p>
-                                
-                             {task.remark && (
-    <ManagerNoteBox
-        notes={task.remark}
-        isRevision={task.status === 'revision'}
-    />
-)}
-                            </div>
-
-                            <div>
-                             <div className="task-meta-list">
- 
-
-    <span>
-        <i className="fa-solid fa-calendar"></i>
-        {task.status === 'scored'
-            ? ` ${t.completedDate} ${task.dueDate}`
-            : ` ${t.due} ${task.dueDate}`}
-    </span>
-</div>
-                                <div className="task-card-actions">
-                                    {task.penaltyActive ? (
-                                        <span className="penalty-text">
-                                            <i className="fa-solid fa-triangle-exclamation"></i> {t.penaltyActive}
-                                        </span>
-                                    ) : (
-                                        <span className="placeholder-text">
-                                            {task.status === 'review' && t.awaitingSupervisor}
-                                            {task.status === 'scored' && <span className="excellent-badge"><i className="fa-solid fa-star"></i> {t.excellentWork}</span>}
-                                        </span>
-                                    )}
-
-                                    {task.status === 'revision' && (
-                                        <button className="btn btn-primary"
-                                        //  onClick={() => navigate(`/portal/task-details/${task.id}`)}
-                                         >
-                                            {t.btnResubmit}
-                                        </button>
-                                    )}
-                                    {task.status === 'review' && (
-                                        <button className="btn btn-secondary" 
-                                        // onClick={() => navigate(`/portal/task-details/${task.id}`)}
-                                        >
-                                            {t.btnDetails}
-                                        </button>
-                                    )}
-                                    {task.status === 'pending' && (
-                                        <button className="btn btn-primary" 
-                                        // onClick={() => handleStartTask(task.id)}
-                                        >
-                                            {t.btnStart}
-                                        </button>
-                                    )}
-                                    {task.status === 'scored' && (
-                                        <button className="btn btn-secondary"
-                                        //  onClick={() => navigate(`/portal/task-details/${task.id}`)}
-                                         >
-                                            {t.btnViewGrade}
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
         </div>
     );
