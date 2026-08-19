@@ -1,69 +1,135 @@
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-export default function CycleTable(){
-     const {t}=useTranslation("HrPerformance/CompanyOverview")
-        const show=()=>{
-      console.log('fdfdf')
-                const container = document.querySelector('.cycle-modal-hr');
-            if (container) {
-                document.body.style.overflow = 'hidden';
-                container.style.display = 'flex';
-             
-            }
-    }
-    const name=["First Quarter 2026 (Q1)","Fourth Quarter 2025 (Q4)","Second Quarter 2026 (Q2)"]
-    const date=["Jan 01, 2026 - Mar 31, 2026","Oct 01, 2025 - Dec 31, 2025","Apr 01, 2026 - Jun 30, 2026"]
-    const back=["Awaiting final closing to calculate","Processed successfully","Unopened"]
-    const status=["Active","Closed","Draft"]
-    const cycle=[]
-    for(let i=0;i<3;i++){
-        cycle.push( <tr>
-                <td >{name[i]}</td>
-                <td>{date[i]}</td>
-                <td>14 Employees</td>
-                <td><span className="badge badge-cycle-active"><i className={`${status[i]==="Active"?"fa-solid fa-circle-play":"hidden-hr"}`}></i> {status[i]}</span></td>
-                <td>
-                  <div >
-                    <span ></span>
-                    <span >{back[i]}</span>
-                  </div>
-                </td>
-                <td >
-                      <div className={` ${status[i]==="Active"?"":"none-hr"}`} >--</div>
-           <div>    <button className={`btn btn-start-cycle btn-edit-cycle ${status[i]==="Draft"?"":"none-hr"}`} onClick={()=>show()}>edit</button>
-                </div>
-                <div>
-           <button className={`btn btn-secondary btn-sm ${status[i]==="Closed"?"":"none-hr"}`} disabled><i className="fa-solid fa-lock"></i> Locked</button>
-               
-                </div>
-                </td>
-              </tr>)
-    }
-    return(
-        <>
-         {/* <!-- Cycles Cards --> */}
-      <div className="card">
-        <div className="card-title">
-          <span>{t("cycle.Active")}</span>
-          <span ><i className="fa-solid fa-circle-check"></i> {t("cycle.Job")}</span>
-        </div>
+import { activatePerformanceCycle, closePerformanceCycle } from "../../../../services/PerformanceHrService";
 
-        <div className="table-wrapper">
-          <table className="custom-table">
-            <thead>
-              <tr>
-                <th>{t("cycle.Cycle")}</th>
-                <th>{t("cycle.Duration")}</th>
-                <th>{t("cycleTracked")}</th>
-                <th>{t("cycle.Status")}</th>
-                <th>{t("cycle.Background")}</th>
-                <th>{t("cycle.Operations")}</th>
-              </tr>
-            </thead>
-            <tbody>
-                {cycle}
-            </tbody>
-          </table>
+export default function CycleTable({ cycles = [], onRefresh }) {
+    const { t } = useTranslation("HrPerformance/CompanyOverview");
+    const [actionLoadingId, setActionLoadingId] = useState(null);
+
+    const handleActivate = async (cycleId) => {
+        if (!window.confirm('هل تريد بالتأكيد تفعيل دورة الأداء هذه؟')) return;
+        try {
+            setActionLoadingId(cycleId);
+            await activatePerformanceCycle(cycleId);
+            if (onRefresh) onRefresh();
+        } catch (err) {
+            console.error("Failed to activate cycle:", err);
+            alert("تعذر تفعيل الدورة.");
+        } finally {
+            setActionLoadingId(null);
+        }
+    };
+
+    const handleClose = async (cycleId) => {
+        if (!window.confirm('هل تريد بالتأكيد إغلاق هذه الدورة وحساب درجات الأداء لجميع الموظفين؟')) return;
+        try {
+            setActionLoadingId(cycleId);
+            await closePerformanceCycle(cycleId);
+            if (onRefresh) onRefresh();
+        } catch (err) {
+            console.error("Failed to close cycle:", err);
+            alert("تعذر إغلاق الدورة.");
+        } finally {
+            setActionLoadingId(null);
+        }
+    };
+
+    const getStatusBadge = (status) => {
+        switch (status) {
+            case 'active':
+                return <span className="badge badge-cycle-active"><i className="fa-solid fa-circle-play"></i> Active</span>;
+            case 'closed':
+                return <span className="badge badge-cycle-closed">Closed</span>;
+            case 'processing':
+                return <span className="badge" style={{ backgroundColor: '#fef3c7', color: '#b45309' }}><i className="fa-solid fa-spinner fa-spin"></i> Processing</span>;
+            case 'draft':
+            default:
+                return <span className="badge badge-cycle-draft">Draft</span>;
+        }
+    };
+
+    const getBgState = (status) => {
+        switch (status) {
+            case 'active': return 'Awaiting final closing to calculate';
+            case 'processing': return 'Processing AI & consolidating scores...';
+            case 'closed': return 'Processed successfully';
+            case 'draft':
+            default: return 'Unopened / Draft';
+        }
+    };
+
+    return (
+        <div className="card">
+            <div className="card-title">
+                <span>{t("cycle.Active")}</span>
+                <span><i className="fa-solid fa-circle-check"></i> {t("cycle.Job")}</span>
+            </div>
+
+            <div className="table-wrapper">
+                <table className="custom-table">
+                    <thead>
+                        <tr>
+                            <th>{t("cycle.Cycle")}</th>
+                            <th>{t("cycle.Duration")}</th>
+                            <th>{t("cycleTracked")}</th>
+                            <th>{t("cycle.Status")}</th>
+                            <th>{t("cycle.Background")}</th>
+                            <th>{t("cycle.Operations")}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {cycles.length === 0 ? (
+                            <tr>
+                                <td colSpan="6" style={{ textAlign: 'center', padding: '24px', color: '#94a3b8' }}>
+                                    لا توجد دورات مسجلة حالياً
+                                </td>
+                            </tr>
+                        ) : (
+                            cycles.map((c) => (
+                                <tr key={c.id}>
+                                    <td style={{ fontWeight: 600 }}>{c.title}</td>
+                                    <td>{c.start_date || '-'} → {c.end_date || '-'}</td>
+                                    <td>{c.template_name || 'Standard Matrix'}</td>
+                                    <td>{getStatusBadge(c.status)}</td>
+                                    <td>
+                                        <div>
+                                            <span>{getBgState(c.status)}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                            {c.status === 'draft' && (
+                                                <button 
+                                                    className="btn btn-start-cycle btn-edit-cycle" 
+                                                    disabled={actionLoadingId === c.id}
+                                                    onClick={() => handleActivate(c.id)}
+                                                >
+                                                    {actionLoadingId === c.id ? <i className="fa-solid fa-spinner fa-spin"></i> : 'تفعيل الدورة'}
+                                                </button>
+                                            )}
+                                            {c.status === 'active' && (
+                                                <button 
+                                                    className="btn btn-secondary btn-sm"
+                                                    style={{ backgroundColor: '#ef4444', color: '#fff' }}
+                                                    disabled={actionLoadingId === c.id}
+                                                    onClick={() => handleClose(c.id)}
+                                                >
+                                                    {actionLoadingId === c.id ? <i className="fa-solid fa-spinner fa-spin"></i> : 'إغلاق وحساب'}
+                                                </button>
+                                            )}
+                                            {c.status === 'closed' && (
+                                                <button className="btn btn-secondary btn-sm" disabled>
+                                                    <i className="fa-solid fa-lock"></i> Locked
+                                                </button>
+                                            )}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
         </div>
-      </div></>
-    )
+    );
 }

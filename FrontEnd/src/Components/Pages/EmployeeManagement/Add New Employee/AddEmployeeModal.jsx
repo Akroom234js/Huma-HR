@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from "react";
+import ReactDOM from "react-dom";
 import "./AddEmployeeModal.css";
 import apiClient from "../../../../apiConfig";
 
-const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, departmentOptions, positionOptions, managerOptions }) => {
-  const [formData, setFormData] = useState({
+const AddEmployeeModal = ({
+  isOpen,
+  onClose,
+  onSave,
+  editingEmployee,
+  departmentOptions = [],
+  positionOptions = [],
+  managerOptions = [],
+}) => {
+  const emptyForm = {
     email: "",
     password: "",
     fullName: "",
-    // تم حذف idNumber من هنا
     phone: "",
     dob: "",
     address: "",
@@ -19,85 +27,21 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
     basicSalary: "",
     directManager: "",
     profilePicture: null,
-  });
+  };
 
+  const [formData, setFormData] = useState(emptyForm);
   const [previewImage, setPreviewImage] = useState(null);
-  const [filteredPositions, setFilteredPositions] = useState([]);
-  const [filteredManagers, setFilteredManagers] = useState([]);
+  const [deptPositions, setDeptPositions] = useState([]);
+  const [deptManagers, setDeptManagers] = useState([]);
 
+  // Reset form when modal opens or editingEmployee changes
   useEffect(() => {
     if (!isOpen) return;
-
-    if (!formData.department) {
-      setFilteredPositions(positionOptions || []);
-      setFilteredManagers(managerOptions || []);
-      return;
-    }
-
-    let isMounted = true;
-
-    // Fetch positions for the selected department
-    apiClient.get(`/positions?department_id=${formData.department}&per_page=100`)
-      .then(res => {
-        if (!isMounted) return;
-        const fetchedPositions = [
-          { value: "", label: "Select Position" },
-          ...(res.data?.data?.positions?.map(p => ({
-            value: p.id,
-            label: p.title,
-            min_salary: p.min_salary,
-            max_salary: p.max_salary,
-            tax_percent: p.tax_percent,
-            allowances: p.allowances,
-            insurance_amount: p.insurance_amount
-          })) || [])
-        ];
-        setFilteredPositions(fetchedPositions);
-
-        // Clear job title if it is no longer valid in the restricted list
-        setFormData(prev => {
-          const isValid = fetchedPositions.some(pos => pos.value == prev.jobTitle);
-          if (!isValid && prev.jobTitle !== "") {
-            return { ...prev, jobTitle: "" };
-          }
-          return prev;
-        });
-      })
-      .catch(err => console.error("Failed to fetch positions for department", err));
-
-    // Fetch managers/employees for the selected department
-    apiClient.get(`/employees/managers?department_id=${formData.department}`)
-      .then(res => {
-        if (!isMounted) return;
-        const fetchedManagers = [
-          { value: "", label: "Select Supervisor" },
-          ...(res.data?.data?.map(m => ({ value: m.id, label: m.full_name })) || [])
-        ];
-        setFilteredManagers(fetchedManagers);
-
-        // Clear direct supervisor if they are no longer valid in the restricted list
-        setFormData(prev => {
-          const isValid = fetchedManagers.some(m => m.value == prev.directManager);
-          if (!isValid && prev.directManager !== "") {
-            return { ...prev, directManager: "" };
-          }
-          return prev;
-        });
-      })
-      .catch(err => console.error("Failed to fetch managers for department", err));
-
-    return () => {
-      isMounted = false;
-    };
-  }, [formData.department, isOpen, positionOptions, managerOptions]);
-
-  useEffect(() => {
     if (editingEmployee) {
       setFormData({
         email: editingEmployee.email || "",
         password: "",
         fullName: editingEmployee.fullName || editingEmployee.name || "",
-        // تم حذف idNumber من هنا أيضاً
         phone: editingEmployee.phone || "",
         dob: editingEmployee.dob || "",
         address: editingEmployee.address || "",
@@ -110,44 +54,76 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
         directManager: editingEmployee.directManager || "",
         profilePicture: null,
       });
-      // عرض الصورة الحالية إن وجدت
       setPreviewImage(editingEmployee.profilePicUrl || null);
     } else {
-      setFormData({
-        email: "",
-        password: "",
-        fullName: "",
-        phone: "",
-        dob: "",
-        address: "",
-        emergencyContact: "",
-        employeeId: "",
-        jobTitle: "",
-        department: "",
-        joiningDate: "",
-        basicSalary: "",
-        directManager: "",
-        profilePicture: null,
-      });
+      setFormData(emptyForm);
       setPreviewImage(null);
     }
-  }, [editingEmployee, isOpen]);
+    setDeptPositions([]);
+    setDeptManagers([]);
+  }, [isOpen, editingEmployee]);
+
+  // Fetch positions/managers for selected department
+  useEffect(() => {
+    if (!isOpen || !formData.department) return;
+    let active = true;
+    apiClient
+      .get(`/positions?department_id=${formData.department}&per_page=100`)
+      .then((res) => {
+        if (!active) return;
+        setDeptPositions(
+          res.data?.data?.positions?.map((p) => ({
+            value: p.id,
+            label: p.title,
+            min_salary: p.min_salary,
+            max_salary: p.max_salary,
+          })) || []
+        );
+      })
+      .catch(() => {});
+    apiClient
+      .get(`/employees/managers?department_id=${formData.department}`)
+      .then((res) => {
+        if (!active) return;
+        setDeptManagers(
+          res.data?.data?.map((m) => ({ value: m.id, label: m.full_name })) ||
+            []
+        );
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [formData.department, isOpen]);
 
   if (!isOpen) return null;
+
+  const shownPositions =
+    formData.department && deptPositions.length > 0
+      ? deptPositions
+      : positionOptions.filter((p) => p.value);
+
+  const shownManagers =
+    formData.department && deptManagers.length > 0
+      ? deptManagers
+      : managerOptions.filter((m) => m.value);
+
+  const selectedPosition = shownPositions.find(
+    (p) => String(p.value) === String(formData.jobTitle)
+  );
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
     if (type === "file") {
       const file = files[0];
-      setFormData({ ...formData, [name]: file });
-      // معاينة الصورة الجديدة
+      setFormData((prev) => ({ ...prev, [name]: file }));
       if (file) {
         const reader = new FileReader();
         reader.onloadend = () => setPreviewImage(reader.result);
         reader.readAsDataURL(file);
       }
     } else {
-      setFormData({ ...formData, [name]: value });
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
@@ -157,38 +133,37 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
     onClose();
   };
 
-  return (
-    <div className="modal-overlay">
-      <div className="modal-container">
-        <div className="modal-header">
-          <div className="header-title">
-            <span>
-              Employee Management / {editingEmployee ? "Edit Employee" : "Add New Employee"}
+  return ReactDOM.createPortal(
+    <div className="aem-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="aem-container">
+        {/* Header */}
+        <div className="aem-header">
+          <div className="aem-header-title">
+            <span className="aem-breadcrumb">
+              Employee Management &gt; {editingEmployee ? "Edit Employee" : "Add New Employee"}
             </span>
             <h2>{editingEmployee ? "Edit Employee" : "Add New Employee"}</h2>
           </div>
-          <button className="close-btn" onClick={onClose}>
+          <button type="button" className="aem-close-btn" onClick={onClose}>
             <span className="material-symbols-outlined">close</span>
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="modal-form">
-          <div className="form-scroll-area">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="aem-form">
+          <div className="aem-scroll-area">
 
-            {/* Section 1: Personal Information */}
-            <div className="form-section">
-              <div className="section-header">
-                <div className="section-icon">
-                  <span className="material-symbols-outlined">person</span>
-                </div>
-                <div className="section-text">
+            {/* --- Section 1: Personal Info --- */}
+            <div className="aem-section">
+              <div className="aem-section-header">
+                <span className="material-symbols-outlined">person</span>
+                <div>
                   <h3>Personal Information</h3>
                   <p>Basic details and login credentials.</p>
                 </div>
               </div>
-
-              <div className="form-grid">
-                <div className="input-group">
+              <div className="aem-grid">
+                <div className="aem-field">
                   <label>Full Name</label>
                   <input
                     type="text"
@@ -199,10 +174,7 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
                     onChange={handleChange}
                   />
                 </div>
-
-                {/* تم حذف حقل الـ National ID من هنا */}
-
-                <div className="input-group">
+                <div className="aem-field">
                   <label>Email Address</label>
                   <input
                     type="email"
@@ -213,13 +185,11 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
                     onChange={handleChange}
                   />
                 </div>
-                <div className="input-group">
+                <div className="aem-field">
                   <label>
                     Password
                     {editingEmployee && (
-                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 400, marginInlineStart: '6px' }}>
-                        (اتركه فارغاً إذا لا تريد تغييره)
-                      </span>
+                      <span className="aem-label-hint">(اتركه فارغاً إذا لا تريد تغييره)</span>
                     )}
                   </label>
                   <input
@@ -231,7 +201,7 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
                     onChange={handleChange}
                   />
                 </div>
-                <div className="input-group full-width">
+                <div className="aem-field aem-full">
                   <label>Address</label>
                   <input
                     type="text"
@@ -241,7 +211,7 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
                     onChange={handleChange}
                   />
                 </div>
-                <div className="input-group">
+                <div className="aem-field">
                   <label>Phone Number</label>
                   <input
                     type="tel"
@@ -251,7 +221,7 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
                     onChange={handleChange}
                   />
                 </div>
-                <div className="input-group">
+                <div className="aem-field">
                   <label>Date of Birth</label>
                   <input
                     type="date"
@@ -260,7 +230,7 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
                     onChange={handleChange}
                   />
                 </div>
-                <div className="input-group full-width">
+                <div className="aem-field aem-full">
                   <label>Emergency Contact</label>
                   <input
                     type="text"
@@ -273,20 +243,17 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
               </div>
             </div>
 
-            {/* Section 2: Employment & Contract */}
-            <div className="form-section">
-              <div className="section-header">
-                <div className="section-icon">
-                  <span className="material-symbols-outlined">badge</span>
-                </div>
-                <div className="section-text">
-                  <h3>Employment & Contract</h3>
+            {/* --- Section 2: Employment --- */}
+            <div className="aem-section">
+              <div className="aem-section-header">
+                <span className="material-symbols-outlined">badge</span>
+                <div>
+                  <h3>Employment &amp; Contract</h3>
                   <p>Role definition and organizational placement.</p>
                 </div>
               </div>
-
-              <div className="form-grid">
-                <div className="input-group">
+              <div className="aem-grid">
+                <div className="aem-field">
                   <label>Start Date</label>
                   <input
                     type="date"
@@ -296,7 +263,24 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
                     onChange={handleChange}
                   />
                 </div>
-                <div className="input-group">
+                <div className="aem-field">
+                  <label>Department</label>
+                  <select
+                    name="department"
+                    value={formData.department}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select Department</option>
+                    {departmentOptions
+                      .filter((d) => d.value)
+                      .map((d) => (
+                        <option key={d.value} value={d.value}>
+                          {d.label}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+                <div className="aem-field">
                   <label>Job Title</label>
                   <select
                     name="jobTitle"
@@ -305,33 +289,14 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
                     onChange={handleChange}
                   >
                     <option value="">Select Position</option>
-                    {filteredPositions && filteredPositions.map(pos => (
-                      pos.value && (
-                        <option key={pos.value} value={pos.value}>
-                          {pos.label}
-                        </option>
-                      )
+                    {shownPositions.map((pos) => (
+                      <option key={pos.value} value={pos.value}>
+                        {pos.label}
+                      </option>
                     ))}
                   </select>
                 </div>
-                <div className="input-group">
-                  <label>Department</label>
-                  <select
-                    name="department"
-                    value={formData.department}
-                    onChange={handleChange}
-                  >
-                    <option value="">Select Department</option>
-                    {departmentOptions && departmentOptions.map(dept => (
-                      dept.value && (
-                        <option key={dept.value} value={dept.value}>
-                          {dept.label}
-                        </option>
-                      )
-                    ))}
-                  </select>
-                </div>
-                <div className="input-group">
+                <div className="aem-field">
                   <label>Direct Supervisor</label>
                   <select
                     name="directManager"
@@ -339,16 +304,14 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
                     onChange={handleChange}
                   >
                     <option value="">Select Supervisor</option>
-                    {filteredManagers && filteredManagers.map(m => (
-                      m.value && (
-                        <option key={m.value} value={m.value}>
-                          {m.label}
-                        </option>
-                      )
+                    {shownManagers.map((m) => (
+                      <option key={m.value} value={m.value}>
+                        {m.label}
+                      </option>
                     ))}
                   </select>
                 </div>
-                <div className="input-group">
+                <div className="aem-field">
                   <label>Employee ID</label>
                   <input
                     type="text"
@@ -358,20 +321,14 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
                     onChange={handleChange}
                   />
                 </div>
-                <div className="input-group">
+                <div className="aem-field">
                   <label>
                     Basic Salary
-                    {(() => {
-                      const selectedPosition = filteredPositions?.find(p => p.value == formData.jobTitle);
-                      if (selectedPosition && selectedPosition.value) {
-                        return (
-                          <span style={{ fontSize: '0.75rem', color: 'var(--primary-color)', fontWeight: 500, marginInlineStart: '6px' }}>
-                            (Range: ${selectedPosition.min_salary} - ${selectedPosition.max_salary})
-                          </span>
-                        );
-                      }
-                      return null;
-                    })()}
+                    {selectedPosition && (
+                      <span className="aem-salary-hint">
+                        (Range: ${selectedPosition.min_salary} – ${selectedPosition.max_salary})
+                      </span>
+                    )}
                   </label>
                   <input
                     type="number"
@@ -381,22 +338,14 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
                     onChange={handleChange}
                   />
                 </div>
-                <div className="input-group full-width">
+                <div className="aem-field aem-full">
                   <label>Profile Picture</label>
                   {previewImage && (
-                    <div style={{ marginBottom: '8px' }}>
-                      <img
-                        src={previewImage}
-                        alt="Profile Preview"
-                        style={{
-                          width: '80px',
-                          height: '80px',
-                          borderRadius: '50%',
-                          objectFit: 'cover',
-                          border: '2px solid var(--primary-color)'
-                        }}
-                      />
-                    </div>
+                    <img
+                      src={previewImage}
+                      alt="Profile Preview"
+                      className="aem-preview-img"
+                    />
                   )}
                   <input
                     type="file"
@@ -410,18 +359,20 @@ const AddEmployeeModal = ({ isOpen, onClose, onSave, editingEmployee, department
 
           </div>
 
-          <div className="modal-footer">
-            <button type="button" className="btn-cancel" onClick={onClose}>
+          {/* Footer */}
+          <div className="aem-footer">
+            <button type="button" className="aem-btn-cancel" onClick={onClose}>
               Cancel
             </button>
-            <button type="submit" className="btn-save">
+            <button type="submit" className="aem-btn-save">
               <span className="material-symbols-outlined">check_circle</span>
               {editingEmployee ? "Update Employee" : "Create Account"}
             </button>
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
