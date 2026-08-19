@@ -111,7 +111,7 @@ class PerformanceEvaluation extends Model
             return 0.00;
         }
 
-        $config = $template->config;
+        $config = $template->components;
         $components = $config['components'] ?? [];
 
         $scoreMap = [

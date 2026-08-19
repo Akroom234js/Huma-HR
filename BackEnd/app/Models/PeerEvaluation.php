@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -12,6 +11,7 @@ class PeerEvaluation extends Model
 
     protected $table = 'peer_evaluations';
 
+    // ✅ مطابق تماماً لأعمدة migration الفعلية
     protected $fillable = [
         'performance_cycle_id',
         'employee_profile_id',

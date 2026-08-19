@@ -154,4 +154,20 @@ class PeerEvaluationService
             })
             ->toArray();
     }
+
+    /**
+     * Decrypt and return all comments submitted by peers for an employee in a cycle.
+     */
+    public function getDecryptedComments(int $cycleId, int $employeeProfileId): array
+    {
+        return PeerEvaluation::where('performance_cycle_id', $cycleId)
+            ->where('employee_profile_id', $employeeProfileId)
+            ->get()
+            ->map(fn($e) => [
+                'collaboration_score' => $e->collaboration_score,
+                'teamwork_score'      => $e->teamwork_score,
+                'comment'             => $this->decryptComment($e->encrypted_comment, base64_encode($e->iv)),
+            ])
+            ->toArray();
+    }
 }
