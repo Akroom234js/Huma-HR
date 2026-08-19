@@ -1,46 +1,46 @@
 import React from 'react';
 import './CompetencyGapTag.css';
 
-const CompetencyGapTag = ({ gapType = 'technical', score = 0, lang }) => {
+const CompetencyGapTag = ({
+    gapType = 'technical',
+    gapName = '',
+    score,
+    lang
+}) => {
     const currentLang = lang || sessionStorage.getItem('lang') || 'en';
     const isAr = currentLang === 'ar';
 
-    const gapMap = {
+    const gapConfig = {
         technical: {
-            class: 'gap-technical',
-            labelEn: 'Technical Execution Gap',
-            labelAr: 'فجوة في التنفيذ الفني',
-            icon: 'fa-solid fa-code'
+            class: 'gap-tech',
+            icon: 'fa-solid fa-code',
+            labelAr: 'فجوة في الإنجاز التقني للمهام',
+            labelEn: 'Technical Execution Gap'
         },
-        teamwork: {
-            class: 'gap-teamwork',
-            labelEn: 'Teamwork & Cooperation Gap',
-            labelAr: 'فجوة في العمل الجماعي والتعاون',
-            icon: 'fa-solid fa-people-group'
+        communication: {
+            class: 'gap-comm',
+            icon: 'fa-solid fa-comments',
+            labelAr: 'فجوة في التواصل والعمل الجماعي',
+            labelEn: 'Teamwork & Communication Gap'
         },
-        commitment: {
-            class: 'gap-commitment',
-            labelEn: 'Commitment & Punctuality Gap',
-            labelAr: 'فجوة في الالتزام بالمواعيد',
-            icon: 'fa-solid fa-user-clock'
-        },
-        task_management: {
-            class: 'gap-tasks',
-            labelEn: 'Task Management Gap',
-            labelAr: 'فجوة في إدارة المهام',
-            icon: 'fa-solid fa-list-check'
+        attendance: {
+            class: 'gap-attend',
+            icon: 'fa-solid fa-user-clock',
+            labelAr: 'فجوة في الحضور والانضباط',
+            labelEn: 'Punctuality & Attendance Gap'
         }
     };
 
-    const currentGap = gapMap[gapType] || gapMap.technical;
+    const config = gapConfig[gapType] || gapConfig.technical;
+    const numScore = score !== undefined && score !== null ? Number(score) : null;
 
     return (
-        <span className={`performance-gap-pill ${currentGap.class}`}>
-            <i className={`${currentGap.icon} gap-icon`}></i>
-            <span className="gap-label-text">
-                {isAr ? currentGap.labelAr : currentGap.labelEn}
-            </span>
-            <span className="gap-score-val">({isAr ? 'الدرجة:' : 'Score:'} {score.toFixed(0)})</span>
+        <span className={`competency-gap-pill ${config.class}`}>
+            <i className={`${config.icon} gap-icon`}></i>
+            <span className="gap-name">{gapName || (isAr ? config.labelAr : config.labelEn)}</span>
+            {numScore !== null && !isNaN(numScore) && (
+                <span className="gap-score-val">({isAr ? 'الدرجة:' : 'Score:'} {numScore.toFixed(0)})</span>
+            )}
         </span>
     );
 };

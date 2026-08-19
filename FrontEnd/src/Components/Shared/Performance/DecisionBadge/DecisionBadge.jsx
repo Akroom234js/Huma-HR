@@ -12,6 +12,12 @@ const DecisionBadge = ({ decision = 'bonus', lang }) => {
             labelAr: 'ترقية + مكافأة',
             icon: 'fa-solid fa-trophy'
         },
+        promotion: {
+            class: 'badge-promo',
+            labelEn: 'Promotion Recommended',
+            labelAr: 'ترقية موصى بها',
+            icon: 'fa-solid fa-trophy'
+        },
         bonus: {
             class: 'badge-bonus',
             labelEn: 'Bonus Eligible',
@@ -22,6 +28,12 @@ const DecisionBadge = ({ decision = 'bonus', lang }) => {
             class: 'badge-training',
             labelEn: 'Training Required',
             labelAr: 'يتطلب تدريباً',
+            icon: 'fa-solid fa-chalkboard-user'
+        },
+        training: {
+            class: 'badge-training',
+            labelEn: 'Training Recommended',
+            labelAr: 'تدريب موصى به',
             icon: 'fa-solid fa-chalkboard-user'
         },
         warning: {
