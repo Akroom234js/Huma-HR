@@ -16,24 +16,29 @@ class TaskController extends Controller
     use ApiResponse;
 
     // ─────────────────────────────────────────────────────────────
-    // المدير يشوف مهام كل موظفي قسمه
+    // المدير يشوف مهام قسمه | HR والأدمن يشوفون مهام كل الشركة
     // GET /tasks
     // ─────────────────────────────────────────────────────────────
     public function index(): JsonResponse
     {
-        $managerProfile = auth()->user()->employeeProfile;
+        $user = auth()->user();
+        $managerProfile = $user->employeeProfile;
 
         if (! $managerProfile) {
             return $this->errorResponse('Manager profile not found.', null, 404);
         }
 
-        $tasks = Task::with(['employee', 'assignedBy'])
-            ->whereHas('employee', function ($query) use ($managerProfile) {
-                $query->where('department_id', $managerProfile->department_id);
-            })
-            ->latest()
-            ->get()
-            ->map(fn($task) => $this->formatTask($task));
+        $query = Task::with(['employee.department', 'assignedBy'])
+            ->latest();
+
+        // إذا لم يكن HR أو Boss أو Admin، يرى فقط مهام قسمه
+        if (! $user->hasAnyRole(['hr', 'boss', 'admin'], 'api')) {
+            $query->whereHas('employee', function ($q) use ($managerProfile) {
+                $q->where('department_id', $managerProfile->department_id);
+            });
+        }
+
+        $tasks = $query->get()->map(fn($task) => $this->formatTask($task));
 
         return $this->successResponse($tasks, 'Tasks retrieved successfully.');
     }
@@ -287,6 +292,8 @@ class TaskController extends Controller
     // ─────────────────────────────────────────────────────────────
     private function formatTask(Task $task): array
     {
+        $taskScore = $task->task_score;
+
         return [
             'id'                   => $task->id,
             'title'                => $task->title,
@@ -300,12 +307,18 @@ class TaskController extends Controller
             'days_late'            => $task->days_late,
             'completion_score'     => $task->completion_score,
             'quality_score'        => $task->quality_score,
-            'task_score'           => $task->task_score,  // من الـ accessor في الـ Model
+            'task_score'           => $taskScore,
+            'final_score'          => $taskScore, // Alias for frontend tables
             'completed_at'         => $task->completed_at?->format('Y-m-d H:i:s'),
             'scored_at'            => $task->scored_at?->format('Y-m-d H:i:s'),
             'employee'             => $task->employee ? [
-                'id'   => $task->employee->id,
-                'name' => $task->employee->full_name,
+                'id'         => $task->employee->id,
+                'name'       => $task->employee->full_name,
+                'full_name'  => $task->employee->full_name,
+                'department' => $task->employee->department ? [
+                    'id'   => $task->employee->department->id,
+                    'name' => $task->employee->department->name,
+                ] : null,
             ] : null,
             'assigned_by'          => $task->assignedBy ? [
                 'id'   => $task->assignedBy->id,

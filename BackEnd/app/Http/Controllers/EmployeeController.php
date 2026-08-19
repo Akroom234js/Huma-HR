@@ -275,5 +275,31 @@ class EmployeeController extends Controller
             message: 'Team members retrieved successfully.'
         );
     }
+
+    // ── GET /api/my-department/employees ─────────────────────────────────────
+    // Middleware: auth:sanctum (any role)
+    // يُرجع زملاء نفس القسم باستثناء الموظف نفسه — للاستخدام في تقييم الأقران
+    public function myDepartmentEmployees(): JsonResponse
+    {
+        $employee = auth()->user()->employeeProfile;
+
+        if (!$employee || !$employee->department_id) {
+            return $this->successResponse(
+                data: [],
+                message: 'No department assigned.'
+            );
+        }
+
+        $colleagues = EmployeeProfile::with(['user', 'department'])
+            ->where('department_id', $employee->department_id)
+            ->where('id', '!=', $employee->id)
+            ->whereHas('user', fn($q) => $q->where('account_status', 'active'))
+            ->get();
+
+        return $this->successResponse(
+            data: EmployeeResource::collection($colleagues)->resolve(),
+            message: 'Department employees retrieved successfully.'
+        );
+    }
 }
 

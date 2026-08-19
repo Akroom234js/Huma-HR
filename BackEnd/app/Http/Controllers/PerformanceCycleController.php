@@ -91,7 +91,7 @@ class PerformanceCycleController extends Controller
                 $template = PerformanceTemplate::create([
                     'name' => "Custom Template for Cycle: " . $request->title,
                     'is_active' => false, // قالب خاص بدورة واحدة وليس عاماً للجميع
-                    'config' => ['components' => $componentsData]
+                    'components' => $componentsData
                 ]);
 
                 $templateId = $template->id;
@@ -278,15 +278,15 @@ class PerformanceCycleController extends Controller
     private function formatCycle(PerformanceCycle $cycle): array
     {
         $template = $cycle->template;
-        $components = $template ? ($template->config['components'] ?? []) : [];
+        $components = $template ? ($template->components ?? []) : [];
 
         $formattedComponents = [];
         foreach ($components as $key => $component) {
             $formattedComponents[] = [
                 'component_key' => $key,
-                'weight'        => $component['weight'] ?? 0,
-                'is_active'     => $component['is_active'] ?? false,
-                'sub_components'=> $component['sub_components'] ?? null,
+                'weight'        => is_array($component) ? ($component['weight'] ?? 0) : $component,
+                'is_active'     => is_array($component) ? ($component['is_active'] ?? true) : true,
+                'sub_components'=> is_array($component) ? ($component['sub_components'] ?? ($component['sub_weights'] ?? null)) : null,
             ];
         }
 
@@ -311,7 +311,9 @@ class PerformanceCycleController extends Controller
             'weights_valid'    => $cycle->areWeightsValid(),
             'created_at'       => $cycle->created_at?->format('Y-m-d H:i:s'),
         ];
-        /**
+    }
+
+    /**
      * تشغيل التفعيل والإغلاق تلقائيًا عند استدعاء أي endpoint للـ cycles.
      * يغيّر الدورات ذات الحالة "draft" إلى "active" عندما يساوي أو يتجاوز تاريخ البدء.
      * يغيّر الدورات ذات الحالة "active" إلى "processing" عندما يتجاوز تاريخ الانتهاء

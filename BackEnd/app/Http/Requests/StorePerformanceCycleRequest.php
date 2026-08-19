@@ -11,6 +11,28 @@ class StorePerformanceCycleRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        // دعم template_id كاسم بديل لـ performance_template_id
+        if ($this->has('template_id') && !$this->has('performance_template_id')) {
+            $this->merge([
+                'performance_template_id' => $this->template_id,
+            ]);
+        }
+
+        // إذا لم يتم تمرير قالب أو مكونات، ابحث عن القالب الافتراضي تلقائياً
+        if (!$this->performance_template_id && !$this->components) {
+            $defaultTemplate = \App\Models\PerformanceTemplate::where('is_default', true)->first()
+                ?? \App\Models\PerformanceTemplate::first();
+
+            if ($defaultTemplate) {
+                $this->merge([
+                    'performance_template_id' => $defaultTemplate->id,
+                ]);
+            }
+        }
+    }
+
     public function rules(): array
     {
         return [
