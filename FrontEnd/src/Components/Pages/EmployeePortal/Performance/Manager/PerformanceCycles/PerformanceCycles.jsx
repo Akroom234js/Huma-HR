@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PerformanceCycles.css';
 import CycleResultsModal from './CycleResultsModal';
+import { getPerformanceCycles } from '../../../../../../services/performanceService';
 
 const PerformanceCycles = () => {
     const navigate = useNavigate();
@@ -11,43 +12,39 @@ const PerformanceCycles = () => {
     const isAr = currentLang === 'ar';
 
     const [selectedCycle, setSelectedCycle] = useState(null);
+    const [cycles, setCycles] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    // Mock Cycles
-    const [cycles, setCycles] = useState([
-        {
-            id: 1,
-            nameEn: 'First Quarter 2026 (Q1)',
-            nameAr: 'الربع الأول 2026 (Q1)',
-            periodEn: 'Jan 01, 2026 - Mar 31, 2026',
-            periodAr: '01 يناير 2026 - 31 مارس 2026',
-            employees: 14,
-            status: 'active',
-            jobStateEn: 'Awaiting final closing to calculate',
-            jobStateAr: 'بانتظار الإغلاق النهائي للحساب'
-        },
-        {
-            id: 2,
-            nameEn: 'Fourth Quarter 2025 (Q4)',
-            nameAr: 'الربع الرابع 2025 (Q4)',
-            periodEn: 'Oct 01, 2025 - Dec 31, 2025',
-            periodAr: '01 أكتوبر 2025 - 31 ديسمبر 2025',
-            employees: 12,
-            status: 'closed',
-            jobStateEn: 'Processed successfully',
-            jobStateAr: 'تمت المعالجة والحساب بنجاح'
-        },
-        {
-            id: 3,
-            nameEn: 'Second Quarter 2026 (Q2)',
-            nameAr: 'الربع الثاني 2026 (Q2)',
-            periodEn: 'Apr 01, 2026 - Jun 30, 2026',
-            periodAr: '01 أبريل 2026 - 30 يونيو 2026',
-            employees: 0,
-            status: 'draft',
-            jobStateEn: 'Unopened',
-            jobStateAr: 'غير مفتوحة بعد'
+    const loadCycles = async () => {
+        try {
+            setIsLoading(true);
+            const res = await getPerformanceCycles();
+            const raw = res?.data?.data || res?.data || [];
+            setCycles(Array.isArray(raw) ? raw : []);
+        } catch (error) {
+            console.error("Failed to fetch performance cycles:", error);
+        } finally {
+            setIsLoading(false);
         }
-    ]);
+    };
+
+    useEffect(() => {
+        loadCycles();
+    }, []);
+
+    const getJobStateText = (status) => {
+        switch (status) {
+            case 'active':
+                return isAr ? 'بانتظار الإغلاق النهائي للحساب' : 'Awaiting final closing to calculate';
+            case 'processing':
+                return isAr ? 'جاري المعالجة وحساب الدرجات...' : 'Processing scores and AI actions...';
+            case 'closed':
+                return isAr ? 'تمت المعالجة والحساب بنجاح' : 'Processed successfully';
+            case 'draft':
+            default:
+                return isAr ? 'غير مفتوحة بعد' : 'Unopened / Draft';
+        }
+    };
 
     return (
         <div className={`performance-cycles-management ${isAr ? 'rtl' : 'ltr'}`}>
@@ -73,79 +70,103 @@ const PerformanceCycles = () => {
                     </span>
                 </div>
 
-                <div className="table-wrapper">
-                    <table className="custom-table">
-                        <thead>
-                            <tr>
-                                <th>{isAr ? 'اسم الدورة' : 'Cycle Name'}</th>
-                                <th>{isAr ? 'فترة التقييم' : 'Duration Period'}</th>
-                                <th>{isAr ? 'الموظفون المشمولون' : 'Tracked Employees'}</th>
-                                <th>{isAr ? 'الحالة' : 'Status'}</th>
-                                <th>{isAr ? 'حالة حساب العمليات الخلفية' : 'Background Job Score State'}</th>
-                                <th style={{ textAlign: 'right' }}>{isAr ? 'العمليات' : 'Operations'}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {cycles.map((c) => (
-                                <tr key={c.id}>
-                                    <td style={{ fontWeight: 700, color: c.status === 'active' ? 'var(--primary-color)' : 'var(--text-main)' }}>
-                                        {isAr ? c.nameAr : c.nameEn}
-                                    </td>
-                                    <td>{isAr ? c.periodAr : c.periodEn}</td>
-                                    <td>{c.employees > 0 ? `${c.employees} ${isAr ? 'موظفين' : 'Employees'}` : '--'}</td>
-                                    <td>
-                                        {c.status === 'active' && (
-                                            <span className="badge badge-cycle-active">
-                                                <i className="fa-solid fa-circle-play pulse-dot-active"></i>
-                                                <span>{isAr ? 'نشطة' : 'Active'}</span>
-                                            </span>
-                                        )}
-                                        {c.status === 'closed' && (
-                                            <span className="badge badge-cycle-closed">
-                                                <span>{isAr ? 'مغلقة' : 'Closed'}</span>
-                                            </span>
-                                        )}
-                                        {c.status === 'draft' && (
-                                            <span className="badge badge-cycle-draft">
-                                                <span>{isAr ? 'مسودة' : 'Draft'}</span>
-                                            </span>
-                                        )}
-                                    </td>
-                                    <td>
-                                        <div className="job-state-cell">
-                                            <span className={`state-indicator-dot ${c.status}`}></span>
-                                            <span style={{ 
-                                                fontSize: '13px', 
-                                                color: c.status === 'closed' ? 'var(--color-scored)' : 'var(--text-secondary)',
-                                                fontWeight: c.status === 'closed' ? 600 : 'normal'
-                                            }}>
-                                                {isAr ? c.jobStateAr : c.jobStateEn}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td style={{ textAlign: 'right' }}>
-                                        {c.status === 'active' ? (
-                                            <button className="btn btn-secondary btn-sm disabled-opacity" disabled>
-                                                <i className="fa-solid fa-clock"></i>
-                                                <span>{isAr ? 'سيتم الحساب عند الإغلاق' : 'Calculated upon closure'}</span>
-                                            </button>
-                                        ) : c.status === 'closed' ? (
-                                            <button className="btn btn-secondary btn-sm" onClick={() => setSelectedCycle(c)}>
-                                                <i className="fa-solid fa-chart-line"></i>
-                                                <span>{isAr ? 'عرض النتائج' : 'View Results'}</span>
-                                            </button>
-                                        ) : (
-                                            <button className="btn btn-secondary btn-sm disabled-opacity" disabled>
-                                                <i className="fa-solid fa-lock"></i>
-                                                <span>{isAr ? 'مغلق' : 'Locked'}</span>
-                                            </button>
-                                        )}
-                                    </td>
+                {isLoading ? (
+                    <div style={{ textAlign: 'center', padding: '50px', color: 'var(--text-secondary)' }}>
+                        <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', marginBottom: '12px', display: 'block' }}></i>
+                        {isAr ? 'جاري تحميل الدورات...' : 'Loading cycles...'}
+                    </div>
+                ) : (
+                    <div className="table-wrapper">
+                        <table className="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>{isAr ? 'اسم الدورة' : 'Cycle Name'}</th>
+                                    <th>{isAr ? 'فترة التقييم' : 'Duration Period'}</th>
+                                    <th>{isAr ? 'القالب المستخدم' : 'Template'}</th>
+                                    <th>{isAr ? 'الحالة' : 'Status'}</th>
+                                    <th>{isAr ? 'حالة حساب العمليات الخلفية' : 'Background Job Score State'}</th>
+                                    <th style={{ textAlign: 'right' }}>{isAr ? 'العمليات' : 'Operations'}</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                {cycles.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="6" style={{ textAlign: 'center', padding: '30px', color: 'var(--text-muted)' }}>
+                                            {isAr ? 'لا توجد دورات أداء مسجلة حالياً.' : 'No performance cycles found.'}
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    cycles.map((c) => {
+                                        const period = `${c.start_date || '-'} → ${c.end_date || '-'}`;
+                                        return (
+                                            <tr key={c.id}>
+                                                <td style={{ fontWeight: 700, color: c.status === 'active' ? 'var(--primary-color)' : 'var(--text-main)' }}>
+                                                    {c.title}
+                                                </td>
+                                                <td>{period}</td>
+                                                <td>{c.template_name || (isAr ? 'القالب الافتراضي' : 'Default Template')}</td>
+                                                <td>
+                                                    {c.status === 'active' && (
+                                                        <span className="badge badge-cycle-active">
+                                                            <i className="fa-solid fa-circle-play pulse-dot-active"></i>
+                                                            <span>{isAr ? 'نشطة' : 'Active'}</span>
+                                                        </span>
+                                                    )}
+                                                    {c.status === 'closed' && (
+                                                        <span className="badge badge-cycle-closed">
+                                                            <span>{isAr ? 'مغلقة' : 'Closed'}</span>
+                                                        </span>
+                                                    )}
+                                                    {c.status === 'processing' && (
+                                                        <span className="badge" style={{ backgroundColor: '#fef3c7', color: '#b45309' }}>
+                                                            <i className="fa-solid fa-spinner fa-spin"></i>
+                                                            <span>{isAr ? 'قيد المعالجة' : 'Processing'}</span>
+                                                        </span>
+                                                    )}
+                                                    {c.status === 'draft' && (
+                                                        <span className="badge badge-cycle-draft">
+                                                            <span>{isAr ? 'مسودة' : 'Draft'}</span>
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td>
+                                                    <div className="job-state-cell">
+                                                        <span className={`state-indicator-dot ${c.status}`}></span>
+                                                        <span style={{ 
+                                                            fontSize: '13px', 
+                                                            color: c.status === 'closed' ? 'var(--color-scored)' : 'var(--text-secondary)',
+                                                            fontWeight: c.status === 'closed' ? 600 : 'normal'
+                                                        }}>
+                                                            {getJobStateText(c.status)}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td style={{ textAlign: 'right' }}>
+                                                    {c.status === 'active' ? (
+                                                        <button className="btn btn-secondary btn-sm disabled-opacity" disabled>
+                                                            <i className="fa-solid fa-clock"></i>
+                                                            <span>{isAr ? 'سيتم الحساب عند الإغلاق' : 'Calculated upon closure'}</span>
+                                                        </button>
+                                                    ) : c.status === 'closed' ? (
+                                                        <button className="btn btn-secondary btn-sm" onClick={() => setSelectedCycle(c)}>
+                                                            <i className="fa-solid fa-chart-line"></i>
+                                                            <span>{isAr ? 'عرض النتائج' : 'View Results'}</span>
+                                                        </button>
+                                                    ) : (
+                                                        <button className="btn btn-secondary btn-sm disabled-opacity" disabled>
+                                                            <i className="fa-solid fa-lock"></i>
+                                                            <span>{isAr ? 'مغلق' : 'Locked'}</span>
+                                                        </button>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
 
             {/* Background Workers Monitor */}
