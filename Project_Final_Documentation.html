@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التوثيق النهائي والكامل لمشروع التخرج: Huma-HR</title>
+    <style>
+        @page {
+            size: A4;
+            margin-top: 2.54cm;
+            margin-bottom: 2.54cm;
+            margin-left: 2.54cm;
+            margin-right: 3cm;
+        }
+        body {
+            font-family: 'Simplified Arabic', 'Traditional Arabic', 'Times New Roman', Tahoma, Arial, sans-serif;
+            font-size: 13.5pt;
+            line-height: 1.5;
+            color: #000000;
+            background-color: #e5e5e5;
+            margin: 0;
+            padding: 20px 0;
+            direction: rtl;
+        }
+        .document-page {
+            background-color: #ffffff;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto 20px auto;
+            padding: 2.54cm 2.54cm 2.54cm 3cm;
+            box-sizing: border-box;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+            border: 1px solid #d3d3d3;
+        }
+        h1.document-main-title {
+            font-size: 20pt;
+            font-weight: bold;
+            text-align: center;
+            color: #000000;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 15px;
+            line-height: 1.4;
+        }
+        h1.chapter-title {
+            font-size: 18pt;
+            font-weight: bold;
+            text-align: center;
+            color: #000000;
+            margin-top: 35px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 10px;
+            page-break-before: always;
+            break-before: page;
+        }
+        h2 {
+            font-size: 15.5pt;
+            font-weight: bold;
+            color: #000000;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #666666;
+            padding-bottom: 5px;
+            page-break-after: avoid;
+        }
+        h3 {
+            font-size: 14.5pt;
+            font-weight: bold;
+            color: #000000;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            page-break-after: avoid;
+        }
+        h4, h5 {
+            font-size: 13.5pt;
+            font-weight: bold;
+            color: #000000;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            page-break-after: avoid;
+        }
+        p {
+            font-size: 13.5pt;
+            text-align: justify;
+            margin-bottom: 12px;
+            margin-top: 0;
+            text-justify: inter-word;
+        }
+        li {
+            font-size: 13.5pt;
+            text-align: justify;
+            margin-bottom: 6px;
+        }
+        ul, ol {
+            margin-top: 5px;
+            margin-bottom: 15px;
+            padding-right: 25px;
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background: #000000;
+            margin: 30px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0 25px 0;
+            font-size: 11pt;
+            page-break-inside: avoid;
+        }
+        table, th, td {
+            border: 1px solid #000000;
+        }
+        th {
+            background-color: #f0f0f0;
+            color: #000000;
+            font-weight: bold;
+            padding: 8px;
+            text-align: center;
+        }
+        td {
+            padding: 6px 8px;
+            vertical-align: middle;
+        }
+        .table-caption {
+            font-size: 12pt;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 6px;
+            color: #000000;
+        }
+        .figure-caption {
+            font-size: 12pt;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 8px;
+            margin-bottom: 25px;
+            color: #000000;
+        }
+        pre {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 10pt;
+            direction: ltr;
+            text-align: left;
+            background-color: #f9f9f9;
+            border: 1px solid #999999;
+            padding: 10px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin: 15px 0;
+        }
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 11pt;
+            direction: ltr;
+            display: inline-block;
+        }
+        .page-break {
+            page-break-before: always;
+            break-before: page;
+        }
+        .toc-list {
+            list-style-type: none;
+            padding-right: 0;
+        }
+        .toc-list li {
+            margin-bottom: 8px;
+            border-bottom: 1px dotted #ccc;
+            padding-bottom: 4px;
+        }
+        .toc-list ul {
+            list-style-type: none;
+            padding-right: 20px;
+        }
+
+        /* ════════════════════════════════════════════════════════════════ */
+        /* Official Visual Diagram Styles (Black & White Academic Style)  */
+        /* ════════════════════════════════════════════════════════════════ */
+        .v-diagram-box {
+            border: 1.5px solid #000000;
+            background-color: #ffffff;
+            padding: 16px;
+            margin: 20px 0 10px 0;
+            page-break-inside: avoid;
+            box-sizing: border-box;
+        }
+        .v-layer {
+            border: 1px solid #333333;
+            background-color: #f8f8f8;
+            padding: 10px 14px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .v-layer-title {
+            font-weight: bold;
+            font-size: 11pt;
+            text-align: center;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #bbb;
+            padding-bottom: 4px;
+            color: #000000;
+        }
+        .v-flex-row {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .v-card {
+            border: 1px solid #000000;
+            background-color: #ffffff;
+            padding: 8px 12px;
+            font-size: 10pt;
+            font-weight: bold;
+            text-align: center;
+            flex: 1;
+            min-width: 110px;
+            border-radius: 3px;
+        }
+        .v-arrow-down {
+            text-align: center;
+            font-weight: bold;
+            font-size: 13pt;
+            margin: 4px 0;
+            color: #000000;
+        }
+
+        /* Use Case Diagrams */
+        .actor-section {
+            border: 1px solid #333;
+            background-color: #fafafa;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+        }
+        .actor-head {
+            font-weight: bold;
+            font-size: 11pt;
+            background-color: #eaeaea;
+            padding: 6px 10px;
+            border: 1px solid #666;
+            margin-bottom: 8px;
+            display: inline-block;
+            border-radius: 3px;
+        }
+        .use-case-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .use-case-pill {
+            border: 1px solid #000000;
+            background-color: #ffffff;
+            padding: 5px 12px;
+            font-size: 9.5pt;
+            border-radius: 15px;
+            font-weight: 600;
+        }
+
+        /* UML Class Diagrams */
+        .uml-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+        .uml-class {
+            border: 1.5px solid #000000;
+            background-color: #ffffff;
+            width: 220px;
+            font-size: 9.5pt;
+            text-align: right;
+            box-shadow: 2px 2px 0px #ccc;
+        }
+        .uml-header {
+            background-color: #e5e5e5;
+            font-weight: bold;
+            text-align: center;
+            padding: 6px;
+            border-bottom: 1.5px solid #000000;
+            font-size: 10.5pt;
+        }
+        .uml-body {
+            padding: 6px 8px;
+            border-bottom: 1px solid #777777;
+            line-height: 1.4;
+        }
+        .uml-methods {
+            padding: 6px 8px;
+            background-color: #fafafa;
+            line-height: 1.4;
+        }
+
+        /* ERD Diagram */
+        .erd-entity {
+            border: 1.5px solid #000000;
+            background-color: #ffffff;
+            width: 200px;
+            font-size: 9pt;
+            margin: 6px;
+            display: inline-block;
+            vertical-align: top;
+        }
+        .erd-header {
+            background-color: #333333;
+            color: #ffffff;
+            font-weight: bold;
+            text-align: center;
+            padding: 5px;
+            font-size: 10pt;
+        }
+        .erd-field {
+            padding: 4px 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .erd-pk {
+            font-weight: bold;
+            color: #000;
+        }
+        .erd-fk {
+            font-style: italic;
+            color: #444;
+        }
+
+        /* Sequence Steps Diagram */
+        .seq-table {
+            width: 100%;
+            border: 1px solid #000;
+            border-collapse: collapse;
+            font-size: 10pt;
+        }
+        .seq-table th {
+            background-color: #222;
+            color: #fff;
+            padding: 6px;
+        }
+        .seq-table td {
+            padding: 6px 10px;
+            border: 1px solid #888;
+        }
+        .seq-num {
+            font-weight: bold;
+            text-align: center;
+            width: 35px;
+            background-color: #f0f0f0;
+        }
+
+        /* DFD Diagram */
+        .dfd-process {
+            border: 2px solid #000;
+            background-color: #f4f4f4;
+            padding: 10px 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 11pt;
+            border-radius: 20px;
+            margin: 10px auto;
+            width: fit-content;
+        }
+        .dfd-entity-box {
+            border: 1.5px solid #000;
+            background-color: #fff;
+            padding: 6px 12px;
+            font-weight: bold;
+            font-size: 9.5pt;
+            text-align: center;
+            border-radius: 2px;
+        }
+        .dfd-store-box {
+            border-top: 1.5px solid #000;
+            border-bottom: 1.5px solid #000;
+            background-color: #fff;
+            padding: 5px 10px;
+            font-weight: bold;
+            font-size: 9.5pt;
+            text-align: center;
+        }
+
+        @media print {
+            body {
+                background: none;
+                padding: 0;
+            }
+            .document-page {
+                width: 100%;
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="document-page">
+
+    <h1 class="document-main-title">التوثيق النهائي والكامل لمشروع التخرج:<br>نظام إدارة الموارد البشرية المتكامل الذكي (Huma-HR)</h1>
+
+    <hr>
+
+    <h2>فهرس المحتويات (Table of Contents)</h2>
+    <ul class="toc-list">
+        <li><strong>فهرس المحتويات</strong></li>
+        <li><strong>فهرس الأشكال</strong></li>
+        <li><strong>فهرس الجداول</strong></li>
+        <li><strong>قائمة الاختصارات (List of Abbreviations)</strong></li>
+        <li><strong>الفصل الأول: المقدمة العامة للمشروع (Introduction)</strong>
+            <ul>
+                <li>1.1 تمهيد للمشروع</li>
+                <li>1.2 فكرة المشروع والهدف منه</li>
+                <li>1.3 أهمية المشروع والقيمة المضافة</li>
+                <li>1.4 الجهات المستفيدة من المشروع</li>
+            </ul>
+        </li>
+        <li><strong>الفصل الثاني: الدراسة النظرية وتقنيات العمل (Theoretical Study & Technologies)</strong>
+            <ul>
+                <li>2.1 المفاهيم النظرية الأساسية</li>
+                <li>2.2 التقنيات وأطر العمل في الجانب الخلفي (Back-End Technologies)</li>
+                <li>2.3 التقنيات وأطر العمل في الجانب الأمامي (Front-End Technologies)</li>
+                <li>2.4 قواعد البيانات المعمارية ونموذج التواصل (Database & API Architecture)</li>
+            </ul>
+        </li>
+        <li><strong>الفصل الثالث: التطبيق العملي والتحليل والتصميم الفني (Practical Implementation & Engineering Design)</strong>
+            <ul>
+                <li>3.1 الأدوات وبيئة العمل (Development Environment & Runtime Setup)</li>
+                <li>3.2 التحليل الهندسي للنظام البرمجي (Software Engineering Analysis)</li>
+                <li>3.3 التوصيف الفني لبنية النظام وقواعد البيانات والواجهات</li>
+                <li>3.4 النتائج والمخرجات المنفذة (System Results & Achievements)</li>
+                <li>3.5 تحديات تطبيق المشروع التقنية والتنفيذية (Challenges & Solutions)</li>
+                <li>3.6 المقترحات والتوصيات المستقبليّة (Future Scope & Recommendations)</li>
+            </ul>
+        </li>
+        <li><strong>المراجع (References)</strong></li>
+        <li><strong>الملاحق (Appendices)</strong>
+            <ul>
+                <li>ملحق (أ): المخطط المعماري لنقاط النهاية البرمجية (RESTful API Endpoints Reference)</li>
+                <li>ملحق (ب): إعدادات البيئة البرمجية والتشغيل الذاتي (Docker & Environment Specs)</li>
+            </ul>
+        </li>
+    </ul>
+
+    <div class="page-break"></div>
+
+    <h2>فهرس الأشكال (List of Figures)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>رقم الشكل</th>
+                <th>عنوان الشكل</th>
+                <th>رقم الصفحة</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>شكل (3-1)</strong></td>
+                <td>الهيكلية المعمارية العامة لنظام Huma-HR (Client-Server REST Architecture)</td>
+                <td>صفحة متغيرة</td>
+            </tr>
+            <tr>
+                <td><strong>شكل (3-2)</strong></td>
+                <td>مخطط حالة الاستخدام الشامل والأدوار الإدارية (Use Case Diagram)</td>
+                <td>صفحة متغيرة</td>
+            </tr>
+            <tr>
+                <td><strong>شكل (3-5)</strong></td>
+                <td>المخطط الصفي العام لكائنات النظام (Class Diagram)</td>
+                <td>صفحة متغيرة</td>
+            </tr>
+            <tr>
+                <td><strong>شكل (3-6)</strong></td>
+                <td>مخطط الكيانات والعلاقات لقاعدة البيانات (Entity Relationship Diagram - ERD)</td>
+                <td>صفحة متغيرة</td>
+            </tr>
+            <tr>
+                <td><strong>شكل (3-7)</strong></td>
+                <td>مخطط التتابع لعملية التقديم الوظيفي والتحليل الذكي بالسيرة الذاتية (CV Parsing Sequence)</td>
+                <td>صفحة متغيرة</td>
+            </tr>
+            <tr>
+                <td><strong>شكل (3-8)</strong></td>
+                <td>مخطط التتابع لتسجيل الحضور الجغرافي والتحقق من الموقع (Geofenced Check-In Sequence)</td>
+                <td>صفحة متغيرة</td>
+            </tr>
+            <tr>
+                <td><strong>شكل (3-9)</strong></td>
+                <td>مخطط التتابع لإغلاق وتجميع دورة تقييم الأداء 360 درجة (360 Evaluation Cycle Sequence)</td>
+                <td>صفحة متغيرة</td>
+            </tr>
+            <tr>
+                <td><strong>شكل (3-10)</strong></td>
+                <td>مخطط تدفق البيانات للمستوى الصفري (DFD Level 0 - Context Diagram)</td>
+                <td>صفحة متغيرة</td>
+            </tr>
+            <tr>
+                <td><strong>شكل (3-11)</strong></td>
+                <td>مخطط تدفق البيانات للمستوى الأول (DFD Level 1 - Process Diagram)</td>
+                <td>صفحة متغيرة</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>فهرس الجداول (List of Tables)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>رقم الجدول</th>
+                <th>عنوان الجدول</th>
+                <th>رقم الصفحة</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>جدول (2-1)</strong></td>
+                <td>مقارنة أطر العمل والتقنيات البرمجية المستخدمة في النظام</td>
+                <td>صفحة متغيرة</td>
+            </tr>
+            <tr>
+                <td><strong>جدول (3-1)</strong></td>
+                <td>توصيف جدول المستخدمين والصلاحيات (<code>users</code> & <code>roles</code>)</td>
+                <td>صفحة متغيرة</td>
+            </tr>
+            <tr>
+                <td><strong>جدول (3-2)</strong></td>
+                <td>توصيف جدول الملف الشخصي للموظف (<code>employee_profiles</code>)</td>
+                <td>صفحة متغيرة</td>
+            </tr>
+            <tr>
+                <td><strong>جدول (3-3)</strong></td>
+                <td>توصيف جدول الأقسام الإدارية (<code>departments</code>)</td>
+                <td>صفحة متغيرة</td>
+            </tr>
+            <tr>
+                <td><strong>جدول (3-4)</strong></td>
+                <td>توصيف جدول المناصب الوظيفية (<code>positions</code>)</td>
+                <td>صفحة متغيرة</td>
+            </tr>
+            <tr>
+                <td><strong>جدول (3-5)</strong></td>
+                <td>توصيف جداول التوظيف والفرص الوظيفية (<code>job_postings</code> & <code>applications</code>)</td>
+                <td>صفحة متغيرة</td>
+            </tr>
+            <tr>
+                <td><strong>جدول (3-6)</strong></td>
+                <td>توصيف جداول الحضور وساعات الأقسام والمواقع (<code>attendance_records</code> & <code>office_locations</code>)</td>
+                <td>صفحة متغيرة</td>
+            </tr>
+            <tr>
+                <td><strong>جدول (3-7)</strong></td>
+                <td>توصيف جداول الإجازات والطلبات الرسمية (<code>leave_types</code>, <code>leave_balances</code>, <code>employee_requests</code>)</td>
+                <td>صفحة متغيرة</td>
+            </tr>
+            <tr>
+                <td><strong>جدول (3-8)</strong></td>
+                <td>توصيف جداول الرواتب والخصومات والتعويضات (<code>salary_structures</code>, <code>monthly_payrolls</code>, <code>payroll_deductions</code>)</td>
+                <td>صفحة متغيرة</td>
+            </tr>
+            <tr>
+                <td><strong>جدول (3-9)</strong></td>
+                <td>توصيف جداول نظام إدارة الأداء والدورات التقييمية (<code>performance_cycles</code>, <code>performance_evaluations</code>, <code>manager_evaluations</code>, <code>peer_evaluations</code>)</td>
+                <td>صفحة متغيرة</td>
+            </tr>
+            <tr>
+                <td><strong>جدول (3-10)</strong></td>
+                <td>توصيف جداول المهام والمراسلات والتقدير (<code>tasks</code>, <code>conversations</code>, <code>messages</code>, <code>recognitions</code>)</td>
+                <td>صفحة متغيرة</td>
+            </tr>
+            <tr>
+                <td><strong>جدول (م-1)</strong></td>
+                <td>ملحق نقاط النهاية البرمجية الأساسية (RESTful API Endpoints List)</td>
+                <td>صفحة متغيرة</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="page-break"></div>
+
+    <h2>قائمة الاختصارات (List of Abbreviations)</h2>
+    <ul>
+        <li><strong>HRMS</strong>: Human Resource Management System (نظام إدارة الموارد البشرية)</li>
+        <li><strong>ATS</strong>: Applicant Tracking System (نظام تتبع المتقدمين للوظائف)</li>
+        <li><strong>AI</strong>: Artificial Intelligence (الذكاء الاصطناعي)</li>
+        <li><strong>REST</strong>: Representational State Transfer (نمط المعمارية البرمجية للخدمات الويبية)</li>
+        <li><strong>API</strong>: Application Programming Interface (واجهة برمجة التطبيقات)</li>
+        <li><strong>SPA</strong>: Single Page Application (تطبيق الصفحة الواحدة)</li>
+        <li><strong>ERD</strong>: Entity Relationship Diagram (مخطط الكيانات والعلاقات)</li>
+        <li><strong>DFD</strong>: Data Flow Diagram (مخطط تدفق البيانات)</li>
+        <li><strong>JWT</strong>: JSON Web Token (رمز التحقق الرقمي)</li>
+        <li><strong>ORM</strong>: Object-Relational Mapping (ربط الكيانات البرمجية بقواعد البيانات)</li>
+        <li><strong>SDK</strong>: Software Development Kit (حزمة تطوير البرمجيات)</li>
+        <li><strong>JSON</strong>: JavaScript Object Notation (صيغة تبادل البيانات الرقمية)</li>
+        <li><strong>PDF</strong>: Portable Document Format (صيغة المستندات المنقولة)</li>
+        <li><strong>GPS</strong>: Global Positioning System (نظام تحديد المواقع العالمي)</li>
+        <li><strong>UI/UX</strong>: User Interface / User Experience (واجهة وتجربة المستخدم)</li>
+    </ul>
+
+    <h1 class="chapter-title">الفصل الأول: المقدمة العامة للمشروع (Introduction)</h1>
+
+    <h3>1.1 تمهيد للمشروع</h3>
+    <p>تشهد المؤسسات والشركات الحديثة تحولاً رقمياً شاملاً في آليات إدارة رأسمالها البشري، حيث لم تعد إدارة الموارد البشرية مقتصرة على العمليات الورقية التقليدية أو تسجيل الحضور والغياب اليدوي. إن تعقيد الهياكل التنظيمية، وتنوع شبكات التوظيف، وتعدد أدوار التقييم الذاتي والتشاركي، يفرض الحاجة الماسة إلى منصات برمجية ذكية وشاملة تجمع كافة أنشطة الموارد البشرية في نظام واحد مترابط.</p>
+    <p>من هذا المنطلق، يأتي مشروع <strong>Huma-HR</strong> كحل برمجي متكامل ومبتكر لإدارة الموارد البشرية، يعتمد على أفضل المعايير البرمجية الحديثة، مدعوماً بتقنيات الذكاء الاصطناعي (AI) المعالجة للغة الطبيعية وقراءة المستندات، من أجل أتمتة العمليات الإدارية، ورفع كفاءة التوظيف، وتأمين آليات تقييم دقيقة بزاوية 360 درجة، وتحقيق أقصى درجات الشفافية والفاعلية المؤسسية.</p>
+
+    <h3>1.2 فكرة المشروع والهدف منه</h3>
+    <h4>فكرة المشروع:</h4>
+    <p>بناء منصة موحدة عالية الأداء (Web-Based HRMS Platform) تعمل وفق معمارية الفصل التام بين الواجهات الخلفية والأمامية (Decoupled RESTful Architecture)، تقدم بيئة تفاعلية لثلاث فئات رئيسية في المؤسسة: <strong>مسؤول الموارد البشرية (HR Manager)</strong>، <strong>مدير القسم / المشرف المباشر (Department Manager/Supervisor)</strong>، و<strong>الموظف (Employee)</strong>، بالإضافة إلى بوابة توظيف خارجية للمتقدمين للعمل (Career Portal/ATS).</p>
+
+    <h4>أهداف المشروع الرئيسية:</h4>
+    <ol>
+        <li><strong>أتمتة دورة التوظيف الكاملة (ATS & AI Screening):</strong> إتاحة نشر الوظائف، واستقبال الطلبات، واستخراج بيانات السير الذاتية (CV Parsing) وتحليل مدى ملاءمة المتقدمين للوظيفة باستخدام نماذج الذكاء الاصطناعي (Gemini / OpenAI API)، وتحديد المقابلات وإصدار العروض الوظيفية.</li>
+        <li><strong>الضبط الجغرافي والزماني للحضور (Geofenced Attendance):</strong> تسجيل الحضور والانصراف بناءً على إحداثيات الموقع الجغرافي للمكاتب والمدى المسموح به (Geofencing) مع حساب ساعات العمل والمغادارات بدقة.</li>
+        <li><strong>توفير نظام تقييم أداء متطور بزاوية 360 درجة (360-Degree Performance Evaluation):</strong> دمج تقييمات الموظف الذاتية، وتقييم المشرف المباشر، وتقييم الأقران (Peers)، وربطها بنسب إنجاز المهام المسندة لحساب النتيجة النهائية وتوليد التوصيات التلقائية (ترقية، زيادة راتب، مكافأة، خطة تحسين أداء PIP).</li>
+        <li><strong>إدارة الهيكل التنظيمي الديناميكي (Dynamic Org Chart):</strong> رسم ومعالجة الهيكل التنظيمي للمؤسسة بصرياً وبشكل شجري تفاعلي يوضح التبعية الإدارية والمناصب وشواغر الأقسام.</li>
+        <li><strong>معالجة الرواتب والأجور الشاملة (Payroll & Compensation Management):</strong> أتمتة حساب الرواتب الشهرية، الاستقطاعات، الضرائب، التأمينات، المكافآت، وتوليد كشوف الرواتب الصادرة بدقة عالية.</li>
+        <li><strong>تعزيز التواصل والتقدير الداخلي (Internal Communication & Recognition):</strong> توفير نظام دردشة مدمج بين الموظفين، وإشعارات فورية، ونظام تقدير ومنح الشارات والأوسمة للموظفين المتميزين.</li>
+    </ol>
+
+    <h3>1.3 أهمية المشروع والقيمة المضافة</h3>
+    <p>تكمن أهمية مشروع <strong>Huma-HR</strong> في تحويل إدارة الموارد البشرية من مركز تكلفة وإداريات تقليدية إلى شريك استراتيجي في نمو المؤسسة، وذلك عبر القيم المضافة التالية:</p>
+    <ul>
+        <li><strong>تقليل زمن الفلترة والتوظيف بنسبة تصل إلى 70%</strong> من خلال التحليل التلقائي للسير الذاتية بالسياق الذكي وليس فقط البحث عن كلمات مفتاحية.</li>
+        <li><strong>القضاء على التلاعب بالحضور والغياب</strong> من خلال التحقق الميداني المزدوج (الجغرافي والزماني).</li>
+        <li><strong>الحد من التحيز الإنساني في التقييم السنوي</strong> عبر اعتماد صيغة التقييم التكاملي 360 درجة المعتمد على بيانات حقيقية وإنجاز المهام.</li>
+        <li><strong>سرعة اتخاذ القرار الإداري</strong> بناءً على لوحات تحليلات بيانية ورسوم بيانية تفاعلية تدعم متخذي القرار لحظياً.</li>
+    </ul>
+
+    <h3>1.4 الجهات المستفيدة من المشروع</h3>
+    <ol>
+        <li><strong>إدارات الموارد البشرية (HR Departments):</strong> في الشركات والمؤسسات متوسطة وكبيرة الحجم لأتمتة كافة العمليات اليومية والسجلات.</li>
+        <li><strong>الإدارات التنفيذية ومدراء الأقسام:</strong> لمتابعة أداء فرق العمل، توزيع المهام، اعتماد الإجازات والطلبات، وتقييم الموظفين.</li>
+        <li><strong>الموظفون:</strong> لمتابعة مستحقاتهم المالية، أرصدة إجازاتهم، المهام المطلوبة منهم، والارتقاء بأدائهم الوظيفي.</li>
+        <li><strong>المتقدمون للوظائف (Job Applicants):</strong> لاستعراض الشواغر الوظيفية والتقديم السلس وتتبع حالة الطلبات والعروض الوظيفية.</li>
+    </ol>
+
+    <h1 class="chapter-title">الفصل الثاني: الدراسة النظرية وتقنيات العمل (Theoretical Study & Technologies)</h1>
+
+    <h3>2.1 المفاهيم النظرية الأساسية</h3>
+
+    <h4>2.1.1 أنظمة إدارة الموارد البشرية (HRMS):</h4>
+    <p>تُعرف أنظمة HRMS بأنها حزمة من البرمجيات والتطبيقات المتكاملة المسؤولة عن إدارة وإدخال ومعالجة كافة البيانات المتعلقة بالموارد البشرية طوال دورة حياة الموظف داخل المؤسسة (Employee Lifecycle)، بدءاً من التعيين والإعداد (Onboarding)، مروراً بالتدريب والتطوير وإدارة الأداء، وحتى الاستقالة أو التقاعد (Offboarding).</p>
+
+    <h4>2.1.2 نظام تتبع المتقدمين للعمل (ATS) والفلترة الذكية:</h4>
+    <p>نظام ATS هو تطبيق برمجي يُمكّن المنظمة من التعامل مع متطلبات التوظيف إلكترونياً. في <strong>Huma-HR</strong>، تم تطوير الـ ATS ليتعدى خزن الطلبات إلى قراءة وتحليل نصوص ملفات PDF و Word المرفقة بطلبات التوظيف واستخراج المهارات، الخبرات، والمؤهلات العلمية، ثم مقارنتها بالمتطلبات الوظيفية المنشورة وتزويد مسؤولي التوظيف بدرجة مطابقة مئوية (Matching Score) مع ملخص ذكي.</p>
+
+    <h4>2.1.3 تقييم الأداء الشامل بزاوية 360 درجة (360-Degree Feedback):</h4>
+    <p>يعتمد هذا المفهوم الإداري على جمع معلومات وتقييمات أداء الموظف من مصادر متعددة ومحيطة به:</p>
+    <ol>
+        <li><strong>التقييم الذاتي (Self-Evaluation):</strong> تقييم الموظف لإنجازاته ومهاراته.</li>
+        <li><strong>تقييم المشرف المباشر (Manager Evaluation):</strong> قياس مدى تحقيق الأهداف التشغيلية والسلوكية.</li>
+        <li><strong>تقييم الأقران (Peer Evaluation):</strong> قياس روح الفريق، التعاون، والمهارات التواصلية.</li>
+        <li><strong>مؤشر إنجاز المهام (Task Completion Index):</strong> حساب ميكانيكي آلي لنسبة المهام المغلقة والمنجزة في الوقت المحدد.</li>
+    </ol>
+    <p>تتم معالجة هذه المدخلات بأوزان ترجيحية مبرمجة لحساب النتيجة النهائية وتحديد الإجراء الإداري التلقائي.</p>
+
+    <h4>2.1.4 الحضور الجغرافي الذكي (Geofencing Attendance):</h4>
+    <p>مفهوم اعتبي تمكيني يحدد نطاقاً جغرافياً وهمياً حول موقع جغرافي حقيقي (خط الطول، خط العرض، ونصف القطر بالمتر). يمنع النظام تسجيل الحضور أو الانصراف إلا إذا كان الجهاز المتصل واقعاً ضمن هذا الحرم الجغرافي المعتمد للمكتب.</p>
+
+    <h4>2.1.5 تطبيقات الذكاء الاصطناعي في إدارة الموارد البشرية (AI in HR):</h4>
+    <p>يستفيد النظام من النماذج اللغوية الكبيرة (LLMs) مثل Google Gemini و OpenAI GPT في:</p>
+    <ul>
+        <li>تحليل ومسح السير الذاتية باللغتين العربية والإلكترونية.</li>
+        <li>توليد صياغة الأسئلة واقتراحات التقييم الإداري.</li>
+        <li>تقديم توصيات تحسين الأداء بناءً على نقاط القوة والضعف المكتشفة.</li>
+    </ul>
+
+    <h3>2.2 التقنيات وأطر العمل في الجانب الخلفي (Back-End Technologies)</h3>
+    <p>تعتمد الواجهة الخلفية لنظام <strong>Huma-HR</strong> على تقنيات حديثة تضمن سرعة الاستجابة، الأمان، وسهولة التوسع:</p>
+    <ul>
+        <li><strong>PHP 8.2+</strong>: لغة البرمجة الأساسية ذات الأداء العالي ودعم الميزات الحديثة مثل Enumerations و Typed Properties.</li>
+        <li><strong>Laravel 12 Framework</strong>: إطار العمل الرائد لبناء التطبيقات الخلفية المتينة وفق نمط MVC، والذي يوفر أدوات حماية عالية، إدارة قواعد البيانات عبر Eloquent ORM، ونظام التوجيه السريع.</li>
+        <li><strong>Laravel Sanctum</strong>: لحماية الحسابات وإدارة الرموز الرقمية (Tokens) للتحقق من هوية مستخدمي API بنمط Bearer Token.</li>
+        <li><strong>Spatie Laravel Permission</strong>: الحزمة المعيارية لإدارة الأدوار والصلاحيات (Role-Based Access Control - RBAC) وتخصيص صلاحيات الوصول الدقيقة لكل مستخدم (<code>hr</code>, <code>manager</code>, <code>department_manager</code>, <code>employee</code>, <code>boss</code>).</li>
+        <li><strong>Google Gemini PHP SDK & OpenAI PHP Client</strong>: حزم الدمج المباشر مع واجهات الذكاء الاصطناعي لتحليل البيانات والنصوص.</li>
+        <li><strong>Smalot PDFParser & PHPWord</strong>: مكتبات معالجة واستخراج النصوص الرقمية من ملفات السير الذاتية بصيغ PDF و DOCX.</li>
+    </ul>
+
+    <h3>2.3 التقنيات وأطر العمل في الجانب الأمامي (Front-End Technologies)</h3>
+    <p>تتميز الواجهة الأمامية لنظام <strong>Huma-HR</strong> بالسرعة الفائقة والتصميم العصري التفاعلي:</p>
+    <ul>
+        <li><strong>React 19 & Vite 7</strong>: إطار عمل الواجهات الأكثر انتشاراً بالاقتران مع محرك البناء والتطوير الفائق السرعة Vite لبناء تطبيق صفحة واحدة (SPA) مرن وسريع.</li>
+        <li><strong>Redux Toolkit & React-Redux</strong>: لإدارة الحالة المركزية للتطبيق (Global State Management)، وتخزين بيانات التوثيق، والموظفين، والإعدادات.</li>
+        <li><strong>React Router Dom v7</strong>: لإدارة التنقل السلس بين صفحات ولوحات التحكم دون الحاجة لإعادة تحميل الصفحة.</li>
+        <li><strong>Axios</strong>: لمناقلة طلبات HTTP بين الواجهة الأمامية والواجهة الخلفية مع معالجة الـ Interceptors للرموز والأخطاء.</li>
+        <li><strong>Bootstrap 5 & Vanilla Custom CSS System</strong>: بناء الواجهات البصرية وفق أفضل الممارسات التصميمية، مع دعم كامل للوضع الداكن/الفاتح وتناسق الألوان والظلال والأنيميشن.</li>
+        <li><strong>React Flow (@xyflow/react) & Dagre</strong>: لرسم الهيكل التنظيمي للمؤسسة على شكل شجرة تفاعلية مع حركات سلسة وإمكانية السحب والإسقاط.</li>
+        <li><strong>Leaflet & React-Leaflet</strong>: لعرض الخرائط الجغرافية وتحديد مواقع الفروع وتثبيت النطاق الجغرافي للحضور.</li>
+        <li><strong>Recharts</strong>: لبناء اللوحات التحليلية والرسوم البيانية التفاعلية للأداء والرواتب والإجازات.</li>
+        <li><strong>i18next & React-i18next</strong>: لدعم وتوفير واجهة متعددة اللغات (العربية والإنجليزية) مع التبديل التلقائي لاتجاه النص (RTL / LTR).</li>
+    </ul>
+
+    <h3>2.4 قواعد البيانات المعمارية ونموذج التواصل (Database & API Architecture)</h3>
+    <p>يعتمد النظام على بنية <strong>RESTful Web APIs</strong> كاملة المعالم، حيث يتم تبادل البيانات بصيغة <strong>JSON</strong>. تم بناء قاعدة البيانات لتكون متوافقة مع محركات قواعد البيانات العلائقية مثل <strong>MySQL</strong> و <strong>PostgreSQL</strong> و <strong>SQLite</strong>.</p>
+
+    <!-- Visual Architecture Diagram 3-1 -->
+    <div class="v-diagram-box">
+        <div class="v-layer">
+            <div class="v-layer-title">طبقة العرض والواجهة الأمامية (Client Layer / Front-End)</div>
+            <div class="v-flex-row">
+                <div class="v-card">React 19 SPA</div>
+                <div class="v-card">Redux Toolkit</div>
+                <div class="v-card">Bootstrap 5 UI</div>
+                <div class="v-card">React Flow (Org Chart)</div>
+                <div class="v-card">Leaflet Maps (GPS)</div>
+            </div>
+        </div>
+        <div class="v-arrow-down">⬇ REST APIs (HTTPS / JSON) ⬇</div>
+        <div class="v-layer">
+            <div class="v-layer-title">طبقة الأمان والتحكم بالوصول (Security & Router Middleware)</div>
+            <div class="v-flex-row">
+                <div class="v-card">Laravel Sanctum (Tokens)</div>
+                <div class="v-card">Spatie RBAC (Roles & Permissions)</div>
+            </div>
+        </div>
+        <div class="v-arrow-down">⬇ Controller Invocation ⬇</div>
+        <div class="v-layer">
+            <div class="v-layer-title">طبقة المنطق والعمليات الخلفية (Business Logic / Back-End Services)</div>
+            <div class="v-flex-row">
+                <div class="v-card">Laravel 12 Controllers</div>
+                <div class="v-card">Services & Handlers</div>
+                <div class="v-card">Eloquent ORM Models</div>
+            </div>
+        </div>
+        <div class="v-arrow-down">⬇ Integration & Storage ⬇</div>
+        <div class="v-layer">
+            <div class="v-layer-title">طبقة الخدمات الخارجية وقواعد البيانات (External AI & Database Storage)</div>
+            <div class="v-flex-row">
+                <div class="v-card">Google Gemini / OpenAI API</div>
+                <div class="v-card">Local / S3 Attachments Storage</div>
+                <div class="v-card">MySQL / SQLite Relational DB</div>
+            </div>
+        </div>
+    </div>
+    <div class="figure-caption">شكل (3-1): الهيكلية المعمارية العامة لنظام Huma-HR</div>
+
+    <h1 class="chapter-title">الفصل الثالث: التطبيق العملي والتحليل والتصميم الفني (Practical Implementation & Engineering Design)</h1>
+
+    <h3>3.1 الأدوات وبيئة العمل (Development Environment & Runtime Setup)</h3>
+    <p>تتكون بيئة تطوير وتشغيل مشروع <strong>Huma-HR</strong> من مجموعة أدوات خادمة ومحلية متكاملة:</p>
+    <ul>
+        <li><strong>نظام التشغيل التشغيلي:</strong> Windows / Linux (Ubuntu Server).</li>
+        <li><strong>خادم الويب والبيئة التراكمية:</strong> PHP 8.2+, Composer 2.x, Node.js v20+, NPM.</li>
+        <li><strong>أدوات إدارة وتتبع الشفرة البرمجية:</strong> Git & GitHub.</li>
+        <li><strong>محرر الشفرة البرمجية:</strong> Visual Studio Code مع إضافات التصحيح والتنسيق.</li>
+        <li><strong>حاويات التشغيل Docker:</strong> توفير ملفات <code>Dockerfile</code> و <code>docker-compose</code> لتشغيل الخدمات والخوادم ببيئة معزولة وموحدة.</li>
+    </ul>
+
+    <h3>3.2 التحليل الهندسي للنظام البرمجي (Software Engineering Analysis)</h3>
+
+    <h4>3.2.1 مخططات حالات الاستخدام (Use Case Diagrams):</h4>
+    <p>توضح مخططات حالات الاستخدام الفاعلين الأساسيين (Actors) والوظائف الرئيسية المتوفرة لكل منهم داخل نظام <strong>Huma-HR</strong>:</p>
+
+    <!-- Visual Actor Use Cases Diagram 3-2 -->
+    <div class="v-diagram-box">
+        <div class="actor-section">
+            <div class="actor-head">👤 المتقدم للعمل (Job Applicant)</div>
+            <div class="use-case-pills">
+                <span class="use-case-pill">استعراض الشواغر الوظيفية</span>
+                <span class="use-case-pill">تقديم الطلب ورفع السيرة الذاتية</span>
+                <span class="use-case-pill">تتبع حالة التوظيف وتلقي العروض</span>
+            </div>
+        </div>
+        <div class="actor-section">
+            <div class="actor-head">👨‍💼 الموظف (Employee)</div>
+            <div class="use-case-pills">
+                <span class="use-case-pill">تسجيل الحضور/الانصراف الجغرافي</span>
+                <span class="use-case-pill">تقديم طلبات الإجازات والمغادارات</span>
+                <span class="use-case-pill">تنفيذ المهام وتحديث الحالات</span>
+                <span class="use-case-pill">إجراء التقييم الذاتي وتقييم الأقران</span>
+                <span class="use-case-pill">استعراض كشوف الرواتب الشهرية</span>
+                <span class="use-case-pill">المراسلة الفورية والدردشة الداخليّة</span>
+            </div>
+        </div>
+        <div class="actor-section">
+            <div class="actor-head">👔 مدير القسم / المشرف المباشر (Department Manager)</div>
+            <div class="use-case-pills">
+                <span class="use-case-pill">متابعة حضور وانصراف أعضاء الفريق</span>
+                <span class="use-case-pill">إسناد المهام وتقييم جودة التسليم</span>
+                <span class="use-case-pill">مراجعة والاعتماد المبدئي للإجازات</span>
+                <span class="use-case-pill">إجراء التقييم الإداري الدوري للفريق</span>
+                <span class="use-case-pill">استعراض الهيكل التنظيمي للقسم</span>
+            </div>
+        </div>
+        <div class="actor-section">
+            <div class="actor-head">🛡️ مسؤول الموارد البشرية (HR Administrator)</div>
+            <div class="use-case-pills">
+                <span class="use-case-pill">إدارة ملفات الموظفين والمصادقات</span>
+                <span class="use-case-pill">إدارة الهيكل التنظيمي والمناصب</span>
+                <span class="use-case-pill">نشر الوظائف والفرز الذكي بـ AI</span>
+                <span class="use-case-pill">جدولة المقابلات وإصدار العقود</span>
+                <span class="use-case-pill">إطلاق معالج الرواتب وتوزيع المستحقات</span>
+                <span class="use-case-pill">إدارة دورات التقييم 360 وإجراءاتها التلقائية</span>
+            </div>
+        </div>
+    </div>
+    <div class="figure-caption">شكل (3-2): مخطط الأدوار والفاعلين بحسب الصلاحيات الإدارية</div>
+
+    <h4>3.2.2 المخطط الصفي للنظام (Class Diagram):</h4>
+    <p>يعكس المخطط الصفي العلاقات البرمجية بين الكائنات الأساسية في الواجهة الخلفية لـ Laravel، حيث ترتبط المتحكمات (Controllers) بالنماذج (Models) والخدمات (Services):</p>
+
+    <!-- Visual UML Class Diagram 3-5 -->
+    <div class="v-diagram-box">
+        <div class="uml-grid">
+            <div class="uml-class">
+                <div class="uml-header">Department</div>
+                <div class="uml-body">
+                    + id: int<br>
+                    + name: string<br>
+                    + code: string<br>
+                    + manager_id: int
+                </div>
+                <div class="uml-methods">
+                    + positions()<br>
+                    + employees()<br>
+                    + manager()
+                </div>
+            </div>
+
+            <div class="uml-class">
+                <div class="uml-header">Position</div>
+                <div class="uml-body">
+                    + id: int<br>
+                    + title: string<br>
+                    + department_id: int<br>
+                    + parent_position_id: int
+                </div>
+                <div class="uml-methods">
+                    + department()<br>
+                    + parentPosition()<br>
+                    + employees()
+                </div>
+            </div>
+
+            <div class="uml-class">
+                <div class="uml-header">EmployeeProfile</div>
+                <div class="uml-body">
+                    + id: int<br>
+                    + user_id: int<br>
+                    + employee_code: string<br>
+                    + department_id: int<br>
+                    + position_id: int<br>
+                    + base_salary: decimal
+                </div>
+                <div class="uml-methods">
+                    + user()<br>
+                    + department()<br>
+                    + position()<br>
+                    + attendances()<br>
+                    + payrolls()
+                </div>
+            </div>
+
+            <div class="uml-class">
+                <div class="uml-header">AttendanceRecord</div>
+                <div class="uml-body">
+                    + id: int<br>
+                    + employee_profile_id: int<br>
+                    + date: date<br>
+                    + check_in: datetime<br>
+                    + check_out: datetime<br>
+                    + status: string
+                </div>
+                <div class="uml-methods">
+                    + employee()<br>
+                    + calculateHours()
+                </div>
+            </div>
+
+            <div class="uml-class">
+                <div class="uml-header">MonthlyPayroll</div>
+                <div class="uml-body">
+                    + id: int<br>
+                    + employee_profile_id: int<br>
+                    + month: int / year: int<br>
+                    + base_salary: decimal<br>
+                    + net_salary: decimal
+                </div>
+                <div class="uml-methods">
+                    + employee()<br>
+                    + deductions()<br>
+                    + processPay()
+                </div>
+            </div>
+
+            <div class="uml-class">
+                <div class="uml-header">PerformanceEvaluation</div>
+                <div class="uml-body">
+                    + id: int<br>
+                    + cycle_id: int<br>
+                    + employee_profile_id: int<br>
+                    + final_score: decimal<br>
+                    + recommendation: string
+                </div>
+                <div class="uml-methods">
+                    + cycle()<br>
+                    + employee()<br>
+                    + calculateWeightedScore()
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="figure-caption">شكل (3-5): المخطط الصفي العام لكائنات النظام (Class Diagram)</div>
+
+    <h4>3.2.3 مخطط الكيانات والعلاقات (Entity Relationship Diagram - ERD):</h4>
+    <p>تتضمن قاعدة بيانات <strong>Huma-HR</strong> جداول متكاملة ومترابطة بعلاقات مفاتيح أجنبية (Foreign Keys) تضمن سلامة البيانات المرجعية (Referential Integrity):</p>
+
+    <!-- Visual ERD Diagram 3-6 -->
+    <div class="v-diagram-box" style="text-align: center;">
+        <div class="erd-entity">
+            <div class="erd-header">users</div>
+            <div class="erd-field erd-pk">🔑 id (PK)</div>
+            <div class="erd-field">name: varchar</div>
+            <div class="erd-field">email: varchar</div>
+            <div class="erd-field">password: varchar</div>
+        </div>
+
+        <div style="display:inline-block; font-weight:bold; margin:0 5px;">1 ── 1</div>
+
+        <div class="erd-entity">
+            <div class="erd-header">employee_profiles</div>
+            <div class="erd-field erd-pk">🔑 id (PK)</div>
+            <div class="erd-field erd-fk">🔗 user_id (FK)</div>
+            <div class="erd-field erd-fk">🔗 department_id (FK)</div>
+            <div class="erd-field erd-fk">🔗 position_id (FK)</div>
+            <div class="erd-field">employee_code: varchar</div>
+            <div class="erd-field">base_salary: decimal</div>
+        </div>
+
+        <div style="display:inline-block; font-weight:bold; margin:0 5px;">N ── 1</div>
+
+        <div class="erd-entity">
+            <div class="erd-header">departments</div>
+            <div class="erd-field erd-pk">🔑 id (PK)</div>
+            <div class="erd-field">name: varchar</div>
+            <div class="erd-field">code: varchar</div>
+            <div class="erd-field erd-fk">🔗 manager_id (FK)</div>
+        </div>
+
+        <br><br>
+
+        <div class="erd-entity">
+            <div class="erd-header">job_postings</div>
+            <div class="erd-field erd-pk">🔑 id (PK)</div>
+            <div class="erd-field">title: varchar</div>
+            <div class="erd-field">status: varchar</div>
+        </div>
+
+        <div style="display:inline-block; font-weight:bold; margin:0 5px;">1 ── N</div>
+
+        <div class="erd-entity">
+            <div class="erd-header">applications</div>
+            <div class="erd-field erd-pk">🔑 id (PK)</div>
+            <div class="erd-field erd-fk">🔗 job_posting_id (FK)</div>
+            <div class="erd-field">candidate_name: varchar</div>
+            <div class="erd-field">ai_score: decimal</div>
+            <div class="erd-field">ai_summary: text</div>
+        </div>
+
+        <div style="display:inline-block; font-weight:bold; margin:0 5px;">1 ── N</div>
+
+        <div class="erd-entity">
+            <div class="erd-header">attachments</div>
+            <div class="erd-field erd-pk">🔑 id (PK)</div>
+            <div class="erd-field erd-fk">🔗 application_id (FK)</div>
+            <div class="erd-field">file_path: varchar</div>
+        </div>
+    </div>
+    <div class="figure-caption">شكل (3-6): مخطط الكيانات والعلاقات لقاعدة البيانات (Entity Relationship Diagram - ERD)</div>
+
+    <h4>3.2.4 مخططات التتابع للعمليات الأساسية (Sequence Diagrams):</h4>
+
+    <h5>1. سيناريو تقديم وتتبع الطلب الوظيفي بالذكاء الاصطناعي (AI ATS Screening Sequence):</h5>
+    <div class="v-diagram-box">
+        <table class="seq-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>المصدر (Sender)</th>
+                    <th>الطلب / الإجراء (Message / Event)</th>
+                    <th>المستقبل (Receiver)</th>
+                    <th>النتيجة / الاستجابة (Return Response)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="seq-num">1</td>
+                    <td>المتقدم للعمل</td>
+                    <td><code>POST /api/job-postings/{id}/apply</code> (البيانات + السيرة الذاتية)</td>
+                    <td>ApplicationController</td>
+                    <td>استلام الطلب والملف</td>
+                </tr>
+                <tr>
+                    <td class="seq-num">2</td>
+                    <td>ApplicationController</td>
+                    <td>حفظ المرفق واستخراج النص (Parse Text)</td>
+                    <td>Smalot PDFParser</td>
+                    <td>إعادة النص المستخرج (Extracted Text)</td>
+                </tr>
+                <tr>
+                    <td class="seq-num">3</td>
+                    <td>ApplicationController</td>
+                    <td>إرسال نص السيرة الذاتية + متطلبات الوظيفة</td>
+                    <td>Gemini / OpenAI API Service</td>
+                    <td>إعادة درجات المطابقة (Score %) والملخص الذكي</td>
+                </tr>
+                <tr>
+                    <td class="seq-num">4</td>
+                    <td>ApplicationController</td>
+                    <td>حفظ النتيجة وتحديث حالة الطلب</td>
+                    <td>MySQL Database</td>
+                    <td>تم حفظ الطلب وقيم AI بنجاح</td>
+                </tr>
+                <tr>
+                    <td class="seq-num">5</td>
+                    <td>ApplicationController</td>
+                    <td>تأكيد استلام الطلب وعرض النتيجة لـ HR</td>
+                    <td>لوحة الموارد البشرية (HR Dashboard)</td>
+                    <td>عرض الترتيب الذكي للمتقدمين</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="figure-caption">شكل (3-7): مخطط التتابع لعملية التقديم والفرز الذكي بالسير الذاتية</div>
+
+    <h5>2. سيناريو تسجيل الحضور الجغرافي (Geofenced Check-In Sequence):</h5>
+    <div class="v-diagram-box">
+        <table class="seq-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>المصدر (Sender)</th>
+                    <th>الطلب / الإجراء (Message / Event)</th>
+                    <th>المستقبل (Receiver)</th>
+                    <th>النتيجة / الاستجابة (Return Response)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="seq-num">1</td>
+                    <td>الموظف (Front-End)</td>
+                    <td>إرسال إحداثيات GPS الحالية (lat, long)</td>
+                    <td>AttendanceController</td>
+                    <td>معالجة طلب الحضور اليومي</td>
+                </tr>
+                <tr>
+                    <td class="seq-num">2</td>
+                    <td>AttendanceController</td>
+                    <td>استعلام مواقع المكاتب المعتمدة للمؤسسة</td>
+                    <td>OfficeLocation Table DB</td>
+                    <td>إعادة قائمة إحداثيات ونصف قطر المكاتب</td>
+                </tr>
+                <tr>
+                    <td class="seq-num">3</td>
+                    <td>AttendanceController</td>
+                    <td>حساب المسافة الرياضية (Haversine Formula)</td>
+                    <td>Geofence Engine Component</td>
+                    <td>التحقق من التواجد داخل النطاق (&le; radius)</td>
+                </tr>
+                <tr>
+                    <td class="seq-num">4</td>
+                    <td>AttendanceController</td>
+                    <td>تسجيل حالة الحضور (Present / Late) والتوقيت</td>
+                    <td>AttendanceRecord Table DB</td>
+                    <td>تأكيد حفظ سجل الحضور</td>
+                </tr>
+                <tr>
+                    <td class="seq-num">5</td>
+                    <td>AttendanceController</td>
+                    <td>إرجاع استجابة النجاح وتأكيد الحضور</td>
+                    <td>واجهة الموظف (Employee UI)</td>
+                    <td>عرض رسالة "تم تسجيل الحضور بنجاح"</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="figure-caption">شكل (3-8): مخطط التتابع لتسجيل الحضور الجغرافي والتحقق من الموقع</div>
+
+    <h5>3. سيناريو إغلاق دورة التقييم وحساب أداء 360 درجة (Performance Evaluation Sequence):</h5>
+    <div class="v-diagram-box">
+        <table class="seq-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>المصدر (Sender)</th>
+                    <th>الطلب / الإجراء (Message / Event)</th>
+                    <th>المستقبل (Receiver)</th>
+                    <th>النتيجة / الاستجابة (Return Response)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="seq-num">1</td>
+                    <td>مسؤول HR</td>
+                    <td><code>POST /api/performance/cycles/{id}/close</code></td>
+                    <td>PerformanceCycleController</td>
+                    <td>بدء احتساب نتائج الدورة</td>
+                </tr>
+                <tr>
+                    <td class="seq-num">2</td>
+                    <td>PerformanceCycleController</td>
+                    <td>جلب مدخلات التقييم الذاتي، المشرف، الأقران، والمهام</td>
+                    <td>Evaluations & Tasks Tables</td>
+                    <td>إعادة كافة الدرجات الجزئية للموظف</td>
+                </tr>
+                <tr>
+                    <td class="seq-num">3</td>
+                    <td>PerformanceCycleController</td>
+                    <td>حساب المعدل الموزون المركب (Final Weighted Score)</td>
+                    <td>Evaluation Engine Service</td>
+                    <td>حساب النسبة المئوية النهائية والتوصية</td>
+                </tr>
+                <tr>
+                    <td class="seq-num">4</td>
+                    <td>PerformanceCycleController</td>
+                    <td>توليد الإجراءات التلقائية (ترقية، زيادة، PIP)</td>
+                    <td>PerformanceAction Table DB</td>
+                    <td>تخزين الإجراء الإداري المستحق آلياً</td>
+                </tr>
+                <tr>
+                    <td class="seq-num">5</td>
+                    <td>PerformanceCycleController</td>
+                    <td>تحديث حالة الدورة إلى (Closed) وتوليد التقارير</td>
+                    <td>لوحة الموارد البشرية HR</td>
+                    <td>عرض إحصائيات الأداء التكاملي 360</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="figure-caption">شكل (3-9): مخطط التتابع لإغلاق وتجميع دورة تقييم الأداء 360 درجة</div>
+
+    <h4>3.2.5 مخطط تدفق البيانات (Data Flow Diagram - DFD):</h4>
+    <h5>المستوى الصفي / Context Diagram (Level 0):</h5>
+    <div class="v-diagram-box">
+        <div style="display:flex; justify-content:space-around; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div class="dfd-entity-box">المتقدم للعمل</div>
+            <div class="dfd-entity-box">الموظف</div>
+            <div class="dfd-process" style="margin:0;">
+                0.0<br>نظام Huma-HR لإدارة الموارد البشرية
+            </div>
+            <div class="dfd-entity-box">مدير القسم</div>
+            <div class="dfd-entity-box">مسؤول HR</div>
+        </div>
+    </div>
+    <div class="figure-caption">شكل (3-10): مخطط تدفق البيانات للمستوى الصفري (DFD Level 0 - Context Diagram)</div>
+
+    <h5>المستوى الأول / Process Diagram (Level 1):</h5>
+    <div class="v-diagram-box">
+        <div style="display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="dfd-entity-box">المستخدم / الزائر</div>
+                <div style="font-weight:bold;">── 1.0 التوثيق والصلاحيات ──►</div>
+                <div class="dfd-store-box">D1: المستخدمين والصلاحيات</div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="dfd-entity-box">المتقدم / HR</div>
+                <div style="font-weight:bold;">── 2.0 إدارة التوظيف و ATS ──►</div>
+                <div class="dfd-store-box">D2: التوظيف والسير الذاتية</div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="dfd-entity-box">الموظف / المشرف</div>
+                <div style="font-weight:bold;">── 3.0 إدارة الحضور والطلبات ──►</div>
+                <div class="dfd-store-box">D3: الحضور والإجازات</div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="dfd-entity-box">مسؤول HR</div>
+                <div style="font-weight:bold;">── 4.0 إدارة الرواتب والاستحقاقات ──►</div>
+                <div class="dfd-store-box">D4: الرواتب والخصومات</div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="dfd-entity-box">الموظف / HR</div>
+                <div style="font-weight:bold;">── 5.0 إدارة الأداء والمهام 360 ──►</div>
+                <div class="dfd-store-box">D5: التقييمات والمهام</div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="dfd-entity-box">الإدارة التنفيذية</div>
+                <div style="font-weight:bold;">── 6.0 التحليلات والهيكل التنظيمي ──►</div>
+                <div class="dfd-store-box">D6: الهيكل التنظيمي والتقارير</div>
+            </div>
+        </div>
+    </div>
+    <div class="figure-caption">شكل (3-11): مخطط تدفق البيانات للمستوى الأول (DFD Level 1 - Process Diagram)</div>
+
+    <h3>3.3 التوصيف الفني لبنية النظام وقواعد البيانات والواجهات</h3>
+
+    <h4>3.3.1 توصيف الحزم والموديلات الأساسية (Core Modules Description):</h4>
+    <ol>
+        <li><strong>حزمة إدارة الموظفين والهيكل التنظيمي (Employee & Org-Chart Module):</strong> تتضمن موديلات <code>EmployeeProfile</code>, <code>Department</code>, <code>Position</code>, <code>EmployeeMovement</code>, <code>SalaryAdjustment</code>. تمكن من تتبع كامل السجل الوظيفي والترقيات والانتقالات بين الأقسام.</li>
+        <li><strong>حزمة التوظيف واستقطاب الكفاءات (ATS Recruitment Module):</strong> تتضمن موديلات <code>JobPosting</code>, <code>Application</code>, <code>Attachment</code>, <code>Interview</code>, <code>Offer</code>. تتيح متابعة المرشح من مرحلة تقديم الطلب وحتى قبول عرض العمل والتحول إلى موظف رسمياً.</li>
+        <li><strong>حزمة الحضور والطلبات (Attendance & Requests Module):</strong> تتضمن موديلات <code>AttendanceRecord</code>, <code>OfficeLocation</code>, <code>DepartmentHour</code>, <code>LeaveType</code>, <code>LeaveBalance</code>, <code>EmployeeRequest</code>.</li>
+        <li><strong>حزمة الرواتب والمكافآت (Payroll & Financials Module):</strong> تتضمن موديلات <code>SalaryStructure</code>, <code>MonthlyPayroll</code>, <code>PayrollDeduction</code>, <code>BonusRule</code>.</li>
+        <li><strong>حزمة إدارة الأداء والمهام 360 (Performance & Tasks Module):</strong> تتضمن موديلات <code>Task</code>, <code>PerformanceTemplate</code>, <code>PerformanceCycle</code>, <code>PerformanceEvaluation</code>, <code>ManagerEvaluation</code>, <code>PeerEvaluation</code>, <code>PerformanceAction</code>.</li>
+        <li><strong>حزمة التواصل والتفاعل المؤسسي (Communication Module):</strong> تتضمن موديلات <code>Conversation</code>, <code>Message</code>, <code>Notification</code>, <code>Recognition</code>.</li>
+    </ol>
+
+    <h4>3.3.2 التوصيف التفصيلي لجداول قاعدة البيانات (Detailed Database Schema Specifications):</h4>
+
+    <div class="table-caption">جدول (3-1): توصيف جدول حسابات المستخدمين (<code>users</code>)</div>
+    <table>
+        <thead>
+            <tr>
+                <th>اسم الحقل</th>
+                <th>نوع البيانات</th>
+                <th>القيود والمفاتيح</th>
+                <th>التوصيف والوظيفة</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>id</code></td>
+                <td>BigInteger</td>
+                <td>Primary Key, Auto Increment</td>
+                <td>المعرف الفريد للمستخدم</td>
+            </tr>
+            <tr>
+                <td><code>name</code></td>
+                <td>String(255)</td>
+                <td>Not Null</td>
+                <td>الاسم الكامل للمستخدم</td>
+            </tr>
+            <tr>
+                <td><code>email</code></td>
+                <td>String(255)</td>
+                <td>Unique, Not Null</td>
+                <td>البريد الإلكتروني (اسم المستخدم)</td>
+            </tr>
+            <tr>
+                <td><code>password</code></td>
+                <td>String(255)</td>
+                <td>Not Null</td>
+                <td>كلمة المرور المشفرة (Bcrypt)</td>
+            </tr>
+            <tr>
+                <td><code>created_at</code></td>
+                <td>Timestamp</td>
+                <td>Nullable</td>
+                <td>تاريخ ووقت إنشاء الحساب</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="table-caption">جدول (3-2): توصيف جدول الملف الشخصي للموظف (<code>employee_profiles</code>)</div>
+    <table>
+        <thead>
+            <tr>
+                <th>اسم الحقل</th>
+                <th>نوع البيانات</th>
+                <th>القيود والمفاتيح</th>
+                <th>التوصيف والوظيفة</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>id</code></td>
+                <td>BigInteger</td>
+                <td>Primary Key, Auto Increment</td>
+                <td>المعرف الفريد للملف الشخصي</td>
+            </tr>
+            <tr>
+                <td><code>user_id</code></td>
+                <td>BigInteger</td>
+                <td>Foreign Key (<code>users.id</code>)</td>
+                <td>ربط الحساب بملف المستخدم</td>
+            </tr>
+            <tr>
+                <td><code>employee_code</code></td>
+                <td>String(50)</td>
+                <td>Unique, Not Null</td>
+                <td>الرقم الوظيفي الموحد للموظف</td>
+            </tr>
+            <tr>
+                <td><code>first_name</code></td>
+                <td>String(100)</td>
+                <td>Not Null</td>
+                <td>الاسم الأول</td>
+            </tr>
+            <tr>
+                <td><code>last_name</code></td>
+                <td>String(100)</td>
+                <td>Not Null</td>
+                <td>اسم العائلة</td>
+            </tr>
+            <tr>
+                <td><code>department_id</code></td>
+                <td>BigInteger</td>
+                <td>Foreign Key (<code>departments.id</code>)</td>
+                <td>معرف القسم التابع له الموظف</td>
+            </tr>
+            <tr>
+                <td><code>position_id</code></td>
+                <td>BigInteger</td>
+                <td>Foreign Key (<code>positions.id</code>)</td>
+                <td>معرف المنصب الوظيفي</td>
+            </tr>
+            <tr>
+                <td><code>hire_date</code></td>
+                <td>Date</td>
+                <td>Not Null</td>
+                <td>تاريخ المباشرة والتعيين</td>
+            </tr>
+            <tr>
+                <td><code>base_salary</code></td>
+                <td>Decimal(12,2)</td>
+                <td>Default: 0.00</td>
+                <td>الراتب الأساسي الشهري</td>
+            </tr>
+            <tr>
+                <td><code>status</code></td>
+                <td>Enum</td>
+                <td>'active', 'on_leave', 'terminated'</td>
+                <td>الحالة الوظيفية للموظف</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="table-caption">جدول (3-3): توصيف جدول الأقسام الإدارية (<code>departments</code>)</div>
+    <table>
+        <thead>
+            <tr>
+                <th>اسم الحقل</th>
+                <th>نوع البيانات</th>
+                <th>القيود والمفاتيح</th>
+                <th>التوصيف والوظيفة</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>id</code></td>
+                <td>BigInteger</td>
+                <td>Primary Key, Auto Increment</td>
+                <td>المعرف الفريد للقسم</td>
+            </tr>
+            <tr>
+                <td><code>name</code></td>
+                <td>String(150)</td>
+                <td>Not Null</td>
+                <td>اسم القسم الإداري</td>
+            </tr>
+            <tr>
+                <td><code>code</code></td>
+                <td>String(20)</td>
+                <td>Unique</td>
+                <td>رمز القسم المختصر</td>
+            </tr>
+            <tr>
+                <td><code>manager_id</code></td>
+                <td>BigInteger</td>
+                <td>Foreign Key (<code>users.id</code>), Nullable</td>
+                <td>معرف مدير/مشرف القسم</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="table-caption">جدول (3-4): توصيف جدول المناصب الوظيفية (<code>positions</code>)</div>
+    <table>
+        <thead>
+            <tr>
+                <th>اسم الحقل</th>
+                <th>نوع البيانات</th>
+                <th>القيود والمفاتيح</th>
+                <th>التوصيف والوظيفة</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>id</code></td>
+                <td>BigInteger</td>
+                <td>Primary Key, Auto Increment</td>
+                <td>المعرف الفريد للمنصب</td>
+            </tr>
+            <tr>
+                <td><code>title</code></td>
+                <td>String(150)</td>
+                <td>Not Null</td>
+                <td>مسمى المنصب الوظيفي</td>
+            </tr>
+            <tr>
+                <td><code>department_id</code></td>
+                <td>BigInteger</td>
+                <td>Foreign Key (<code>departments.id</code>)</td>
+                <td>القسم التابع له المنصب</td>
+            </tr>
+            <tr>
+                <td><code>parent_position_id</code></td>
+                <td>BigInteger</td>
+                <td>Foreign Key (<code>positions.id</code>), Nullable</td>
+                <td>المنصب الأعلى في الهيكل التنظيمي</td>
+            </tr>
+            <tr>
+                <td><code>min_salary</code></td>
+                <td>Decimal(12,2)</td>
+                <td>Nullable</td>
+                <td>الحد الأدنى لراتب المنصب</td>
+            </tr>
+            <tr>
+                <td><code>max_salary</code></td>
+                <td>Decimal(12,2)</td>
+                <td>Nullable</td>
+                <td>الحد الأقصى لراتب المنصب</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h4>3.3.3 توصيف واجهات المستخدم الوظيفية (User Interface Architecture & Workflows):</h4>
+    <p>تتضمن الواجهة الأمامية لنظام <strong>Huma-HR</strong> أربع لوحات تحكم تفاعلية مصممة وفق أحدث معايير تجربة المستخدم (UI/UX):</p>
+    <ol>
+        <li><strong>بوابة التوظيف العامة (Public Career Portal):</strong> واجهة مخصصة للمتقدمين الخارجيين لاستعراض الشواغر الوظيفية المتاحة، واستكشاف متطلبات الوظيفة والتقديم المباشر ورفع السيرة الذاتية بسهولة.</li>
+        <li><strong>لوحة تحكم الموظف (Employee Portal Dashboard):</strong>
+            <ul>
+                <li>زر تسجيل الحضور والانصراف الجغرافي الفوري مع عرض الخريطة التفاعلية.</li>
+                <li>قسم إدارة المهام واستعراض الأولويات والمواعيد النهائية.</li>
+                <li>مركز تقديم الطلبات والإجازات ومتابعة الحالة ورصيد الإجازات المتبقي.</li>
+                <li>قسم استعراض الرواتب وكشوف الحسابات الصادرة.</li>
+                <li>نموذج التقييم الذاتي وتقييم الزملاء خلال الدورات النشطة.</li>
+            </ul>
+        </li>
+        <li><strong>لوحة تحكم المشرف / مدير القسم (Manager Dashboard):</strong>
+            <ul>
+                <li>نظرة عامة على حضور وانصراف الفريق لحظياً.</li>
+                <li>مركز استقبال وطلب التوصية على إجازات وطلبات أعضاء الفريق.</li>
+                <li>لوحة إسناد المهام للموظفين وتقييم جودة تسليمها من (1-10) مع الملاحظات.</li>
+                <li>نموذج التقييم الإداري المباشر لأفراد الفريق خلال دورة التقييم.</li>
+            </ul>
+        </li>
+        <li><strong>لوحة تحكم مسؤول الموارد البشرية (HR Administrator Dashboard):</strong>
+            <ul>
+                <li><strong>مركز تحليلات الموارد البشرية:</strong> مؤشرات الحضور، إحصائيات التوظيف، ونسب الأداء التراكمي.</li>
+                <li><strong>مستعرض الهيكل التنظيمي (Interactive Org Chart):</strong> التعديل المباشر وإعادة توزيع المناصب والأقسام برسم شجري تفاعلي.</li>
+                <li><strong>لوحة التوظيف الذكية (AI ATS Manager):</strong> فرز الطلبات، مشاهدة السير الذاتية المحللة آلياً بواسطة Gemini/OpenAI، جدولة المقابلات، وتوليد العروض الوظيفية.</li>
+                <li><strong>معالج الرواتب والأجور (Payroll Engine):</strong> إطلاق كشوف الرواتب الشهرية بزر واحد وحساب الخصومات والمكافآت التلقائية.</li>
+                <li><strong>مُدير التقييمات والأداء (360 Performance Manager):</strong> بناء نماذج التقييم وتعيين أوزانها، إغلاق الدورات، وتطبيق إجراءات الترقية والزيادات التلقائية.</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h3>3.4 النتائج والمخرجات المنفذة (System Results & Achievements)</h3>
+    <p>تم إنجاز النظام بالكامل واختباره بنجاح في بيئة تشغيلية مماثلة للواقع العملي، وأسفرت النتائج عن تحقق المخرجات التالية:</p>
+    <ol>
+        <li><strong>العمل التكاملي الشامل:</strong> النجاح في دمج جميع أنشطة الموارد البشرية (التوظيف، الحضور، الرواتب، الأداء، الهيكل التنظيمي، والتواصل) ضمن منصة واحدة دون الحاجة لأنظمة خارجية متفرقة.</li>
+        <li><strong>الكفاءة والدقة في التوظيف:</strong> أدى دمج معالجة الذكاء الاصطناعي مع مكتبات استخراج النصوص إلى قراءة وتصنيف مئات السير الذاتية وترتيب المتقدمين بحسب درجة المطابقة الذكية بكل دقة وحيادية.</li>
+        <li><strong>الانضباط الجغرافي المؤكد:</strong> منع تسجيل أي حالة حضور خارج النطاق الجغرافي للمؤسسة مما ألغى أي احتمالية للتلاعب بالحضور والغياب.</li>
+        <li><strong>تقييم أداء دقيق ومبني على البيانات:</strong> وفر تقييم 360 درجة نتائج عادلة وموزونة تعكس الإنجاز الحقيقي للموظفين، وتوليد توصيات ترقية وحوافز تلقائية معتمدة على نتائج الأرقام.</li>
+        <li><strong>معالجة فورية للرواتب:</strong> خفض زمن إصدار كشوف الرواتب الشهرية وحساب الخصومات والمكافآت من عدة أيام عمل إلى بضع ثوانٍ معدودة.</li>
+    </ol>
+
+    <h3>3.5 تحديات تطبيق المشروع التقنية والتنفيذية (Challenges & Solutions)</h3>
+    <p>خاطب فريق العمل عدداً من التحديات التقنية خلال مراحل تصميم وتنفيذ المشروع، وتم التغلب عليها وفق الأساليب التالية:</p>
+    <ol>
+        <li><strong>تحدي اختلاف صيغ ومخططات السير الذاتية (CV Parsing Formats):</strong>
+            <br><em>التحدي:</em> تتنوع السير الذاتية بين صيغ PDF نصوص وصور وملفات Word متعددة التنسيقات.
+            <br><em>الحل:</em> دمج مكتبة <code>Smalot PDFParser</code> ومكتبة <code>PHPWord</code> مع تنظيف النصوص واستخدام نماذج معالجة اللغة الطبيعية في <code>Google Gemini API</code> لقراءة النصوص العربية والإنجليزية بغض النظر عن طريقة التنسيق البصري.
+        </li>
+        <li><strong>تحدي الأداء في رسم الهيكل التنظيمي الضخم (Org-Chart Rendering):</strong>
+            <br><em>التحدي:</em> بطء استجابة الواجهة عند عرض مئات المناصب والعلاقات الهيكلية المترابطة.
+            <br><em>الحل:</em> استخدام خوارزمية التجميع المتوازي وتكامل مكتبة <code>React Flow (@xyflow/react)</code> بالاقتران مع <code>Dagre Layout Engine</code> لحساب مواقع العقد بمرونة عالية دون إجهاد المتصفح.
+        </li>
+        <li><strong>تحدي تعارض الأدوار الصلاحيات المتعددة في API:</strong>
+            <br><em>التحدي:</em> ضمان حماية نقاط النهاية لكي لا يستطيع الموظف استعراض أو تعديل بيانات رواتب أو تقييمات موظفين آخرين.
+            <br><em>الحل:</em> بناء نظام RBAC متين باستخدام <code>Spatie Laravel Permission Middleware</code> وتطبيق سياسات الوصول (Laravel Policies & Gateways) للتحقق من هوية وصلاحية صاحب الطلب قبل تنفيذ أي عملية.
+        </li>
+        <li><strong>تحدي الدقة في حساب المسافات الجغرافية:</strong>
+            <br><em>التحدي:</em> تباين دقة أجهزة الموبايل والمتصفحات في تحديد إحداثيات GPS.
+            <br><em>الحل:</em> تطبيق معادلة Haversine الرياضية لحساب كروية الأرض، وإتاحة هامش سماحية محدد في نطاق المكتب الجغرافي (<code>radius_meters</code>).
+        </li>
+    </ol>
+
+    <h3>3.6 المقترحات والتوصيات المستقبليّة (Future Scope & Recommendations)</h3>
+    <p>لتعزيز قدرات نظام <strong>Huma-HR</strong> وتوسيعه في المستقبل، يُوصى بما يلي:</p>
+    <ol>
+        <li><strong>تطوير تطبيق للهواتف المحمولة (Native Mobile App):</strong> باستخدام React Native أو Flutter لدعم تسجيل الحضور عبر البصمة الحيوية (Biometric / Face Recognition).</li>
+        <li><strong>دمج أنظمة الحسابات والبنوك (Banking & ERP Integration):</strong> الربط المباشر مع واجهات البنوك المحلية لدفع الرواتب تلقائياً وتصدير القيود المحاسبية لأنظمة الـ ERP مثل SAP أو Odoo.</li>
+        <li><strong>نظام التنبؤ بدوران الموظفين (Employee Turnover Prediction AI):</strong> بناء نموذج تعلم آلي لتوقع احتمال استقالة الموظف أو تراجع أدائه استناداً إلى التحليلات التاريخية وسلوكيات العمل.</li>
+    </ol>
+
+    <h1 class="chapter-title">المراجع (References)</h1>
+    <ol>
+        <li><strong>Laravel Documentation (v12.x)</strong> - "The PHP Framework for Web Artisans". Available online: https://laravel.com/docs</li>
+        <li><strong>React Documentation</strong> - "A JavaScript library for building user interfaces". Available online: https://react.dev</li>
+        <li><strong>Google Gemini API Documentation</strong> - "Build with Gemini Models". Available online: https://ai.google.dev/docs</li>
+        <li><strong>Spatie Laravel-Permission Package</strong> - "Associate roles and permissions with users". Available online: https://spatie.be/docs/laravel-permission</li>
+        <li><strong>Redux Toolkit Guide</strong> - "The official, opinionated, batteries-included toolset for efficient Redux development". Available online: https://redux-toolkit.js.org</li>
+        <li><strong>Pressman, R. S., & Maxim, B. R. (2020)</strong>. <em>Software Engineering: A Practitioner's Approach</em> (9th ed.). McGraw-Hill Education.</li>
+        <li><strong>Armstrong, M., & Taylor, S. (2020)</strong>. <em>Armstrong's Handbook of Human Resource Management Practice</em> (15th ed.). Kogan Page.</li>
+        <li><strong>Leaflet API Reference</strong> - "An open-source JavaScript library for mobile-friendly interactive maps". Available online: https://leafletjs.com</li>
+        <li><strong>OpenAI API Documentation</strong> - "API Reference & Embeddings for Text Processing". Available online: https://platform.openai.com/docs</li>
+    </ol>
+
+    <h1 class="chapter-title">الملاحق (Appendices)</h1>
+
+    <h3>ملحق (أ): المخطط المعماري لنقاط النهاية البرمجية (RESTful API Endpoints Reference)</h3>
+    <div class="table-caption">جدول (م-1): قائمة ببعض نقاط النهاية البرمجية الرئيسية لنظام Huma-HR</div>
+    <table>
+        <thead>
+            <tr>
+                <th>الطريقة (HTTP)</th>
+                <th>مسار النقطة (Endpoint URI)</th>
+                <th>المستوى المسموح (Role/Access)</th>
+                <th>التوصيف والوظيفة</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>POST</code></td>
+                <td><code>/api/auth/sessions</code></td>
+                <td>Public</td>
+                <td>تسجيل الدخول وتوليد رمز Auth Token</td>
+            </tr>
+            <tr>
+                <td><code>GET</code></td>
+                <td><code>/api/job-postings</code></td>
+                <td>Public</td>
+                <td>استعراض الفرص الوظيفية المنشورة</td>
+            </tr>
+            <tr>
+                <td><code>POST</code></td>
+                <td><code>/api/job-postings/{id}/apply</code></td>
+                <td>Public</td>
+                <td>التقديم على الوظيفة ورفع السيرة الذاتية</td>
+            </tr>
+            <tr>
+                <td><code>GET</code></td>
+                <td><code>/api/my-profile</code></td>
+                <td>Authenticated</td>
+                <td>استعراض الملف الشخصي للموظف المسجل</td>
+            </tr>
+            <tr>
+                <td><code>POST</code></td>
+                <td><code>/api/employee/attendance/checkin</code></td>
+                <td>Authenticated</td>
+                <td>تسجيل الحضور الجغرافي الفوري</td>
+            </tr>
+            <tr>
+                <td><code>POST</code></td>
+                <td><code>/api/requests</code></td>
+                <td>Authenticated</td>
+                <td>تقديم طلب إجازة أو مغادرة</td>
+            </tr>
+            <tr>
+                <td><code>GET</code></td>
+                <td><code>/api/tasks/my-tasks</code></td>
+                <td>Authenticated</td>
+                <td>استعراض المهام الشخصية المسندة للموظف</td>
+            </tr>
+            <tr>
+                <td><code>GET</code></td>
+                <td><code>/api/employees</code></td>
+                <td>HR / Manager</td>
+                <td>استعراض جميع الموظفين والملفات</td>
+            </tr>
+            <tr>
+                <td><code>GET</code></td>
+                <td><code>/api/org-chart</code></td>
+                <td>HR / Manager</td>
+                <td>استرجاع بيانات رسم الهيكل التنظيمي</td>
+            </tr>
+            <tr>
+                <td><code>POST</code></td>
+                <td><code>/api/payroll/initialize</code></td>
+                <td>HR Manager</td>
+                <td>احتساب وتجميع كشوف الرواتب الشهرية</td>
+            </tr>
+            <tr>
+                <td><code>POST</code></td>
+                <td><code>/api/performance/cycles</code></td>
+                <td>HR Manager</td>
+                <td>إنشاء دورة تقييم أداء جديدة 360 درجة</td>
+            </tr>
+            <tr>
+                <td><code>POST</code></td>
+                <td><code>/api/performance/cycles/{id}/close</code></td>
+                <td>HR Manager</td>
+                <td>إغلاق دورة التقييم وحساب النتائج الموزونة</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>ملحق (ب): إعدادات البيئة البرمجية والتشغيل الذاتي (Docker & Environment Specs)</h3>
+    <p>تكوين حاوية التطبيق في ملف <code>Dockerfile</code>:</p>
+    <pre>
+FROM php:8.2-fpm-alpine
+
+# Install System Dependencies & Extensions
+RUN apk add --no-linux-headers add git unzip libpng-dev libjpeg-turbo-dev freetype-dev libzip-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_mysql gd zip
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+
+COPY . .
+
+RUN composer install --no-dev --optimize-autoloader
+
+EXPOSE 9000
+CMD ["php-fpm"]
+    </pre>
+    <p>تطابق الشفرات البرمجية وإعدادات التشغيل التلقائية تضمن سهولة الرفع والنشر في بيئات السحاب وDocker دون تعديلات يدوية معقدة.</p>
+
+    <hr>
+    <p style="text-align: center; font-weight: bold; margin-top: 30px;">تم بحمد الله التوثيق الشامل والنهائي لمشروع التخرج: Huma-HR</p>
+
+</div>
+
+</body>
+</html>

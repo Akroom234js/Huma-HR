@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Huma-HR | مخطط واجهات وحدة الأداء المدعومة بالذكاء الاصطناعي</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-page: #0f172a;
+            --bg-gradient: radial-gradient(circle at 50% -20%, rgba(53,158,255,0.18), #0f172a 60%, #020617 100%);
+            --bg-card: rgba(30,41,59,0.5);
+            --bg-card-hover: rgba(30,41,59,0.75);
+            --sidebar-bg: rgba(15,23,42,0.7);
+            --glass-bg: rgba(255,255,255,0.03);
+            --glass-border: rgba(255,255,255,0.08);
+            --text-main: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --primary: #359EFF;
+            --primary-light: rgba(53,158,255,0.12);
+            --primary-grad: linear-gradient(135deg,#1d4ed8,#1383ed,#359eff);
+            --accent-grad: linear-gradient(135deg,#6366f1,#8b5cf6);
+            --ai-grad: linear-gradient(135deg,#0ea5e9,#6366f1,#8b5cf6);
+            --border: rgba(255,255,255,0.08);
+            --border-light: rgba(255,255,255,0.04);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.3);
+            --shadow-lg: 0 20px 40px rgba(0,0,0,0.4);
+            --radius-xl: 20px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --radius-full: 9999px;
+            --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+
+            /* Status */
+            --c-pending: #f59e0b;
+            --c-progress: #3b82f6;
+            --c-review: #f97316;
+            --c-revision: #ef4444;
+            --c-scored: #10b981;
+            --c-promo: #10b981;
+            --c-bonus: #3b82f6;
+            --c-train: #f59e0b;
+            --c-warn: #ef4444;
+        }
+        [data-theme="light"] {
+            --bg-page: #f0f4f8;
+            --bg-gradient: radial-gradient(circle at 50% -10%, rgba(53,158,255,0.07), #f0f4f8 70%);
+            --bg-card: #ffffff;
+            --bg-card-hover: #f8fafc;
+            --sidebar-bg: #ffffff;
+            --glass-bg: rgba(0,0,0,0.02);
+            --glass-border: rgba(0,0,0,0.06);
+            --text-main: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            --border: rgba(0,0,0,0.08);
+            --border-light: rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.07);
+            --shadow-lg: 0 20px 40px rgba(0,0,0,0.08);
+        }
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Cairo',system-ui,sans-serif;background:var(--bg-page);background-image:var(--bg-gradient);color:var(--text-main);min-height:100vh;display:flex;flex-direction:column;transition:var(--transition);overflow-x:hidden;}
+
+        /* HEADER */
+        header{background:var(--sidebar-bg);border-bottom:1px solid var(--border);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:200;box-shadow:var(--shadow-md);}
+        .logo-wrap{display:flex;align-items:center;gap:.75rem;}
+        .logo-icon{background:var(--primary-grad);color:#fff;width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 0 18px rgba(53,158,255,0.45);}
+        .logo-name{font-size:1.4rem;font-weight:900;background:var(--primary-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+        .logo-tag{font-size:.75rem;font-weight:700;color:var(--text-muted);border:1px solid var(--border);padding:.15rem .6rem;border-radius:20px;}
+        .header-right{display:flex;align-items:center;gap:.75rem;}
+        .icon-btn{background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text-main);width:38px;height:38px;border-radius:var(--radius-md);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:var(--transition);}
+        .icon-btn:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary);transform:scale(1.06);}
+
+        /* LAYOUT */
+        .workspace{flex:1;display:flex;max-width:1700px;margin:0 auto;width:100%;}
+        .sidebar{width:290px;background:var(--sidebar-bg);border-left:1px solid var(--border);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);padding:1.75rem 1.25rem;display:flex;flex-direction:column;gap:1.25rem;position:sticky;top:72px;height:calc(100vh - 72px);overflow-y:auto;}
+        .sidebar-label{font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);font-weight:800;padding:.5rem .75rem 0;}
+        .nav-list{list-style:none;display:flex;flex-direction:column;gap:.3rem;}
+        .nav-item button{width:100%;background:none;border:1px solid transparent;color:var(--text-secondary);font-family:'Cairo',sans-serif;text-align:right;padding:.8rem 1rem;border-radius:var(--radius-md);cursor:pointer;font-size:.95rem;font-weight:600;display:flex;align-items:center;gap:.85rem;transition:var(--transition);}
+        .nav-item button i{font-size:1rem;width:22px;text-align:center;color:var(--text-muted);transition:var(--transition);}
+        .nav-item.active button{background:var(--primary-light);border-color:rgba(53,158,255,0.22);color:var(--primary);}
+        .nav-item.active button i{color:var(--primary);transform:scale(1.12);}
+        .nav-item button:hover:not(:focus){background:var(--glass-bg);color:var(--text-main);}
+        main{flex:1;padding:2.5rem;overflow-y:auto;min-width:0;}
+        .tab-panel{display:none;animation:fadeUp .35s cubic-bezier(.4,0,.2,1) forwards;}
+        .tab-panel.active{display:block;}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+        /* TYPOGRAPHY */
+        .page-hero{margin-bottom:2.5rem;}
+        .page-hero h1{font-size:2rem;font-weight:900;background:linear-gradient(135deg,var(--text-main) 40%,var(--primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.5rem;line-height:1.25;}
+        .page-hero p{color:var(--text-muted);font-size:1rem;line-height:1.7;}
+        .section-title{font-size:1.25rem;font-weight:800;color:var(--text-main);display:flex;align-items:center;gap:.65rem;margin-bottom:1.25rem;}
+        .section-title i{color:var(--primary);}
+
+        /* CARDS */
+        .card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.75rem;margin-bottom:1.75rem;box-shadow:var(--shadow-md);transition:var(--transition);position:relative;overflow:hidden;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+        .card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:rgba(53,158,255,0.18);}
+        .card.blue-top::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--primary-grad);}
+        .card.purple-top::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent-grad);}
+        .card.ai-top::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ai-grad);}
+        .card.green-top::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(135deg,#10b981,#34d399);}
+        .card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border-light);}
+        .card-header h2{font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:.65rem;color:var(--text-main);}
+        .card-header h2 i{color:var(--primary);}
+
+        /* GRIDS */
+        .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;}
+        .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+        .grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;}
+
+        /* BADGES & PILLS */
+        .badge{display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .9rem;border-radius:var(--radius-full);font-size:.82rem;font-weight:700;border:1px solid transparent;}
+        .badge.pending{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.3);color:#f59e0b;}
+        .badge.progress{background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.3);color:#3b82f6;}
+        .badge.review{background:rgba(249,115,22,.12);border-color:rgba(249,115,22,.3);color:#f97316;}
+        .badge.revision{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3);color:#ef4444;}
+        .badge.scored{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.3);color:#10b981;}
+        .badge.promo{background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.35);color:#10b981;}
+        .badge.bonus{background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.35);color:#3b82f6;}
+        .badge.train{background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.35);color:#f59e0b;}
+        .badge.warn{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.35);color:#ef4444;}
+        .badge.ai{background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(139,92,246,.2));border-color:rgba(139,92,246,.4);color:#a78bfa;}
+        .pill{font-family:'Consolas',monospace;background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text-secondary);padding:.28rem .7rem;border-radius:var(--radius-sm);font-size:.85rem;font-weight:600;display:inline-block;direction:ltr;}
+        .method-get{color:#60a5fa;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);padding:.2rem .5rem;border-radius:4px;font-size:.8rem;font-weight:700;font-family:monospace;}
+        .method-post{color:#34d399;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);padding:.2rem .5rem;border-radius:4px;font-size:.8rem;font-weight:700;font-family:monospace;}
+        .method-put{color:#fbbf24;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);padding:.2rem .5rem;border-radius:4px;font-size:.8rem;font-weight:700;font-family:monospace;}
+        .method-del{color:#f87171;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);padding:.2rem .5rem;border-radius:4px;font-size:.8rem;font-weight:700;font-family:monospace;}
+
+        /* ALERTS */
+        .alert{padding:1.1rem 1.4rem;border-radius:var(--radius-md);border:1px solid transparent;margin-bottom:1.25rem;display:flex;align-items:flex-start;gap:.9rem;line-height:1.65;}
+        .alert i{font-size:1.15rem;margin-top:.15rem;flex-shrink:0;}
+        .alert h4{font-weight:700;margin-bottom:.2rem;font-size:.95rem;}
+        .alert p{font-size:.9rem;}
+        .alert.info{background:rgba(53,158,255,.08);border-color:rgba(53,158,255,.2);color:var(--primary);}
+        .alert.warn{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.2);color:#fbbf24;}
+        .alert.danger{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.2);color:#f87171;}
+        .alert.success{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.2);color:#34d399;}
+        .alert.ai{background:linear-gradient(135deg,rgba(14,165,233,.06),rgba(139,92,246,.06));border-color:rgba(139,92,246,.25);color:#a78bfa;}
+
+        /* TABLES */
+        .tbl-wrap{width:100%;overflow-x:auto;border-radius:var(--radius-md);border:1px solid var(--border);margin:1.25rem 0;background:rgba(15,23,42,.25);}
+        table.tbl{width:100%;border-collapse:collapse;text-align:right;font-size:.9rem;}
+        table.tbl th{background:rgba(30,41,59,.65);color:var(--text-main);font-weight:700;padding:.9rem 1.1rem;border-bottom:2px solid var(--border);}
+        table.tbl td{padding:.85rem 1.1rem;border-bottom:1px solid var(--border);color:var(--text-secondary);}
+        table.tbl tr:last-child td{border-bottom:none;}
+        table.tbl tr:hover td{background:rgba(255,255,255,.02);color:var(--text-main);}
+
+        /* STYLED LIST */
+        .slist{list-style:none;display:flex;flex-direction:column;gap:.7rem;margin:1rem 0;}
+        .slist li{position:relative;padding-right:1.75rem;line-height:1.65;color:var(--text-secondary);}
+        .slist li::before{content:'\f058';font-family:'Font Awesome 6 Free';font-weight:900;position:absolute;right:0;top:.1rem;color:var(--primary);font-size:1rem;}
+        .slist.danger li::before{content:'\f06a';color:#ef4444;}
+        .slist.star li::before{content:'\f005';color:#f59e0b;}
+        .slist strong{color:var(--text-main);font-weight:700;}
+
+        /* WEIGHT CARDS */
+        .weight-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:1.25rem;text-align:center;position:relative;overflow:hidden;transition:var(--transition);}
+        .weight-card:hover{border-color:var(--primary);transform:translateY(-3px);}
+        .weight-card .wc-pct{font-size:2rem;font-weight:900;background:var(--primary-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;}
+        .weight-card .wc-label{font-size:.88rem;color:var(--text-muted);font-weight:600;margin-top:.35rem;}
+        .weight-card .wc-icon{font-size:1.4rem;margin-bottom:.5rem;}
+        .weight-card.w40 .wc-pct{background:var(--primary-grad);-webkit-background-clip:text;}
+        .weight-card.w25{border-top:3px solid #8b5cf6;}.weight-card.w25 .wc-pct{background:var(--accent-grad);-webkit-background-clip:text;}
+        .weight-card.w15{border-top:3px solid #10b981;}.weight-card.w15 .wc-pct{background:linear-gradient(135deg,#10b981,#34d399);-webkit-background-clip:text;}
+        .weight-card.w10a{border-top:3px solid #f59e0b;}.weight-card.w10a .wc-pct{background:linear-gradient(135deg,#f59e0b,#fbbf24);-webkit-background-clip:text;}
+        .weight-card.w10b{border-top:3px solid #ec4899;}.weight-card.w10b .wc-pct{background:linear-gradient(135deg,#ec4899,#f472b6);-webkit-background-clip:text;}
+
+        /* FORMULA BOX */
+        .formula-box{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:var(--radius-md);padding:1.25rem 1.75rem;font-family:'Consolas',monospace;font-size:1rem;color:var(--primary);direction:ltr;text-align:center;margin:1.25rem 0;font-weight:700;letter-spacing:.3px;word-break:break-all;}
+
+        /* LIFECYCLE FLOW */
+        .flow{display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap;padding:1.5rem;background:rgba(15,23,42,.3);border:1px solid var(--border);border-radius:var(--radius-md);margin:1.25rem 0;}
+        .flow-node{flex:1;min-width:110px;max-width:150px;text-align:center;background:var(--bg-card);border:1px solid var(--border);padding:.9rem .75rem;border-radius:var(--radius-md);transition:var(--transition);}
+        .flow-node:hover{border-color:var(--primary);transform:scale(1.04);}
+        .flow-node h4{font-size:.82rem;margin-top:.4rem;font-weight:700;}
+        .flow-node p{font-size:.7rem;color:var(--text-muted);}
+        .flow-node.pend{border-top:3px solid #f59e0b;}
+        .flow-node.prog{border-top:3px solid #3b82f6;}
+        .flow-node.rev{border-top:3px solid #f97316;}
+        .flow-node.need{border-top:3px solid #ef4444;}
+        .flow-node.done{border-top:3px solid #10b981;}
+        .flow-arrow{color:var(--text-muted);font-size:1rem;animation:pulse 2s ease-in-out infinite;}
+        @keyframes pulse{0%,100%{opacity:.5;transform:translateX(0);}50%{opacity:1;transform:translateX(-4px);}}
+
+        /* SCORE CALC WIDGET */
+        .calc-box{background:linear-gradient(135deg,rgba(29,78,216,.08),rgba(53,158,255,.05));border:1px solid rgba(53,158,255,.25);border-radius:var(--radius-lg);padding:1.75rem;}
+        .calc-row{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.85rem;}
+        .calc-row label{font-size:.85rem;font-weight:600;color:var(--text-secondary);}
+        .calc-inp{width:100%;background:rgba(15,23,42,.5);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-main);padding:.65rem 1rem;font-size:.95rem;font-weight:600;transition:var(--transition);}
+        .calc-inp:focus{outline:none;border-color:var(--primary);box-shadow:0 0 10px rgba(53,158,255,.2);}
+        .calc-result{background:rgba(16,185,129,.1);border:1px dashed #10b981;border-radius:var(--radius-md);padding:1.25rem;text-align:center;margin-top:1rem;}
+        .calc-score{font-size:2.2rem;font-weight:900;color:#10b981;}
+        .calc-formula{font-size:.8rem;color:var(--text-muted);direction:ltr;margin-top:.25rem;}
+
+        /* FINAL CALC (5-component) */
+        .final-calc-box{background:linear-gradient(135deg,rgba(99,102,241,.06),rgba(139,92,246,.04));border:1px solid rgba(139,92,246,.2);border-radius:var(--radius-lg);padding:1.75rem;}
+        .final-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;}
+        .final-row label{font-size:.82rem;font-weight:700;color:var(--text-secondary);width:180px;flex-shrink:0;}
+        .final-row .weight-tag{font-size:.75rem;background:rgba(139,92,246,.15);color:#a78bfa;padding:.15rem .45rem;border-radius:4px;font-weight:700;white-space:nowrap;}
+        .final-inp{flex:1;background:rgba(15,23,42,.5);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-main);padding:.55rem .85rem;font-size:.95rem;font-weight:600;transition:var(--transition);}
+        .final-inp:focus{outline:none;border-color:#8b5cf6;box-shadow:0 0 8px rgba(139,92,246,.2);}
+        .final-result{background:rgba(16,185,129,.08);border:1px dashed #10b981;border-radius:var(--radius-md);padding:1.5rem;text-align:center;margin-top:1rem;}
+        .final-score-big{font-size:2.8rem;font-weight:900;color:#10b981;}
+        .final-decision{margin-top:.5rem;}
+
+        /* DECISION TABLE CARD */
+        .decision-row{display:flex;align-items:center;padding:.85rem 1.1rem;border-bottom:1px solid var(--border);gap:1rem;}
+        .decision-row:last-child{border-bottom:none;}
+        .decision-range{font-size:.95rem;font-weight:700;color:var(--text-main);min-width:90px;}
+        .decision-bar{flex:1;height:8px;border-radius:var(--radius-full);background:var(--border);}
+        .decision-bar-fill{height:100%;border-radius:var(--radius-full);transition:var(--transition);}
+
+        /* PAGE BLUEPRINT CARDS */
+        .blueprint{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.75rem;margin-bottom:1.5rem;position:relative;overflow:hidden;transition:var(--transition);}
+        .blueprint:hover{border-color:rgba(53,158,255,.2);transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+        .bp-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.1rem;gap:1rem;}
+        .bp-title{font-size:1.1rem;font-weight:800;color:var(--text-main);display:flex;align-items:center;gap:.65rem;}
+        .bp-title i{color:var(--primary);}
+        .bp-num{background:var(--primary-grad);color:#fff;font-size:.75rem;font-weight:900;padding:.2rem .6rem;border-radius:var(--radius-full);}
+        .bp-new{background:linear-gradient(135deg,#10b981,#34d399);color:#fff;font-size:.72rem;font-weight:900;padding:.2rem .55rem;border-radius:var(--radius-full);}
+        .bp-body{color:var(--text-secondary);line-height:1.65;font-size:.93rem;}
+        .bp-features{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem;}
+        .bp-feat{background:var(--primary-light);color:var(--primary);font-size:.8rem;font-weight:700;padding:.3rem .75rem;border-radius:var(--radius-full);border:1px solid rgba(53,158,255,.2);}
+        .bp-feat.purple{background:rgba(139,92,246,.1);color:#a78bfa;border-color:rgba(139,92,246,.2);}
+        .bp-feat.green{background:rgba(16,185,129,.1);color:#34d399;border-color:rgba(16,185,129,.2);}
+        .bp-feat.orange{background:rgba(249,115,22,.1);color:#fb923c;border-color:rgba(249,115,22,.2);}
+        .bp-feat.red{background:rgba(239,68,68,.1);color:#f87171;border-color:rgba(239,68,68,.2);}
+        .bp-feat.ai{background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(139,92,246,.12));color:#a78bfa;border-color:rgba(139,92,246,.25);}
+        .bp-api{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.85rem;}
+
+        /* AI SECTION */
+        .ai-card{background:linear-gradient(135deg,rgba(14,165,233,.06),rgba(99,102,241,.06),rgba(139,92,246,.06));border:1px solid rgba(139,92,246,.2);border-radius:var(--radius-lg);padding:1.75rem;margin-bottom:1.5rem;}
+        .ai-step{display:flex;gap:1rem;align-items:flex-start;padding:1rem;background:rgba(255,255,255,.02);border-radius:var(--radius-md);border:1px solid rgba(139,92,246,.12);margin-bottom:.75rem;transition:var(--transition);}
+        .ai-step:hover{border-color:rgba(139,92,246,.3);background:rgba(139,92,246,.04);}
+        .ai-step-num{background:var(--ai-grad);color:#fff;width:32px;height:32px;border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.9rem;flex-shrink:0;}
+        .ai-step-body h4{font-size:.95rem;font-weight:700;color:var(--text-main);margin-bottom:.3rem;}
+        .ai-step-body p{font-size:.88rem;color:var(--text-secondary);line-height:1.6;}
+
+        /* SECURITY TAGS */
+        .sec-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .8rem;border-radius:var(--radius-sm);font-size:.8rem;font-weight:700;background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.25);}
+        .sec-badge.green{background:rgba(16,185,129,.1);color:#34d399;border-color:rgba(16,185,129,.25);}
+
+        /* JOBS SECTION */
+        .job-card{background:rgba(30,41,59,.4);border:1px solid var(--border);border-radius:var(--radius-md);padding:1.1rem 1.25rem;margin-bottom:.75rem;display:flex;gap:1rem;align-items:flex-start;transition:var(--transition);}
+        .job-card:hover{border-color:var(--primary);background:rgba(53,158,255,.04);}
+        .job-icon{background:var(--primary-grad);color:#fff;width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+        .job-body h4{font-size:.95rem;font-weight:700;color:var(--text-main);font-family:monospace;margin-bottom:.3rem;}
+        .job-body p{font-size:.87rem;color:var(--text-secondary);line-height:1.6;}
+
+        /* COMPONENTS TABLE */
+        .comp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;}
+        .comp-item{background:rgba(30,41,59,.35);border:1px solid var(--border);border-radius:var(--radius-md);padding:1rem 1.25rem;transition:var(--transition);}
+        .comp-item:hover{border-color:var(--primary);background:rgba(53,158,255,.04);}
+        .comp-item h4{font-size:.88rem;font-weight:800;color:var(--primary);font-family:monospace;margin-bottom:.3rem;}
+        .comp-item p{font-size:.82rem;color:var(--text-secondary);line-height:1.55;}
+        .comp-item .comp-roles{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.5rem;}
+        .comp-role{font-size:.72rem;font-weight:700;padding:.15rem .45rem;border-radius:3px;background:var(--primary-light);color:var(--primary);}
+        .comp-role.purple{background:rgba(139,92,246,.1);color:#a78bfa;}
+        .comp-role.green{background:rgba(16,185,129,.1);color:#34d399;}
+
+        /* FOOTER */
+        footer{background:var(--sidebar-bg);border-top:1px solid var(--border);padding:1.25rem 2rem;text-align:center;color:var(--text-muted);font-size:.85rem;font-weight:600;backdrop-filter:blur(20px);}
+
+        @media(max-width:1100px){
+            .workspace{flex-direction:column;}
+            .sidebar{width:100%;height:auto;position:relative;top:0;border-left:none;border-bottom:1px solid var(--border);}
+            main{padding:1.5rem;}
+            .grid-2,.grid-3,.grid-5,.comp-grid{grid-template-columns:1fr;}
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+<header>
+    <div class="logo-wrap">
+        <div class="logo-icon"><i class="fa-solid fa-brain"></i></div>
+        <div class="logo-name">Huma-HR</div>
+        <div class="logo-tag">وحدة الأداء الذكي</div>
+    </div>
+    <div class="header-right">
+        <button class="icon-btn" id="themeBtn" title="تبديل المظهر"><i class="fa-solid fa-sun" id="themeIcon"></i></button>
+    </div>
+</header>
+
+<div class="workspace">
+    <aside class="sidebar">
+        <div class="sidebar-label">أقسام المخطط</div>
+        <ul class="nav-list">
+            <li class="nav-item active" data-tab="t-system"><button><i class="fa-solid fa-microchip-ai"></i><span>آلية النظام والحسابات</span></button></li>
+            <li class="nav-item" data-tab="t-ai"><button><i class="fa-solid fa-robot"></i><span>الذكاء الاصطناعي والتوصيات</span></button></li>
+            <li class="nav-item" data-tab="t-manager"><button><i class="fa-solid fa-crown"></i><span>واجهات المدير (6 صفحات)</span></button></li>
+            <li class="nav-item" data-tab="t-employee"><button><i class="fa-solid fa-user"></i><span>واجهات الموظف (4 صفحات)</span></button></li>
+            <li class="nav-item" data-tab="t-hr"><button><i class="fa-solid fa-chart-pie"></i><span>واجهات الموارد البشرية (3 صفحات)</span></button></li>
+            <li class="nav-item" data-tab="t-components"><button><i class="fa-solid fa-cubes"></i><span>المكونات المشتركة</span></button></li>
+            <li class="nav-item" data-tab="t-apis"><button><i class="fa-solid fa-plug-circle-bolt"></i><span>ربط الـ APIs بالواجهات</span></button></li>
+        </ul>
+    </aside>
+
+    <main>
+
+        <!-- =================== TAB 1: SYSTEM & SCORING =================== -->
+        <section id="t-system" class="tab-panel active">
+            <div class="page-hero">
+                <h1>آلية نظام الأداء المدعوم بالذكاء الاصطناعي</h1>
+                <p>تفصيل كامل لمنطق احتساب الدرجة النهائية من 5 مكونات، وآلية القرار التلقائي ودورات الأداء ومعالجة الخلفية.</p>
+            </div>
+
+            <!-- 5-Component Weights -->
+            <div class="card blue-top">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-weight-scale"></i>الأوزان الثابتة لمكونات الدرجة النهائية</h2>
+                </div>
+                <p style="margin-bottom:1.25rem;color:var(--text-secondary);line-height:1.7;">تُحسب الدرجة النهائية للموظف بناءً على متوسط مرجح لخمسة مكونات رئيسية، لكل منها وزن محدد يعكس أهميته في التقييم الشامل:</p>
+                <div class="grid-5" style="margin-bottom:1.5rem;">
+                    <div class="weight-card w40" style="border-top:3px solid #359eff;">
+                        <div class="wc-icon" style="color:#359eff;"><i class="fa-solid fa-list-check"></i></div>
+                        <div class="wc-pct">40%</div>
+                        <div class="wc-label">درجة المهام<br><small style="color:var(--text-muted)">Task Score</small></div>
+                    </div>
+                    <div class="weight-card w25">
+                        <div class="wc-icon" style="color:#8b5cf6;"><i class="fa-solid fa-user-tie"></i></div>
+                        <div class="wc-pct">25%</div>
+                        <div class="wc-label">درجة المدير<br><small style="color:var(--text-muted)">Manager Score</small></div>
+                    </div>
+                    <div class="weight-card w15">
+                        <div class="wc-icon" style="color:#10b981;"><i class="fa-solid fa-users"></i></div>
+                        <div class="wc-pct">15%</div>
+                        <div class="wc-label">درجة الزملاء<br><small style="color:var(--text-muted)">Peer Score</small></div>
+                    </div>
+                    <div class="weight-card w10a">
+                        <div class="wc-icon" style="color:#f59e0b;"><i class="fa-solid fa-calendar-check"></i></div>
+                        <div class="wc-pct">10%</div>
+                        <div class="wc-label">درجة الحضور<br><small style="color:var(--text-muted)">Attendance Score</small></div>
+                    </div>
+                    <div class="weight-card w10b">
+                        <div class="wc-icon" style="color:#ec4899;"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <div class="wc-pct">10%</div>
+                        <div class="wc-label">العمل الإضافي<br><small style="color:var(--text-muted)">Overtime Score</small></div>
+                    </div>
+                </div>
+                <div class="formula-box">
+                    الدرجة النهائية = (المهام × 40%) + (المدير × 25%) + (الزملاء × 15%) + (الحضور × 10%) + (الإضافي × 10%)
+                </div>
+            </div>
+
+            <!-- Sub-scores detail -->
+            <div class="grid-2">
+                <!-- Task Score -->
+                <div class="card blue-top">
+                    <div class="card-header"><h2><i class="fa-solid fa-list-check"></i>درجة المهام — 40%</h2></div>
+                    <div class="formula-box" style="font-size:.85rem;">task_score = (completion × 60%) + (quality × 40%) − (days_late × penalty)</div>
+                    <ul class="slist" style="margin-top:1rem;">
+                        <li><strong>درجة الاكتمال (60%):</strong> هل أنجز الموظف كافة التسليمات؟</li>
+                        <li><strong>درجة الجودة (40%):</strong> مستوى احترافية وإتقان العمل</li>
+                        <li><strong>وزن المهمة:</strong> يتأثر بالصعوبة (سهل/متوسط/صعب) والأولوية (منخفض/عالي/عاجل) — المهام الأصعب تساهم أكثر</li>
+                        <li><strong>days_late:</strong> يُحسب آلياً من الواجهة الخلفية</li>
+                    </ul>
+                    <!-- Mini calculator -->
+                    <div class="calc-box" style="margin-top:1.25rem;">
+                        <div style="font-size:.88rem;font-weight:700;color:var(--primary);margin-bottom:1rem;"><i class="fa-solid fa-calculator"></i> حاسبة درجة المهمة</div>
+                        <div class="calc-row"><label>درجة الاكتمال (0-100)</label><input class="calc-inp" type="number" id="tc" value="90" min="0" max="100" oninput="calcTask()"></div>
+                        <div class="calc-row"><label>درجة الجودة (0-100)</label><input class="calc-inp" type="number" id="tq" value="80" min="0" max="100" oninput="calcTask()"></div>
+                        <div class="calc-row"><label>أيام التأخير</label><input class="calc-inp" type="number" id="td" value="0" min="0" oninput="calcTask()"></div>
+                        <div class="calc-row"><label>خصم يومي</label><input class="calc-inp" type="number" id="tp" value="5" min="0" oninput="calcTask()"></div>
+                        <div class="calc-result"><div class="calc-score" id="task-result">—</div><div class="calc-formula" id="task-formula"></div></div>
+                    </div>
+                </div>
+                <!-- Manager Score -->
+                <div class="card purple-top">
+                    <div class="card-header"><h2><i class="fa-solid fa-user-tie" style="color:#8b5cf6;"></i>درجة المدير — 25%</h2></div>
+                    <p style="color:var(--text-secondary);margin-bottom:1rem;line-height:1.65;">يقيّم المدير المباشر الموظف على 3 معايير من 0 إلى 10 نقاط:</p>
+                    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>المعيار</th><th>النطاق</th></tr></thead><tbody>
+                        <tr><td>الاحترافية (Professionalism)</td><td>0 – 10</td></tr>
+                        <tr><td>المسؤولية (Responsibility)</td><td>0 – 10</td></tr>
+                        <tr><td>حل المشكلات (Problem-Solving)</td><td>0 – 10</td></tr>
+                    </tbody></table></div>
+                    <div class="formula-box" style="font-size:.85rem;">درجة المدير = ((احترافية + مسؤولية + حل المشكلات) ÷ 3) × 10</div>
+                    <div class="alert info" style="margin-top:1rem;"><i class="fa-solid fa-lightbulb"></i><div><h4>مثال عملي</h4><p>درجات 8, 9, 7 → المتوسط = 8 → درجة المدير = <strong>80 / 100</strong></p></div></div>
+                </div>
+                <!-- Peer Score -->
+                <div class="card green-top">
+                    <div class="card-header"><h2><i class="fa-solid fa-users" style="color:#10b981;"></i>درجة الزملاء — 15%</h2></div>
+                    <p style="color:var(--text-secondary);margin-bottom:1rem;line-height:1.65;">تقييمات سرية تامة من الزملاء تقيس التعاون والعمل الجماعي:</p>
+                    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>المعيار</th><th>النطاق</th></tr></thead><tbody>
+                        <tr><td>العمل الجماعي (Teamwork)</td><td>0 – 10</td></tr>
+                        <tr><td>التعاون (Cooperation)</td><td>0 – 10</td></tr>
+                    </tbody></table></div>
+                    <div class="formula-box" style="font-size:.85rem;">درجة الزملاء = متوسط تقييمات الزملاء × 10</div>
+                    <div class="alert danger" style="margin-top:1rem;"><i class="fa-solid fa-lock"></i><div><h4>الأمان والسرية</h4><p><strong>anonymous_token:</strong> hash(userId + cycleId + salt) — يمنع التقييم المزدوج دون كشف الهوية<br><strong>comment_encrypted:</strong> تشفير AES-256-CBC — حتى مدير قاعدة البيانات لا يقرأ التعليقات</p></div></div>
+                </div>
+                <!-- Attendance + Overtime -->
+                <div style="display:flex;flex-direction:column;gap:1.5rem;">
+                    <div class="card" style="border-top:3px solid #f59e0b;">
+                        <div class="card-header"><h2><i class="fa-solid fa-calendar-check" style="color:#f59e0b;"></i>درجة الحضور — 10%</h2></div>
+                        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>حالة الحضور</th><th>النقاط</th></tr></thead><tbody>
+                            <tr><td>حاضر كامل</td><td><strong style="color:#10b981;">10</strong></td></tr>
+                            <tr><td>تأخير بسيط</td><td><strong style="color:#f59e0b;">7</strong></td></tr>
+                            <tr><td>تأخير متكرر</td><td><strong style="color:#f97316;">4</strong></td></tr>
+                            <tr><td>غائب</td><td><strong style="color:#ef4444;">0</strong></td></tr>
+                        </tbody></table></div>
+                        <div class="formula-box" style="font-size:.82rem;">درجة الحضور = متوسط نقاط الأيام × 10</div>
+                    </div>
+                    <div class="card" style="border-top:3px solid #ec4899;">
+                        <div class="card-header"><h2><i class="fa-solid fa-clock-rotate-left" style="color:#ec4899;"></i>درجة العمل الإضافي — 10%</h2></div>
+                        <div class="formula-box" style="font-size:.85rem;">درجة العمل الإضافي = ساعات العمل الإضافي × 2 (الحد الأقصى: 100)</div>
+                        <div class="alert success"><i class="fa-solid fa-star"></i><div><h4>مثال</h4><p>50 ساعة إضافية → 50 × 2 = <strong>100 نقطة</strong></p></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Final Score Calculator -->
+            <div class="card ai-top">
+                <div class="card-header"><h2><i class="fa-solid fa-sigma"></i>حاسبة الدرجة النهائية الشاملة (5 مكونات)</h2><span class="badge ai"><i class="fa-solid fa-calculator"></i> تفاعلية</span></div>
+                <div class="final-calc-box">
+                    <div class="final-row"><label>درجة المهام <span class="weight-tag">× 40%</span></label><input class="final-inp" type="number" id="ft" value="85" min="0" max="100" oninput="calcFinal()"></div>
+                    <div class="final-row"><label>درجة المدير <span class="weight-tag">× 25%</span></label><input class="final-inp" type="number" id="fm" value="80" min="0" max="100" oninput="calcFinal()"></div>
+                    <div class="final-row"><label>درجة الزملاء <span class="weight-tag">× 15%</span></label><input class="final-inp" type="number" id="fp" value="75" min="0" max="100" oninput="calcFinal()"></div>
+                    <div class="final-row"><label>درجة الحضور <span class="weight-tag">× 10%</span></label><input class="final-inp" type="number" id="fa" value="90" min="0" max="100" oninput="calcFinal()"></div>
+                    <div class="final-row"><label>درجة العمل الإضافي <span class="weight-tag">× 10%</span></label><input class="final-inp" type="number" id="fo" value="60" min="0" max="100" oninput="calcFinal()"></div>
+                    <div class="final-result">
+                        <div style="font-size:.9rem;color:var(--text-muted);margin-bottom:.5rem;">الدرجة النهائية</div>
+                        <div class="final-score-big" id="final-result">—</div>
+                        <div class="final-decision" id="final-decision"></div>
+                        <div style="font-size:.78rem;color:var(--text-muted);margin-top:.4rem;direction:ltr;" id="final-breakdown"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Decision Table -->
+            <div class="card">
+                <div class="card-header"><h2><i class="fa-solid fa-code-branch"></i>جدول القرارات التلقائية للنظام</h2></div>
+                <p style="color:var(--text-secondary);margin-bottom:1.25rem;">بناءً على الدرجة النهائية، يتخذ النظام قراراً تلقائياً يُسجَّل في جدول <code style="color:var(--primary);">performance_snapshots</code>:</p>
+                <div style="background:var(--glass-bg);border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;">
+                    <div class="decision-row">
+                        <div class="decision-range"><span class="badge promo">90 – 100</span></div>
+                        <div class="decision-bar"><div class="decision-bar-fill" style="width:100%;background:linear-gradient(90deg,#10b981,#34d399);"></div></div>
+                        <div style="min-width:200px;"><strong style="color:#10b981;">ترقية + مكافأة</strong><br><small style="color:var(--text-muted);">promotion_bonus</small></div>
+                    </div>
+                    <div class="decision-row">
+                        <div class="decision-range"><span class="badge bonus">75 – 89</span></div>
+                        <div class="decision-bar"><div class="decision-bar-fill" style="width:74%;background:linear-gradient(90deg,#3b82f6,#60a5fa);"></div></div>
+                        <div style="min-width:200px;"><strong style="color:#3b82f6;">مكافأة</strong><br><small style="color:var(--text-muted);">bonus</small></div>
+                    </div>
+                    <div class="decision-row">
+                        <div class="decision-range"><span class="badge train">60 – 74</span></div>
+                        <div class="decision-bar"><div class="decision-bar-fill" style="width:54%;background:linear-gradient(90deg,#f59e0b,#fbbf24);"></div></div>
+                        <div style="min-width:200px;"><strong style="color:#f59e0b;">يتطلب تدريباً</strong><br><small style="color:var(--text-muted);">training_required</small></div>
+                    </div>
+                    <div class="decision-row">
+                        <div class="decision-range"><span class="badge warn">أقل من 60</span></div>
+                        <div class="decision-bar"><div class="decision-bar-fill" style="width:30%;background:linear-gradient(90deg,#ef4444,#f87171);"></div></div>
+                        <div style="min-width:200px;"><strong style="color:#ef4444;">إنذار</strong><br><small style="color:var(--text-muted);">warning</small></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lifecycle & Cycles -->
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header"><h2><i class="fa-solid fa-route"></i>دورة حياة المهمة</h2></div>
+                    <div class="flow">
+                        <div class="flow-node pend"><span class="badge pending">pending</span><h4>معلّقة</h4><p>لم تبدأ بعد</p></div>
+                        <div class="flow-arrow"><i class="fa-solid fa-arrow-left"></i></div>
+                        <div class="flow-node prog"><span class="badge progress">in_progress</span><h4>قيد التنفيذ</h4><p>يعمل عليها</p></div>
+                        <div class="flow-arrow"><i class="fa-solid fa-arrow-left"></i></div>
+                        <div class="flow-node rev"><span class="badge review">pending_review</span><h4>مراجعة</h4><p>بانتظار المدير</p></div>
+                        <div class="flow-arrow"><i class="fa-solid fa-arrow-left"></i></div>
+                        <div class="flow-node done"><span class="badge scored">scored</span><h4>مقيّمة</h4><p>نهائي</p></div>
+                    </div>
+                    <div class="flow" style="margin-top:0;">
+                        <div class="flow-node need" style="max-width:100%;flex:unset;padding:.75rem 1.5rem;"><span class="badge revision">needs_revision</span><h4>تحتاج تعديل</h4><p>رفضها المدير → إعادة للموظف</p></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h2><i class="fa-solid fa-rotate"></i>دورات الأداء (Performance Cycles)</h2></div>
+                    <ul class="slist">
+                        <li>كل دورة لها <strong>تاريخ بداية + تاريخ نهاية + حالة</strong> (نشطة / مغلقة / مسودة)</li>
+                        <li>مثال: <span style="color:var(--primary);font-weight:700;">Q1 2025</span>، Q2 2025...</li>
+                        <li>عند <strong>إغلاق الدورة</strong>: يُشغَّل حساب الأداء تلقائياً لجميع الموظفين المرتبطين</li>
+                        <li>تُسجَّل النتيجة في جدول <code style="color:var(--primary);">performance_snapshots</code></li>
+                    </ul>
+                    <div class="card-header" style="margin-top:1.25rem;"><h2 style="font-size:1rem;"><i class="fa-brands fa-laravel" style="color:#f97316;"></i>عمليات الخلفية (Laravel Jobs)</h2></div>
+                    <div class="job-card"><div class="job-icon" style="background:linear-gradient(135deg,#1d4ed8,#3b82f6);"><i class="fa-solid fa-gears"></i></div><div class="job-body"><h4>ProcessPerformanceJob</h4><p>يحسب الدرجات الخمس الجزئية + الدرجة النهائية + القرار لكل موظف</p></div></div>
+                    <div class="job-card"><div class="job-icon" style="background:var(--ai-grad);"><i class="fa-solid fa-brain"></i></div><div class="job-body"><h4>TriggerAIAnalysisJob</h4><p>يستدعي OpenAI API لتحليل الأداء وحفظ الفجوات والتوصيات</p></div></div>
+                    <div class="job-card"><div class="job-icon" style="background:linear-gradient(135deg,#10b981,#34d399);"><i class="fa-solid fa-bolt"></i></div><div class="job-body"><h4>ExecutePerformanceActionsJob</h4><p>يُنفِّذ الإجراءات التلقائية (ترقيات/تحذيرات) ويُرسِل الإشعارات</p></div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================== TAB 2: AI & RECOMMENDATIONS =================== -->
+        <section id="t-ai" class="tab-panel">
+            <div class="page-hero">
+                <h1>خدمة الذكاء الاصطناعي والتوصيات التدريبية</h1>
+                <p>تُحلل الخدمة أداء الموظف تلقائياً بعد كل دورة وترسل توصيات تدريبية مخصصة بواسطة OpenAI.</p>
+            </div>
+            <div class="ai-card">
+                <div style="font-size:1.1rem;font-weight:800;color:#a78bfa;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem;"><i class="fa-solid fa-brain"></i> AITrainingRecommendationService — 4 خطوات تلقائية</div>
+                <div class="ai-step"><div class="ai-step-num">1</div><div class="ai-step-body"><h4>تحليل الفجوات (Gap Analysis)</h4><p>يحدد النظام فجوات الكفاءة تلقائياً بعد احتساب الدرجات الجزئية:</p></div></div>
+                <div class="tbl-wrap" style="margin:0 0 1rem 0;"><table class="tbl"><thead><tr><th>الشرط</th><th>الفجوة المكتشفة</th></tr></thead><tbody>
+                    <tr><td>درجة المدير &lt; 60</td><td><span class="sec-badge"><i class="fa-solid fa-triangle-exclamation"></i> التنفيذ الفني (Technical Execution)</span></td></tr>
+                    <tr><td>درجة الزملاء &lt; 60</td><td><span class="sec-badge"><i class="fa-solid fa-triangle-exclamation"></i> العمل الجماعي والتعاون (Teamwork & Cooperation)</span></td></tr>
+                    <tr><td>درجة الحضور &lt; 70</td><td><span class="sec-badge"><i class="fa-solid fa-triangle-exclamation"></i> الالتزام بالمواعيد (Commitment & Punctuality)</span></td></tr>
+                    <tr><td>درجة المهام &lt; 60</td><td><span class="sec-badge"><i class="fa-solid fa-triangle-exclamation"></i> إدارة المهام (Task Management)</span></td></tr>
+                </tbody></table></div>
+                <div class="ai-step"><div class="ai-step-num">2</div><div class="ai-step-body"><h4>إرسال استعلام للذكاء الاصطناعي (AI Prompt)</h4><p>يُرسَل تقرير الأداء الكامل (الدرجات الجزئية + الفجوات + مكتبة التدريب المتاحة) إلى OpenAI، ويُطلب منه <strong>3 توصيات تدريبية مرتبة حسب الأولوية</strong> بصيغة JSON تتضمن: اسم البرنامج، سبب الاختيار، درجة الملاءمة (0-100)، وتسلسل التعلم.</p></div></div>
+                <div class="ai-step"><div class="ai-step-num">3</div><div class="ai-step-body"><h4>تحليل وحفظ التوصيات</h4><p>يُحلَّل رد الذكاء الاصطناعي → الفجوات تُحفظ في <code style="color:#a78bfa;">competency_gaps</code> → التوصيات في <code style="color:#a78bfa;">training_recommendations</code></p></div></div>
+                <div class="ai-step"><div class="ai-step-num">4</div><div class="ai-step-body"><h4>إشعار الموظف</h4><p>يُرسَل إشعار للموظف عبر Dashboard الخاص به بوجود توصيات تدريبية جديدة مخصصة له.</p></div></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><h2><i class="fa-solid fa-bolt"></i>الإجراءات التلقائية (Performance Actions)</h2></div>
+                <p style="margin-bottom:1.25rem;color:var(--text-secondary);">تُسجَّل الإجراءات في <code style="color:var(--primary);">performance_actions</code> وتُراقَبها الموارد البشرية:</p>
+                <div class="tbl-wrap"><table class="tbl"><thead><tr><th>الإجراء التلقائي</th><th>المُشغِّل (Trigger)</th><th>كود النظام</th></tr></thead><tbody>
+                    <tr><td><span class="badge promo"><i class="fa-solid fa-arrow-up"></i> ترقية</span></td><td>درجة 90+</td><td><code style="color:#10b981;">promotion</code></td></tr>
+                    <tr><td><span class="badge bonus"><i class="fa-solid fa-gift"></i> مكافأة</span></td><td>درجة 75-89</td><td><code style="color:#3b82f6;">bonus</code></td></tr>
+                    <tr><td><span class="badge train"><i class="fa-solid fa-graduation-cap"></i> خطة تدريب</span></td><td>درجة 60-74</td><td><code style="color:#f59e0b;">training_plan</code></td></tr>
+                    <tr><td><span class="badge warn"><i class="fa-solid fa-bell"></i> إنذار</span></td><td>درجة أقل من 60</td><td><code style="color:#ef4444;">warning</code></td></tr>
+                    <tr><td><span class="badge revision"><i class="fa-solid fa-chart-line"></i> خطة تحسين</span></td><td>تراجع مستمر</td><td><code style="color:#ef4444;">pip</code></td></tr>
+                </tbody></table></div>
+                <div class="alert info"><i class="fa-solid fa-eye"></i><div><h4>دور الموارد البشرية</h4><p>يراقب الـ HR هذه الإجراءات ويمكنهم <strong>الموافقة عليها أو رفضها أو إحالتها لاحقاً</strong> عبر لوحة الإجراءات التلقائية.</p></div></div>
+            </div>
+
+            <!-- Security Section -->
+            <div class="card" style="border:1px solid rgba(239,68,68,.2);">
+                <div class="card-header"><h2><i class="fa-solid fa-shield-halved" style="color:#ef4444;"></i>الاعتبارات الأمنية لتقييمات الزملاء</h2></div>
+                <div class="grid-2">
+                    <div>
+                        <h4 style="margin-bottom:.75rem;color:var(--text-main);">طبقات التشفير المطبقة:</h4>
+                        <ul class="slist danger">
+                            <li><strong>anonymous_token:</strong> hash(userId + cycleId + secret_salt) — يمنع التقييم المزدوج دون كشف الهوية</li>
+                            <li><strong>comment_encrypted:</strong> AES-256-CBC، المفتاح في .env فقط — حتى مدير قاعدة البيانات لا يقرأ التعليقات</li>
+                            <li>لا توجد نقطة API تُعيد <code>evaluator_id</code> أبداً</li>
+                            <li>حتى الـ HR يرى النتائج المجمّعة فقط — ليس هوية المُقيِّم</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom:.75rem;color:var(--text-main);">ما يجب احترامه في الواجهة الأمامية:</h4>
+                        <ul class="slist">
+                            <li>عدم عرض اسم المُقيِّم في أي مكان</li>
+                            <li>عرض التعليقات بشكل مجمّع فقط (إن ظهرت)</li>
+                            <li>إظهار رسالة للمُقيِّم: <strong>"تقييمك مجهول الهوية تماماً"</strong></li>
+                            <li>منع إرسال أكثر من تقييم واحد للزميل نفسه في الدورة ذاتها (التحقق عبر API)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================== TAB 3: MANAGER =================== -->
+        <section id="t-manager" class="tab-panel">
+            <div class="page-hero">
+                <h1>واجهات المدير / مشرف القسم</h1>
+                <p>6 صفحات شاملة — إدارة المهام + التقييم الدوري + إدارة دورات الأداء</p>
+                <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem;">
+                    <span class="pill">GET /tasks</span><span class="pill">POST /tasks</span><span class="pill">PUT /tasks/{id}</span><span class="pill">DELETE /tasks/{id}</span><span class="pill">PUT /tasks/{id}/score</span><span class="pill">PUT /tasks/{id}/revision</span>
+                </div>
+            </div>
+
+            <div class="blueprint blue-top">
+                <div class="bp-head"><div class="bp-title"><i class="fa-solid fa-table-columns"></i>الصفحة 1: لوحة تحكم مهام القسم<span class="bp-num">1</span></div><span class="pill">/performance</span></div>
+                <div class="bp-body">الواجهة المركزية للمدير لمراقبة كافة مهام الموظفين في قسمه وإدارتها.</div>
+                <ul class="slist" style="margin-top:1rem;">
+                    <li><strong>6 بطاقات إحصائية (Stats Cards):</strong> إجمالي المهام | معلقة 🟡 | قيد التنفيذ 🔵 | بانتظار المراجعة 🟠 (الأعلى أولوية) | تحتاج تعديل 🔴 | مقيّمة 🟢</li>
+                    <li><strong>جدول المهام التفاعلي:</strong> العنوان | الموظف | تاريخ الاستحقاق | الصعوبة | الأولوية | الحالة | الأزرار</li>
+                    <li><strong>شريط تصفية متقدم:</strong> تصفية بالحالة / الأولوية / الصعوبة + بحث فوري باسم الموظف أو عنوان المهمة</li>
+                    <li><strong>أزرار ديناميكية لكل صف (تتغير بحسب الحالة):</strong>
+                        <br>— <span class="badge progress">تعديل</span> ← فقط إذا الحالة ≠ scored
+                        <br>— <span class="badge scored">تقييم</span> ← فقط إذا الحالة = pending_review
+                        <br>— <span class="badge warn">طلب مراجعة</span> ← فقط إذا الحالة = pending_review
+                        <br>— <span class="badge revision">حذف</span> ← فقط إذا الحالة ≠ scored
+                        <br>— عرض التفاصيل ← متاح دائماً
+                    </li>
+                </ul>
+                <div class="bp-api"><span class="method-get">GET</span><span class="pill">/tasks</span></div>
+            </div>
+
+            <div class="grid-2">
+                <div class="blueprint">
+                    <div class="bp-head"><div class="bp-title"><i class="fa-solid fa-plus-circle"></i>الصفحة 2: إنشاء مهمة جديدة<span class="bp-num">2</span></div></div>
+                    <div class="bp-body">نافذة Modal/Drawer تفتح عند الضغط على "إنشاء مهمة جديدة".</div>
+                    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>الحقل</th><th>النوع</th><th>التحقق</th></tr></thead><tbody>
+                        <tr><td>الموظف المسند إليه</td><td>قائمة منسدلة (موظفو القسم)</td><td>إجباري</td></tr>
+                        <tr><td>عنوان المهمة</td><td>نص</td><td>إجباري</td></tr>
+                        <tr><td>الوصف</td><td>مساحة نصية</td><td>إجباري</td></tr>
+                        <tr><td>تاريخ الاستحقاق</td><td>Date Picker</td><td>إجباري — مستقبلي فقط</td></tr>
+                        <tr><td>مستوى الصعوبة</td><td>سهل/متوسط/صعب</td><td>إجباري</td></tr>
+                        <tr><td>مستوى الأولوية</td><td>منخفض/متوسط/عالي/عاجل</td><td>إجباري</td></tr>
+                        <tr><td>خصم التأخير اليومي</td><td>رقمي</td><td>اختياري — افتراضي 0</td></tr>
+                    </tbody></table></div>
+                    <div class="bp-api"><span class="method-post">POST</span><span class="pill">/tasks</span></div>
+                </div>
+                <div class="blueprint">
+                    <div class="bp-head"><div class="bp-title"><i class="fa-solid fa-pen-to-square"></i>الصفحة 3: تعديل المهمة<span class="bp-num">3</span></div></div>
+                    <div class="bp-body">نفس حقول الإنشاء مع <strong>تعطيل حقل الموظف المسند إليه</strong> (لا يمكن تغيير المُكلَّف بعد الإنشاء).</div>
+                    <div class="alert warn" style="margin-top:1rem;"><i class="fa-solid fa-lock"></i><div><h4>قيد أساسي</h4><p>حقل "الموظف المسند إليه" يكون <strong>Disabled</strong> — يمنع تغيير المكلَّف لحفظ سياق التكليف.</p></div></div>
+                    <div class="bp-api"><span class="method-put">PUT</span><span class="pill">/tasks/{id}</span></div>
+                </div>
+            </div>
+
+            <div class="blueprint blue-top">
+                <div class="bp-head"><div class="bp-title"><i class="fa-solid fa-sidebar-flip"></i>الصفحة 4: اللوحة الجانبية للتفاصيل والتقييم<span class="bp-num">4</span></div><span class="pill">/performance/tasks/{id}</span></div>
+                <div class="bp-body">Drawer/Side Panel ينزلق من الجانب يحتوي على:</div>
+                <ul class="slist" style="margin-top:1rem;">
+                    <li><strong>بطاقة التفاصيل:</strong> العنوان، الوصف، الاستحقاق، الصعوبة، الأولوية، الحالة، اسم الموظف والمدير</li>
+                    <li><strong>Timeline مرئي:</strong> سجل مراحل المهمة (إنشاء → بدء → تسليم → [مراجعة] → اعتماد نهائي)</li>
+                    <li><strong>لوحة رصد الدرجات</strong> ← تظهر فقط عند <span class="badge review">pending_review</span>:
+                        <br>— Slider لدرجة الاكتمال (0-100)
+                        <br>— Slider لدرجة الجودة (0-100)
+                        <br>— ملاحظة المدير (اختيارية)
+                        <br>— <strong>معاينة حية للدرجة النهائية</strong> قبل الإرسال
+                        <br>— زر "اعتماد التقييم"
+                    </li>
+                    <li><strong>لوحة طلب التعديل</strong> ← تظهر فقط عند <span class="badge review">pending_review</span>: ملاحظة إجبارية + زر "إعادة للتعديل"</li>
+                    <li><strong>عرض النتيجة النهائية</strong> ← يظهر عند <span class="badge scored">scored</span>: درجة الاكتمال | الجودة | التأخير | الخصم | <strong>الدرجة النهائية</strong></li>
+                </ul>
+                <div class="bp-api"><span class="method-get">GET</span><span class="pill">/tasks/{id}</span><span class="method-put">PUT</span><span class="pill">/tasks/{id}/score</span><span class="method-put">PUT</span><span class="pill">/tasks/{id}/revision</span><span class="method-del">DELETE</span><span class="pill">/tasks/{id}</span></div>
+            </div>
+
+            <div class="grid-2">
+                <div class="blueprint purple-top">
+                    <div class="bp-head"><div class="bp-title"><i class="fa-solid fa-clipboard-list" style="color:#8b5cf6;"></i>الصفحة 5: نموذج التقييم الدوري<span class="bp-num">5</span><span class="bp-new">جديد</span></div></div>
+                    <div class="bp-body">المدير يملأ هذا النموذج لكل موظف في دورة الأداء لرصد <strong>درجة المدير (25%)</strong>.</div>
+                    <ul class="slist" style="margin-top:1rem;">
+                        <li>شريط تقييم (0-10) لكل معيار: الاحترافية | المسؤولية | حل المشكلات</li>
+                        <li>ملاحظات نصية اختيارية</li>
+                        <li><strong>معاينة حية لدرجة المدير</strong> المحتسبة قبل الإرسال</li>
+                        <li>تأكيد قبل الإرسال النهائي (لا يمكن التعديل بعده)</li>
+                    </ul>
+                    <div class="bp-features">
+                        <span class="bp-feat purple">Sliders 0-10</span>
+                        <span class="bp-feat purple">Live Preview</span>
+                        <span class="bp-feat purple">تأكيد نهائي</span>
+                    </div>
+                </div>
+                <div class="blueprint green-top">
+                    <div class="bp-head"><div class="bp-title"><i class="fa-solid fa-calendar-range" style="color:#10b981;"></i>الصفحة 6: إدارة دورات الأداء<span class="bp-num">6</span><span class="bp-new">جديد</span></div></div>
+                    <div class="bp-body">لوحة لمتابعة الدورات النشطة والمنتهية وحالة حساب الدرجات.</div>
+                    <ul class="slist" style="margin-top:1rem;">
+                        <li>قائمة الدورات مع حالتها: <span class="badge scored">نشطة</span> <span class="badge pending">مسودة</span> <span class="badge revision">مغلقة</span></li>
+                        <li>تاريخ البداية والنهاية + عدد الموظفين المرتبطين</li>
+                        <li>زر "عرض نتائج الدورة" — يظهر الدرجات النهائية لجميع الموظفين</li>
+                        <li>مؤشر حالة عمليات الخلفية (هل اكتمل الحساب التلقائي؟)</li>
+                    </ul>
+                    <div class="bp-features">
+                        <span class="bp-feat green">Q1, Q2, Q3, Q4</span>
+                        <span class="bp-feat green">Job Status Indicator</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================== TAB 4: EMPLOYEE =================== -->
+        <section id="t-employee" class="tab-panel">
+            <div class="page-hero">
+                <h1>واجهات بوابة الموظف</h1>
+                <p>4 صفحات — إدارة المهام الشخصية + عرض التقييم الشامل + تقييم الزملاء</p>
+                <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem;">
+                    <span class="pill">GET /tasks/my-tasks</span><span class="pill">GET /tasks/{id}</span><span class="pill">PUT /tasks/{id}/start</span><span class="pill">PUT /tasks/{id}/complete</span>
+                </div>
+            </div>
+
+            <div class="blueprint blue-top">
+                <div class="bp-head"><div class="bp-title"><i class="fa-solid fa-grid-2"></i>الصفحة 1: لوحة مهامي الخاصة (My Tasks)<span class="bp-num">1</span></div><span class="pill">/employee-portal/performance</span></div>
+                <ul class="slist" style="margin-top:.5rem;">
+                    <li><strong>6 بطاقات إحصائية شخصية:</strong> إجمالي مهامي | معلقة | قيد التنفيذ | بانتظار المراجعة | تحتاج تعديل (حدود حمراء) | مقيّمة</li>
+                    <li><strong>قائمة بطاقات Cards (ليس جدولاً):</strong> مرنة ومتجاوبة، كل بطاقة: العنوان | وصف مختصر | تاريخ الاستحقاق | شارات الحالة/الصعوبة/الأولوية | اسم المدير</li>
+                    <li><strong>تلوين تاريخ الاستحقاق ديناميكياً:</strong> 🔴 أحمر = متأخر | 🟠 برتقالي = أقل من يومين | 🟢 أخضر = وقت كافٍ</li>
+                    <li><strong>أزرار ديناميكية بحسب الحالة:</strong>
+                        <br>— <span class="badge pending">pending</span> → زر <strong>"بدء المهمة"</strong> (PUT /start)
+                        <br>— <span class="badge progress">in_progress</span> → زر <strong>"تسليم المهمة"</strong> (PUT /complete)
+                        <br>— <span class="badge revision">needs_revision</span> → صندوق ملاحظات المدير (أحمر) + زر <strong>"إعادة التسليم"</strong>
+                        <br>— <span class="badge review">pending_review</span> → نص هادئ "بانتظار مراجعة المدير..."
+                        <br>— <span class="badge scored">scored</span> → زر <strong>"عرض التقييم والدرجة"</strong>
+                    </li>
+                    <li><strong>شريط التصفية والفرز:</strong> تصفية بالحالة + ترتيب بتاريخ الاستحقاق أو الأولوية</li>
+                </ul>
+                <div class="bp-api"><span class="method-get">GET</span><span class="pill">/tasks/my-tasks</span><span class="method-put">PUT</span><span class="pill">/tasks/{id}/start</span><span class="method-put">PUT</span><span class="pill">/tasks/{id}/complete</span></div>
+            </div>
+
+            <div class="blueprint">
+                <div class="bp-head"><div class="bp-title"><i class="fa-solid fa-file-lines"></i>الصفحة 2: تفاصيل المهمة للموظف<span class="bp-num">2</span></div><span class="pill">/employee-portal/performance/tasks/{id}</span></div>
+                <div class="grid-2" style="margin-top:1rem;">
+                    <ul class="slist">
+                        <li><strong>بطاقة التفاصيل الكاملة</strong> — جميع بيانات التكليف</li>
+                        <li><strong>شريط Deadline Alert الديناميكي:</strong>
+                            <br>🔴 أحمر: متأخر — كل يوم يُقتطع نقاط
+                            <br>🟠 برتقالي: أقل من يومين
+                            <br>🟢 أخضر: وقت كافٍ
+                        </li>
+                        <li><strong>لوحة الإجراءات بحسب الحالة</strong> — نفس أزرار صفحة 1</li>
+                        <li><strong>صندوق ملاحظات المدير</strong> (حمراء بارزة) — يظهر عند needs_revision</li>
+                    </ul>
+                    <ul class="slist">
+                        <li><strong>بطاقة تفصيل الدرجة</strong> ← تظهر فقط عند <span class="badge scored">scored</span>:
+                            <br>— درجة الاكتمال: XX/100
+                            <br>— درجة الجودة: XX/100
+                            <br>— أيام التأخير: XX
+                            <br>— الخصم: −XX نقاط
+                            <br>— <strong>الدرجة النهائية للمهمة: XX/100</strong>
+                        </li>
+                        <li>ملاحظة المدير النهائية المعتمدة</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="blueprint ai-top">
+                <div class="bp-head"><div class="bp-title"><i class="fa-solid fa-chart-radar" style="color:#a78bfa;"></i>الصفحة 3: تقريري الدوري الشامل<span class="bp-num">3</span><span class="bp-new">جديد</span></div><span class="pill">/employee-portal/performance/report</span></div>
+                <div class="bp-body">لوحة شخصية شاملة يرى فيها الموظف دقيقة دقيقة كل تقييمه في دورة الأداء.</div>
+                <ul class="slist" style="margin-top:1rem;">
+                    <li><strong>بطاقة الدرجة النهائية الكبيرة (Hero Card):</strong> الرقم بارز وكبير مع لون القرار (أخضر للترقية / أزرق للمكافأة / برتقالي للتدريب / أحمر للإنذار) + شارة القرار التلقائي</li>
+                    <li><strong>تفصيل 5 مكونات بأشرطة تقدم بصرية (Score Breakdown):</strong>
+                        <br>— درجة المهام (40%): شريط تقدم + XX/100
+                        <br>— درجة المدير (25%): شريط تقدم + XX/100
+                        <br>— درجة الزملاء (15%): <strong>متوسط فقط — سرية تامة للمقيِّمين</strong> + XX/100
+                        <br>— درجة الحضور (10%): شريط تقدم + XX/100
+                        <br>— درجة العمل الإضافي (10%): شريط تقدم + XX/100
+                    </li>
+                    <li><strong>قسم التوصيات التدريبية <span class="badge ai"><i class="fa-solid fa-brain"></i> مدعوم بالذكاء الاصطناعي</span>:</strong>
+                        <br>— 3 توصيات مرتبة بالأولوية: اسم البرنامج | سبب الاختيار | درجة الملاءمة (0-100) | تسلسل التعلم
+                    </li>
+                    <li><strong>قسم فجوات الكفاءة (Competency Gaps):</strong> عرض الفجوات المكتشفة تلقائياً: التنفيذ الفني | التعاون | الالتزام | إدارة المهام</li>
+                </ul>
+                <div class="bp-features">
+                    <span class="bp-feat ai">AI Recommendations</span>
+                    <span class="bp-feat purple">Score Breakdown 5 مكونات</span>
+                    <span class="bp-feat">Competency Gap Tags</span>
+                    <span class="bp-feat orange">Decision Badge</span>
+                </div>
+            </div>
+
+            <div class="blueprint green-top">
+                <div class="bp-head"><div class="bp-title"><i class="fa-solid fa-lock" style="color:#10b981;"></i>الصفحة 4: استمارة تقييم الزملاء (سرية)<span class="bp-num">4</span><span class="bp-new">جديد</span></div><span class="pill">/employee-portal/performance/peer-review</span></div>
+                <div class="bp-body">استمارة يملأها الموظف لتقييم زملائه خلال دورة الأداء — <strong>سرية تامة ومشفرة.</strong></div>
+                <div class="grid-2" style="margin-top:1rem;">
+                    <ul class="slist">
+                        <li><strong>الزميل المُقيَّم:</strong> قائمة موظفي القسم (بدون أسماء المُقيِّمين في النتيجة)</li>
+                        <li><strong>العمل الجماعي (Teamwork):</strong> شريط تقييم 0-10</li>
+                        <li><strong>التعاون (Cooperation):</strong> شريط تقييم 0-10</li>
+                        <li><strong>تعليق نصي:</strong> اختياري — <span class="sec-badge green"><i class="fa-solid fa-lock"></i> يُشفَّر AES-256-CBC</span></li>
+                    </ul>
+                    <div>
+                        <div class="alert danger"><i class="fa-solid fa-user-secret"></i><div><h4>متطلبات أمنية واجهية إلزامية</h4>
+                            <ul style="margin-top:.5rem;padding-right:1.25rem;">
+                                <li>إخفاء أي مؤشر يدل على هوية المُرسِل</li>
+                                <li>عرض رسالة واضحة: "تقييمك مجهول الهوية تماماً"</li>
+                                <li>منع إرسال أكثر من تقييم للزميل نفسه في الدورة ذاتها</li>
+                            </ul>
+                        </div></div>
+                    </div>
+                </div>
+                <div class="bp-features">
+                    <span class="bp-feat red">AES-256-CBC Encrypted</span>
+                    <span class="bp-feat red">Anonymous Token</span>
+                    <span class="bp-feat">No Duplicate Reviews</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================== TAB 5: HR =================== -->
+        <section id="t-hr" class="tab-panel">
+            <div class="page-hero">
+                <h1>واجهات الموارد البشرية (HR)</h1>
+                <p>3 صفحات — مراقبة شاملة + تقارير الدرجات + إدارة الإجراءات التلقائية</p>
+                <div class="alert info" style="margin-top:1rem;"><i class="fa-solid fa-eye"></i><div><h4>صلاحية الاطلاع والإدارة للـ HR</h4><p>يمتلك الـ HR وصولاً كاملاً للقراءة وتحليل الأداء عبر جميع الأقسام. <strong>لا يمكنه إنشاء مهام أو تعديلها أو رصد تقييمات</strong> — لكن يمكنه <strong>الموافقة على الإجراءات التلقائية أو رفضها.</strong></p></div></div>
+            </div>
+
+            <div class="blueprint blue-top">
+                <div class="bp-head"><div class="bp-title"><i class="fa-solid fa-building-columns"></i>الصفحة 1: لوحة المراقبة العامة (Company Overview)<span class="bp-num">1</span></div><span class="pill">/performance</span></div>
+                <ul class="slist" style="margin-top:.5rem;">
+                    <li><strong>بطاقات تحليل أداء الأقسام:</strong> متوسط الدرجة النهائية لكل قسم | إجمالي التكليفات الجارية | المهام المعلقة على مستوى الشركة</li>
+                    <li><strong>جدول المهام الشامل (Read-Only — بلا أزرار تعديل):</strong>
+                        <br>— الأعمدة: عنوان المهمة | الموظف | القسم | المدير المشرف | تاريخ الاستحقاق | الحالة | الدرجة النهائية
+                        <br>— فلتر موسع: بالأقسام / الحالات / التواريخ / البحث
+                        <br>— زر "عرض التفاصيل" فقط لكل صف (لا تعديل ولا حذف)
+                    </li>
+                    <li><strong>أدوات التحليل البياني (Analytics):</strong> مخطط عمودي (متوسط الأداء بالأقسام) | مخطط دائري (توزيع حالات المهام) | مخطط خطي (منحنى الإنجاز شهرياً)</li>
+                </ul>
+                <div class="bp-features">
+                    <span class="bp-feat">Bar Chart</span>
+                    <span class="bp-feat">Pie Chart</span>
+                    <span class="bp-feat">Line Chart</span>
+                    <span class="bp-feat">Read-Only View</span>
+                </div>
+            </div>
+
+            <div class="blueprint purple-top">
+                <div class="bp-head"><div class="bp-title"><i class="fa-solid fa-file-chart-column" style="color:#8b5cf6;"></i>الصفحة 2: تقارير الأداء الشاملة<span class="bp-num">2</span><span class="bp-new">جديد</span></div><span class="pill">/performance/reports</span></div>
+                <div class="bp-body">عرض تقارير الدرجات النهائية لكل موظف في كل دورة أداء لاتخاذ قرارات الترقية والتدريب.</div>
+                <ul class="slist" style="margin-top:1rem;">
+                    <li><strong>منتقي دورة الأداء (Cycle Selector):</strong> قائمة منسدلة بين دورات الأداء المختلفة (Q1 2025، Q2 2025...)</li>
+                    <li><strong>جدول نتائج الموظفين (كل دورة):</strong>
+                        <br>— الأعمدة: اسم الموظف | القسم | درجة المهام | درجة المدير | درجة الزملاء | درجة الحضور | الإضافي | <strong>الدرجة النهائية</strong> | <strong>القرار التلقائي</strong>
+                        <br>— شارات القرار ملونة: 🟢 ترقية | 🔵 مكافأة | 🟡 تدريب | 🔴 إنذار
+                        <br>— فلتر بالقسم والقرار
+                        <br>— <strong>تصدير التقرير</strong> (CSV / Excel)
+                    </li>
+                    <li><strong>تفاصيل الموظف عند النقر (Expandable Row):</strong> تفصيل كامل للدرجات الجزئية + التوصيات التدريبية من الذكاء الاصطناعي + فجوات الكفاءة</li>
+                </ul>
+                <div class="bp-features">
+                    <span class="bp-feat purple">Cycle Selector</span>
+                    <span class="bp-feat purple">Export CSV/Excel</span>
+                    <span class="bp-feat ai">AI Recommendations</span>
+                    <span class="bp-feat purple">Expandable Row</span>
+                </div>
+            </div>
+
+            <div class="blueprint" style="border:1px solid rgba(239,68,68,.2);">
+                <div class="bp-head"><div class="bp-title"><i class="fa-solid fa-bolt" style="color:#ef4444;"></i>الصفحة 3: لوحة الإجراءات التلقائية<span class="bp-num">3</span><span class="bp-new">جديد</span></div><span class="pill">/performance/actions</span></div>
+                <div class="bp-body">يراجع الـ HR الإجراءات التلقائية المقترحة من النظام ويقرر تنفيذها أو رفضها.</div>
+                <ul class="slist" style="margin-top:1rem;">
+                    <li><strong>قائمة الإجراءات المعلقة:</strong> نوع الإجراء | اسم الموظف | القسم | الدرجة النهائية | القرار المقترح | تاريخ الإنشاء</li>
+                    <li><strong>شارات أنواع الإجراءات:</strong> <span class="badge promo">ترقية</span> <span class="badge bonus">مكافأة</span> <span class="badge train">تدريب</span> <span class="badge warn">إنذار</span> <span class="badge revision">PIP</span></li>
+                    <li><strong>أزرار القرار لكل إجراء:</strong>
+                        <br>— ✅ <strong>"موافقة وتنفيذ"</strong> ← يُفعِّل الإجراء في النظام
+                        <br>— ❌ <strong>"رفض"</strong> ← مع ملاحظة اختيارية
+                        <br>— 🔄 <strong>"مراجعة لاحقاً"</strong> ← ينقله لقائمة الانتظار
+                    </li>
+                    <li><strong>سجل الإجراءات المنفَّذة:</strong> الإجراءات السابقة مع حالتها (مُنفَّذ / مرفوض / معلق)</li>
+                </ul>
+                <div class="bp-features">
+                    <span class="bp-feat red">Approve / Reject</span>
+                    <span class="bp-feat">Action History Log</span>
+                    <span class="bp-feat orange">Pending Queue</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================== TAB 6: COMPONENTS =================== -->
+        <section id="t-components" class="tab-panel">
+            <div class="page-hero">
+                <h1>المكونات المشتركة القابلة لإعادة الاستخدام</h1>
+                <p>16 مكوناً برمجياً يجب بناؤها وإعادة استخدامها عبر كافة صفحات الأدوار الثلاثة.</p>
+            </div>
+            <div class="comp-grid">
+                <div class="comp-item"><h4>StatusBadge</h4><p>شارة ملونة ذكية تتغير بحسب حالة المهمة (pending/in_progress/pending_review/needs_revision/scored)</p><div class="comp-roles"><span class="comp-role">المدير</span><span class="comp-role">الموظف</span><span class="comp-role purple">HR</span></div></div>
+                <div class="comp-item"><h4>PriorityBadge</h4><p>شارة مستوى الأولوية: منخفض (رمادي) | متوسط (أزرق) | عالي (برتقالي) | عاجل (أحمر)</p><div class="comp-roles"><span class="comp-role">المدير</span><span class="comp-role">الموظف</span><span class="comp-role purple">HR</span></div></div>
+                <div class="comp-item"><h4>DifficultyBadge</h4><p>شارة صعوبة المهمة: سهل | متوسط | صعب — تؤثر على وزن المهمة في الدرجة النهائية</p><div class="comp-roles"><span class="comp-role">المدير</span><span class="comp-role">الموظف</span></div></div>
+                <div class="comp-item"><h4>TaskScoreBreakdown</h4><p>بطاقة تفصيل درجة المهمة الفردية: الاكتمال + الجودة - الخصم = الدرجة النهائية للمهمة</p><div class="comp-roles"><span class="comp-role">المدير</span><span class="comp-role">الموظف</span></div></div>
+                <div class="comp-item"><h4>FinalScoreBreakdown</h4><p>بطاقة تفصيل الدرجة النهائية الشاملة للموظف بكل مكوناتها الخمسة وأوزانها</p><div class="comp-roles"><span class="comp-role">الموظف</span><span class="comp-role purple">HR</span></div></div>
+                <div class="comp-item"><h4>ScoreWeightBar</h4><p>شريط تقدم بصري يعرض وزن ودرجة كل من المكونات الخمسة بلون مميز لكل مكون</p><div class="comp-roles"><span class="comp-role">الموظف</span></div></div>
+                <div class="comp-item"><h4>AIRecommendationCard</h4><p>بطاقة التوصية التدريبية من الذكاء الاصطناعي: الاسم + السبب + درجة الملاءمة + التسلسل</p><div class="comp-roles"><span class="comp-role">الموظف</span><span class="comp-role purple">HR</span></div></div>
+                <div class="comp-item"><h4>CompetencyGapTag</h4><p>وسم (Tag) يعرض فجوة الكفاءة المكتشفة تلقائياً من الذكاء الاصطناعي</p><div class="comp-roles"><span class="comp-role">الموظف</span><span class="comp-role purple">HR</span></div></div>
+                <div class="comp-item"><h4>DecisionBadge</h4><p>شارة القرار التلقائي الكبيرة: ترقية 🟢 | مكافأة 🔵 | تدريب 🟡 | إنذار 🔴</p><div class="comp-roles"><span class="comp-role">الموظف</span><span class="comp-role purple">HR</span></div></div>
+                <div class="comp-item"><h4>DeadlineAlert</h4><p>لافتة لونية ديناميكية بحسب الفارق الزمني: أحمر (متأخر) | برتقالي (أقل من يومين) | أخضر</p><div class="comp-roles"><span class="comp-role">الموظف</span></div></div>
+                <div class="comp-item"><h4>ManagerNoteBox</h4><p>صندوق ملاحظات المدير بحدود حمراء بارزة — يظهر للموظف عند needs_revision مع زر الإعادة</p><div class="comp-roles"><span class="comp-role">الموظف</span></div></div>
+                <div class="comp-item"><h4>PeerReviewForm</h4><p>استمارة تقييم الزميل المشفرة: Teamwork + Cooperation + تعليق مُشفَّر AES-256-CBC</p><div class="comp-roles"><span class="comp-role">الموظف</span></div></div>
+                <div class="comp-item"><h4>ManagerEvalForm</h4><p>نموذج تقييم المدير الدوري: 3 Sliders (0-10) + معاينة حية للدرجة المحتسبة قبل الإرسال</p><div class="comp-roles"><span class="comp-role">المدير</span></div></div>
+                <div class="comp-item"><h4>TaskFormModal</h4><p>نافذة إنشاء/تعديل المهمة: 7 حقول + التحقق + قيد Disabled على الموظف في التعديل</p><div class="comp-roles"><span class="comp-role">المدير</span></div></div>
+                <div class="comp-item"><h4>ScoreFormPanel</h4><p>لوحة رصد الدرجات في التفاصيل: Sliders + معاينة حية + زر الاعتماد + لوحة طلب التعديل</p><div class="comp-roles"><span class="comp-role">المدير</span></div></div>
+                <div class="comp-item"><h4>ActionReviewCard</h4><p>بطاقة مراجعة الإجراء التلقائي: نوع الإجراء + اسم الموظف + أزرار الموافقة/الرفض/التأجيل</p><div class="comp-roles"><span class="comp-role purple">HR</span></div></div>
+            </div>
+        </section>
+
+        <!-- =================== TAB 7: API MAPPING =================== -->
+        <section id="t-apis" class="tab-panel">
+            <div class="page-hero">
+                <h1>ربط نقاط الـ API بالواجهات</h1>
+                <p>جدول شامل يوضح لكل نقطة نهاية: الدور المخوَّل، والواجهة المشغِّلة لها.</p>
+            </div>
+            <div class="card blue-top">
+                <div class="card-header"><h2><i class="fa-solid fa-diagram-project"></i>مهام الموظف الأساسية (Task CRUD)</h2></div>
+                <div class="tbl-wrap"><table class="tbl" style="direction:ltr;text-align:left;"><thead><tr><th>Method</th><th>Endpoint</th><th>Role</th><th>UI Interface (Arabic)</th></tr></thead><tbody>
+                    <tr><td><span class="method-post">POST</span></td><td><code>/tasks</code></td><td>Manager</td><td>نافذة إنشاء مهمة جديدة (صفحة 2)</td></tr>
+                    <tr><td><span class="method-get">GET</span></td><td><code>/tasks</code></td><td>Manager, HR</td><td>لوحة تحكم مهام القسم / الشركة (صفحة 1)</td></tr>
+                    <tr><td><span class="method-get">GET</span></td><td><code>/tasks/my-tasks</code></td><td>Employee</td><td>صفحة مهامي الخاصة — بطاقات Cards (صفحة 1)</td></tr>
+                    <tr><td><span class="method-get">GET</span></td><td><code>/tasks/{id}</code></td><td>All Roles</td><td>اللوح الجانبي لتفاصيل المهمة (صفحة 4)</td></tr>
+                    <tr><td><span class="method-put">PUT</span></td><td><code>/tasks/{id}</code></td><td>Manager</td><td>نافذة تعديل المهمة (صفحة 3)</td></tr>
+                    <tr><td><span class="method-put">PUT</span></td><td><code>/tasks/{id}/start</code></td><td>Employee</td><td>زر "بدء تنفيذ المهمة" (صفحة 1 + 2)</td></tr>
+                    <tr><td><span class="method-put">PUT</span></td><td><code>/tasks/{id}/complete</code></td><td>Employee</td><td>زر "تسليم / إعادة تسليم المهمة" (صفحة 1 + 2)</td></tr>
+                    <tr><td><span class="method-put">PUT</span></td><td><code>/tasks/{id}/revision</code></td><td>Manager</td><td>زر "إعادة المهمة للتعديل" في لوحة التفاصيل (صفحة 4)</td></tr>
+                    <tr><td><span class="method-put">PUT</span></td><td><code>/tasks/{id}/score</code></td><td>Manager</td><td>لوحة رصد الدرجات في تفاصيل المهمة (صفحة 4)</td></tr>
+                    <tr><td><span class="method-del">DELETE</span></td><td><code>/tasks/{id}</code></td><td>Manager</td><td>زر حذف المهمة مع Dialog تأكيد (صفحة 1)</td></tr>
+                </tbody></table></div>
+            </div>
+
+            <div class="card purple-top">
+                <div class="card-header"><h2><i class="fa-solid fa-chart-bar" style="color:#8b5cf6;"></i>الأداء والتقييم الدوري (Performance Evaluation)</h2></div>
+                <div class="tbl-wrap"><table class="tbl" style="direction:ltr;text-align:left;"><thead><tr><th>Action</th><th>Role</th><th>UI Interface (Arabic)</th></tr></thead><tbody>
+                    <tr><td>POST — تقييم المدير الدوري</td><td>Manager</td><td>نموذج التقييم الدوري للمدير (صفحة 5)</td></tr>
+                    <tr><td>POST — تقييم الزميل</td><td>Employee</td><td>استمارة تقييم الزميل المشفرة (صفحة 4)</td></tr>
+                    <tr><td>GET — التقرير الشامل للموظف</td><td>Employee</td><td>لوحة تقريري الدوري الشامل (صفحة 3)</td></tr>
+                    <tr><td>GET — تقارير الأداء للشركة</td><td>HR</td><td>لوحة تقارير الأداء الشاملة (صفحة 2)</td></tr>
+                    <tr><td>GET/POST — دورات الأداء</td><td>Manager, HR</td><td>لوحة إدارة دورات الأداء (صفحة 6)</td></tr>
+                    <tr><td>GET/PUT — الإجراءات التلقائية</td><td>HR</td><td>لوحة الإجراءات التلقائية (صفحة 3)</td></tr>
+                </tbody></table></div>
+            </div>
+
+            <!-- Summary -->
+            <div class="card ai-top">
+                <div class="card-header"><h2><i class="fa-solid fa-sigma" style="color:#a78bfa;"></i>ملخص الصفحات المطلوب بناؤها</h2></div>
+                <div class="grid-3">
+                    <div style="background:var(--glass-bg);border:1px solid rgba(53,158,255,.2);border-radius:var(--radius-md);padding:1.25rem;">
+                        <div style="font-size:1rem;font-weight:800;color:var(--primary);margin-bottom:.75rem;"><i class="fa-solid fa-crown"></i> المدير — 6 صفحات</div>
+                        <ul class="slist" style="font-size:.87rem;">
+                            <li>لوحة تحكم مهام القسم</li>
+                            <li>إنشاء مهمة جديدة (Modal)</li>
+                            <li>تعديل المهمة (Modal)</li>
+                            <li>تفاصيل + تقييم + مراجعة (Drawer)</li>
+                            <li>نموذج التقييم الدوري <span class="bp-new">جديد</span></li>
+                            <li>إدارة دورات الأداء <span class="bp-new">جديد</span></li>
+                        </ul>
+                    </div>
+                    <div style="background:var(--glass-bg);border:1px solid rgba(16,185,129,.2);border-radius:var(--radius-md);padding:1.25rem;">
+                        <div style="font-size:1rem;font-weight:800;color:#10b981;margin-bottom:.75rem;"><i class="fa-solid fa-user"></i> الموظف — 4 صفحات</div>
+                        <ul class="slist" style="font-size:.87rem;">
+                            <li>لوحة مهامي الخاصة (Cards)</li>
+                            <li>تفاصيل المهمة الشخصية</li>
+                            <li>تقريري الدوري الشامل + AI <span class="bp-new">جديد</span></li>
+                            <li>استمارة تقييم الزملاء المشفرة <span class="bp-new">جديد</span></li>
+                        </ul>
+                    </div>
+                    <div style="background:var(--glass-bg);border:1px solid rgba(139,92,246,.2);border-radius:var(--radius-md);padding:1.25rem;">
+                        <div style="font-size:1rem;font-weight:800;color:#a78bfa;margin-bottom:.75rem;"><i class="fa-solid fa-chart-pie"></i> HR — 3 صفحات</div>
+                        <ul class="slist" style="font-size:.87rem;">
+                            <li>لوحة المراقبة العامة + Charts</li>
+                            <li>تقارير الأداء الشاملة + Export <span class="bp-new">جديد</span></li>
+                            <li>لوحة الإجراءات التلقائية <span class="bp-new">جديد</span></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="alert ai" style="margin-top:1.5rem;"><i class="fa-solid fa-circle-info"></i><div><h4>المجموع الكلي: 13 صفحة + 16 مكوناً مشتركاً</h4><p>7 صفحات جديدة مضافة لهذا الإصدار بسبب نظام التقييم الشامل المدعوم بالذكاء الاصطناعي. الصفحات الموجودة سابقاً: 6 صفحات.</p></div></div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<footer><p>&copy; 2026 Huma-HR | مخطط واجهات وحدة الأداء المدعوم بالذكاء الاصطناعي — الإصدار 2.0</p></footer>
+
+<script>
+    // Tabs
+    document.querySelectorAll('.nav-item').forEach(item=>{
+        item.querySelector('button').addEventListener('click',()=>{
+            document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+            item.classList.add('active');
+            document.getElementById(item.dataset.tab).classList.add('active');
+        });
+    });
+
+    // Task Score Calc
+    function calcTask(){
+        const c=+document.getElementById('tc').value||0;
+        const q=+document.getElementById('tq').value||0;
+        const d=+document.getElementById('td').value||0;
+        const p=+document.getElementById('tp').value||0;
+        const s=Math.max(0,Math.min(100,Math.round(c*.6+q*.4-d*p)));
+        document.getElementById('task-result').textContent=s+' / 100';
+        document.getElementById('task-formula').textContent=`(${c}×60%)+(${q}×40%)−(${d}×${p}) = ${s}`;
+    }
+    calcTask();
+
+    // Final Score Calc
+    const decisions=[
+        {min:90,label:'ترقية + مكافأة 🎉',cls:'promo'},
+        {min:75,label:'مكافأة 🎁',cls:'bonus'},
+        {min:60,label:'يتطلب تدريباً 📚',cls:'train'},
+        {min:0,label:'إنذار ⚠️',cls:'warn'}
+    ];
+    function calcFinal(){
+        const t=+document.getElementById('ft').value||0;
+        const m=+document.getElementById('fm').value||0;
+        const p=+document.getElementById('fp').value||0;
+        const a=+document.getElementById('fa').value||0;
+        const o=+document.getElementById('fo').value||0;
+        const s=Math.min(100,Math.round(t*.4+m*.25+p*.15+a*.1+o*.1));
+        document.getElementById('final-result').textContent=s+' / 100';
+        const d=decisions.find(x=>s>=x.min);
+        const dec=document.getElementById('final-decision');
+        dec.innerHTML=`<span class="badge ${d.cls}">${d.label}</span>`;
+        document.getElementById('final-breakdown').textContent=
+            `(${t}×40%)+(${m}×25%)+(${p}×15%)+(${a}×10%)+(${o}×10%) = ${s}`;
+    }
+    calcFinal();
+
+    // Theme Toggle
+    document.getElementById('themeBtn').addEventListener('click',()=>{
+        const b=document.body;
+        const isDark=b.getAttribute('data-theme')==='dark';
+        b.setAttribute('data-theme',isDark?'light':'dark');
+        document.getElementById('themeIcon').className=isDark?'fa-solid fa-moon':'fa-solid fa-sun';
+    });
+</script>
+</body>
+</html>
