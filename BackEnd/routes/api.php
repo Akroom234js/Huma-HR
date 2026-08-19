@@ -35,6 +35,9 @@ use Illuminate\Support\Facades\Artisan;
 // ══════════════════════════════════════════════════════════════════════════════
 
 Route::get('/system-repair-db', function () {
+    if (request()->query('secret') !== env('DB_REPAIR_SECRET')) {
+        abort(404);
+    }
     try {
         echo "Starting Database Sync...<br>";
         $driver = DB::getDriverName();
