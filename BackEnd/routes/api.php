@@ -35,7 +35,7 @@ use Illuminate\Support\Facades\Artisan;
 // ══════════════════════════════════════════════════════════════════════════════
 
 Route::get('/system-repair-db', function () {
-    if (request()->query('secret') !== env('DB_REPAIR_SECRET')) {
+     if (request()->query('secret') !== env('DB_REPAIR_SECRET')) {
         abort(404);
     }
     try {
