@@ -25,6 +25,7 @@ use App\Http\Controllers\PerformanceActionController;
 use App\Http\Controllers\PerformanceEvaluationController;
 use App\Http\Controllers\PerformanceStatsController;
 use App\Http\Controllers\PerformanceTemplateController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
@@ -237,6 +238,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/requests',               [EmployeeRequestController::class, 'index']);
         Route::patch('/requests/{id}/status', [EmployeeRequestController::class, 'updateStatus']);
         Route::get('/leaves/dashboard-analytics', [EmployeeRequestController::class, 'dashboardAnalytics']);
+
+        // ── Dashboard Analytics ──────────────────────────────────────────────
+        Route::get('/dashboard/general',          [DashboardController::class, 'general']);
+        Route::get('/dashboard/attendance',       [DashboardController::class, 'attendance']);
+        Route::get('/attendance/admin/records',   [DashboardController::class, 'attendance']);
+        Route::get('/dashboard/employee-reports', [DashboardController::class, 'employeeReports']);
+        Route::get('/dashboard/improvement-stats',[DashboardController::class, 'improvementStats']);
 
         Route::get('/payroll/overview',      [PayrollController::class, 'overview']);
         Route::post('/payroll/initialize',   [PayrollController::class, 'initialize']);
