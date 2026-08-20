@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             AdjustmentTypeSeeder::class,
             HrUserSeeder::class,
             SalarySeeder::class,
+            performanceTemplateSeeder::class,
         ]);
     }
 }
