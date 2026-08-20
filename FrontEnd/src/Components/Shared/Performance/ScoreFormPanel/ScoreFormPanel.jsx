@@ -128,21 +128,27 @@ const ScoreFormPanel = ({
                     />
                 </div>
 
-                {/* Live Preview Box (Value received from parent/backend calculations) */}
-                <div className="score-live-preview-box">
-                    <div className="score-preview-info">
-                        <span className="score-preview-label">{isAr ? 'درجة المهمة المعتمدة:' : 'Approved Task Score:'}</span>
-                        <span className="score-preview-math">
-                            {isAr 
-                                ? 'الدرجة المحسوبة والمعتمدة في الخلفية' 
-                                : 'Consolidated grade computed in the backend'
-                            }
-                        </span>
-                    </div>
-                    <div className="score-preview-value-big">
-                        {calculatedTaskScore.toFixed(1)} <span className="score-preview-max">/ 100</span>
-                    </div>
-                </div>
+                {/* Live Preview Box */}
+                {(() => {
+                    const liveEstimated = Math.max(0, Math.min(100, (completion * 0.6) + (quality * 0.4) - totalPenalty));
+                    const displayScore = task?.status === 'scored' && calculatedTaskScore ? calculatedTaskScore : liveEstimated;
+                    return (
+                        <div className="score-live-preview-box">
+                            <div className="score-preview-info">
+                                <span className="score-preview-label">{isAr ? 'الدرجة التقديرية المحسوبة:' : 'Calculated Task Score:'}</span>
+                                <span className="score-preview-math">
+                                    {isAr 
+                                        ? `(اكتمال 60% + جودة 40%) ${totalPenalty > 0 ? `- خصم تأخير (${totalPenalty} نقطة)` : ''}`
+                                        : `(60% Completion + 40% Quality) ${totalPenalty > 0 ? `- Late penalty (${totalPenalty} pts)` : ''}`
+                                    }
+                                </span>
+                            </div>
+                            <div className="score-preview-value-big">
+                                {displayScore.toFixed(1)} <span className="score-preview-max">/ 100</span>
+                            </div>
+                        </div>
+                    );
+                })()}
 
                 {/* Two Action Paths */}
                 <div className="score-panel-actions">

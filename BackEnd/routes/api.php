@@ -129,6 +129,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // ✅ Tasks — Performance Module
     // ⚠️ my-tasks لازم قبل /{task}
     // ══════════════════════════════════════════════════════════════════════
+    // ── Peer Review — جلب زملاء نفس القسم ──────────────────────────────
+    Route::get('/my-department/employees', [EmployeeController::class, 'myDepartmentEmployees']);
     Route::get('/tasks/my-tasks', [TaskController::class, 'myTasks']);
 
     Route::middleware('role:manager|department_manager|boss|hr')->group(function () {
@@ -168,8 +170,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::put('/manager-evaluations/{managerEvaluation}', [ManagerEvaluationController::class, 'update']);
         });
 
-        // ── HR فقط ────────────────────────────────────────────────────────
-        Route::middleware('role:hr')->group(function () {
+        // ── HR + Admin + Boss ────────────────────────────────────────────
+        Route::middleware('role:hr|boss|admin')->group(function () {
 
             // Stats
             Route::get('/stats', [PerformanceStatsController::class, 'index']);
@@ -246,6 +248,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/requests',               [EmployeeRequestController::class, 'index']);
         Route::patch('/requests/{id}/status', [EmployeeRequestController::class, 'updateStatus']);
         Route::get('/leaves/dashboard-analytics', [EmployeeRequestController::class, 'dashboardAnalytics']);
+
+        // ── Dashboard Analytics ──────────────────────────────────────────────
+        Route::get('/dashboard/general',          [DashboardController::class, 'general']);
+        Route::get('/dashboard/attendance',       [DashboardController::class, 'attendance']);
+        Route::get('/attendance/admin/records',   [DashboardController::class, 'attendance']);
+        Route::get('/dashboard/employee-reports', [DashboardController::class, 'employeeReports']);
+        Route::get('/dashboard/improvement-stats',[DashboardController::class, 'improvementStats']);
 
         Route::get('/payroll/overview',      [PayrollController::class, 'overview']);
         Route::post('/payroll/initialize',   [PayrollController::class, 'initialize']);
@@ -329,7 +338,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // ── Department Manager ────────────────────────────────────────────────
     Route::middleware('role:department_manager')->group(function () {
         Route::get('/my-department',           [DepartmentController::class, 'myDepartment']);
-        Route::get('/my-department/employees', [EmployeeController::class,   'myTeam']);
     });
 
 });

@@ -48,50 +48,77 @@ class PerformanceStatsController extends Controller
         // ── إحصائيات الإجراءات المعلقة ───────────────────────────
         $pendingActions = PerformanceAction::where('status', 'pending_approval')->count();
 
-        // ── متوسط الدرجات النهائية (آخر دورة مكتملة) ────────────
+        // ── متوسط الدرجات النهائية ────────────────────────────
         $avgScore = null;
-        $lastCompleted = PerformanceCycle::where('status', 'completed')->latest()->first();
+        $evalQuery = PerformanceEvaluation::where('status', 'evaluated');
+        if ($activeCycle) {
+            $evalQuery->where('performance_cycle_id', $activeCycle->id);
+        }
+        
+        $avgEvalScore = $evalQuery->avg('final_score');
+        if ($avgEvalScore) {
+            $avgScore = round($avgEvalScore, 2);
+        } else {
+            // حساب متوسط تقييم المهام المسجلة فعلياً
+            $scoredTasks = Task::where('status', 'scored')->get();
+            if ($scoredTasks->count() > 0) {
+                $avgScore = round($scoredTasks->avg(fn($t) => $t->task_score), 2);
+            }
+        }
 
-        if ($lastCompleted) {
-            $avgScore = PerformanceEvaluation::where('performance_cycle_id', $lastCompleted->id)
+        // ── متوسط تقييم الأقسام من جداول قاعدة البيانات ────────
+        $departments = Department::with(['employeeProfiles.tasks'])->get();
+        $departmentAverages = $departments->map(function ($dept) use ($activeCycle) {
+            $empIds = $dept->employeeProfiles->pluck('id');
+            
+            // هل يوجد تقييمات موحدة للدورة في هذا القسم؟
+            $evalScore = PerformanceEvaluation::whereIn('employee_profile_id', $empIds)
+                ->when($activeCycle, fn($q) => $q->where('performance_cycle_id', $activeCycle->id))
                 ->where('status', 'evaluated')
                 ->avg('final_score');
-            $avgScore = $avgScore ? round($avgScore, 2) : null;
-        }
 
-        // ── متوسط تقييم الأقسام (آخر دورة مكتملة) ───────────────
-        $departmentAverages = [];
-        if ($lastCompleted) {
-            $deptScores = PerformanceEvaluation::where('performance_cycle_id', $lastCompleted->id)
-                ->where('status', 'evaluated')
-                ->with('department')
-                ->get()
-                ->groupBy('department_id')
-                ->map(function ($evals) {
-                    $dept = $evals->first()->department;
-                    return [
-                        'department_id'   => $dept?->id,
-                        'department_name' => $dept?->name,
-                        'avg_score'       => round($evals->avg('final_score'), 2),
-                        'employees_count' => $evals->count(),
-                    ];
-                })
-                ->values();
+            if ($evalScore !== null && $evalScore > 0) {
+                $finalDeptScore = round($evalScore, 2);
+            } else {
+                // حساب متوسط درجات مهام موظفي هذا القسم
+                $deptScoredTasks = Task::whereIn('employee_profile_id', $empIds)
+                    ->where('status', 'scored')
+                    ->get();
 
-            $departmentAverages = $deptScores;
-        }
+                if ($deptScoredTasks->count() > 0) {
+                    $finalDeptScore = round($deptScoredTasks->avg(fn($t) => $t->task_score), 2);
+                } else {
+                    $finalDeptScore = 0;
+                }
+            }
 
-        // ── نسبة الإنجاز في الدورة النشطة ────────────────────────
-        $completionRate = null;
+            return [
+                'department_id'   => $dept->id,
+                'department_name' => $dept->name,
+                'avg_score'       => $finalDeptScore,
+                'employees_count' => $dept->employeeProfiles->count(),
+            ];
+        })->values();
+
+        // ── نسبة الإنجاز ─────────────────────────────────────────
+        $completionRate = 0;
         if ($activeCycle) {
-            $totalEvals    = PerformanceEvaluation::where('performance_cycle_id', $activeCycle->id)->count();
+            $totalEvals = PerformanceEvaluation::where('performance_cycle_id', $activeCycle->id)->count();
             $evaluatedEvals = PerformanceEvaluation::where('performance_cycle_id', $activeCycle->id)
                 ->where('status', 'evaluated')
                 ->count();
 
-            $completionRate = $totalEvals > 0
-                ? round(($evaluatedEvals / $totalEvals) * 100, 2)
-                : 0;
+            if ($totalEvals > 0) {
+                $completionRate = round(($evaluatedEvals / $totalEvals) * 100, 2);
+            }
+        }
+
+        if ($completionRate === 0) {
+            $totalTasks = Task::count();
+            $completedTasks = Task::whereIn('status', ['scored', 'pending_review'])->count();
+            if ($totalTasks > 0) {
+                $completionRate = round(($completedTasks / $totalTasks) * 100, 2);
+            }
         }
 
         return $this->successResponse([

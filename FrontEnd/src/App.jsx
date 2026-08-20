@@ -243,7 +243,7 @@ function App() {
         </Route>
 
         {/* Protected Employee Portal Routes */}
-        <Route element={<ProtectedRoute allowedRoles={['employee', 'department supervisor']} />}>
+        <Route element={<ProtectedRoute allowedRoles={['employee', 'department supervisor', 'department_manager', 'manager', 'hr', 'boss']} />}>
           <Route path="/portal" element={<EmpLayout />}>
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />

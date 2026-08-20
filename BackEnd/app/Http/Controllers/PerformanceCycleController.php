@@ -56,9 +56,11 @@ class PerformanceCycleController extends Controller
             return $this->errorResponse('No active performance template found. Please create one first.', null, 422);
         }
 
-        if (! $activeTemplate->areWeightsValid()) {
-            return $this->errorResponse('Active template weights do not sum to 100. Please fix the template first.', null, 422);
-        }
+                $template = PerformanceTemplate::create([
+                    'name' => "Custom Template for Cycle: " . $request->title,
+                    'is_active' => false, // قالب خاص بدورة واحدة وليس عاماً للجميع
+                    'components' => $componentsData
+                ]);
 
         $cycle = DB::transaction(function () use ($request, $hrProfile, $activeTemplate) {
             return PerformanceCycle::create([
@@ -161,16 +163,16 @@ class PerformanceCycleController extends Controller
     // ─────────────────────────────────────────────────────────────
     private function formatCycle(PerformanceCycle $cycle): array
     {
-        $template   = $cycle->template;
+        $template = $cycle->template;
         $components = $template ? ($template->components ?? []) : [];
 
         $formattedComponents = [];
         foreach ($components as $key => $component) {
             $formattedComponents[] = [
-                'component_key'  => $key,
-                'weight'         => $component['weight'] ?? 0,
-                'is_active'      => $component['is_active'] ?? false,
-                'sub_components' => $component['sub_components'] ?? null,
+                'component_key' => $key,
+                'weight'        => is_array($component) ? ($component['weight'] ?? 0) : $component,
+                'is_active'     => is_array($component) ? ($component['is_active'] ?? true) : true,
+                'sub_components'=> is_array($component) ? ($component['sub_components'] ?? ($component['sub_weights'] ?? null)) : null,
             ];
         }
 
@@ -195,5 +197,29 @@ class PerformanceCycleController extends Controller
             'weights_valid'     => $cycle->areWeightsValid(),
             'created_at'        => $cycle->created_at?->format('Y-m-d H:i:s'),
         ];
+    }
+
+    /**
+     * تشغيل التفعيل والإغلاق تلقائيًا عند استدعاء أي endpoint للـ cycles.
+     * يغيّر الدورات ذات الحالة "draft" إلى "active" عندما يساوي أو يتجاوز تاريخ البدء.
+     * يغيّر الدورات ذات الحالة "active" إلى "processing" عندما يتجاوز تاريخ الانتهاء
+     * ويُرسل مهمة ProcessPerformanceJob لحساب الدرجات.
+     */
+    private function autoUpdateCycles(): void
+    {
+        // تفعيل تلقائي للدورات في وضع draft
+        PerformanceCycle::where('status', 'draft')
+            ->whereDate('start_date', '<=', now()->toDateString())
+            ->update(['status' => 'active']);
+
+        // إغلاق تلقائي للدورات التي انتهت
+        $expired = PerformanceCycle::where('status', 'active')
+            ->whereDate('end_date', '<', now()->toDateString())
+            ->get();
+
+        foreach ($expired as $cycle) {
+            $cycle->update(['status' => 'processing']);
+            ProcessPerformanceJob::dispatch($cycle);
+        }
     }
 }

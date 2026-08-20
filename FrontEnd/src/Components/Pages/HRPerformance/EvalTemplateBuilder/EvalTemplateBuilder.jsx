@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import './EvalTemplateBuilder.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
+import {
+  getPerformanceTemplates,
+  createPerformanceTemplate,
+  updatePerformanceTemplate,
+  deletePerformanceTemplate
+} from '../../../../services/PerformanceHrService';
 
 /* ─── helpers ─────────────────────────────────────────────── */
 const clamp = (v, min = 0, max = 100) => Math.min(max, Math.max(min, Number(v) || 0));
@@ -219,34 +225,175 @@ export default function EvalTemplateBuilder() {
     });
   };
 
+  const [templateId, setTemplateId] = useState(null);
+  const [savedTemplates, setSavedTemplates] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Load all templates from backend
+  const loadAllTemplates = async () => {
+    try {
+      const res = await getPerformanceTemplates();
+      const raw = res?.data?.data || res?.data || [];
+      const list = Array.isArray(raw) ? raw : [];
+      setSavedTemplates(list);
+      return list;
+    } catch (err) {
+      console.error("Failed to load evaluation templates:", err);
+      return [];
+    }
+  };
+
+  const applyTemplateToEditor = (tpl) => {
+    if (!tpl) return;
+    setTemplateId(tpl.id);
+    setTemplate(prev => {
+      const next = deepClone(prev);
+      next.name = tpl.name || prev.name;
+
+      // Check if components exist in raw_components or components array
+      const rawComps = tpl.raw_components || {};
+      if (Object.keys(rawComps).length > 0) {
+        Object.entries(rawComps).forEach(([k, v]) => {
+          if (next.components[k]) {
+            next.components[k].weight = is_array_or_obj_weight(v);
+            next.components[k].is_active = is_array_or_obj_active(v);
+            const subs = v.sub_components || v.sub_weights;
+            if (subs && next.components[k].sub_components) {
+              Object.entries(subs).forEach(([sk, sv]) => {
+                if (next.components[k].sub_components[sk]) {
+                  next.components[k].sub_components[sk].value = sv.value ?? (typeof sv === 'number' ? sv : next.components[k].sub_components[sk].value);
+                  if (sv.max_score !== undefined) {
+                    next.components[k].sub_components[sk].max_score = sv.max_score;
+                  }
+                }
+              });
+            }
+          }
+        });
+      } else if (Array.isArray(tpl.components)) {
+        tpl.components.forEach(c => {
+          const key = c.key || c.component_key;
+          if (next.components[key]) {
+            next.components[key].weight = c.weight ?? next.components[key].weight;
+            next.components[key].is_active = c.is_active ?? true;
+          }
+        });
+      }
+
+      return next;
+    });
+    setIsNameCustomized(true);
+  };
+
+  const is_array_or_obj_weight = (v) => {
+    if (typeof v === 'number') return v;
+    if (v && typeof v.weight === 'number') return v.weight;
+    return 0;
+  };
+
+  const is_array_or_obj_active = (v) => {
+    if (typeof v === 'boolean') return v;
+    if (v && typeof v.is_active === 'boolean') return v.is_active;
+    return true;
+  };
+
+  useEffect(() => {
+    const init = async () => {
+      const list = await loadAllTemplates();
+      if (list.length > 0) {
+        const defaultTpl = list.find(t => t.is_active || t.is_default) || list[0];
+        applyTemplateToEditor(defaultTpl);
+      }
+    };
+    init();
+  }, []);
+
+  const handleSelectTemplate = (tpl) => {
+    applyTemplateToEditor(tpl);
+    window.scrollTo({ top: 400, behavior: 'smooth' });
+  };
+
+  const handleCreateNewTemplate = () => {
+    setTemplateId(null);
+    const newTpl = deepClone(DEFAULT_TEMPLATE);
+    newTpl.name = 'قالب تقييم جديد 2026';
+    setTemplate(newTpl);
+    setIsNameCustomized(true);
+    window.scrollTo({ top: 400, behavior: 'smooth' });
+  };
+
+  const handleDeleteTemplate = async (id, e) => {
+    e.stopPropagation();
+    if (!window.confirm('هل أنت متأكد من رغبتك في حذف هذا القالب؟')) return;
+    try {
+      await deletePerformanceTemplate(id);
+      alert('تم حذف القالب بنجاح.');
+      const list = await loadAllTemplates();
+      if (templateId === id && list.length > 0) {
+        applyTemplateToEditor(list[0]);
+      }
+    } catch (err) {
+      console.error("Failed to delete template:", err);
+      const msg = err.response?.data?.message || 'تعذر حذف القالب لأنه مستخدم في دورات أداء.';
+      alert(msg);
+    }
+  };
+
   /* ── save / export ── */
-  const buildPayload = () => {
-    const config = { components: {} };
+  const buildPayload = (asNew = false) => {
+    const components = {};
     Object.entries(template.components).forEach(([key, comp]) => {
       const subs = {};
-      Object.entries(comp.sub_components).forEach(([sk, sv]) => {
-        subs[sk] = { value: sv.value, ...(sv.max_score !== undefined ? { max_score: sv.max_score } : {}) };
-      });
-      config.components[key] = {
-        weight: comp.weight,
-        is_active: comp.is_active,
+      if (comp.sub_components) {
+        Object.entries(comp.sub_components).forEach(([sk, sv]) => {
+          subs[sk] = { value: sv.value, ...(sv.max_score !== undefined ? { max_score: sv.max_score } : {}) };
+        });
+      }
+      components[key] = {
+        weight: comp.is_active ? Number(comp.weight) : 0,
+        is_active: Boolean(comp.is_active),
         sub_components: subs,
       };
     });
-    config.decision_thresholds = {};
-    Object.entries(template.decision_thresholds).forEach(([k, v]) => {
-      config.decision_thresholds[k] = { min: v.min, max: v.max };
-    });
-    return { name: template.name, config };
+    return { 
+      name: template.name, 
+      components, 
+      is_default: !asNew && templateId ? undefined : true 
+    };
   };
 
-  const handleSave = () => {
-    if (!weightsOk) return;
-    const payload = buildPayload();
-    console.log('📦 Template Payload to POST /performance/templates:', payload);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+  const handleSave = async (saveAsNew = false) => {
+    if (!weightsOk) {
+      alert(`مجموع أوزان المعايير الحالية هو (${totalWeight}%)، ويجب أن يساوي 100% تماماً.`);
+      return;
+    }
+    const payload = buildPayload(saveAsNew);
+    try {
+      setIsSaving(true);
+      if (templateId && !saveAsNew) {
+        await updatePerformanceTemplate(templateId, payload);
+      } else {
+        const res = await createPerformanceTemplate(payload);
+        if (res.data?.data?.id) setTemplateId(res.data.data.id);
+      }
+      setSaved(true);
+      await loadAllTemplates();
+      setTimeout(() => setSaved(false), 3000);
+    } catch (error) {
+      console.error("Failed to save template:", error);
+      const errors = error.response?.data?.errors;
+      let msg = error.response?.data?.message || "تعذر حفظ القالب.";
+      if (errors && typeof errors === 'object') {
+        const detailed = Object.values(errors).flat().join('\n');
+        if (detailed) msg = detailed;
+      }
+      alert(msg);
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  const activeLoadedTpl = savedTemplates.find(t => t.id === templateId);
 
   /* ─── formula preview ─── */
   const FormulaPreview = () => (
@@ -325,12 +472,166 @@ export default function EvalTemplateBuilder() {
         </div>
         <div className="etb-header-right">
           <div className="em-theme-toggle-wrapper"><ThemeToggle /></div>
-          <button className="etb-save-btn" onClick={handleSave} disabled={!weightsOk}>
+          {templateId && (
+            <button 
+              className="etb-auto-btn" 
+              onClick={() => handleSave(true)} 
+              disabled={!weightsOk || isSaving}
+              style={{ padding: '10px 16px' }}
+            >
+              <span className="material-symbols-outlined">add_circle</span>
+              حفظ كنسخة جديدة
+            </button>
+          )}
+          <button className="etb-save-btn" onClick={() => handleSave(false)} disabled={!weightsOk || isSaving}>
             <span className="material-symbols-outlined">{saved ? 'check_circle' : 'save'}</span>
-            {saved ? t('saved') : t('save_template')}
+            {saved ? t('saved') : (templateId ? 'حفظ التعديلات' : t('save_template'))}
           </button>
         </div>
       </div>
+
+      {/* ── SAVED TEMPLATES OVERVIEW CARDS ── */}
+      <div className="etb-templates-section">
+        <div className="etb-sec-head">
+          <div className="etb-sec-title">
+            <span className="material-symbols-outlined">view_carousel</span>
+            <span>قوالب التقييم المحفوظة في النظام ({savedTemplates.length})</span>
+          </div>
+          <button className="etb-new-tpl-btn" onClick={handleCreateNewTemplate}>
+            <span className="material-symbols-outlined">add</span>
+            <span>إنشاء قالب جديد</span>
+          </button>
+        </div>
+
+        <div className="etb-templates-grid">
+          {savedTemplates.map((tpl) => {
+            const isSelected = tpl.id === templateId;
+            const hasActiveCycle = !!tpl.active_cycle;
+            const componentsList = tpl.components || [];
+
+            return (
+              <div 
+                key={tpl.id} 
+                className={`etb-tpl-card ${isSelected ? 'selected' : ''} ${hasActiveCycle ? 'is-active-cycle' : ''}`}
+                onClick={() => handleSelectTemplate(tpl)}
+              >
+                <div className="etb-tpl-header">
+                  <div className="etb-tpl-badges">
+                    {hasActiveCycle && (
+                      <span className="etb-badge-active-cycle" title={`دورة نشطة: ${tpl.active_cycle.title}`}>
+                        <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>check_circle</span>
+                        مفعل لدورة: {tpl.active_cycle.title}
+                      </span>
+                    )}
+                    {tpl.is_default && (
+                      <span className="etb-badge-default">
+                        <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>star</span>
+                        القالب الافتراضي
+                      </span>
+                    )}
+                    <span style={{ fontSize: '11px', color: '#94a3b8' }}>
+                      {tpl.cycles_count || 0} دورات
+                    </span>
+                  </div>
+
+                  <h3 className="etb-tpl-name">
+                    <span>{tpl.name}</span>
+                    {isSelected && (
+                      <span className="material-symbols-outlined" style={{ color: '#359EFF', fontSize: '18px' }}>
+                        edit
+                      </span>
+                    )}
+                  </h3>
+
+                  {hasActiveCycle && (
+                    <div className="etb-tpl-cycle-info">
+                      <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>event</span>
+                      <span>فترة الدورة: {tpl.active_cycle.start_date} → {tpl.active_cycle.end_date}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Weight Minibar */}
+                <div className="etb-tpl-minibar">
+                  {componentsList.filter(c => c.is_active !== false).map((c, idx) => {
+                    const compColors = {
+                      tasks: '#359EFF',
+                      manager: '#8b5cf6',
+                      peer: '#10b981',
+                      attendance: '#f59e0b',
+                      overtime: '#ef4444',
+                      self_assessment: '#6b7280'
+                    };
+                    const color = compColors[c.key] || '#359EFF';
+                    return (
+                      <div 
+                        key={idx} 
+                        className="etb-minibar-segment" 
+                        style={{ width: `${c.weight}%`, backgroundColor: color }}
+                        title={`${c.key}: ${c.weight}%`}
+                      />
+                    );
+                  })}
+                </div>
+
+                {/* Weight distribution labels */}
+                <div className="etb-tpl-comp-labels">
+                  {componentsList.filter(c => c.is_active !== false).map((c, idx) => {
+                    const compColors = {
+                      tasks: '#359EFF',
+                      manager: '#8b5cf6',
+                      peer: '#10b981',
+                      attendance: '#f59e0b',
+                      overtime: '#ef4444',
+                      self_assessment: '#6b7280'
+                    };
+                    return (
+                      <span key={idx} className="etb-tpl-comp-item">
+                        <span className="etb-comp-dot" style={{ backgroundColor: compColors[c.key] || '#359EFF' }}></span>
+                        <span>{t(`components.${c.key}.label` || c.key)}: <strong>{c.weight}%</strong></span>
+                      </span>
+                    );
+                  })}
+                </div>
+
+                <div className="etb-tpl-footer">
+                  <button className="etb-card-load-btn" onClick={() => handleSelectTemplate(tpl)}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>tune</span>
+                    <span>{isSelected ? 'قيد التعديل الآن' : 'تعديل في المحرر'}</span>
+                  </button>
+
+                  {!hasActiveCycle && (!tpl.cycles_count || tpl.cycles_count === 0) && (
+                    <button 
+                      className="etb-card-del-btn" 
+                      title="حذف القالب"
+                      onClick={(e) => handleDeleteTemplate(tpl.id, e)}
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>delete</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── ACTIVE CYCLE BANNER IF LOADED TEMPLATE IS LINKED ── */}
+      {activeLoadedTpl?.active_cycle && (
+        <div className="etb-active-cycle-banner">
+          <div className="etb-banner-left">
+            <span className="material-symbols-outlined etb-banner-icon">verified</span>
+            <div className="etb-banner-text">
+              <h4>هذا القالب معتمد ومفعّل حالياً لدورة الأداء: "{activeLoadedTpl.active_cycle.title}"</h4>
+              <p>تاريخ بدء الدورة: {activeLoadedTpl.active_cycle.start_date} — تاريخ الانتهاء: {activeLoadedTpl.active_cycle.end_date} (الحالة: نشطة Active)</p>
+            </div>
+          </div>
+          <span className="etb-badge-active-cycle">
+            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>lock</span>
+            مربوط بدورة نشطة
+          </span>
+        </div>
+      )}
 
       {/* ── template name ── */}
       <div className="etb-name-row card-hr">
@@ -343,6 +644,11 @@ export default function EvalTemplateBuilder() {
               setIsNameCustomized(true);
             }} />
         </div>
+        {templateId && (
+          <span style={{ fontSize: '12px', color: '#64748b', whiteSpace: 'nowrap' }}>
+            ID: #{templateId}
+          </span>
+        )}
       </div>
 
       {/* ── tabs ── */}

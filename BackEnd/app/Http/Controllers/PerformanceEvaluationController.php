@@ -33,7 +33,7 @@ class PerformanceEvaluationController extends Controller
         if ($request->has('cycle_id')) {
             $query->where('performance_cycle_id', $request->cycle_id);
         } else {
-            $query->latest('evaluated_at');
+            $query->orderByDesc('id');
         }
 
         $evaluation = $query->first();

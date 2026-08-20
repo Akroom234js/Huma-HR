@@ -2,15 +2,17 @@ import React from 'react';
 import './ScoreWeightBar.css';
 
 const ScoreWeightBar = ({ label = '', score = 0, weight = 100, color = '' }) => {
+    const numScore = Number(score) || 0;
+    const numWeight = Number(weight) || 100;
     // Fill calculations
-    const fillPercent = Math.min(100, Math.max(0, score));
+    const fillPercent = Math.min(100, Math.max(0, (numScore / numWeight) * 100));
 
     return (
         <div className="performance-weight-bar-item">
             <div className="weight-bar-label-row">
                 <span className="weight-bar-label">{label}</span>
                 <span className="weight-bar-score-val" style={{ color: color || 'var(--primary-color)' }}>
-                    {score.toFixed(1)} / {weight}
+                    {numScore.toFixed(1)} / {numWeight}
                 </span>
             </div>
             <div className="weight-bar-outer">

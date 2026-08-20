@@ -16,10 +16,20 @@ import {
 } from "recharts";
 
 import { useTranslation } from 'react-i18next';
+import { getPerformanceStats } from '../../../../services/PerformanceHrService';
 
 const PerformanceReports = () => {
   const { t } = useTranslation("Reports/PerformanceReports")
   const [showPreview, setShowPreview] = useState(false);
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    getPerformanceStats().then(res => {
+      setStats(res.data?.data || null);
+    }).catch(err => {
+      console.error("Failed to load performance stats for reports:", err);
+    });
+  }, []);
 
   const data = [
     { range: "1.0-2.0", value: 4 },
@@ -33,12 +43,30 @@ const PerformanceReports = () => {
   const colors = ["#ff6b6b", "#f7b500", "#4a90e2", "#2ecc71"];
   const colorsa = ["rgba(255, 107, 107, 0.37)", "rgba(247, 181, 0, 0.37)", "rgba(74, 145, 226, 0.37)", "rgba(46, 204, 112, 0.37)"];
 
+  const deptRows = stats?.department_averages?.length > 0
+    ? stats.department_averages.map(d => ({
+        dept: d.department_name,
+        avg: (d.avg_score / 20).toFixed(1),
+        comp: '100%',
+        color: '#22c55e'
+      }))
+    : [
+        { dept: t("Engineering"), avg: "4.5", comp: "98%", color: '#22c55e' },
+        { dept: t("Marketing"), avg: "4.1", comp: "90%", color: '#0f172a' },
+        { dept: t("Product"), avg: "4.3", comp: "100%", color: '#22c55e' },
+        { dept: t("Sales"), avg: "3.8", comp: "82%", color: '#f59e0b' },
+        { dept: t("Human"), avg: "4.2", comp: "100%", color: '#ef4444' }
+      ];
+
+  const avgDisplay = stats?.avg_score ? `${(stats.avg_score / 20).toFixed(1)} / 5.0` : "4.2 / 5.0";
+  const rateDisplay = stats?.completion_rate !== null && stats?.completion_rate !== undefined ? `${stats.completion_rate}%` : "94%";
+
   const reportConfig = {
     title: t("PerformanceReports"),
     summary: "This report provides a comprehensive analysis of employee performance metrics. It covers average performance scores, evaluation completion rates, and a detailed breakdown of performance across different departments.",
     kpis: [
-      { label: t("Average"), value: "4.2 / 5.0" },
-      { label: t("rate"), value: "94%" },
+      { label: t("Average"), value: avgDisplay },
+      { label: t("rate"), value: rateDisplay },
       { label: t("achievement"), value: "88%" },
       { label: t("competency"), value: "3.9" },
     ],
@@ -76,13 +104,7 @@ const PerformanceReports = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {[
-                            { dept: t("Engineering"), avg: "4.5", comp: "98%", color: '#22c55e' },
-                            { dept: t("Marketing"), avg: "4.1", comp: "90%", color: '#0f172a' },
-                            { dept: t("Product"), avg: "4.3", comp: "100%", color: '#22c55e' },
-                            { dept: t("Sales"), avg: "3.8", comp: "82%", color: '#f59e0b' },
-                            { dept: t("Human"), avg: "4.2", comp: "100%", color: '#ef4444' }
-                        ].map((row, i) => (
+                        {deptRows.map((row, i) => (
                             <tr key={i} style={{ borderBottom: '1px solid #f8fafc' }}>
                                 <td style={{ padding: '12px 8px', fontWeight: '600' }}>{row.dept}</td>
                                 <td style={{ padding: '12px 8px' }}>{row.avg}</td>

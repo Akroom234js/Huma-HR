@@ -25,41 +25,27 @@ class PerformanceTemplate extends Model
         return $this->hasMany(PerformanceCycle::class, 'performance_template_id');
     }
 
-    // ─── Helpers ──────────────────────────────────────────────────
+    // ─── Helpers ─────────────────────────────────────────────────
 
-    public static function getActive(): ?self
+    /**
+     * إرجاع إعدادات القالب بشكل موحّد
+     */
+    public function getConfigAttribute(): array
     {
-        return self::where('is_active', true)->first();
+        return ['components' => $this->components ?? []];
     }
 
     /**
-     * مجموع أوزان المكونات المفعلة فقط = 100
+     * التحقق من أن مجموع أوزان المكونات النشطة = 100
      */
     public function areWeightsValid(): bool
     {
-        $components = collect($this->components ?? [])->filter(fn($c) => !empty($c['is_active']));
-        $total = $components->sum('weight');
-        return round($total, 2) === 100.00;
-    }
-
-    public function getComponentWeight(string $key): float
-    {
         $components = $this->components ?? [];
-        return floatval($components[$key]['weight'] ?? 0);
-    }
 
-    public function hasComponent(string $key): bool
-    {
-        $components = $this->components ?? [];
-        return isset($components[$key]) && !empty($components[$key]['is_active']);
-    }
+        $total = collect($components)
+            ->filter(fn($c) => is_array($c) ? !empty($c['is_active']) : true)
+            ->sum(fn($c) => is_array($c) ? floatval($c['weight'] ?? 0) : floatval($c));
 
-    /**
-     * جلب sub_components لمكوّن معين (الاسم الموحّد في كل المشروع)
-     */
-    public function getSubComponents(string $key): array
-    {
-        $components = $this->components ?? [];
-        return $components[$key]['sub_components'] ?? [];
+        return abs($total - 100) <= 0.05;
     }
 }

@@ -1,14 +1,18 @@
 import apiClient from "../apiConfig";
 
-// 1. GET /api/tasks (عرض مهام القسم للمدير)
+// ══════════════════════════════════════════════════════════════════
+// 📋 1. Tasks Management (Manager & Employee)
+// ══════════════════════════════════════════════════════════════════
+
+// GET /api/tasks (عرض مهام القسم للمدير)
 export const getDepartmentTasks = () => 
   apiClient.get("/tasks");
 
-// 2. GET /api/my-department/employees (جلب موظفي القسم للمدير)
+// GET /api/my-department/employees (جلب موظفي القسم للمدير وزملاء القسم للأقران)
 export const getDepartmentEmployees = () =>
   apiClient.get("/my-department/employees");
 
-// 3. POST /api/tasks (إنشاء مهمة - مدير)
+// POST /api/tasks (إنشاء مهمة - مدير)
 export const createTask = (data) =>
   apiClient.post("/tasks", {
     employee_profile_id: data.employee_profile_id,
@@ -20,7 +24,7 @@ export const createTask = (data) =>
     late_penalty_per_day: data.late_penalty_per_day,
   });
 
-// 4. PUT /api/tasks/{task} (تعديل مهمة - مدير)
+// PUT /api/tasks/{task} (تعديل مهمة - مدير)
 export const updateTask = (taskId, data) =>
   apiClient.put(`/tasks/${taskId}`, {
     title: data.title,
@@ -31,15 +35,15 @@ export const updateTask = (taskId, data) =>
     late_penalty_per_day: data.late_penalty_per_day,
   });
 
-// 5. DELETE /api/tasks/{task} (حذف مهمة - مدير)
+// DELETE /api/tasks/{task} (حذف مهمة - مدير)
 export const deleteTask = (taskId) =>
   apiClient.delete(`/tasks/${taskId}`);
 
-// 6. GET /api/tasks/{task} (تفاصيل مهمة - مدير وموظف)
+// GET /api/tasks/{task} (تفاصيل مهمة - مدير وموظف)
 export const getTaskDetails = (taskId) =>
   apiClient.get(`/tasks/${taskId}`);
 
-// 7. PUT /api/tasks/{task}/score (تقييم المهمة ورصد الدرجة - مدير)
+// PUT /api/tasks/{task}/score (تقييم المهمة ورصد الدرجة - مدير)
 export const scoreTask = (taskId, data) =>
   apiClient.put(`/tasks/${taskId}/score`, {
     completion_score: data.completion_score,
@@ -47,20 +51,71 @@ export const scoreTask = (taskId, data) =>
     manager_note: data.manager_note,
   });
 
-// 8. PUT /api/tasks/{task}/revision (إرجاع للمراجعة - مدير)
+// PUT /api/tasks/{task}/revision (إرجاع للمراجعة - مدير)
 export const requestRevision = (taskId, data) =>
   apiClient.put(`/tasks/${taskId}/revision`, {
     manager_note: data.manager_note,
   });
 
-// 9. PUT /api/tasks/{task}/start (بدء المهمة - موظف)
+// PUT /api/tasks/{task}/start (بدء المهمة - موظف)
 export const startTask = (taskId) =>
   apiClient.put(`/tasks/${taskId}/start`);
 
-// 10. PUT /api/tasks/{task}/complete (إنجاز المهمة / إعادة إنجاز بعد المراجعة - موظف)
-export const completeTask = (taskId) =>
-  apiClient.put(`/tasks/${taskId}/complete`);
+// PUT /api/tasks/{task}/complete (إنجاز المهمة / إعادة إنجاز بعد المراجعة - موظف)
+export const completeTask = (taskId, data = {}) =>
+  apiClient.put(`/tasks/${taskId}/complete`, data);
 
-// 11. GET /api/tasks/my-tasks (عرض مهامي - موظف)
+// GET /api/tasks/my-tasks (عرض مهامي - موظف)
 export const getMyTasks = () =>
   apiClient.get("/tasks/my-tasks");
+
+
+// ══════════════════════════════════════════════════════════════════
+// 🌟 2. Performance Cycles & Evaluations (Employee & Manager)
+// ══════════════════════════════════════════════════════════════════
+
+// GET /api/performance/cycles (عرض الدورات - متاح للجميع/المدير/HR)
+export const getPerformanceCycles = () =>
+  apiClient.get("/performance/cycles");
+
+// GET /api/performance/cycles/{cycle} (تفاصيل دورة معينة)
+export const getPerformanceCycleDetails = (cycleId) =>
+  apiClient.get(`/performance/cycles/${cycleId}`);
+
+// GET /api/performance/my-evaluation (جلب تقييم الموظف الحالي في الدورة النشطة)
+export const getMyEvaluation = () =>
+  apiClient.get("/performance/my-evaluation");
+
+// POST /api/performance/peer-evaluations (تقييم زميل)
+export const submitPeerEvaluation = (data) =>
+  apiClient.post("/performance/peer-evaluations", {
+    performance_cycle_id: data.performance_cycle_id ?? data.cycle_id,
+    employee_profile_id: data.employee_profile_id ?? data.evaluatee_id,
+    collaboration_score: data.collaboration_score ?? data.comm_score ?? 8,
+    teamwork_score: data.teamwork_score ?? 8,
+    comment: data.comment || data.feedback || 'Good collaboration',
+  });
+
+// GET /api/performance/manager-evaluations/my-team/{cycleId} (جلب أعضاء الفريق للتقييم في دورة)
+export const getMyTeamEvaluations = (cycleId) =>
+  apiClient.get(`/performance/manager-evaluations/my-team/${cycleId}`);
+
+// POST /api/performance/manager-evaluations (إرسال تقييم مدير لموظف)
+export const submitManagerEvaluation = (data) =>
+  apiClient.post("/performance/manager-evaluations", {
+    performance_cycle_id: data.performance_cycle_id,
+    employee_profile_id: data.employee_profile_id,
+    professionalism: data.professionalism,
+    responsibility: data.responsibility,
+    problem_solving: data.problem_solving,
+    notes: data.notes,
+  });
+
+// PUT /api/performance/manager-evaluations/{id} (تعديل تقييم مدير)
+export const updateManagerEvaluation = (evalId, data) =>
+  apiClient.put(`/performance/manager-evaluations/${evalId}`, {
+    professionalism: data.professionalism,
+    responsibility: data.responsibility,
+    problem_solving: data.problem_solving,
+    notes: data.notes,
+  });

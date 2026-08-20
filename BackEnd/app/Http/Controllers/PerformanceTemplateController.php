@@ -14,136 +14,156 @@ class PerformanceTemplateController extends Controller
     use ApiResponse;
 
     // ─────────────────────────────────────────────────────────────
-    // عرض القالب النشط الحالي
+    // عرض جميع القوالب مع تفاصيل الدورات المرتبطة
     // GET /performance/templates
     // HR فقط
     // ─────────────────────────────────────────────────────────────
     public function index(): JsonResponse
     {
-        $template = PerformanceTemplate::where('is_active', true)->first();
-
-        if (! $template) {
-            return $this->successResponse(null, 'No active template found.');
-        }
+        $templates = PerformanceTemplate::with(['cycles'])
+            ->latest()
+            ->get()
+            ->map(fn($t) => $this->formatTemplate($t));
 
         return $this->successResponse(
-            $this->formatTemplate($template),
-            'Active performance template retrieved successfully.'
+            $templates,
+            'Performance templates retrieved successfully.'
         );
     }
 
     // ─────────────────────────────────────────────────────────────
-    // إنشاء قالب جديد وتفعيله تلقائياً
+    // إنشاء قالب جديد
     // POST /performance/templates
     // HR فقط
     // ─────────────────────────────────────────────────────────────
     public function store(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name'                    => ['required', 'string', 'max:100'],
-            'components'              => ['required', 'array', 'min:1'],
-            'components.*.key'        => ['required', 'string', 'in:tasks,manager,peer,attendance,overtime,self_assessment'],
-            'components.*.weight'     => ['required', 'numeric', 'min:1', 'max:100'],
-            // المكونات الفرعية — اختيارية
-            'components.*.sub_components'=> ['sometimes', 'array'],
-        ]);
-
-        // التحقق من أن مجموع الأوزان = 100
-        $total = collect($validated['components'])->sum('weight');
-        if (round($total, 2) !== 100.00) {
-            return $this->errorResponse(
-                "Component weights must sum to 100. Current sum: {$total}.",
-                null,
-                422
-            );
+        $name = $request->input('name');
+        if (! $name) {
+            return $this->errorResponse('Template name is required.', null, 422);
         }
 
-        // التحقق من عدم تكرار المكونات
-        $keys = collect($validated['components'])->pluck('key');
-        if ($keys->count() !== $keys->unique()->count()) {
-            return $this->errorResponse('Duplicate component keys are not allowed.', null, 422);
+        $rawComponents = $request->input('components') ?? $request->input('config.components');
+        if (! $rawComponents) {
+            return $this->errorResponse('Components are required.', null, 422);
         }
 
-        $template = DB::transaction(function () use ($validated) {
-            // تعطيل القالب النشط الحالي
-            PerformanceTemplate::where('is_active', true)->update(['is_active' => false]);
+        // بناء وتوحيد components JSON
+        $components = [];
+        if (is_array($rawComponents)) {
+            if (! isset($rawComponents[0])) {
+                foreach ($rawComponents as $key => $comp) {
+                    $components[$key] = [
+                        'weight'      => is_array($comp) ? floatval($comp['weight'] ?? 0) : floatval($comp),
+                        'is_active'   => is_array($comp) ? (bool) ($comp['is_active'] ?? true) : true,
+                        'sub_weights' => is_array($comp) ? ($comp['sub_weights'] ?? ($comp['sub_components'] ?? $this->defaultSubWeights($key))) : $this->defaultSubWeights($key),
+                    ];
+                }
+            } else {
+                foreach ($rawComponents as $comp) {
+                    $key = $comp['key'] ?? $comp['component_key'];
+                    $components[$key] = [
+                        'weight'      => floatval($comp['weight'] ?? 0),
+                        'is_active'   => (bool) ($comp['is_active'] ?? true),
+                        'sub_weights' => $comp['sub_weights'] ?? ($comp['sub_components'] ?? $this->defaultSubWeights($key)),
+                    ];
+                }
+            }
+        }
 
-            // بناء الـ components JSON
-            $components = [];
-            foreach ($validated['components'] as $comp) {
-                $components[$comp['key']] = [
-                    'weight'         => $comp['weight'],
-                    'sub_components' => $comp['sub_components'] ?? $this->defaultSubWeights($comp['key']),
-                ];
+        // حساب مجموع أوزان المكونات النشطة فقط
+        $total = collect($components)->filter(function ($c) {
+            if (! is_array($c)) return true;
+            $isActive = $c['is_active'] ?? true;
+            return filter_var($isActive, FILTER_VALIDATE_BOOLEAN);
+        })->sum(fn($c) => is_array($c) ? floatval($c['weight'] ?? 0) : floatval($c));
+
+        if (abs($total - 100) > 0.05) {
+            return $this->errorResponse("Component weights must sum to 100. Current active components sum: {$total}.", null, 422);
+        }
+
+        $template = DB::transaction(function () use ($name, $components, $request) {
+            $isDefault = $request->boolean('is_default') || $request->boolean('is_active');
+            if ($isDefault) {
+                PerformanceTemplate::where('is_active', true)->update(['is_active' => false]);
             }
 
             return PerformanceTemplate::create([
-                'name'       => $validated['name'],
-                'is_active'  => true,
+                'name'       => $name,
+                'is_active'  => $isDefault,
                 'components' => $components,
             ]);
         });
 
         return $this->successResponse(
-            $this->formatTemplate($template),
-            'Performance template created and activated successfully.',
+            $this->formatTemplate($template->load('cycles')),
+            'Performance template created successfully.',
             201
         );
     }
 
     // ─────────────────────────────────────────────────────────────
-    // تعديل القالب النشط
+    // تعديل قالب
     // PUT /performance/templates/{template}
     // HR فقط
     // ─────────────────────────────────────────────────────────────
     public function update(Request $request, PerformanceTemplate $template): JsonResponse
     {
-        $validated = $request->validate([
-            'name'                      => ['sometimes', 'string', 'max:100'],
-            'components'                => ['sometimes', 'array', 'min:1'],
-            'components.*.key'          => ['required_with:components', 'string', 'in:tasks,manager,peer,attendance,overtime,self_assessment'],
-            'components.*.weight'       => ['required_with:components', 'numeric', 'min:1', 'max:100'],
-            'components.*.sub_components'=> ['sometimes', 'array'],
-        ]);
-
-        // التحقق من الأوزان إذا أُرسلت مكونات
-        if (isset($validated['components'])) {
-            $total = collect($validated['components'])->sum('weight');
-            if (round($total, 2) !== 100.00) {
-                return $this->errorResponse(
-                    "Component weights must sum to 100. Current sum: {$total}.",
-                    null,
-                    422
-                );
-            }
-
-            $keys = collect($validated['components'])->pluck('key');
-            if ($keys->count() !== $keys->unique()->count()) {
-                return $this->errorResponse('Duplicate component keys are not allowed.', null, 422);
-            }
-        }
-
         $updateData = [];
 
-        if (isset($validated['name'])) {
-            $updateData['name'] = $validated['name'];
+        if ($request->has('name')) {
+            $updateData['name'] = $request->input('name');
         }
 
-        if (isset($validated['components'])) {
+        $rawComponents = $request->input('components') ?? $request->input('config.components');
+        if ($rawComponents) {
             $components = [];
-            foreach ($validated['components'] as $comp) {
-                $components[$comp['key']] = [
-                    'weight'         => $comp['weight'],
-                    'sub_components' => $comp['sub_components'] ?? $this->defaultSubWeights($comp['key']),
-                ];
+            if (is_array($rawComponents)) {
+                if (! isset($rawComponents[0])) {
+                    foreach ($rawComponents as $key => $comp) {
+                        $components[$key] = [
+                            'weight'      => is_array($comp) ? floatval($comp['weight'] ?? 0) : floatval($comp),
+                            'is_active'   => is_array($comp) ? (bool) ($comp['is_active'] ?? true) : true,
+                            'sub_weights' => is_array($comp) ? ($comp['sub_weights'] ?? ($comp['sub_components'] ?? $this->defaultSubWeights($key))) : $this->defaultSubWeights($key),
+                        ];
+                    }
+                } else {
+                    foreach ($rawComponents as $comp) {
+                        $key = $comp['key'] ?? $comp['component_key'];
+                        $components[$key] = [
+                            'weight'      => floatval($comp['weight'] ?? 0),
+                            'is_active'   => (bool) ($comp['is_active'] ?? true),
+                            'sub_weights' => $comp['sub_weights'] ?? ($comp['sub_components'] ?? $this->defaultSubWeights($key)),
+                        ];
+                    }
+                }
+            }
+
+            // حساب مجموع أوزان المكونات النشطة فقط
+            $total = collect($components)->filter(function ($c) {
+                if (! is_array($c)) return true;
+                $isActive = $c['is_active'] ?? true;
+                return filter_var($isActive, FILTER_VALIDATE_BOOLEAN);
+            })->sum(fn($c) => is_array($c) ? floatval($c['weight'] ?? 0) : floatval($c));
+
+            if (abs($total - 100) > 0.05) {
+                return $this->errorResponse("Component weights must sum to 100. Current active components sum: {$total}.", null, 422);
             }
             $updateData['components'] = $components;
+        }
+
+        if ($request->has('is_default') || $request->has('is_active')) {
+            $isDefault = $request->boolean('is_default') || $request->boolean('is_active');
+            if ($isDefault) {
+                PerformanceTemplate::where('id', '!=', $template->id)->update(['is_active' => false]);
+            }
+            $updateData['is_active'] = $isDefault;
         }
 
         $template->update($updateData);
 
         return $this->successResponse(
-            $this->formatTemplate($template->fresh()),
+            $this->formatTemplate($template->fresh(['cycles'])),
             'Performance template updated successfully.'
         );
     }
@@ -194,20 +214,41 @@ class PerformanceTemplateController extends Controller
         $formatted = [];
         foreach ($components as $key => $data) {
             $formatted[] = [
-                'key'            => $key,
-                'weight'         => $data['weight'],
-                'sub_components' => $data['sub_components'] ?? [],
+                'key'         => $key,
+                'weight'      => is_array($data) ? ($data['weight'] ?? 0) : $data,
+                'is_active'   => is_array($data) ? ($data['is_active'] ?? true) : true,
+                'sub_weights' => is_array($data) ? ($data['sub_weights'] ?? ($data['sub_components'] ?? [])) : [],
             ];
         }
 
+        $cycles = $template->cycles ?? collect();
+        $activeCycle = $cycles->firstWhere('status', 'active');
+
         return [
-            'id'         => $template->id,
-            'name'       => $template->name,
-            'is_active'  => $template->is_active,
-            'components' => $formatted,
-            'total_weight' => collect($components)->sum('weight'),
-            'created_at' => $template->created_at?->format('Y-m-d H:i:s'),
-            'updated_at' => $template->updated_at?->format('Y-m-d H:i:s'),
+            'id'             => $template->id,
+            'name'           => $template->name,
+            'is_active'      => (bool) $template->is_active,
+            'is_default'     => (bool) $template->is_active,
+            'components'     => $formatted,
+            'raw_components' => $components,
+            'total_weight'   => collect($formatted)->where('is_active', true)->sum('weight'),
+            'cycles_count'   => $cycles->count(),
+            'active_cycle'   => $activeCycle ? [
+                'id'         => $activeCycle->id,
+                'title'      => $activeCycle->title,
+                'status'     => $activeCycle->status,
+                'start_date' => $activeCycle->start_date?->format('Y-m-d'),
+                'end_date'   => $activeCycle->end_date?->format('Y-m-d'),
+            ] : null,
+            'cycles'         => $cycles->map(fn($c) => [
+                'id'         => $c->id,
+                'title'      => $c->title,
+                'status'     => $c->status,
+                'start_date' => $c->start_date?->format('Y-m-d'),
+                'end_date'   => $c->end_date?->format('Y-m-d'),
+            ]),
+            'created_at'     => $template->created_at?->format('Y-m-d H:i:s'),
+            'updated_at'     => $template->updated_at?->format('Y-m-d H:i:s'),
         ];
     }
 }

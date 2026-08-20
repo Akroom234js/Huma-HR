@@ -263,6 +263,8 @@ const AllEmployees = () => {
           </div>
         </div>
         <button
+          type="button"
+          className="add-emp-btn"
           onClick={() => {
             setEditingEmployee(null);
             setIsModalOpen(true);
@@ -312,6 +314,7 @@ const AllEmployees = () => {
         </table>
       </div>
       <AddEmployeeModal
+        key={isModalOpen ? (editingEmployee ? `edit-${editingEmployee.id}` : 'create-new') : 'closed'}
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
