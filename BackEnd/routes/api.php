@@ -35,6 +35,9 @@ use Illuminate\Support\Facades\Artisan;
 // ══════════════════════════════════════════════════════════════════════════════
 
 Route::get('/system-repair-db', function () {
+     if (request()->query('secret') !== env('DB_REPAIR_SECRET')) {
+        abort(404);
+    }
     try {
         echo "Starting Database Sync...<br>";
         $driver = DB::getDriverName();
@@ -185,11 +188,18 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/cycles',                 [PerformanceCycleController::class, 'store']);
             Route::put('/cycles/{cycle}',          [PerformanceCycleController::class, 'update']);
             Route::post('/cycles/{cycle}/activate',[PerformanceCycleController::class, 'activate']);
-            
+
 
             // Evaluations — HR يشوف النتائج
             Route::get('/evaluations/{cycleId}',              [PerformanceEvaluationController::class, 'byCycle']);
             Route::get('/evaluations/{cycleId}/{employeeId}', [PerformanceEvaluationController::class, 'show']);
+
+            // ══════════════════════════════════════════════════════════════════════════════
+            // ✅ Dashboard General Stats
+            // ══════════════════════════════════════════════════════════════════════════════
+            Route::get('/dashboard/general-stats', [DashboardController::class, 'generalStats']);
+
+
 
             // Actions
             Route::get('/actions',                  [PerformanceActionController::class, 'index']);

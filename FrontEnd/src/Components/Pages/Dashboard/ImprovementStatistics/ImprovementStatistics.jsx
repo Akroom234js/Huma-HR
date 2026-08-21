@@ -1,34 +1,79 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     ResponsiveContainer, AreaChart, Area, XAxis, YAxis,
-    CartesianGrid, Tooltip, ScatterChart, Scatter, ZAxis, Cell
+    CartesianGrid, Tooltip, ScatterChart, Scatter, Cell
 } from 'recharts';
 import './ImprovementStatistics.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
+import apiClient from '../../../../apiConfig';
 
-const ImprovementStatistics = () => {
-    // هذه المصفوفات هي التي سيتم استبدالها لاحقاً ببيانات من الباك اند (API Response)
-    const departmentsData = [
-        { id: 1, name: 'Engineering', attendance: 98, tasks: 124, cost: 8500, index: 95, color: '#10b981' },
-        { id: 2, name: 'Marketing', attendance: 95, tasks: 88, cost: 5200, index: 82, color: '#f59e0b' },
-        { id: 3, name: 'Sales', attendance: 92, tasks: 156, cost: 6800, index: 91, color: '#6366f1' },
-        { id: 4, name: 'Support', attendance: 88, tasks: 210, cost: 4500, index: 75, color: '#ef4444' },
-    ];
+export default function ImprovementStatistics() {
+    const [overallStats, setOverallStats] = useState({
+        mostProductiveDept: '---',
+        avgEmployeeCost: '---',
+        overallIndex: '---',
+        operationalEfficiency: '---'
+    });
+    const [departmentsData, setDepartmentsData] = useState([]);
+    const [monthlyTrends, setMonthlyTrends] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const monthlyTrends = [
-        { month: 'Jan', performance: 65 },
-        { month: 'Feb', performance: 72 },
-        { month: 'Mar', performance: 68 },
-        { month: 'Apr', performance: 85 },
-        { month: 'May', performance: 82 },
-        { month: 'Jun', performance: 91 },
-    ];
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+
+                const res = await apiClient.get('/dashboard/improvement-stats');
+                const result = res.data;
+                console.log("Data from API Payload:", result.data);
+
+                if (result && result.status && result.data) {
+                    const apiData = result.data;
+                    const stats = apiData.stats || apiData.overall_stats || {};
+                    setOverallStats({
+                        mostProductiveDept: stats.most_productive_dept || stats.mostProductiveDept || '---',
+                        avgEmployeeCost: stats.avg_employee_cost || stats.avgEmployeeCost || '---',
+                        overallIndex: stats.overall_index || stats.overallIndex || '---',
+                        operationalEfficiency: stats.operational_efficiency || stats.operationalEfficiency || '---'
+                    });
+
+                    const rawDepts = apiData.departments || apiData.departments_data || apiData.department_stats || [];
+                    const defaultColors = ['#10b981', '#f59e0b', '#6366f1', '#ef4444', '#8b5cf6'];
+                    
+                    const formattedDepts = rawDepts.map((dept, idx) => ({
+                        id: dept.id || idx + 1,
+                        name: dept.name || dept.department_name || 'N/A',
+                        attendance: dept.attendance || dept.attendance_rate || 0,
+                        tasks: dept.tasks || dept.tasks_completed || 0,
+                        cost: dept.cost || dept.avg_cost || 0,
+                        index: dept.index || dept.performance_index || 0,
+                        color: dept.color || defaultColors[idx % defaultColors.length]
+                    }));
+                    setDepartmentsData(formattedDepts);
+                    const rawTrends = apiData.monthly_trends || apiData.monthlyTrends || apiData.trends || [];
+                    setMonthlyTrends(rawTrends);
+                }
+            } catch (err) {
+                console.error("Failed fetching improvement statistics:", err);
+                setError("Failed to fetch dashboard data.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDashboardData();
+    }, []);
 
     const getIndexClass = (score) => {
         if (score >= 90) return 'is-badge-success';
         if (score >= 80) return 'is-badge-warning';
         return 'is-badge-danger';
     };
+
+    if (loading) return <div style={{ padding: '40px', textAlign: 'center' }}>Loading Statistics...</div>;
+    if (error) return <div className="error-message" style={{ padding: '20px', color: 'red' }}>{error}</div>;
 
     return (
         <div className="is-page">
@@ -41,27 +86,28 @@ const ImprovementStatistics = () => {
             </header>
 
             <div className="is-content">
-                {/* الإحصائيات السريعة */}
                 <section className="is-stats-grid">
                     <div className="is-stat-card">
                         <span className="is-stat-label">Most Productive Dept.</span>
-                        <span className="is-stat-value">Engineering</span>
+                        <span className="is-stat-value">{overallStats.mostProductiveDept}</span>
                     </div>
                     <div className="is-stat-card">
                         <span className="is-stat-label">Avg. Employee Cost</span>
-                        <span className="is-stat-value">$7,250</span>
+                        <span className="is-stat-value">
+                            {typeof overallStats.avgEmployeeCost === 'number' ? `$${overallStats.avgEmployeeCost}` : overallStats.avgEmployeeCost}
+                        </span>
                     </div>
                     <div className="is-stat-card">
                         <span className="is-stat-label">Overall Index</span>
-                        <span className="is-stat-value">85.7%</span>
+                        <span className="is-stat-value">
+                            {overallStats.overallIndex}{typeof overallStats.overallIndex === 'number' ? '%' : ''}
+                        </span>
                     </div>
                     <div className="is-stat-card">
                         <span className="is-stat-label">Operational Efficiency</span>
-                        <span className="is-stat-value">+12%</span>
+                        <span className="is-stat-value">{overallStats.operationalEfficiency}</span>
                     </div>
                 </section>
-
-                {/* المخططات البيانية باستخدام Recharts */}
                 <section className="is-charts-grid">
                     <div className="is-chart-card">
                         <h3 className="is-chart-title">Cost vs. Performance (Scatter)</h3>
@@ -103,8 +149,6 @@ const ImprovementStatistics = () => {
                         </div>
                     </div>
                 </section>
-
-                {/* جدول البيانات */}
                 <div className="is-table-wrapper">
                     <table className="is-table">
                         <thead>
@@ -134,6 +178,4 @@ const ImprovementStatistics = () => {
             </div>
         </div>
     );
-};
-
-export default ImprovementStatistics;
+}
