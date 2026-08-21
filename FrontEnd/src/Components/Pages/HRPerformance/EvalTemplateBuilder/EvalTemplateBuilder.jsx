@@ -480,12 +480,12 @@ export default function EvalTemplateBuilder() {
               style={{ padding: '10px 16px' }}
             >
               <span className="material-symbols-outlined">add_circle</span>
-              حفظ كنسخة جديدة
+              {t('save_as_new') || 'حفظ كنسخة جديدة'}
             </button>
           )}
           <button className="etb-save-btn" onClick={() => handleSave(false)} disabled={!weightsOk || isSaving}>
             <span className="material-symbols-outlined">{saved ? 'check_circle' : 'save'}</span>
-            {saved ? t('saved') : (templateId ? 'حفظ التعديلات' : t('save_template'))}
+            {saved ? t('saved') : (templateId ? (t('save_changes') || 'حفظ التعديلات') : t('save_template'))}
           </button>
         </div>
       </div>
@@ -495,11 +495,11 @@ export default function EvalTemplateBuilder() {
         <div className="etb-sec-head">
           <div className="etb-sec-title">
             <span className="material-symbols-outlined">view_carousel</span>
-            <span>قوالب التقييم المحفوظة في النظام ({savedTemplates.length})</span>
+            <span>{t('saved_templates') || 'قوالب التقييم المحفوظة في النظام'} ({savedTemplates.length})</span>
           </div>
           <button className="etb-new-tpl-btn" onClick={handleCreateNewTemplate}>
             <span className="material-symbols-outlined">add</span>
-            <span>إنشاء قالب جديد</span>
+            <span>{t('create_new') || 'إنشاء قالب جديد'}</span>
           </button>
         </div>
 
@@ -518,19 +518,19 @@ export default function EvalTemplateBuilder() {
                 <div className="etb-tpl-header">
                   <div className="etb-tpl-badges">
                     {hasActiveCycle && (
-                      <span className="etb-badge-active-cycle" title={`دورة نشطة: ${tpl.active_cycle.title}`}>
+                      <span className="etb-badge-active-cycle" title={`${t('active_for_cycle') || 'دورة نشطة'}: ${tpl.active_cycle.title}`}>
                         <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>check_circle</span>
-                        مفعل لدورة: {tpl.active_cycle.title}
+                        {t('active_for_cycle') || 'مفعل لدورة'}: {tpl.active_cycle.title}
                       </span>
                     )}
                     {tpl.is_default && (
                       <span className="etb-badge-default">
                         <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>star</span>
-                        القالب الافتراضي
+                        {t('default_badge') || 'القالب الافتراضي'}
                       </span>
                     )}
                     <span style={{ fontSize: '11px', color: '#94a3b8' }}>
-                      {tpl.cycles_count || 0} دورات
+                      {tpl.cycles_count || 0} {t('cycles_count') || 'دورات'}
                     </span>
                   </div>
 
@@ -546,7 +546,7 @@ export default function EvalTemplateBuilder() {
                   {hasActiveCycle && (
                     <div className="etb-tpl-cycle-info">
                       <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>event</span>
-                      <span>فترة الدورة: {tpl.active_cycle.start_date} → {tpl.active_cycle.end_date}</span>
+                      <span>{t('cycle_period') || 'فترة الدورة'}: {tpl.active_cycle.start_date} → {tpl.active_cycle.end_date}</span>
                     </div>
                   )}
                 </div>
@@ -597,13 +597,13 @@ export default function EvalTemplateBuilder() {
                 <div className="etb-tpl-footer">
                   <button className="etb-card-load-btn" onClick={() => handleSelectTemplate(tpl)}>
                     <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>tune</span>
-                    <span>{isSelected ? 'قيد التعديل الآن' : 'تعديل في المحرر'}</span>
+                    <span>{isSelected ? (t('currently_editing') || 'قيد التعديل الآن') : (t('edit_in_editor') || 'تعديل في المحرر')}</span>
                   </button>
 
                   {!hasActiveCycle && (!tpl.cycles_count || tpl.cycles_count === 0) && (
                     <button 
                       className="etb-card-del-btn" 
-                      title="حذف القالب"
+                      title={t('delete') || 'حذف القالب'}
                       onClick={(e) => handleDeleteTemplate(tpl.id, e)}
                     >
                       <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>delete</span>
@@ -857,21 +857,6 @@ export default function EvalTemplateBuilder() {
       {tab === 'preview' && (
         <div className="etb-tab-body">
           <FormulaPreview />
-          {/* JSON payload preview */}
-          <div className="card-hr etb-json-wrap">
-            <div className="card-title-hr">
-              <span>
-                <span className="material-symbols-outlined">data_object</span>
-                {t('json_payload')}
-              </span>
-              <button className="etb-copy-btn"
-                onClick={() => navigator.clipboard.writeText(JSON.stringify(buildPayload(), null, 2))}>
-                <span className="material-symbols-outlined">content_copy</span>
-                {t('copy')}
-              </button>
-            </div>
-            <pre className="etb-json-pre">{JSON.stringify(buildPayload(), null, 2)}</pre>
-          </div>
         </div>
       )}
     </div>

@@ -20,7 +20,7 @@ export default function ReportsTable({ evaluations = [] }) {
         return (
             <tr>
                 <td colSpan="9" style={{ textAlign: 'center', padding: '30px', color: '#94a3b8' }}>
-                    لا توجد تقييمات مسجلة لهذه الدورة
+                    {t("no_evaluations") || 'لا توجد تقييمات مسجلة لهذه الدورة'}
                 </td>
             </tr>
         );
@@ -41,9 +41,9 @@ export default function ReportsTable({ evaluations = [] }) {
 
                 return (
                     <React.Fragment key={e.id || i}>
-                        <tr className="clickable-row" onClick={() => toggleRowDetails(i)}>
+                        <tr className={`clickable-row ${isExpanded ? 'active-row' : ''}`} onClick={() => toggleRowDetails(i)}>
                             <td>
-                                <i className={`fa-solid ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}`} style={{ marginRight: '8px', cursor: 'pointer' }}></i>
+                                <i className={`fa-solid fa-chevron-down row-expand-arrow ${isExpanded ? 'expanded' : ''}`} style={{ marginInlineEnd: '8px', cursor: 'pointer' }}></i>
                                 {empName}
                             </td>
                             <td>{dept}</td>
@@ -60,7 +60,7 @@ export default function ReportsTable({ evaluations = [] }) {
 
                         {isExpanded && (
                             <tr className="detail-row expanded">
-                                <td colSpan="9">
+                                <td colSpan="9" className="detail-row-cell">
                                     <div className="detail-row-content">
                                         <div className="weights-grid-hr">
                                             <FinalScoreBreakdown 
@@ -77,8 +77,8 @@ export default function ReportsTable({ evaluations = [] }) {
                                             />
                                         </div>
 
-                                        <div>
-                                            <h4>{t("Gaps")}</h4>
+                                        <div className="gaps-and-ai-section">
+                                            <h4 className="gaps-section-title">{t("Gaps")}</h4>
                                             <div className='fl-per-re'>
                                                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                                     {scores.tasks < 80 && <CompetencyGapTag gapType="technical" gapName="التنفيذ الفني" />}

@@ -5,6 +5,7 @@ import DifficultyBadge from '../../../../../Shared/Performance/DifficultyBadge/D
 import PriorityBadge from '../../../../../Shared/Performance/PriorityBadge/PriorityBadge';
 import StatusBadge from '../../../../../Shared/Performance/StatusBadge/StatusBadge';
 import TaskFormModal from '../../../../../Shared/Performance/TaskFormModal/TaskFormModal';
+import { useTranslation } from 'react-i18next';
 import { 
     getDepartmentTasks, 
     getDepartmentEmployees, 
@@ -15,6 +16,9 @@ import {
 
 const DepartmentTasks = () => {
     const navigate = useNavigate();
+    const { t, i18n } = useTranslation('EmployeePortal/DepartmentTasks');
+    const isAr = i18n ? i18n.language === 'ar' : false;
+
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
     const [priorityFilter, setPriorityFilter] = useState('');
@@ -25,12 +29,8 @@ const DepartmentTasks = () => {
     const [employeesList, setEmployeesList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Check language
-    const currentLang = sessionStorage.getItem('lang') || 'en';
-    const isAr = currentLang === 'ar';
-
     const formatTaskForFrontend = (backendTask) => {
-        const empName = backendTask.employee?.name || backendTask.employee?.full_name || (isAr ? 'موظف غير معروف' : 'Unknown Employee');
+        const empName = backendTask.employee?.name || backendTask.employee?.full_name || t('alerts.unknownEmployee');
         const avatar = empName
             ? empName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
             : '??';
@@ -41,7 +41,7 @@ const DepartmentTasks = () => {
             description: backendTask.description || '',
             employee_name: empName,
             employee_avatar: avatar,
-            due_date: backendTask.due_date, // Keep backend format YYYY-MM-DD
+            due_date: backendTask.due_date,
             difficulty: backendTask.difficulty || 'medium',
             priority: backendTask.priority || 'medium',
             status: backendTask.status || 'pending',
@@ -78,7 +78,7 @@ const DepartmentTasks = () => {
 
     useEffect(() => {
         loadData();
-    }, []);
+    }, [i18n.language]);
 
     // Success handlers
     const handleAssignSuccess = (newTask) => {
@@ -91,20 +91,16 @@ const DepartmentTasks = () => {
 
     // Handle delete
     const handleDelete = async (id) => {
-        const confirmMsg = isAr 
-            ? 'هل أنت متأكد من رغبتك في حذف هذه المهمة نهائياً؟' 
-            : 'Are you sure you want to delete this task? This action is irreversible.';
-        if (window.confirm(confirmMsg)) {
+        if (window.confirm(t('alerts.deleteConfirm'))) {
             try {
                 await deleteTask(id);
                 setTasks(tasks.filter(t => t.id !== id));
             } catch (error) {
                 console.error("Failed to delete task:", error);
-                alert(isAr ? 'فشل حذف المهمة.' : 'Failed to delete task.');
+                alert(t('alerts.deleteError'));
             }
         }
     };
-
 
     // Filters
     const filteredTasks = tasks.filter(task => {
@@ -127,12 +123,12 @@ const DepartmentTasks = () => {
         <section className={`tab-content active performance-department-tasks ${isAr ? 'rtl' : 'ltr'}`}>
             <div className="top-header">
                 <div className="page-title">
-                    <h1>{isAr ? 'لوحة تحكم مهام القسم' : 'Department Tasks Dashboard'}</h1>
-                    <p>{isAr ? 'مراقبة وتقييم نسب إنجاز وجودة المهام لموظفي القسم' : "Monitor and evaluate your team's task completion and quality scores"}</p>
+                    <h1>{t('title')}</h1>
+                    <p>{t('subtitle')}</p>
                 </div>
                 <button className="btn btn-primary" onClick={() => setShowAssignModal(true)}>
                     <i className="fa-solid fa-plus"></i>
-                    <span>{isAr ? 'إسناد تكليف جديد' : 'Assign New Task'}</span>
+                    <span>{t('assignNewTask')}</span>
                 </button>
             </div>
 
@@ -140,32 +136,32 @@ const DepartmentTasks = () => {
             <div className="stats-grid">
                 <div className="stat-card total-tasks">
                     <i className="fa-solid fa-list-check stat-icon"></i>
-                    <div className="stat-label">{isAr ? 'إجمالي المهام' : 'Total Dept Tasks'}</div>
+                    <div className="stat-label">{t('stats.total')}</div>
                     <div className="stat-value">{totalCount}</div>
                 </div>
                 <div className="stat-card pending">
                     <i className="fa-solid fa-clock stat-icon"></i>
-                    <div className="stat-label">{isAr ? 'معلقة / لم تبدأ' : 'Pending / Unstarted'}</div>
+                    <div className="stat-label">{t('stats.pending')}</div>
                     <div className="stat-value">{pendingCount}</div>
                 </div>
                 <div className="stat-card progress">
                     <i className="fa-solid fa-spinner stat-icon"></i>
-                    <div className="stat-label">{isAr ? 'قيد التنفيذ' : 'In Progress'}</div>
+                    <div className="stat-label">{t('stats.inProgress')}</div>
                     <div className="stat-value">{progressCount}</div>
                 </div>
                 <div className="stat-card review">
                     <i className="fa-solid fa-envelope-open-text stat-icon"></i>
-                    <div className="stat-label">{isAr ? 'بانتظار المراجعة' : 'Pending Review'}</div>
+                    <div className="stat-label">{t('stats.pendingReview')}</div>
                     <div className="stat-value" style={{ color: 'var(--color-review)' }}>{reviewCount}</div>
                 </div>
                 <div className="stat-card revision">
                     <i className="fa-solid fa-triangle-exclamation stat-icon"></i>
-                    <div className="stat-label">{isAr ? 'تحتاج تعديل' : 'Needs Revision'}</div>
+                    <div className="stat-label">{t('stats.needsRevision')}</div>
                     <div className="stat-value">{revisionCount}</div>
                 </div>
                 <div className="stat-card scored">
                     <i className="fa-solid fa-circle-check stat-icon"></i>
-                    <div className="stat-label">{isAr ? 'مقيّمة / مكتملة' : 'Scored / Completed'}</div>
+                    <div className="stat-label">{t('stats.scored')}</div>
                     <div className="stat-value">{scoredCount}</div>
                 </div>
             </div>
@@ -173,9 +169,9 @@ const DepartmentTasks = () => {
             {/* Table Card */}
             <div className="card">
                 <div className="card-title">
-                    <span>{isAr ? 'قائمة المهام النشطة' : 'Active Tasks List'}</span>
+                    <span>{t('activeTasksList')}</span>
                     <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: 'normal' }}>
-                        {isAr ? 'بوابة المدير • قسم تكنولوجيا المعلومات' : 'Manager Portal • IT Division'}
+                        {t('managerPortalSub')}
                     </span>
                 </div>
 
@@ -186,40 +182,40 @@ const DepartmentTasks = () => {
                         <input 
                             type="text" 
                             className="search-input" 
-                            placeholder={isAr ? 'البحث عن مهمة أو اسم موظف...' : 'Search by task title or employee name...'}
+                            placeholder={t('searchPlaceholder')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
                     
                     <div className="filter-group">
-                        <span className="filter-label">{isAr ? 'الحالة' : 'Status'}</span>
+                        <span className="filter-label">{t('statusFilter')}</span>
                         <select 
                             className="select-input"
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
                         >
-                            <option value="">{isAr ? 'جميع الحالات' : 'All Statuses'}</option>
-                            <option value="pending">{isAr ? 'معلقة' : 'Pending'}</option>
-                            <option value="in_progress">{isAr ? 'قيد التنفيذ' : 'In Progress'}</option>
-                            <option value="pending_review">{isAr ? 'بانتظار المراجعة' : 'Pending Review'}</option>
-                            <option value="needs_revision">{isAr ? 'تحتاج تعديل' : 'Needs Revision'}</option>
-                            <option value="scored">{isAr ? 'مقيّمة' : 'Scored'}</option>
+                            <option value="">{t('allStatuses')}</option>
+                            <option value="pending">{t('statuses.pending')}</option>
+                            <option value="in_progress">{t('statuses.in_progress')}</option>
+                            <option value="pending_review">{t('statuses.pending_review')}</option>
+                            <option value="needs_revision">{t('statuses.needs_revision')}</option>
+                            <option value="scored">{t('statuses.scored')}</option>
                         </select>
                     </div>
 
                     <div className="filter-group">
-                        <span className="filter-label">{isAr ? 'الأولوية' : 'Priority'}</span>
+                        <span className="filter-label">{t('priorityFilter')}</span>
                         <select 
                             className="select-input"
                             value={priorityFilter}
                             onChange={(e) => setPriorityFilter(e.target.value)}
                         >
-                            <option value="">{isAr ? 'جميع الأولويات' : 'All Priorities'}</option>
-                            <option value="low">{isAr ? 'منخفضة' : 'Low'}</option>
-                            <option value="medium">{isAr ? 'متوسطة' : 'Medium'}</option>
-                            <option value="high">{isAr ? 'عالية' : 'High'}</option>
-                            <option value="urgent">{isAr ? 'عاجلة' : 'Urgent'}</option>
+                            <option value="">{t('allPriorities')}</option>
+                            <option value="low">{t('priorities.low')}</option>
+                            <option value="medium">{t('priorities.medium')}</option>
+                            <option value="high">{t('priorities.high')}</option>
+                            <option value="urgent">{t('priorities.urgent')}</option>
                         </select>
                     </div>
                 </div>
@@ -229,27 +225,27 @@ const DepartmentTasks = () => {
                     <table className="custom-table">
                         <thead>
                             <tr>
-                                <th>{isAr ? 'عنوان التكليف' : 'Task Title'}</th>
-                                <th>{isAr ? 'الموظف المسند إليه' : 'Assigned To'}</th>
-                                <th>{isAr ? 'تاريخ الاستحقاق' : 'Due Date'}</th>
-                                <th>{isAr ? 'الصعوبة' : 'Difficulty'}</th>
-                                <th>{isAr ? 'الأولوية' : 'Priority'}</th>
-                                <th>{isAr ? 'الحالة' : 'Status'}</th>
-                                <th style={{ textAlign: isAr ? 'left' : 'right' }}>{isAr ? 'العمليات' : 'Actions'}</th>
+                                <th>{t('table.taskTitle')}</th>
+                                <th>{t('table.assignedTo')}</th>
+                                <th>{t('table.dueDate')}</th>
+                                <th>{t('table.difficulty')}</th>
+                                <th>{t('table.priority')}</th>
+                                <th>{t('table.status')}</th>
+                                <th style={{ textAlign: isAr ? 'left' : 'right' }}>{t('table.actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredTasks.length === 0 ? (
                                 <tr>
                                     <td colSpan="7" style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)' }}>
-                                        {isAr ? 'لا توجد مهام مطابقة لخيارات التصفية' : 'No tasks match current filters'}
+                                        {t('table.noTasks')}
                                     </td>
                                 </tr>
                             ) : (
                                 filteredTasks.map((task) => (
                                     <tr key={task.id}>
-                                        <td data-label={isAr ? "المهمة" : "Task"} style={{ fontWeight: 600 }}>{task.title}</td>
-                                        <td data-label={isAr ? "الموظف" : "Assigned To"}>
+                                        <td data-label={t('table.task')} style={{ fontWeight: 600 }}>{task.title}</td>
+                                        <td data-label={t('table.employee')}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                 <div className="user-avatar btn-sm" style={{ width: '26px', height: '26px', fontSize: '10px', borderColor: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                     {task.employee_avatar}
@@ -257,15 +253,15 @@ const DepartmentTasks = () => {
                                                 <span>{task.employee_name}</span>
                                             </div>
                                         </td>
-                                        <td data-label={isAr ? "تاريخ الاستحقاق" : "Due Date"}>{task.due_date}</td>
-                                        <td data-label={isAr ? "الصعوبة" : "Difficulty"}>
-                                            <DifficultyBadge difficulty={task.difficulty} lang={isAr ? 'ar' : 'en'} />
+                                        <td data-label={t('table.dueDate')}>{task.due_date}</td>
+                                        <td data-label={t('table.difficulty')}>
+                                            <DifficultyBadge difficulty={task.difficulty} lang={i18n.language} />
                                         </td>
-                                        <td data-label={isAr ? "الأولوية" : "Priority"}>
-                                            <PriorityBadge priority={task.priority} lang={isAr ? 'ar' : 'en'} />
+                                        <td data-label={t('table.priority')}>
+                                            <PriorityBadge priority={task.priority} lang={i18n.language} />
                                         </td>
-                                        <td data-label={isAr ? "الحالة" : "Status"}>
-                                            <StatusBadge status={task.status} lang={isAr ? 'ar' : 'en'} />
+                                        <td data-label={t('table.status')}>
+                                            <StatusBadge status={task.status} lang={i18n.language} />
                                         </td>
                                         <td style={{ textAlign: isAr ? 'left' : 'right' }}>
                                             <div style={{ display: 'flex', gap: '8px', justifyContent: isAr ? 'flex-start' : 'flex-end' }}>
@@ -275,7 +271,7 @@ const DepartmentTasks = () => {
                                                         onClick={() => navigate(`/portal/manager/tasks/score/${task.id}`)}
                                                     >
                                                         <i className="fa-solid fa-star"></i>
-                                                        <span>{isAr ? 'تقييم' : 'Score'}</span>
+                                                        <span>{t('table.score')}</span>
                                                     </button>
                                                 ) : task.status === 'scored' ? (
                                                     <button 
@@ -283,7 +279,7 @@ const DepartmentTasks = () => {
                                                         onClick={() => navigate(`/portal/manager/tasks/score/${task.id}`)}
                                                     >
                                                         <i className="fa-solid fa-search"></i>
-                                                        <span>{isAr ? 'التفاصيل' : 'Details'}</span>
+                                                        <span>{t('table.details')}</span>
                                                     </button>
                                                 ) : (
                                                     <button 
@@ -292,7 +288,7 @@ const DepartmentTasks = () => {
                                                         disabled
                                                     >
                                                         <i className="fa-solid fa-star"></i>
-                                                        <span>{isAr ? 'تقييم' : 'Score'}</span>
+                                                        <span>{t('table.score')}</span>
                                                     </button>
                                                 )}
 
@@ -302,7 +298,7 @@ const DepartmentTasks = () => {
                                                         onClick={() => setEditingTask(task)}
                                                     >
                                                         <i className="fa-solid fa-pen"></i>
-                                                        <span>{isAr ? 'تعديل' : 'Edit'}</span>
+                                                        <span>{t('table.edit')}</span>
                                                     </button>
                                                 ) : (
                                                     <button 
@@ -311,7 +307,7 @@ const DepartmentTasks = () => {
                                                         disabled
                                                     >
                                                         <i className="fa-solid fa-pen"></i>
-                                                        <span>{isAr ? 'تعديل' : 'Edit'}</span>
+                                                        <span>{t('table.edit')}</span>
                                                     </button>
                                                 )}
 
@@ -364,13 +360,11 @@ const DepartmentTasks = () => {
                         setShowAssignModal(false);
                     } catch (error) {
                         console.error("Failed to create task:", error);
-                        alert(isAr 
-                            ? 'فشل إنشاء المهمة. يرجى التحقق من المدخلات وأن تاريخ الاستحقاق في المستقبل.' 
-                            : 'Failed to create task. Please check input values and ensure due date is in the future.');
+                        alert(t('alerts.createError'));
                     }
                 }}
                 employees={employeesList}
-                lang={currentLang}
+                lang={i18n.language}
             />
 
             {/* Edit Task Modal */}
@@ -395,7 +389,7 @@ const DepartmentTasks = () => {
                         setEditingTask(null);
                     } catch (error) {
                         console.error("Failed to update task:", error);
-                        alert(isAr ? 'فشل تعديل المهمة.' : 'Failed to update task.');
+                        alert(t('alerts.updateError'));
                     }
                 }}
                 task={editingTask ? {
@@ -403,11 +397,10 @@ const DepartmentTasks = () => {
                     employee_id: editingTask.employee_id
                 } : null}
                 employees={employeesList}
-                lang={currentLang}
+                lang={i18n.language}
             />
         </section>
     );
 };
 
 export default DepartmentTasks;
-

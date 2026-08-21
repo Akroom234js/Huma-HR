@@ -18,5 +18,12 @@
         "Date":"Date Decided",
         "Decided":"Decided By",
         "Status":"Status"
-    }
+    },
+    "btn_approve": "Approve",
+    "btn_reject": "Reject",
+    "status_approved": "Approved",
+    "status_rejected": "Rejected",
+    "no_pending": "No pending actions awaiting approval at this time",
+    "no_logs": "No past actions recorded in audit log yet",
+    "loading": "Loading automated actions..."
 }

@@ -110,6 +110,16 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const emailInputRef = useRef(null);
+  const passwordInputRef = useRef(null);
+  const loginBtnRef = useRef(null);
+
+  useEffect(() => {
+    if (step === "login") {
+      emailInputRef.current?.focus();
+    }
+  }, [step]);
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [notification, setNotification] = useState(null); // { message, type }
   const [showDemo, setShowDemo] = useState(true);
@@ -396,19 +406,33 @@ export default function Home() {
                   <div className="con-input">
                     <label>{t("login.emailLabel")}</label>
                     <input
+                      ref={emailInputRef}
                       type="text"
                       placeholder={t("login.emailPlaceholder")}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          passwordInputRef.current?.focus();
+                        }
+                      }}
                     />
                     {errors.email && <span className="error-text">{errors.email[0]}</span>}
 
                     <label>{t("login.passwordLabel")}</label>
                     <input
+                      ref={passwordInputRef}
                       type="password"
                       placeholder={t("login.passwordPlaceholder")}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          loginBtnRef.current?.focus();
+                        }
+                      }}
                     />
                     {errors.password && <span className="error-text">{errors.password[0]}</span>}
 
@@ -420,7 +444,12 @@ export default function Home() {
                       <Link onClick={() => setStep("forgot")}>{t("login.forgetPassword")}</Link>
                     </div>
                     <div className="login-button-wrapper">
-                      <button className="ptn-login" onClick={handleLogin} disabled={loading}>
+                      <button
+                        ref={loginBtnRef}
+                        className="ptn-login"
+                        onClick={handleLogin}
+                        disabled={loading}
+                      >
                         {loading ? t("login.processing") : t("login.signInBtn")}
                       </button>
                     </div>

@@ -1,0 +1,35 @@
+{
+  "title": "تقييم التكليفات ومراجعة المخرجات",
+  "subtitle": "فحص ملفات التسليم، الجدول الزمني، ورصد درجات الجودة والاكتمال",
+  "backToDashboard": "العودة للوحة التحكم",
+  "selectTaskTitle": "اختر مهمة من القائمة لمراجعتها وتقييمها:",
+  "noTasksFound": "لا توجد مهام مسجلة للقسم حالياً.",
+  "taskDetails": "تفاصيل التكليف ومخرجات الموظف",
+  "assignedTo": "الموظف المسند إليه:",
+  "dueDate": "تاريخ الاستحقاق:",
+  "submissionDate": "تاريخ التسليم:",
+  "notSubmittedYet": "لم تسلم بعد",
+  "taskScope": "نطاق ومتطلبات المهمة",
+  "noScope": "لا يوجد وصف للمهمة",
+  "submissionNotes": "ملاحظات تسليم الموظف والروابط",
+  "noNotes": "لا توجد ملاحظات حالية",
+  "activityTimeline": "سجل مراحل النشاط (Timeline)",
+  "timeline": {
+    "taskCreated": "تم إنشاء التكليف",
+    "assignedBy": "تم تكليف الموظف بواسطة {{name}}",
+    "statusInProgress": "الحالة: قيد العمل",
+    "employeeStarted": "بدأ الموظف العمل على المهمة",
+    "submittedForReview": "تم تسليم العمل للمراجعة",
+    "pendingManagerAction": "بانتظار إجراء المدير وتقييم مخرجات العمل",
+    "finalGradeApproved": "تم رصد التقييم النهائي",
+    "gradeApprovedDesc": "الدرجة المحسوبة والمعتمدة: {{score}}"
+  },
+  "alerts": {
+    "scoreSuccess": "تم اعتماد تقييم المهمة ورصد الدرجة بنجاح!",
+    "scoreError": "فشل رصد تقييم المهمة.",
+    "revisionSuccess": "تم إرسال طلب التعديل إلى الموظف مع الملاحظات!",
+    "revisionError": "فشل إرسال طلب التعديل.",
+    "unknownEmployee": "موظف غير معروف",
+    "supervisor": "المدير"
+  }
+}

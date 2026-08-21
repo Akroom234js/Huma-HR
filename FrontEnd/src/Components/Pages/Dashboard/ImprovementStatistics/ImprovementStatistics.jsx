@@ -5,9 +5,13 @@ import {
 } from 'recharts';
 import './ImprovementStatistics.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
+import { useTranslation } from 'react-i18next';
 import apiClient from '../../../../apiConfig';
 
 export default function ImprovementStatistics() {
+    const { t, i18n } = useTranslation('Dashboard/ImprovementStatistics');
+    const isAr = i18n ? i18n.language === 'ar' : false;
+
     const [overallStats, setOverallStats] = useState({
         mostProductiveDept: '---',
         avgEmployeeCost: '---',
@@ -27,7 +31,6 @@ export default function ImprovementStatistics() {
 
                 const res = await apiClient.get('/dashboard/improvement-stats');
                 const result = res.data;
-                console.log("Data from API Payload:", result.data);
 
                 if (result && result.status && result.data) {
                     const apiData = result.data;
@@ -57,14 +60,14 @@ export default function ImprovementStatistics() {
                 }
             } catch (err) {
                 console.error("Failed fetching improvement statistics:", err);
-                setError("Failed to fetch dashboard data.");
+                setError(t('error'));
             } finally {
                 setLoading(false);
             }
         };
 
         fetchDashboardData();
-    }, []);
+    }, [i18n.language]);
 
     const getIndexClass = (score) => {
         if (score >= 90) return 'is-badge-success';
@@ -72,45 +75,45 @@ export default function ImprovementStatistics() {
         return 'is-badge-danger';
     };
 
-    if (loading) return <div style={{ padding: '40px', textAlign: 'center' }}>Loading Statistics...</div>;
+    if (loading) return <div style={{ padding: '40px', textAlign: 'center' }}>{t('loading')}</div>;
     if (error) return <div className="error-message" style={{ padding: '20px', color: 'red' }}>{error}</div>;
 
     return (
-        <div className="is-page">
+        <div className={`is-page ${isAr ? 'rtl' : 'ltr'}`}>
             <div className="is-theme-toggle-wrapper">
                 <ThemeToggle />
             </div>
 
             <header className="is-header">
-                <h1 className="is-title">Improvement Statistics</h1>
+                <h1 className="is-title">{t('title')}</h1>
             </header>
 
             <div className="is-content">
                 <section className="is-stats-grid">
                     <div className="is-stat-card">
-                        <span className="is-stat-label">Most Productive Dept.</span>
+                        <span className="is-stat-label">{t('mostProductiveDept')}</span>
                         <span className="is-stat-value">{overallStats.mostProductiveDept}</span>
                     </div>
                     <div className="is-stat-card">
-                        <span className="is-stat-label">Avg. Employee Cost</span>
+                        <span className="is-stat-label">{t('avgEmployeeCost')}</span>
                         <span className="is-stat-value">
                             {typeof overallStats.avgEmployeeCost === 'number' ? `$${overallStats.avgEmployeeCost}` : overallStats.avgEmployeeCost}
                         </span>
                     </div>
                     <div className="is-stat-card">
-                        <span className="is-stat-label">Overall Index</span>
+                        <span className="is-stat-label">{t('overallIndex')}</span>
                         <span className="is-stat-value">
                             {overallStats.overallIndex}{typeof overallStats.overallIndex === 'number' ? '%' : ''}
                         </span>
                     </div>
                     <div className="is-stat-card">
-                        <span className="is-stat-label">Operational Efficiency</span>
+                        <span className="is-stat-label">{t('operationalEfficiency')}</span>
                         <span className="is-stat-value">{overallStats.operationalEfficiency}</span>
                     </div>
                 </section>
                 <section className="is-charts-grid">
                     <div className="is-chart-card">
-                        <h3 className="is-chart-title">Cost vs. Performance (Scatter)</h3>
+                        <h3 className="is-chart-title">{t('costVsPerformance')}</h3>
                         <div className="is-chart-container">
                             <ResponsiveContainer width="100%" height="100%">
                                 <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
@@ -129,7 +132,7 @@ export default function ImprovementStatistics() {
                     </div>
 
                     <div className="is-chart-card">
-                        <h3 className="is-chart-title">Company Performance Trend</h3>
+                        <h3 className="is-chart-title">{t('performanceTrend')}</h3>
                         <div className="is-chart-container">
                             <ResponsiveContainer width="100%" height="100%">
                                 <AreaChart data={monthlyTrends} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
@@ -153,10 +156,10 @@ export default function ImprovementStatistics() {
                     <table className="is-table">
                         <thead>
                             <tr>
-                                <th>Department</th>
-                                <th>Attendance Rate</th>
-                                <th>Tasks Completed</th>
-                                <th>Performance Index</th>
+                                <th>{t('table.department')}</th>
+                                <th>{t('table.attendanceRate')}</th>
+                                <th>{t('table.tasksCompleted')}</th>
+                                <th>{t('table.performanceIndex')}</th>
                             </tr>
                         </thead>
                         <tbody>

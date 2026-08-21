@@ -1,0 +1,35 @@
+{
+  "title": "Task Evaluation & Deliverables Review",
+  "subtitle": "Inspect employee deliverables, review timeline events, and approve quality scores",
+  "backToDashboard": "Back to Dashboard",
+  "selectTaskTitle": "Select a task from the list to review and evaluate:",
+  "noTasksFound": "No department tasks found.",
+  "taskDetails": "Task Details & Deliverables",
+  "assignedTo": "Assigned To:",
+  "dueDate": "Due Date:",
+  "submissionDate": "Submission Date:",
+  "notSubmittedYet": "Not submitted yet",
+  "taskScope": "Task Scope & Description",
+  "noScope": "No description provided",
+  "submissionNotes": "Employee Submission Notes & Links",
+  "noNotes": "No notes provided yet",
+  "activityTimeline": "Activity Timeline",
+  "timeline": {
+    "taskCreated": "Task Assigned & Created",
+    "assignedBy": "Assigned by {{name}}",
+    "statusInProgress": "Status: In Progress",
+    "employeeStarted": "Employee started working on the task",
+    "submittedForReview": "Submitted for Review",
+    "pendingManagerAction": "Pending review and grading action",
+    "finalGradeApproved": "Final Grade Approved",
+    "gradeApprovedDesc": "Grade computed and approved: {{score}}"
+  },
+  "alerts": {
+    "scoreSuccess": "Task score approved and recorded successfully!",
+    "scoreError": "Failed to submit task score.",
+    "revisionSuccess": "Revision requested successfully and employee notified!",
+    "revisionError": "Failed to request revision.",
+    "unknownEmployee": "Unknown Employee",
+    "supervisor": "Supervisor"
+  }
+}

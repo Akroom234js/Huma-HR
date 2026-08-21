@@ -1,0 +1,17 @@
+{
+  "title": "Improvement Statistics",
+  "mostProductiveDept": "Most Productive Dept.",
+  "avgEmployeeCost": "Avg. Employee Cost",
+  "overallIndex": "Overall Index",
+  "operationalEfficiency": "Operational Efficiency",
+  "costVsPerformance": "Cost vs. Performance (Scatter)",
+  "performanceTrend": "Company Performance Trend",
+  "table": {
+    "department": "Department",
+    "attendanceRate": "Attendance Rate",
+    "tasksCompleted": "Tasks Completed",
+    "performanceIndex": "Performance Index"
+  },
+  "loading": "Loading Statistics...",
+  "error": "Failed to fetch dashboard data."
+}
