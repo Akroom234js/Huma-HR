@@ -579,6 +579,12 @@
   background-color: var(--primary-hover);
 }
 
+.ptn-login:focus-visible {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 3px;
+  box-shadow: 0 0 15px rgba(19, 131, 237, 0.4);
+}
+
 .icon1 i {
   font-size: 32px;
   text-align: center;
