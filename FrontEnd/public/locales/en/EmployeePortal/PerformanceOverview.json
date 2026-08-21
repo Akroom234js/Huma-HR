@@ -1,0 +1,45 @@
+{
+  "title": "Performance Management",
+  "totalScore": "Total Score",
+  "outOfTen": "/10",
+  "ratingDesc": "Your performance is rated as",
+  "excellent": "Excellent.",
+  "evaluations": "Performance Evaluations",
+  "cumulative": "Cumulative Points Overview",
+  "table": {
+    "period": "Period",
+    "yourScore": "Your Score",
+    "benchmark": "Benchmark",
+    "status": "System Management",
+    "onTrack": "On Track",
+    "exceeding": "Exceeding"
+  },
+  "rating": "Performance Rating",
+  "managerRating": "Manager's Rating",
+  "systemRating": "System Rating",
+  "details": "Details",
+  "trend": "Performance Trend",
+  "suggestedCourses": "Suggested Courses",
+  "suggestBtn": "+ Suggest",
+  "hours": "Hours",
+  "months": {
+    "jan": "Jan",
+    "feb": "Feb",
+    "mar": "Mar",
+    "apr": "Apr",
+    "may": "May"
+  },
+  "days": {
+    "mon": "Mon",
+    "tue": "Tue",
+    "wed": "Wed",
+    "thu": "Thu",
+    "fri": "Fri",
+    "sat": "Sat"
+  },
+  "courses": {
+    "comm": "Advanced Communication",
+    "pm": "Project Management Basics",
+    "leadership": "Leadership Skills"
+  }
+}

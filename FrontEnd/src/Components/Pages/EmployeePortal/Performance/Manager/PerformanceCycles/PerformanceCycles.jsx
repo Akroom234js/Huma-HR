@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PerformanceCycles.css';
 import CycleResultsModal from './CycleResultsModal';
+import { useTranslation } from 'react-i18next';
 import { getPerformanceCycles } from '../../../../../../services/performanceService';
 
 const PerformanceCycles = () => {
     const navigate = useNavigate();
-
-    // Check language
-    const currentLang = sessionStorage.getItem('lang') || 'en';
-    const isAr = currentLang === 'ar';
+    const { t, i18n } = useTranslation('EmployeePortal/PerformanceCycles');
+    const isAr = i18n ? i18n.language === 'ar' : false;
 
     const [selectedCycle, setSelectedCycle] = useState(null);
     const [cycles, setCycles] = useState([]);
@@ -30,19 +29,19 @@ const PerformanceCycles = () => {
 
     useEffect(() => {
         loadCycles();
-    }, []);
+    }, [i18n.language]);
 
     const getJobStateText = (status) => {
         switch (status) {
             case 'active':
-                return isAr ? 'بانتظار الإغلاق النهائي للحساب' : 'Awaiting final closing to calculate';
+                return t('jobStates.active');
             case 'processing':
-                return isAr ? 'جاري المعالجة وحساب الدرجات...' : 'Processing scores and AI actions...';
+                return t('jobStates.processing');
             case 'closed':
-                return isAr ? 'تمت المعالجة والحساب بنجاح' : 'Processed successfully';
+                return t('jobStates.closed');
             case 'draft':
             default:
-                return isAr ? 'غير مفتوحة بعد' : 'Unopened / Draft';
+                return t('jobStates.draft');
         }
     };
 
@@ -51,48 +50,48 @@ const PerformanceCycles = () => {
             {/* Header */}
             <div className="top-header">
                 <div className="page-title">
-                    <h1>{isAr ? 'إدارة دورات الأداء' : 'Performance Cycles Management'}</h1>
-                    <p>{isAr ? 'تتبع فترات التقييم الحالية، تجميع الدرجات، ومراقبة العمليات الخلفية للقسم' : 'Track current evaluation durations, run automated score consolidations, and inspect queue states'}</p>
+                    <h1>{t('title')}</h1>
+                    <p>{t('subtitle')}</p>
                 </div>
                 <button className="btn btn-secondary" onClick={() => navigate('/portal/manager/tasks')}>
                     <i className="fa-solid fa-arrow-left"></i>
-                    <span>{isAr ? 'العودة للوحة التحكم' : 'Back to Dashboard'}</span>
+                    <span>{t('backToDashboard')}</span>
                 </button>
             </div>
 
             {/* Cycles Table */}
             <div className="card">
                 <div className="card-title">
-                    <span>{isAr ? 'دورات الأداء الحالية والسابقة' : 'Active & Historical Cycles'}</span>
+                    <span>{t('cyclesCardTitle')}</span>
                     <span className="card-subtitle-small">
                         <i className="fa-solid fa-circle-check font-green"></i> 
-                        {isAr ? ' محرك المهام الخلفي نشط' : ' Job Queue Engine Online'}
+                        {` ${t('queueEngineOnline')}`}
                     </span>
                 </div>
 
                 {isLoading ? (
                     <div style={{ textAlign: 'center', padding: '50px', color: 'var(--text-secondary)' }}>
                         <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', marginBottom: '12px', display: 'block' }}></i>
-                        {isAr ? 'جاري تحميل الدورات...' : 'Loading cycles...'}
+                        {t('loading')}
                     </div>
                 ) : (
                     <div className="table-wrapper">
                         <table className="custom-table">
                             <thead>
                                 <tr>
-                                    <th>{isAr ? 'اسم الدورة' : 'Cycle Name'}</th>
-                                    <th>{isAr ? 'فترة التقييم' : 'Duration Period'}</th>
-                                    <th>{isAr ? 'القالب المستخدم' : 'Template'}</th>
-                                    <th>{isAr ? 'الحالة' : 'Status'}</th>
-                                    <th>{isAr ? 'حالة حساب العمليات الخلفية' : 'Background Job Score State'}</th>
-                                    <th style={{ textAlign: 'right' }}>{isAr ? 'العمليات' : 'Operations'}</th>
+                                    <th>{t('table.cycleName')}</th>
+                                    <th>{t('table.durationPeriod')}</th>
+                                    <th>{t('table.template')}</th>
+                                    <th>{t('table.status')}</th>
+                                    <th>{t('table.jobScoreState')}</th>
+                                    <th style={{ textAlign: 'right' }}>{t('table.operations')}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {cycles.length === 0 ? (
                                     <tr>
                                         <td colSpan="6" style={{ textAlign: 'center', padding: '30px', color: 'var(--text-muted)' }}>
-                                            {isAr ? 'لا توجد دورات أداء مسجلة حالياً.' : 'No performance cycles found.'}
+                                            {t('noCyclesFound')}
                                         </td>
                                     </tr>
                                 ) : (
@@ -104,28 +103,28 @@ const PerformanceCycles = () => {
                                                     {c.title}
                                                 </td>
                                                 <td>{period}</td>
-                                                <td>{c.template_name || (isAr ? 'القالب الافتراضي' : 'Default Template')}</td>
+                                                <td>{c.template_name || t('table.defaultTemplate')}</td>
                                                 <td>
                                                     {c.status === 'active' && (
                                                         <span className="badge badge-cycle-active">
                                                             <i className="fa-solid fa-circle-play pulse-dot-active"></i>
-                                                            <span>{isAr ? 'نشطة' : 'Active'}</span>
+                                                            <span>{t('statuses.active')}</span>
                                                         </span>
                                                     )}
                                                     {c.status === 'closed' && (
                                                         <span className="badge badge-cycle-closed">
-                                                            <span>{isAr ? 'مغلقة' : 'Closed'}</span>
+                                                            <span>{t('statuses.closed')}</span>
                                                         </span>
                                                     )}
                                                     {c.status === 'processing' && (
                                                         <span className="badge" style={{ backgroundColor: '#fef3c7', color: '#b45309' }}>
                                                             <i className="fa-solid fa-spinner fa-spin"></i>
-                                                            <span>{isAr ? 'قيد المعالجة' : 'Processing'}</span>
+                                                            <span>{t('statuses.processing')}</span>
                                                         </span>
                                                     )}
                                                     {c.status === 'draft' && (
                                                         <span className="badge badge-cycle-draft">
-                                                            <span>{isAr ? 'مسودة' : 'Draft'}</span>
+                                                            <span>{t('statuses.draft')}</span>
                                                         </span>
                                                     )}
                                                 </td>
@@ -145,17 +144,17 @@ const PerformanceCycles = () => {
                                                     {c.status === 'active' ? (
                                                         <button className="btn btn-secondary btn-sm disabled-opacity" disabled>
                                                             <i className="fa-solid fa-clock"></i>
-                                                            <span>{isAr ? 'سيتم الحساب عند الإغلاق' : 'Calculated upon closure'}</span>
+                                                            <span>{t('table.calculatedOnClose')}</span>
                                                         </button>
                                                     ) : c.status === 'closed' ? (
                                                         <button className="btn btn-secondary btn-sm" onClick={() => setSelectedCycle(c)}>
                                                             <i className="fa-solid fa-chart-line"></i>
-                                                            <span>{isAr ? 'عرض النتائج' : 'View Results'}</span>
+                                                            <span>{t('table.viewResults')}</span>
                                                         </button>
                                                     ) : (
                                                         <button className="btn btn-secondary btn-sm disabled-opacity" disabled>
                                                             <i className="fa-solid fa-lock"></i>
-                                                            <span>{isAr ? 'مغلق' : 'Locked'}</span>
+                                                            <span>{t('table.locked')}</span>
                                                         </button>
                                                     )}
                                                 </td>
@@ -172,42 +171,36 @@ const PerformanceCycles = () => {
             {/* Background Workers Monitor */}
             <div className="card">
                 <div className="card-title">
-                    {isAr ? 'مراقبة العمال والوظائف الخلفية' : 'Background Worker & Job Queue Monitor'}
+                    {t('workersTitle')}
                 </div>
                 <div className="workers-grid">
                     <div className="worker-monitor-card">
                         <div className="worker-header">
                             <span className="worker-name">ProcessPerformanceJob</span>
-                            <span className="badge badge-scored btn-sm">{isAr ? 'جاهز' : 'Idle'}</span>
+                            <span className="badge badge-scored btn-sm">{t('idleBadge')}</span>
                         </div>
                         <p className="worker-desc">
-                            {isAr 
-                                ? 'يقوم بحساب المتوسط المرجح لدرجات الأداء الخمس للموظفين تلقائياً فور إغلاق الدورة.'
-                                : 'Computes 5-component weighted average scores. Triggered on cycle closure or manual supervisor request.'}
+                            {t('workers.processDesc')}
                         </p>
                     </div>
 
                     <div className="worker-monitor-card">
                         <div className="worker-header">
                             <span className="worker-name">TriggerAIAnalysisJob</span>
-                            <span className="badge badge-scored btn-sm">{isAr ? 'جاهز' : 'Idle'}</span>
+                            <span className="badge badge-scored btn-sm">{t('idleBadge')}</span>
                         </div>
                         <p className="worker-desc">
-                            {isAr 
-                                ? 'يرسل بيانات الموظف إلى الذكاء الاصطناعي لتشخيص الفجوات المكتشفة وتوصيات التدريب.'
-                                : 'Dispatches prompt data to OpenAI model to establish 3 structured competency gaps and tailored training paths.'}
+                            {t('workers.aiDesc')}
                         </p>
                     </div>
 
                     <div className="worker-monitor-card">
                         <div className="worker-header">
                             <span className="worker-name">ExecutePerformanceActionsJob</span>
-                            <span className="badge badge-scored btn-sm">{isAr ? 'جاهز' : 'Idle'}</span>
+                            <span className="badge badge-scored btn-sm">{t('idleBadge')}</span>
                         </div>
                         <p className="worker-desc">
-                            {isAr 
-                                ? 'ينفذ الإجراءات التلقائية المترتبة على الدرجة كإعداد الترقية أو المكافأة أو الإنذار.'
-                                : 'Automates HR task triggers (notifying employees of warnings, queuing bonus forms, issuing letters of training).'}
+                            {t('workers.actionsDesc')}
                         </p>
                     </div>
                 </div>

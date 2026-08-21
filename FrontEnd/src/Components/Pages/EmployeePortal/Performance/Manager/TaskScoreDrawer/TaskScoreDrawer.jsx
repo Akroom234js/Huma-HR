@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './TaskScoreDrawer.css';
-import StatusBadge from '../../../../../Shared/Performance/StatusBadge/StatusBadge'
+import StatusBadge from '../../../../../Shared/Performance/StatusBadge/StatusBadge';
 import ScoreFormPanel from '../../../../../Shared/Performance/ScoreFormPanel/ScoreFormPanel';
+import { useTranslation } from 'react-i18next';
 import { 
     getTaskDetails, 
     getDepartmentTasks, 
@@ -13,54 +14,48 @@ import {
 const TaskScoreDrawer = () => {
     const navigate = useNavigate();
     const { id } = useParams();
-
-    // Check language
-    const currentLang = sessionStorage.getItem('lang') || 'en';
-    const isAr = currentLang === 'ar';
+    const { t, i18n } = useTranslation('EmployeePortal/TaskScoreDrawer');
+    const isAr = i18n ? i18n.language === 'ar' : false;
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [task, setTask] = useState(null);
     const [allTasks, setAllTasks] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    const buildTimeline = (t, isAr) => {
+    const buildTimeline = (itemData) => {
         const timeline = [];
         
         timeline.push({
-            time: t.created_at ? new Date(t.created_at).toLocaleDateString() : '',
-            title: isAr ? 'تم إنشاء التكليف' : 'Task Assigned & Created',
-            desc: isAr 
-                ? `تم تكليف الموظف بواسطة ${t.assigned_by?.name || 'المدير'}` 
-                : `Assigned by ${t.assigned_by?.name || 'Supervisor'}`,
+            time: itemData.created_at ? new Date(itemData.created_at).toLocaleDateString() : '',
+            title: t('timeline.taskCreated'),
+            desc: t('timeline.assignedBy', { name: itemData.assigned_by?.name || (isAr ? 'المدير' : 'Supervisor') }),
             completed: true
         });
         
-        if (t.status !== 'pending') {
+        if (itemData.status !== 'pending') {
             timeline.push({
                 time: '',
-                title: isAr ? 'الحالة: قيد العمل' : 'Status: In Progress',
-                desc: isAr ? 'بدأ الموظف العمل على المهمة' : 'Employee started working on the task',
+                title: t('timeline.statusInProgress'),
+                desc: t('timeline.employeeStarted'),
                 completed: true
             });
         }
         
-        if (t.completed_at || t.status === 'pending_review' || t.status === 'scored') {
+        if (itemData.completed_at || itemData.status === 'pending_review' || itemData.status === 'scored') {
             timeline.push({
-                time: t.completed_at ? new Date(t.completed_at).toLocaleString() : '',
-                title: isAr ? 'تم تسليم العمل للمراجعة' : 'Submitted for Review',
-                desc: isAr ? 'بانتظار إجراء المدير وتقييم مخرجات العمل' : 'Pending review and grading action',
-                completed: t.status === 'scored',
-                active: t.status === 'pending_review'
+                time: itemData.completed_at ? new Date(itemData.completed_at).toLocaleString() : '',
+                title: t('timeline.submittedForReview'),
+                desc: t('timeline.pendingManagerAction'),
+                completed: itemData.status === 'scored',
+                active: itemData.status === 'pending_review'
             });
         }
         
-        if (t.scored_at || t.status === 'scored') {
+        if (itemData.scored_at || itemData.status === 'scored') {
             timeline.push({
-                time: t.scored_at ? new Date(t.scored_at).toLocaleString() : '',
-                title: isAr ? 'تم رصد التقييم النهائي' : 'Final Grade Approved',
-                desc: isAr 
-                    ? `الدرجة المحسوبة والمعتمدة: ${t.task_score ?? 0}` 
-                    : `Grade computed and approved: ${t.task_score ?? 0}`,
+                time: itemData.scored_at ? new Date(itemData.scored_at).toLocaleString() : '',
+                title: t('timeline.finalGradeApproved'),
+                desc: t('timeline.gradeApprovedDesc', { score: itemData.task_score ?? 0 }),
                 active: true
             });
         }
@@ -77,17 +72,17 @@ const TaskScoreDrawer = () => {
                 const rawTasks = resTasks.data?.data || [];
                 
                 // Format all tasks for the slider
-                const formattedTasks = rawTasks.map(t => {
-                    const empName = t.employee?.name || t.employee?.full_name || (isAr ? 'موظف غير معروف' : 'Unknown Employee');
+                const formattedTasks = rawTasks.map(tItem => {
+                    const empName = tItem.employee?.name || tItem.employee?.full_name || t('alerts.unknownEmployee');
                     const avatar = empName
                         ? empName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
                         : '??';
                     return {
-                        id: t.id,
-                        title: t.title,
+                        id: tItem.id,
+                        title: tItem.title,
                         employee_name: empName,
                         employee_avatar: avatar,
-                        status: t.status
+                        status: tItem.status
                     };
                 });
                 setAllTasks(formattedTasks);
@@ -105,7 +100,7 @@ const TaskScoreDrawer = () => {
                     const resDetails = await getTaskDetails(targetTaskId);
                     if (resDetails.data?.data) {
                         const fetchedTask = resDetails.data.data;
-                        const empName = fetchedTask.employee?.name || fetchedTask.employee?.full_name || (isAr ? 'موظف غير معروف' : 'Unknown Employee');
+                        const empName = fetchedTask.employee?.name || fetchedTask.employee?.full_name || t('alerts.unknownEmployee');
                         const avatar = empName
                             ? empName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
                             : '??';
@@ -116,14 +111,14 @@ const TaskScoreDrawer = () => {
                             employee_name: empName,
                             employee_avatar: avatar,
                             due_date: fetchedTask.due_date,
-                            submission_date: fetchedTask.completed_at ? fetchedTask.completed_at.split(' ')[0] : (isAr ? 'لم تسلم بعد' : 'Not submitted yet'),
+                            submission_date: fetchedTask.completed_at ? fetchedTask.completed_at.split(' ')[0] : t('notSubmittedYet'),
                             status: fetchedTask.status,
                             days_late: fetchedTask.days_late || 0,
                             late_penalty_per_day: fetchedTask.late_penalty_per_day || 0,
-                            scope: fetchedTask.description || (isAr ? 'لا يوجد وصف للمهمة' : 'No description provided'),
-                            submission_notes: fetchedTask.manager_note || (isAr ? 'لا توجد ملاحظات حالية' : 'No notes provided yet'),
+                            scope: fetchedTask.description || t('noScope'),
+                            submission_notes: fetchedTask.manager_note || t('noNotes'),
                             task_score: fetchedTask.task_score || 0,
-                            timeline: buildTimeline(fetchedTask, isAr)
+                            timeline: buildTimeline(fetchedTask)
                         };
                         setTask(formatted);
                     }
@@ -138,7 +133,7 @@ const TaskScoreDrawer = () => {
         };
 
         init();
-    }, [id]);
+    }, [id, i18n.language]);
 
     // Handle selecting task from horizontal slider
     const handleSelectTask = (selectedTask) => {
@@ -154,11 +149,11 @@ const TaskScoreDrawer = () => {
                 quality_score: data.quality_score,
                 manager_note: data.notes
             });
-            alert(isAr ? 'تم اعتماد تقييم المهمة بنجاح!' : 'Task scored successfully!');
+            alert(t('alerts.scoreSuccess'));
             navigate('/portal/manager/tasks');
         } catch (error) {
             console.error("Failed to score task:", error);
-            alert(isAr ? 'فشل إرسال التقييم.' : 'Failed to submit score.');
+            alert(t('alerts.scoreError'));
         } finally {
             setIsSubmitting(false);
         }
@@ -170,19 +165,15 @@ const TaskScoreDrawer = () => {
             await requestRevision(task.id, {
                 manager_note: data.notes
             });
-            alert(isAr 
-                ? 'تم إرجاع المهمة للموظف للتعديل مع الملاحظات.' 
-                : 'Task sent back for revision with supervisor instructions.');
+            alert(t('alerts.revisionSuccess'));
             navigate('/portal/manager/tasks');
         } catch (error) {
             console.error("Failed to request revision:", error);
-            alert(isAr ? 'فشل طلب التعديل.' : 'Failed to request revision.');
+            alert(t('alerts.revisionError'));
         } finally {
             setIsSubmitting(false);
         }
     };
-
-    const [liveScore, setLiveScore] = useState(88.0);
 
     if (isLoading) {
         return (
@@ -198,12 +189,12 @@ const TaskScoreDrawer = () => {
             <div className={`performance-task-score-drawer ${isAr ? 'rtl' : 'ltr'}`} style={{ padding: '40px 35px' }}>
                 <div className="top-header">
                     <div className="page-title">
-                        <h1>{isAr ? 'لوحة تفاصيل وتقييم المهمة' : 'Task Evaluation & Details'}</h1>
-                        <p>{isAr ? 'لا توجد أي مهام مسندة في القسم لمراجعتها حالياً.' : 'There are no assigned tasks in this department to evaluate currently.'}</p>
+                        <h1>{t('title')}</h1>
+                        <p>{t('noTasksFound')}</p>
                     </div>
                     <button className="btn btn-secondary" onClick={() => navigate('/portal/manager/tasks')}>
                         <i className="fa-solid fa-arrow-left"></i>
-                        <span>{isAr ? 'العودة للوحة التحكم' : 'Back to Dashboard'}</span>
+                        <span>{t('backToDashboard')}</span>
                     </button>
                 </div>
                 <div className="card" style={{ textAlign: 'center', padding: '60px 20px', marginTop: '20px' }}>
@@ -226,35 +217,35 @@ const TaskScoreDrawer = () => {
             {/* Header */}
             <div className="top-header">
                 <div className="page-title">
-                    <h1>{isAr ? 'لوحة تفاصيل وتقييم المهمة' : 'Task Evaluation & Details'}</h1>
-                    <p>{isAr ? 'راجع مخرجات العمل، اطلب تعديلات، أو اعتمد النتيجة النهائية للتكليف' : 'Review deliverables, request revisions, or score the final submission'}</p>
+                    <h1>{t('title')}</h1>
+                    <p>{t('subtitle')}</p>
                 </div>
                 <button className="btn btn-secondary" onClick={() => navigate('/portal/manager/tasks')}>
                     <i className="fa-solid fa-arrow-left"></i>
-                    <span>{isAr ? 'العودة للوحة التحكم' : 'Back to Dashboard'}</span>
+                    <span>{t('backToDashboard')}</span>
                 </button>
             </div>
 
             {/* Employee Slider/Selection Row */}
             <div className="employee-slider-container">
-                <h3 className="slider-section-title">{isAr ? 'اختر موظفاً للتقييم والمراجعة:' : 'Select Employee to Evaluate:'}</h3>
+                <h3 className="slider-section-title">{t('selectTaskTitle')}</h3>
                 <div className="employee-slider">
-                    {allTasks.map((t) => {
-                        const isSelected = task.id === t.id;
+                    {allTasks.map((tItem) => {
+                        const isSelected = task.id === tItem.id;
                         return (
                             <div 
-                                key={t.id} 
+                                key={tItem.id} 
                                 className={`employee-slide-card ${isSelected ? 'active' : ''}`}
-                                onClick={() => handleSelectTask(t)}
+                                onClick={() => handleSelectTask(tItem)}
                             >
                                 <div className="employee-slide-avatar">
-                                    {t.employee_avatar}
+                                    {tItem.employee_avatar}
                                 </div>
                                 <div className="employee-slide-info">
-                                    <h4 className="employee-slide-name">{t.employee_name}</h4>
-                                    <p className="employee-slide-task-title">{t.title}</p>
+                                    <h4 className="employee-slide-name">{tItem.employee_name}</h4>
+                                    <p className="employee-slide-task-title">{tItem.title}</p>
                                     <div className="employee-slide-badge-wrapper">
-                                        <StatusBadge status={t.status} lang={currentLang} />
+                                        <StatusBadge status={tItem.status} lang={i18n.language} />
                                     </div>
                                 </div>
                             </div>
@@ -269,37 +260,37 @@ const TaskScoreDrawer = () => {
                     {/* Deliverable Review */}
                     <div className="card deliverable-card">
                         <div className="card-title">
-                            <span>{isAr ? 'مراجعة المخرجات المسلمة' : 'Submitted Deliverable Review'}</span>
-                            <StatusBadge status={task.status} lang={currentLang} />
+                            <span>{t('taskDetails')}</span>
+                            <StatusBadge status={task.status} lang={i18n.language} />
                         </div>
                         
                         <div className="task-specs-section">
                             <h3 className="task-title-bold">{task.title}</h3>
                             <div className="task-specs-meta">
-                                <div><strong>{isAr ? 'الموظف:' : 'Assignee:'}</strong> {task.employee_name}</div>
+                                <div><strong>{t('assignedTo')}</strong> {task.employee_name}</div>
                                 <div>
-                                    <strong>{isAr ? 'الموعد النهائي:' : 'Deadline:'}</strong> {task.due_date} ({isAr ? 'تم التسليم في' : 'Submitted on'} {task.submission_date} - <span className="green-text">{isAr ? 'قبل يوم واحد' : '1 day early'}</span>)
+                                    <strong>{t('dueDate')}</strong> {task.due_date} ({t('submissionDate')} {task.submission_date})
                                 </div>
                                 <div className="specs-description">
-                                    <strong>{isAr ? 'متطلبات المهمة:' : 'Scope:'}</strong> {task.scope}
+                                    <strong>{t('taskScope')}:</strong> {task.scope}
                                 </div>
                             </div>
                         </div>
 
                         <div className="employee-notes-box">
-                            <h4 className="notes-header-title">{isAr ? 'ملاحظات تسليم الموظف:' : 'Employee Submission Notes:'}</h4>
+                            <h4 className="notes-header-title">{t('submissionNotes')}:</h4>
                             <p className="notes-content">"{task.submission_notes}"</p>
                         </div>
                     </div>
 
-                    {/* Dumb Score Form Panel */}
+                    {/* Score Form Panel */}
                     <ScoreFormPanel 
                         task={task} 
                         onSubmitScore={handleScoreSubmit} 
                         onSubmitRevision={handleRevisionRequest} 
                         calculatedTaskScore={task.task_score || 0}
                         isSubmitting={isSubmitting}
-                        lang={currentLang}
+                        lang={i18n.language}
                     />
                 </div>
 
@@ -307,7 +298,7 @@ const TaskScoreDrawer = () => {
                 <div className="right-column">
                     {/* Timeline */}
                     <div className="card timeline-card">
-                        <div className="card-title">{isAr ? 'سجل تتبع الحالات' : 'Task Timeline History'}</div>
+                        <div className="card-title">{t('activityTimeline')}</div>
                         <div className="timeline">
                             {task.timeline && task.timeline.map((item, idx) => (
                                 <div key={idx} className={`timeline-item ${item.completed ? 'completed' : item.active ? 'active' : ''}`}>

@@ -1,0 +1,17 @@
+{
+  "title": "إحصائيات وتحليلات التحسين",
+  "mostProductiveDept": "القسم الأكثر إنتاجية",
+  "avgEmployeeCost": "متوسط تكلفة الموظف",
+  "overallIndex": "المؤشر العام للأداء",
+  "operationalEfficiency": "الكفاءة التشغيلية",
+  "costVsPerformance": "التكلفة مقابل الأداء (تشتت)",
+  "performanceTrend": "اتجاه الأداء العام للشركة",
+  "table": {
+    "department": "القسم",
+    "attendanceRate": "معدل الحضور",
+    "tasksCompleted": "المهام المكتملة",
+    "performanceIndex": "مؤشر الأداء"
+  },
+  "loading": "جاري تحميل الإحصائيات...",
+  "error": "فشل تحميل بيانات لوحة الإحصائيات."
+}

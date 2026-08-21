@@ -1,42 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import './PeerReviewForm.css';
 import ThemeToggle from '../../../../ThemeToggle/ThemeToggle';
+import { useTranslation } from 'react-i18next';
 import { getDepartmentEmployees, getPerformanceCycles, submitPeerEvaluation } from '../../../../../services/performanceService';
 
 const PeerReviewForm = () => {
-    const currentLang = sessionStorage.getItem('lang') || 'en';
-    const isAr = currentLang === 'ar';
-
-    const t = {
-        title: isAr ? 'تقييم وملاحظات الأقران' : 'Peer Review & Feedback',
-        subtitle: isAr ? 'قدم تقييمك وملاحظاتك المجهولة حول جهود التعاون المشتركة لزملائك' : "Submit anonymous feedback regarding your colleagues' collaborative efforts",
-        privacyTitle: isAr ? 'ضمان الخصوصية والسرية المطلقة:' : 'STRICT PRIVACY GUARANTEE:',
-        privacyBody: isAr 
-            ? 'تقييمات الأقران مجهولة المصدر بنسبة 100%. يتم تشفير الملاحظات باستخدام مفاتيح أمان مع تجزئة هويتك المشفرة، ولا يمكن لأي مدير أو مسؤول موارد بشرية معرفة مصدر التقييم.'
-            : 'Peer submissions are 100% anonymized. Your comments are automatically encrypted on submission, and your user ID is hashed using a cycle-specific security salt. No supervisors or HR representatives can trace these scores back to you.',
-        formTitle: isAr ? 'نموذج تقييم الزميل' : 'Peer Assessment Form',
-        saltActive: isAr ? 'تشفير أمان نشط' : 'Secure Salt Active',
-        selectColleague: isAr ? 'اختر الزميل المراد تقييمه *' : 'Colleague to Evaluate *',
-        selectColleaguePlaceholder: isAr ? 'اختر زميل العمل...' : 'Select Colleague...',
-        selectCycle: isAr ? 'دورة الأداء *' : 'Performance Cycle *',
-        selectCyclePlaceholder: isAr ? 'اختر دورة الأداء...' : 'Select Cycle...',
-        teamworkLabel: isAr ? 'العمل الجماعي والتعاون (0 - 10)' : 'Teamwork & Collaboration (0 - 10)',
-        teamworkDesc: isAr ? 'يقيس مدى الاستعداد للمساعدة، التناغم وروح الفريق.' : 'Evaluates readiness to help, collaboration, and team engagement.',
-        commLabel: isAr ? 'التواصل والشفافية (0 - 10)' : 'Communication & Cooperation (0 - 10)',
-        commDesc: isAr ? 'يقيس وضوح التواصل، سرعة الاستجابة والتعاطي الإيجابي.' : 'Evaluates communication clarity, transparency, and collaboration.',
-        feedbackLabel: isAr ? 'ملاحظات بناءة (اختياري)' : 'Constructive Feedback (Optional)',
-        feedbackPlaceholder: isAr ? 'اكتب ملاحظات بنّاءة ومجهولة الهوية لتحسين بيئة العمل المشتركة...' : 'Write anonymous feedback...',
-        validationTitle: isAr ? 'التحقق المجهول' : 'Anonymous Validation',
-        validationDesc: isAr ? 'التحقق القائم على التجزئة نشط لمنع التقييمات المكررة مع الحفاظ على سرية الهوية.' : 'Hash-based verification active to prevent duplicate submissions.',
-        hashSecured: isAr ? 'مؤمّن بالتجزئة' : 'HASH SECURED',
-        clearBtn: isAr ? 'مسح' : 'Clear',
-        submitBtn: isAr ? 'إرسال التقييم السري' : 'Submit Feedback',
-        submitting: isAr ? 'جاري الإرسال...' : 'Submitting...',
-        successMsg: isAr ? 'تم إرسال تقييم الزميل بنجاح وبسرية تامة!' : 'Peer review submitted successfully and anonymized!',
-        errorMsg: isAr ? 'تعذر إرسال التقييم، تأكد من عدم تكرار التقييم لنفس الزميل في هذه الدورة.' : 'Failed to submit evaluation. Please make sure you have not already evaluated this colleague in this cycle.',
-        noColleagues: isAr ? 'لا يوجد زملاء متاحين للتقييم في قسمك حالياً.' : 'No colleagues found in your department.',
-        loadingData: isAr ? 'جاري تحميل البيانات...' : 'Loading data...',
-    };
+    const { t, i18n } = useTranslation('EmployeePortal/PeerReviewForm');
+    const isAr = i18n ? i18n.language === 'ar' : false;
 
     const [colleaguesList, setColleaguesList] = useState([]);
     const [cyclesList, setCyclesList] = useState([]);
@@ -89,7 +59,7 @@ const PeerReviewForm = () => {
         };
 
         loadInitialData();
-    }, []);
+    }, [i18n.language]);
 
     const handleClear = () => {
         setSelectedColleague('');
@@ -102,7 +72,7 @@ const PeerReviewForm = () => {
         e.preventDefault();
         if (!selectedColleague) return;
         if (!selectedCycle) {
-            alert(isAr ? 'يرجى اختيار دورة الأداء أولاً.' : 'Please select a performance cycle first.');
+            alert(t('selectCycleAlert'));
             return;
         }
 
@@ -113,10 +83,10 @@ const PeerReviewForm = () => {
                 employee_profile_id: Number(selectedColleague),
                 collaboration_score: Math.round(commScore),
                 teamwork_score: Math.round(teamworkScore),
-                comment: comment.trim() || (isAr ? 'تقييم تعاون إيجابي وتواصل فعّال.' : 'Positive collaboration and effective communication.')
+                comment: comment.trim() || t('defaultComment')
             });
 
-            alert(t.successMsg);
+            alert(t('successMsg'));
             handleClear();
         } catch (error) {
             console.error("Error submitting peer review:", error);
@@ -126,21 +96,21 @@ const PeerReviewForm = () => {
                 const detailed = Object.values(errors).flat().join('\n');
                 if (detailed) serverMsg = detailed;
             }
-            alert(serverMsg || t.errorMsg);
+            alert(serverMsg || t('errorMsg'));
         } finally {
-            setSubmitting(false);
+            setIsSubmitting(false);
         }
     };
 
     return (
         <div className={`peer-review-portal-container ${isAr ? 'rtl' : 'ltr'}`}>
             <section className="peer-header-section">
-                <h1>{t.title}</h1>
+                <h1>{t('title')}</h1>
                 <div className="sm-theme-toggle-wrapper">
                     <ThemeToggle />
                 </div>
                 <p className="subtitle">
-                    {t.subtitle}
+                    {t('subtitle')}
                 </p>
             </section>
 
@@ -149,28 +119,28 @@ const PeerReviewForm = () => {
                     <i className="fa-solid fa-user-shield"></i>
                 </div>
                 <div className="privacy-text-content">
-                    <strong>{t.privacyTitle}</strong> {t.privacyBody}
+                    <strong>{t('privacyTitle')}</strong> {t('privacyBody')}
                 </div>
             </div>
 
             <div className="peer-card-body">
                 <div className="peer-card-header-flex">
-                    <h2 className="card-inner-title">{t.formTitle}</h2>
+                    <h2 className="card-inner-title">{t('formTitle')}</h2>
                     <span className="salt-status-badge">
-                        <i className="fa-solid fa-key"></i> {t.saltActive}
+                        <i className="fa-solid fa-key"></i> {t('saltActive')}
                     </span>
                 </div>
 
                 {loading ? (
                     <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
                         <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', marginBottom: '12px', display: 'block' }}></i>
-                        {t.loadingData}
+                        {t('loadingData')}
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit} className="peer-actual-form">
                         {cyclesList.length > 0 && (
                             <div className="peer-form-group">
-                                <label>{t.selectCycle}</label>
+                                <label>{t('selectCycle')}</label>
                                 <select
                                     className="peer-select-input"
                                     value={selectedCycle}
@@ -178,7 +148,7 @@ const PeerReviewForm = () => {
                                     required
                                 >
                                     <option value="" disabled hidden>
-                                        {t.selectCyclePlaceholder}
+                                        {t('selectCyclePlaceholder')}
                                     </option>
                                     {cyclesList.map(c => (
                                         <option key={c.id} value={c.id}>
@@ -190,7 +160,7 @@ const PeerReviewForm = () => {
                         )}
 
                         <div className="peer-form-group">
-                            <label>{t.selectColleague}</label>
+                            <label>{t('selectColleague')}</label>
                             <select
                                 className="peer-select-input"
                                 value={selectedColleague}
@@ -207,14 +177,14 @@ const PeerReviewForm = () => {
                                 ))}
                             </select>
                             {colleaguesList.length === 0 && (
-                                <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '6px' }}>{t.noColleagues}</p>
+                                <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '6px' }}>{t('noColleagues')}</p>
                             )}
                         </div>
 
                         <div className="peer-form-group slider-box-wrap">
                             <div className="slider-label-header">
                                 <span className="slider-title">
-                                    {t.teamworkLabel}
+                                    {t('teamworkLabel')}
                                 </span>
                                 <span className="slider-counter-badge">
                                     {teamworkScore.toFixed(1)}
@@ -234,14 +204,14 @@ const PeerReviewForm = () => {
                             />
 
                             <p className="slider-bottom-desc">
-                                {t.teamworkDesc}
+                                {t('teamworkDesc')}
                             </p>
                         </div>
 
                         <div className="peer-form-group slider-box-wrap">
                             <div className="slider-label-header">
                                 <span className="slider-title">
-                                    {t.commLabel}
+                                    {t('commLabel')}
                                 </span>
                                 <span className="slider-counter-badge">
                                     {commScore.toFixed(1)}
@@ -261,16 +231,16 @@ const PeerReviewForm = () => {
                             />
 
                             <p className="slider-bottom-desc">
-                                {t.commDesc}
+                                {t('commDesc')}
                             </p>
                         </div>
 
                         <div className="peer-form-group">
-                            <label>{t.feedbackLabel}</label>
+                            <label>{t('feedbackLabel')}</label>
                             <textarea
                                 className="peer-textarea-field"
                                 rows={4}
-                                placeholder={t.feedbackPlaceholder}
+                                placeholder={t('feedbackPlaceholder')}
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
                             />
@@ -278,12 +248,12 @@ const PeerReviewForm = () => {
 
                         <div className="anonymous-validation-footer-box">
                             <div className="validation-meta-text">
-                                <h4>{t.validationTitle}</h4>
-                                <p>{t.validationDesc}</p>
+                                <h4>{t('validationTitle')}</h4>
+                                <p>{t('validationDesc')}</p>
                             </div>
 
                             <span className="hash-secured-badge">
-                                <i className="fa-solid fa-shield-halved"></i> {t.hashSecured}
+                                <i className="fa-solid fa-shield-halved"></i> {t('hashSecured')}
                             </span>
                         </div>
 
@@ -293,7 +263,7 @@ const PeerReviewForm = () => {
                                 className="btn-peer-clear"
                                 onClick={handleClear}
                             >
-                                {t.clearBtn}
+                                {t('clearBtn')}
                             </button>
 
                             <button 
@@ -305,7 +275,7 @@ const PeerReviewForm = () => {
                                     <i className="fa-solid fa-spinner fa-spin"></i>
                                 ) : (
                                     <>
-                                        <i className="fa-solid fa-lock"></i> {t.submitBtn}
+                                        <i className="fa-solid fa-lock"></i> {t('submitBtn')}
                                     </>
                                 )}
                             </button>

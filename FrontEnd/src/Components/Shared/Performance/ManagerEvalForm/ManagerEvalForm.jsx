@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './ManagerEvalForm.css';
+import { useTranslation } from 'react-i18next';
 
 const ManagerEvalForm = ({ 
     employeeName = '', 
@@ -8,7 +9,8 @@ const ManagerEvalForm = ({
     managerScore = 0, // Passed from parent/backend
     lang 
 }) => {
-    const currentLang = lang || sessionStorage.getItem('lang') || 'en';
+    const { i18n } = useTranslation();
+    const currentLang = lang || (i18n ? i18n.language : sessionStorage.getItem('lang')) || 'en';
     const isAr = currentLang === 'ar';
 
     // State variables for form fields

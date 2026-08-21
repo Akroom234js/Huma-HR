@@ -1,8 +1,10 @@
 import React from 'react';
 import './ManagerNoteBox.css';
+import { useTranslation } from 'react-i18next';
 
 const ManagerNoteBox = ({ notes = '', isRevision = false, lang }) => {
-    const currentLang = lang || sessionStorage.getItem('lang') || 'en';
+    const { i18n } = useTranslation();
+    const currentLang = lang || (i18n ? i18n.language : sessionStorage.getItem('lang')) || 'en';
     const isAr = currentLang === 'ar';
 
     if (!notes) return null;

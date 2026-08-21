@@ -1,5 +1,6 @@
 import React from 'react';
 import './TaskScoreBreakdown.css';
+import { useTranslation } from 'react-i18next';
 
 const TaskScoreBreakdown = ({
     completionScore = 0,
@@ -11,7 +12,8 @@ const TaskScoreBreakdown = ({
     finalScore = 0,
     lang
 }) => {
-    const currentLang = lang || sessionStorage.getItem('lang') || 'en';
+    const { i18n } = useTranslation();
+    const currentLang = lang || (i18n ? i18n.language : sessionStorage.getItem('lang')) || 'en';
     const isAr = currentLang === 'ar';
 
     return (

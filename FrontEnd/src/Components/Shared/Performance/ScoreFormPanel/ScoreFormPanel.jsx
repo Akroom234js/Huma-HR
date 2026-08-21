@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './ScoreFormPanel.css';
+import { useTranslation } from 'react-i18next';
 
 const ScoreFormPanel = ({
     task = {},
@@ -9,7 +10,8 @@ const ScoreFormPanel = ({
     isSubmitting = false,
     lang
 }) => {
-    const currentLang = lang || sessionStorage.getItem('lang') || 'en';
+    const { i18n } = useTranslation();
+    const currentLang = lang || (i18n ? i18n.language : sessionStorage.getItem('lang')) || 'en';
     const isAr = currentLang === 'ar';
 
     // State variables

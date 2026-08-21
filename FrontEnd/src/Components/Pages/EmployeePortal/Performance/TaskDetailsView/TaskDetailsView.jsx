@@ -6,37 +6,15 @@ import DeadlineAlert from '../../../../Shared/Performance/DeadlineAlert/Deadline
 import ManagerNoteBox from '../../../../Shared/Performance/ManagerNoteBox/ManagerNoteBox';
 import TaskScoreBreakdown from '../../../../Shared/Performance/TaskScoreBreakdown/TaskScoreBreakdown';
 import ThemeToggle from '../../../../ThemeToggle/ThemeToggle';
+import { useTranslation } from 'react-i18next';
 import { getTaskDetails, completeTask, startTask } from '../../../../../services/performanceService';
 
 const TaskDetailsView = () => {
     const navigate = useNavigate();
     const { id, taskId } = useParams();
     const activeTaskId = id || taskId;
-
-    const currentLang = sessionStorage.getItem('lang') || 'en';
-    const isAr = currentLang === 'ar';
-
-    const t = {
-        title: isAr ? 'تفاصيل ومخرجات المهمة' : 'Task Deliverable Details',
-        subtitle: isAr ? 'مراجعة متطلبات المهمة، فحص ملاحظات المشرف، وتقديم المخرجات' : 'Review requirements, inspect supervisor revision comments, and upload deliverables',
-        backBtn: isAr ? 'العودة للمهام' : 'Back to Tasks',
-        specifications: isAr ? 'مواصفات وتفاصيل المهمة' : 'Task Specifications',
-        submissionLabel: isAr ? 'نص المخرجات والروابط المرفقة *' : 'Submission Text & Links *',
-        submissionPlaceholder: isAr ? 'أدخل تفاصيل الإنجاز، روابط المستودع، التوثيق، أو الملاحظات...' : 'Enter deliverable details, repository links, documentation, or remarks...',
-        attachFiles: isAr ? 'إرفاق ملفات الإنجاز (PDF, ZIP, الصور - حتى 10MB)' : 'Attach Artifact Files (PDF, ZIP, Image - Max 10MB)',
-        chooseFile: isAr ? 'اختر ملف' : 'Choose File',
-        noFile: isAr ? 'لم يتم اختيار ملف' : 'No file chosen',
-        cancel: isAr ? 'إلغاء' : 'Cancel',
-        resubmit: isAr ? 'إعادة تسليم المخرجات' : 'Resubmit Deliverables',
-        submit: isAr ? 'تسليم المهمة للمراجعة' : 'Submit for Review',
-        startTask: isAr ? 'بدء المهمة أولاً' : 'Start Task First',
-        breakdownTitle: isAr ? 'تفاصيل احتساب درجة المهمة' : 'Completed Task Grades Breakdown',
-        loading: isAr ? 'جاري تحميل تفاصيل المهمة...' : 'Loading task details...',
-        successSubmit: isAr ? 'تم تسليم المهمة بنجاح وهي قيد المراجعة!' : 'Task submitted successfully and is pending review!',
-        failedSubmit: isAr ? 'تعذر تسليم المهمة، يرجى المحاولة مرة أخرى.' : 'Failed to submit task, please try again.',
-        difficulty: isAr ? 'الصعوبة:' : 'Difficulty:',
-        priority: isAr ? 'الأولوية:' : 'Priority:',
-    };
+    const { t, i18n } = useTranslation('EmployeePortal/TaskDetailsView');
+    const isAr = i18n ? i18n.language === 'ar' : false;
 
     const [task, setTask] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -60,7 +38,7 @@ const TaskDetailsView = () => {
 
     useEffect(() => {
         fetchTask();
-    }, [activeTaskId]);
+    }, [activeTaskId, i18n.language]);
 
     const handleFileChange = (e) => {
         if (e.target.files.length > 0) {
@@ -74,15 +52,14 @@ const TaskDetailsView = () => {
 
         try {
             setSubmitting(true);
-            // In API completeTask takes data payload
             await completeTask(task.id, {
                 submission_notes: submissionText,
             });
-            alert(t.successSubmit);
+            alert(t('successSubmit'));
             navigate('/portal/performance');
         } catch (error) {
             console.error("Error submitting task deliverable:", error);
-            alert(t.failedSubmit);
+            alert(t('failedSubmit'));
         } finally {
             setSubmitting(false);
         }
@@ -92,7 +69,7 @@ const TaskDetailsView = () => {
         return (
             <div className="task-details-container" style={{ textAlign: 'center', padding: '60px' }}>
                 <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2.5rem', color: '#6366f1' }}></i>
-                <p style={{ marginTop: '16px', color: '#64748b' }}>{t.loading}</p>
+                <p style={{ marginTop: '16px', color: '#64748b' }}>{t('loading')}</p>
             </div>
         );
     }
@@ -100,9 +77,9 @@ const TaskDetailsView = () => {
     if (!task) {
         return (
             <div className="task-details-container" style={{ textAlign: 'center', padding: '60px' }}>
-                <h2>{isAr ? 'المهمة غير موجودة' : 'Task Not Found'}</h2>
+                <h2>{t('taskNotFound')}</h2>
                 <button className="btn-back" onClick={() => navigate('/portal/performance')} style={{ marginTop: '16px' }}>
-                    {t.backBtn}
+                    {t('backBtn')}
                 </button>
             </div>
         );
@@ -124,8 +101,8 @@ const TaskDetailsView = () => {
         <div className={`task-details-container ${isAr ? 'rtl' : 'ltr'}`}>
             <div className="details-header-section">
                 <div className="title-block">
-                    <h1>{t.title}</h1>
-                    <p className="subtitle">{t.subtitle}</p>
+                    <h1>{t('title')}</h1>
+                    <p className="subtitle">{t('subtitle')}</p>
                 </div>
 
                 <div className="sm-theme-toggle-wrapper">
@@ -134,11 +111,11 @@ const TaskDetailsView = () => {
 
                 <button className="btn-back" onClick={() => navigate('/portal/performance')}>
                     <i className="fa-solid fa-arrow-left"></i>
-                    {t.backBtn}
+                    {t('backBtn')}
                 </button>
             </div>
 
-            {task.due_date && <DeadlineAlert dueDate={task.due_date} />}
+            {task.due_date && <DeadlineAlert dueDate={task.due_date} lang={i18n.language} />}
 
             <div className="details-main-card">
                 <div className="card-header-flex">
@@ -149,13 +126,13 @@ const TaskDetailsView = () => {
                 </div>
 
                 <div className="task-specifications-block">
-                    <h3>{t.specifications}</h3>
+                    <h3>{t('specifications')}</h3>
                     <p>{task.description || (isAr ? 'لا يوجد وصف مفصل لهذه المهمة.' : 'No detailed description provided.')}</p>
                     
                     <div style={{ display: 'flex', gap: '16px', marginTop: '12px', fontSize: '0.875rem', color: '#64748b' }}>
-                        {task.difficulty && <span><strong>{t.difficulty}</strong> {task.difficulty}</span>}
-                        {task.priority && <span><strong>{t.priority}</strong> {task.priority}</span>}
-                        {task.due_date && <span><strong>{isAr ? 'تاريخ الاستحقاق:' : 'Due Date:'}</strong> {task.due_date}</span>}
+                        {task.difficulty && <span><strong>{t('difficulty')}</strong> {task.difficulty}</span>}
+                        {task.priority && <span><strong>{t('priority')}</strong> {task.priority}</span>}
+                        {task.due_date && <span><strong>{t('dueDate')}</strong> {task.due_date}</span>}
                     </div>
                 </div>
 
@@ -163,6 +140,7 @@ const TaskDetailsView = () => {
                     <ManagerNoteBox
                         notes={task.manager_note}
                         isRevision={isRevision}
+                        lang={i18n.language}
                     />
                 )}
 
@@ -171,23 +149,23 @@ const TaskDetailsView = () => {
                     <form onSubmit={handleSubmit} className="submission-form">
                         <div className="form-group">
                             <label className="required-label">
-                                {t.submissionLabel}
+                                {t('submissionLabel')}
                             </label>
                             <textarea
                                 className="form-textarea"
                                 value={submissionText}
                                 onChange={(e) => setSubmissionText(e.target.value)}
-                                placeholder={t.submissionPlaceholder}
+                                placeholder={t('submissionPlaceholder')}
                                 rows={5}
                                 required
                             />
                         </div>
 
                         <div className="form-group">
-                            <label>{t.attachFiles}</label>
+                            <label>{t('attachFiles')}</label>
                             <div className="file-upload-wrapper">
                                 <label className="file-upload-btn">
-                                    {t.chooseFile}
+                                    {t('chooseFile')}
                                     <input
                                         type="file"
                                         onChange={handleFileChange}
@@ -195,7 +173,7 @@ const TaskDetailsView = () => {
                                     />
                                 </label>
                                 <span className="file-name-text">
-                                    {selectedFile ? selectedFile.name : t.noFile}
+                                    {selectedFile ? selectedFile.name : t('noFile')}
                                 </span>
                             </div>
                         </div>
@@ -206,7 +184,7 @@ const TaskDetailsView = () => {
                                 className="btn-cancel"
                                 onClick={() => navigate('/portal/performance')}
                             >
-                                {t.cancel}
+                                {t('cancel')}
                             </button>
                             <button 
                                 type="submit" 
@@ -218,7 +196,7 @@ const TaskDetailsView = () => {
                                 ) : (
                                     <>
                                         <i className="fa-solid fa-paper-plane"></i>
-                                        {isRevision ? t.resubmit : t.submit}
+                                        {isRevision ? t('resubmit') : t('submit')}
                                     </>
                                 )}
                             </button>
@@ -237,9 +215,16 @@ const TaskDetailsView = () => {
             {breakdownData && (
                 <div className="grades-breakdown-section">
                     <h3 className="section-title-secondary">
-                        {t.breakdownTitle}
+                        {t('breakdownTitle')}
                     </h3>
-                    <TaskScoreBreakdown breakdown={breakdownData} />
+                    <TaskScoreBreakdown 
+                        completionScore={breakdownData.completionScore}
+                        qualityScore={breakdownData.qualityScore}
+                        daysLate={breakdownData.daysLate}
+                        totalPenalty={breakdownData.penaltyPoints}
+                        finalScore={breakdownData.finalScore}
+                        lang={i18n.language}
+                    />
                 </div>
             )}
         </div>
