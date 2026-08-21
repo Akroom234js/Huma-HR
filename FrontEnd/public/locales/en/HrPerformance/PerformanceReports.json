@@ -38,5 +38,9 @@
     "edit":"edit",
     "delete":"delete",
     "message":"Are you sure you want to delete?",
-    "ok":"ok"
+    "ok":"ok",
+    "total_evaluated": "Total Evaluated",
+    "avg_score": "Average Score",
+    "loading": "Loading evaluations...",
+    "no_evaluations": "No evaluations recorded for this cycle"
 }
