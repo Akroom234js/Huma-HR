@@ -28,6 +28,14 @@ class PerformanceTemplate extends Model
     // ─── Helpers ─────────────────────────────────────────────────
 
     /**
+     * جلب القالب النشط الحالي (أو أول قالب متوفر كـ fallback)
+     */
+    public static function getActive(): ?self
+    {
+        return static::where('is_active', true)->first() ?? static::first();
+    }
+
+    /**
      * إرجاع إعدادات القالب بشكل موحّد
      */
     public function getConfigAttribute(): array
