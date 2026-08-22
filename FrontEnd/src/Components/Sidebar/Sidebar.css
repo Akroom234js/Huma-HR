@@ -107,6 +107,7 @@ body[dir="rtl"] {
     transition: opacity 0.3s ease 0.1s, width 0.3s ease;
     display: flex;
     align-items: center;
+    direction: ltr;
 }
 
 .brand-h {

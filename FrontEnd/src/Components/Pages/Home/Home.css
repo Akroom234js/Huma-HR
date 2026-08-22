@@ -135,6 +135,7 @@
   letter-spacing: -0.05em;
   display: flex;
   align-items: center;
+  direction: ltr;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   animation: titleGlow 3s ease-in-out infinite alternate;
 }

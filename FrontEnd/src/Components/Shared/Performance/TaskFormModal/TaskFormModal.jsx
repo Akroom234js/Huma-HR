@@ -25,6 +25,9 @@ const TaskFormModal = ({
     const [difficulty, setDifficulty] = useState('medium');
     const [priority, setPriority] = useState('medium');
     const [latePenalty, setLatePenalty] = useState(0);
+    const [localSubmitting, setLocalSubmitting] = useState(false);
+
+    const effectiveSubmitting = isSubmitting || localSubmitting;
 
     // Load task data if in edit mode
     useEffect(() => {
@@ -55,28 +58,38 @@ const TaskFormModal = ({
             setPriority('medium');
             setLatePenalty(0);
         }
+        setLocalSubmitting(false);
     }, [task, isOpen]);
 
     if (!isOpen) return null;
 
-    const handleFormSubmit = (e) => {
+    const handleFormSubmit = async (e) => {
         e.preventDefault();
+        if (effectiveSubmitting) return;
+
         if (!employeeId) {
             alert(isAr ? 'يرجى تحديد الموظف المسند إليه' : 'Please select an assigned employee');
             return;
         }
 
         if (onSubmit) {
-            onSubmit({
-                id: task?.id || undefined,
-                employee_id: employeeId,
-                title: title,
-                description: description,
-                due_date: dueDate,
-                difficulty: difficulty,
-                priority: priority,
-                late_penalty_per_day: Number(latePenalty)
-            });
+            try {
+                setLocalSubmitting(true);
+                await onSubmit({
+                    id: task?.id || undefined,
+                    employee_id: employeeId,
+                    title: title,
+                    description: description,
+                    due_date: dueDate,
+                    difficulty: difficulty,
+                    priority: priority,
+                    late_penalty_per_day: Number(latePenalty)
+                });
+            } catch (err) {
+                console.error("Task submit error:", err);
+            } finally {
+                setLocalSubmitting(false);
+            }
         }
     };
 
@@ -244,9 +257,9 @@ const TaskFormModal = ({
                         <button 
                             type="submit" 
                             className="task-btn-submit" 
-                            disabled={isSubmitting}
+                            disabled={effectiveSubmitting}
                         >
-                            {isSubmitting ? (
+                            {effectiveSubmitting ? (
                                 <>
                                     <i className="fa-solid fa-circle-notch fa-spin"></i>
                                     <span>{isAr ? 'جاري الحفظ والتكليف...' : 'Saving Assignment...'}</span>
