@@ -8,24 +8,14 @@ import apiClient from '../../../../apiConfig';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-/* ─── Static attendance data ─── */
-const attendanceData = [
-    { name: 'Olivia Rhye',    id: 'EMP-00123', dept: 'Engineering', date: '2023-10-26', timeIn: '09:05 AM', timeOut: '05:35 PM', duration: '8h 30m', status: 'onTime',  latenessReason: '-',                  img: 'https://i.pravatar.cc/150?u=olivia'  },
-    { name: 'Phoenix Baker',  id: 'EMP-00124', dept: 'Design',      date: '2023-10-26', timeIn: '09:17 AM', timeOut: '06:02 PM', duration: '8h 45m', status: 'late',     latenessReason: 'Heavy traffic',      img: 'https://i.pravatar.cc/150?u=phoenix' },
-    { name: 'Lana Steiner',   id: 'EMP-00125', dept: 'Product',     date: '2023-10-26', timeIn: '-',        timeOut: '-',        duration: '-',      status: 'onLeave',  latenessReason: '-',                  img: 'https://i.pravatar.cc/150?u=lana'    },
-    { name: 'Candice Wu',     id: 'EMP-00126', dept: 'Engineering', date: '2023-10-26', timeIn: '-',        timeOut: '-',        duration: '-',      status: 'absent',   latenessReason: '-',                  img: 'https://i.pravatar.cc/150?u=candice' },
-    { name: 'Demi Wilkinson', id: 'EMP-00127', dept: 'Design',      date: '2023-10-26', timeIn: '08:50 AM', timeOut: '05:20 PM', duration: '8h 30m', status: 'onTime',  latenessReason: '-',                  img: 'https://i.pravatar.cc/150?u=demi'    },
-    { name: 'Nathan Roberts', id: 'EMP-00128', dept: 'Marketing',   date: '2023-10-26', timeIn: '09:45 AM', timeOut: '06:15 PM', duration: '8h 30m', status: 'late',    latenessReason: 'Doctor appointment', img: 'https://i.pravatar.cc/150?u=nathan'  },
-];
-
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 
 
-/* ─── Compute total hours from "HH:MM" strings ─── */
 const calcHours = (start, end) => {
-    const [sh, sm] = start.split(':').map(Number);
-    const [eh, em] = end.split(':').map(Number);
+    if (!start || !end || !String(start).includes(':') || !String(end).includes(':')) return '—';
+    const [sh, sm] = String(start).split(':').map(Number);
+    const [eh, em] = String(end).split(':').map(Number);
     const diff = (eh * 60 + em) - (sh * 60 + sm);
     if (diff <= 0) return '—';
     const h = Math.floor(diff / 60);
@@ -33,9 +23,7 @@ const calcHours = (start, end) => {
     return m > 0 ? `${h}h ${m}m` : `${h}h`;
 };
 
-/* ══════════════════════════════════════════════════
-   SMOOTH ACCORDION — measures real height via ref
-══════════════════════════════════════════════════ */
+
 const Accordion = ({ open, children }) => {
     const innerRef = useRef(null);
     const [height, setHeight] = useState(0);
@@ -49,7 +37,6 @@ const Accordion = ({ open, children }) => {
         return () => observer.disconnect();
     }, []);
 
-    // Also recalculate when children change
     useEffect(() => {
         if (innerRef.current) setHeight(innerRef.current.scrollHeight);
     });
@@ -67,24 +54,32 @@ const Accordion = ({ open, children }) => {
     );
 };
 
-/* ══════════════════════════════════════════════════
-   MAIN COMPONENT
-══════════════════════════════════════════════════ */
 const Attendance = () => {
     const { t } = useTranslation('Dashboard/Attendance');
 
-    /* Attendance table filters */
-    const [searchTerm,   setSearchTerm]   = useState('');
-    const [deptFilter,   setDeptFilter]   = useState('');
-    const [statusFilter, setStatusFilter] = useState('');
+    const [attendanceRecords, setAttendanceRecords] = useState([]);
+    const [attendanceStats, setAttendanceStats] = useState({
+        presentToday: 0,
+        lateToday: 0,
+        avgHours: '0h',
+        latenessCount: 0
+    });
+    const [attendanceLoading, setAttendanceLoading] = useState(true);
+    const [attendanceError, setAttendanceError] = useState(null);
 
-    /* Work-hours section */
+    const [searchTerm, setSearchTerm] = useState('');
+    const [deptFilter, setDeptFilter] = useState('');
+    const [statusFilter, setStatusFilter] = useState('');
+    const [dateFilter, setDateFilter] = useState('');
+
+    const attendanceAbortRef = useRef(null);
+    const attendanceFirstRender = useRef(true);
+
     const [showWorkHours, setShowWorkHours] = useState(false);
     const [deptHours, setDeptHours]         = useState([]);
     const [editingDept, setEditingDept]     = useState(null);
     const [saved, setSaved]                 = useState(null);
 
-    /* Office locations section (Geofencing) */
     const [showLocations, setShowLocations] = useState(false);
     const [officeLocations, setOfficeLocations] = useState([]);
     const [locName, setLocName] = useState('');
@@ -95,13 +90,116 @@ const Attendance = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearchingMap, setIsSearchingMap] = useState(false);
 
-    // Leaflet References
+    const fetchAttendanceData = async (currentFilters) => {
+        if (attendanceAbortRef.current) {
+            attendanceAbortRef.current.abort();
+        }
+
+        const controller = new AbortController();
+        attendanceAbortRef.current = controller;
+
+        try {
+            setAttendanceLoading(true);
+            setAttendanceError(null);
+
+            const params = {};
+
+            if (currentFilters.date) params.date = currentFilters.date;
+            if (currentFilters.status) params.status = currentFilters.status;
+            if (currentFilters.search) params.search = currentFilters.search;
+
+            if (
+                currentFilters.department_id !== '' &&
+                currentFilters.department_id !== null &&
+                currentFilters.department_id !== undefined &&
+                !Number.isNaN(Number(currentFilters.department_id))
+            ) {
+                params.department_id = currentFilters.department_id;
+            }
+            const response = await apiClient.get('/dashboard/attendance', {
+                params,
+                signal: controller.signal
+            });
+
+            const result = response?.data || {};
+
+            if (result.status || result.success) {
+                const data = result.data || {};
+                const apiStats = data.stats || {};
+                const records = Array.isArray(data.records)
+                    ? data.records
+                    : Array.isArray(data.data)
+                        ? data.data
+                        : [];
+
+                setAttendanceStats({
+                    presentToday: apiStats.present_today ?? apiStats.presentToday ?? 0,
+                    lateToday: apiStats.late_today ?? apiStats.lateToday ?? 0,
+                    avgHours: apiStats.avg_hours ?? apiStats.avgHours ?? '0h',
+                    latenessCount: apiStats.lateness_count ?? apiStats.latenessCount ?? 0
+                });
+
+                setAttendanceRecords(records);
+            } else {
+                setAttendanceRecords([]);
+                setAttendanceError(result.message || 'Failed to fetch attendance records.');
+            }
+        } catch (error) {
+            if (error?.name === 'CanceledError' || error?.code === 'ERR_CANCELED') {
+                return;
+            }
+
+            console.error('Error fetching attendance data:', error);
+            setAttendanceError(
+                error?.response?.data?.message ||
+                error?.message ||
+                'Error connecting to the server.'
+            );
+        } finally {
+            if (!controller.signal.aborted) {
+                setAttendanceLoading(false);
+            }
+        }
+    };
+
+    useEffect(() => {
+        const filters = {
+            date: dateFilter,
+            department_id: deptFilter,
+            status: statusFilter,
+            search: searchTerm
+        };
+
+        if (attendanceFirstRender.current) {
+            attendanceFirstRender.current = false;
+            fetchAttendanceData(filters);
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            fetchAttendanceData(filters);
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [dateFilter, deptFilter, statusFilter, searchTerm]);
+
+    useEffect(() => {
+        return () => {
+            if (attendanceAbortRef.current) {
+                attendanceAbortRef.current.abort();
+            }
+        };
+    }, []);
+
+    const handleAttendanceSearchChange = (value) => {
+        setSearchTerm(value);
+    };
+
     const mapRef = useRef(null);
     const mapInstance = useRef(null);
     const markerRef = useRef(null);
     const circleRef = useRef(null);
 
-    // Leaflet broken marker asset fix
     useEffect(() => {
         if (typeof window !== 'undefined' && L.Icon.Default) {
             delete L.Icon.Default.prototype._getIconUrl;
@@ -139,10 +237,8 @@ const Attendance = () => {
         mapInstance.current.setView(position, 15);
     };
 
-    // Handle map setup when accordion is toggled open
     useEffect(() => {
         if (showLocations && mapRef.current) {
-            // Short delay to allow Accordion sliding transition height to complete
             const timer = setTimeout(() => {
                 if (!mapInstance.current && mapRef.current) {
                     const defaultSyriaLat = 34.8021;
@@ -150,7 +246,7 @@ const Attendance = () => {
 
                     const startLat = parseFloat(locLat) || defaultSyriaLat;
                     const startLon = parseFloat(locLon) || defaultSyriaLon;
-                    const startZoom = (locLat && locLon) ? 13 : 7; // Zoom 7 is ideal to show all of Syria
+                    const startZoom = (locLat && locLon) ? 13 : 7; 
 
                     mapInstance.current = L.map(mapRef.current).setView([startLat, startLon], startZoom);
                     
@@ -158,18 +254,15 @@ const Attendance = () => {
                         attribution: '&copy; OpenStreetMap contributors'
                     }).addTo(mapInstance.current);
 
-                    // Click event on map to select coordinates
                     mapInstance.current.on('click', (e) => {
                         const { lat, lng } = e.latlng;
                         setLocLat(lat.toFixed(8));
                         setLocLon(lng.toFixed(8));
                     });
 
-                    // If existing values are present, put marker immediately
                     if (locLat && locLon) {
                         updateMarker(startLat, startLon, locRadius);
                     } else {
-                        // Ask for HR's GPS permission to center on current location automatically
                         if (navigator.geolocation) {
                             navigator.geolocation.getCurrentPosition(
                                 (position) => {
@@ -204,14 +297,12 @@ const Attendance = () => {
         }
     }, [showLocations]);
 
-    // Keep circle radius visually in sync with locRadius input changes
     useEffect(() => {
         if (mapInstance.current && locLat && locLon && locRadius) {
             updateMarker(parseFloat(locLat), parseFloat(locLon), parseInt(locRadius));
         }
     }, [locLat, locLon, locRadius]);
 
-    // Fetch locations from backend
     const fetchLocations = async () => {
         try {
             const response = await apiClient.get('/office-locations');
@@ -223,17 +314,16 @@ const Attendance = () => {
         }
     };
 
-    // Fetch department hours settings from backend
     const fetchDepartmentHours = async () => {
         try {
             const response = await apiClient.get('/department-hours');
             if (response.data && response.data.data) {
                 const mappedHours = response.data.data.map(item => ({
                     dept: item.dept,
-                    startTime: item.start_time.substring(0, 5),
-                    endTime: item.end_time.substring(0, 5),
+                    startTime: String(item.start_time || '').substring(0, 5),
+                    endTime: String(item.end_time || '').substring(0, 5),
                     gracePeriod: String(item.grace_period),
-                    workDays: item.work_days
+                    workDays: Array.isArray(item.work_days) ? item.work_days : []
                 }));
                 setDeptHours(mappedHours);
             }
@@ -302,7 +392,6 @@ const Attendance = () => {
             setLocLon('');
             setLocRadius(150);
             
-            // Clean up leaflet layers
             if (markerRef.current && mapInstance.current) {
                 mapInstance.current.removeLayer(markerRef.current);
                 markerRef.current = null;
@@ -354,27 +443,31 @@ const Attendance = () => {
         }
     };
 
-    /* ── Filtered rows ── */
     const filteredData = useMemo(() => {
-        return attendanceData.filter(row => {
-            const q = searchTerm.toLowerCase();
-            const matchSearch = row.name.toLowerCase().includes(q) || row.id.toLowerCase().includes(q);
-            const matchDept   = deptFilter   === '' || row.dept === deptFilter;
-            const matchStatus = statusFilter  === '' || row.status === statusFilter;
-            return matchSearch && matchDept && matchStatus;
-        });
-    }, [searchTerm, deptFilter, statusFilter]);
+        return attendanceRecords.filter(row => {
+            const departmentId = row.department_id ?? row.department?.id;
+            const departmentName = row.dept || row.department?.name || row.department || '';
 
-    /* ── Work-hours handlers ── */
+            if (deptFilter === '') return true;
+
+            if (!Number.isNaN(Number(deptFilter)) && departmentId != null) {
+                return String(departmentId) === String(deptFilter);
+            }
+
+            return String(departmentName) === String(deptFilter);
+        });
+    }, [attendanceRecords, deptFilter]);
+
     const handleHourChange = (dept, field, value) =>
         setDeptHours(prev => prev.map(d => d.dept === dept ? { ...d, [field]: value } : d));
 
     const toggleDay = (dept, day) =>
         setDeptHours(prev => prev.map(d => {
             if (d.dept !== dept) return d;
-            const days = d.workDays.includes(day)
-                ? d.workDays.filter(wd => wd !== day)
-                : [...d.workDays, day];
+            const currentDays = Array.isArray(d.workDays) ? d.workDays : [];
+            const days = currentDays.includes(day)
+                ? currentDays.filter(wd => wd !== day)
+                : [...currentDays, day];
             return { ...d, workDays: days };
         }));
 
@@ -399,22 +492,37 @@ const Attendance = () => {
         }
     };
 
-    /* ── Stats ── */
     const stats = [
-        { label: t('stats.presentToday'), value: '1,210' },
-        { label: t('stats.lateToday'),    value: '12'    },
-        { label: t('stats.avgHours'),     value: '8.2h'  },
-        { label: t('stats.latenessCount'),value: '89'    },
+        { label: t('stats.presentToday'), value: attendanceStats.presentToday },
+        { label: t('stats.lateToday'), value: attendanceStats.lateToday },
+        { label: t('stats.avgHours'), value: attendanceStats.avgHours },
+        { label: t('stats.latenessCount'), value: attendanceStats.latenessCount },
     ];
 
-    /* ── Dropdown options ── */
-    const departmentOptions = [
-        { value: '',            label: t('filters.department') },
-        { value: 'Engineering', label: 'Engineering'           },
-        { value: 'Design',      label: 'Design'                },
-        { value: 'Product',     label: 'Product'               },
-        { value: 'Marketing',   label: 'Marketing'             },
-    ];
+    const departmentOptions = useMemo(() => {
+        const departmentMap = new Map();
+
+        attendanceRecords.forEach(row => {
+            const departmentId = row.department_id ?? row.department?.id;
+            const departmentName = row.dept || row.department?.name || row.department;
+
+            if (!departmentName && departmentId == null) return;
+
+            const value = departmentId != null ? String(departmentId) : String(departmentName);
+            const label = departmentName || value;
+
+            if (!departmentMap.has(value)) {
+                departmentMap.set(value, label);
+            }
+        });
+
+        return [
+            { value: '', label: t('filters.department') },
+            ...Array.from(departmentMap.entries())
+                .sort((a, b) => a[1].localeCompare(b[1]))
+                .map(([value, label]) => ({ value, label }))
+        ];
+    }, [attendanceRecords, t]);
 
     const statusOptions = [
         { value: '',        label: t('filters.status')    },
@@ -424,21 +532,18 @@ const Attendance = () => {
         { value: 'absent',  label: t('status.absent')     },
     ];
 
-    /* ══ RENDER ══ */
     return (
         <div className="at-page">
 
-            {/* Theme Toggle */}
             <div className="at-theme-toggle-wrapper">
                 <ThemeToggle />
             </div>
 
-            {/* Header */}
             <header className="at-header">
                 <h1 className="at-title">{t('title')}</h1>
             </header>
 
-            {/* Stats */}
+            
             <div className="at-stats-row">
                 {stats.map((s, i) => (
                     <div key={i} className="at-stat-card">
@@ -448,7 +553,6 @@ const Attendance = () => {
                 ))}
             </div>
 
-            {/* ── Work Hours Settings ── */}
             <div className="at-workhours-card">
                 <button
                     className="at-workhours-toggle"
@@ -467,7 +571,6 @@ const Attendance = () => {
                     </span>
                 </button>
 
-                {/* Smooth accordion */}
                 <Accordion open={showWorkHours}>
                     <div className="at-workhours-body">
                         {deptHours.length === 0 ? (
@@ -556,7 +659,6 @@ const Attendance = () => {
                 </Accordion>
             </div>
 
-            {/* ── Office Locations Settings (Geofencing) ── */}
             <div className="at-workhours-card" style={{ marginTop: '20px' }}>
                 <button
                     className="at-workhours-toggle"
@@ -577,8 +679,6 @@ const Attendance = () => {
 
                 <Accordion open={showLocations}>
                     <div className="at-workhours-body" style={{ flexDirection: 'column', gap: '20px', padding: '20px' }}>
-                        
-                        {/* Search Box on Map */}
                         <div style={{ display: 'flex', gap: '10px', width: '100%', direction: 'rtl', marginBottom: '10px' }}>
                             <input 
                                 type="text" 
@@ -665,7 +765,7 @@ const Attendance = () => {
                             </div>
                         </form>
 
-                        {/* List of Locations */}
+                     
                         <div style={{ width: '100%', overflowX: 'auto' }}>
                             <table className="at-table" style={{ background: 'transparent' }}>
                                 <thead>
@@ -727,24 +827,42 @@ const Attendance = () => {
                     </div>
                 </Accordion>
             </div>
-
-            {/* Filter Card */}
             <div className="at-filter-card">
                 <div className="at-all-filt">
-                    <input type="text" className="at-search-input"
+                    <input
+                        type="text"
+                        className="at-search-input"
                         placeholder={t('searchPlaceholder')}
                         value={searchTerm}
-                        onChange={e => setSearchTerm(e.target.value)} />
+                        onChange={e => handleAttendanceSearchChange(e.target.value)}
+                    />
+
                     <div className="at-filters-row">
-                        <FilterDropdown value={deptFilter} onChange={setDeptFilter}
-                            options={departmentOptions} placeholder={t('filters.department')} />
-                        <FilterDropdown value={statusFilter} onChange={setStatusFilter}
-                            options={statusOptions} placeholder={t('filters.status')} />
+                        <FilterDropdown
+                            value={deptFilter}
+                            onChange={setDeptFilter}
+                            options={departmentOptions}
+                            placeholder={t('filters.department')}
+                        />
+
+                        <FilterDropdown
+                            value={statusFilter}
+                            onChange={setStatusFilter}
+                            options={statusOptions}
+                            placeholder={t('filters.status')}
+                        />
+
+                        <input
+                            type="date"
+                            className="at-search-input"
+                            value={dateFilter}
+                            onChange={e => setDateFilter(e.target.value)}
+                            aria-label="Attendance date"
+                        />
                     </div>
                 </div>
             </div>
 
-            {/* Attendance Table */}
             <div className="at-table-card">
                 <div className="at-table-header">
                     <h2 className="at-table-title">{t('table.title')}</h2>
@@ -764,34 +882,107 @@ const Attendance = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredData.map((row, i) => (
-                                <tr key={i}>
-                                    <td>
-                                        <div className="at-employee-cell">
-                                            <Avatar user={{ full_name: row.name }} size="sm" />
-                                            <span className="at-employee-name">{row.name}</span>
-                                        </div>
-                                    </td>
-                                    <td><span className="at-employee-id">{row.id}</span></td>
-                                    <td><span className="at-date">{row.date}</span></td>
-                                    <td><span className="at-time">{row.timeIn}</span></td>
-                                    <td><span className="at-time">{row.timeOut}</span></td>
-                                    <td><span className="at-duration">{row.duration}</span></td>
-                                    <td>
-                                        <span className={`at-status-badge at-status-${row.status}`}>
-                                            {t(`status.${row.status}`)}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span className="at-lateness-reason">
-                                            {row.latenessReason === '-'
-                                                ? <span className="at-dash">—</span>
-                                                : row.latenessReason}
-                                        </span>
+                            {attendanceLoading ? (
+                                <tr>
+                                    <td colSpan="8" className="at-no-results">
+                                        {t('loading') || 'Loading attendance records...'}
                                     </td>
                                 </tr>
-                            ))}
-                            {filteredData.length === 0 && (
+                            ) : attendanceError ? (
+                                <tr>
+                                    <td colSpan="8" className="at-no-results">
+                                        {attendanceError}
+                                    </td>
+                                </tr>
+                            ) : filteredData.length > 0 ? (
+                                filteredData.map((row, i) => {
+                                    const employeeName = row.name || row.full_name || '—';
+                                    const employeeId = row.employee_id || row.id || '—';
+                                    const department = row.dept || row.department || '—';
+                                    const timeIn = row.timeIn || row.time_in || '—';
+                                    const timeOut = row.timeOut || row.time_out || '—';
+                                    const duration = row.duration || '—';
+                                    const latenessReason =
+                                        row.latenessReason ||
+                                        row.lateness_reason ||
+                                        '-';
+
+                                    return (
+                                        <tr key={row.id || row.employee_id || i}>
+                                            <td>
+                                                <div className="at-employee-cell">
+                                                    {row.img ? (
+                                                        <img
+                                                            src={row.img}
+                                                            alt={employeeName}
+                                                            style={{
+                                                                width: '32px',
+                                                                height: '32px',
+                                                                borderRadius: '50%',
+                                                                objectFit: 'cover'
+                                                            }}
+                                                        />
+                                                    ) : (
+                                                        <Avatar
+                                                            user={{ full_name: employeeName }}
+                                                            size="sm"
+                                                        />
+                                                    )}
+                                                    <span className="at-employee-name">
+                                                        {employeeName}
+                                                    </span>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <span className="at-employee-id">
+                                                    {employeeId}
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                <span className="at-date">
+                                                    {row.date || '—'}
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                <span className="at-time">
+                                                    {timeIn}
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                <span className="at-time">
+                                                    {timeOut}
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                <span className="at-duration">
+                                                    {duration}
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                <span className={`at-status-badge at-status-${row.status || 'unknown'}`}>
+                                                    {row.status
+                                                        ? t(`status.${row.status}`)
+                                                        : '—'}
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                <span className="at-lateness-reason">
+                                                    {latenessReason === '-' || !latenessReason
+                                                        ? <span className="at-dash">—</span>
+                                                        : latenessReason}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
+                            ) : (
                                 <tr>
                                     <td colSpan="8" className="at-no-results">
                                         {t('table.noResults')}
