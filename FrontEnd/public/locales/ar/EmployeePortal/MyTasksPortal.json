@@ -1,0 +1,32 @@
+{
+  "title": "مهام الأداء الخاصة بي",
+  "subtitle": "تتبع التكليفات المسندة إليك، ابدأ العمل، سلم المخرجات، وتابع رصد الدرجات",
+  "stats": {
+    "assignedTasks": "المهام المسندة",
+    "unstarted": "لم تبدأ (معلقة)",
+    "activeProgress": "نشطة / جارية",
+    "submittedReview": "تم التسليم (للمراجعة)",
+    "requiresRevision": "تتطلب إعادة صياغة",
+    "avgScore": "متوسط درجاتي"
+  },
+  "currentDeliverables": "مخرجات المهام الحالية",
+  "cycleText": "دورة الأداء الحالية",
+  "searchPlaceholder": "ابحث عن طريق عنوان المهمة...",
+  "supervisorRemark": "ملاحظة المشرف:",
+  "due": "تاريخ الاستحقاق:",
+  "completedDate": "تم الإنجاز في:",
+  "penaltyActive": "الجزاء نشط (تأخير)",
+  "awaitingSupervisor": "بانتظار مراجعة المشرف...",
+  "buttons": {
+    "resubmit": "إعادة تسليم",
+    "details": "التفاصيل",
+    "start": "ابدأ العمل",
+    "viewGrade": "عرض الدرجة"
+  },
+  "statusScored": "تم رصد الدرجة",
+  "excellentWork": "عمل ممتاز",
+  "noTasks": "لا توجد مهام مسندة إليك حالياً.",
+  "loading": "جاري تحميل المهام...",
+  "startSuccess": "تم بدء المهمة بنجاح!",
+  "startError": "تعذر بدء المهمة، يرجى المحاولة لاحقاً."
+}

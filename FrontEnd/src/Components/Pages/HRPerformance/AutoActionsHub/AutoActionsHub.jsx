@@ -83,7 +83,7 @@ const AutoActionsHub = () => {
             {isLoading ? (
                 <div style={{ textAlign: 'center', padding: '50px', color: '#64748b' }}>
                     <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', marginBottom: '12px', display: 'block' }}></i>
-                    <span>جاري تحميل الإجراءات التلقائية...</span>
+                    <span>{t("loading") || 'جاري تحميل الإجراءات التلقائية...'}</span>
                 </div>
             ) : (
                 <>

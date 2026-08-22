@@ -22,7 +22,7 @@
     },
     "table":{
      "Tasks":"Global Active Tasks (Read-Only)",
-     "view":"HR View Only &bull; API: GET /tasks",
+     "view":"HR View Only",
      "title":"Search by title or employee name...",
      "Department":"Department",
      "Task":"Task Title",
@@ -30,17 +30,34 @@
      "Supervisor":"Supervisor Manager",
      "Date":"Due Date",
      "Status":"Status",
-     "Grade":"Final Grade"
+     "Grade":"Final Grade",
+     "All": "All Departments",
+     "no_tasks": "No tasks match the search criteria",
+     "grading": "Grading..."
     },
     "cycle":{
         "Cycle":"Cycle Name",
         "Duration":"Duration Period",
-        "Tracked":"Tracked Employees",
+        "Tracked":"Tracked Template",
         "Status":"Status",
-        "Background":"Background Job Score State",
+        "Background":"Score Processing State",
         "Operations":"Operations",
         "Active":"Active & Historical Cycles",
         "Job":"Job Queue Engine Online"
-    }
-
+    },
+    "status": {
+        "active": "Active",
+        "closed": "Closed",
+        "processing": "Processing",
+        "draft": "Draft"
+    },
+    "bg_state": {
+        "active": "Awaiting final closing to calculate",
+        "processing": "Processing AI & consolidating scores...",
+        "closed": "Processed successfully",
+        "draft": "Unopened / Draft"
+    },
+    "btn_activate": "Activate Cycle",
+    "btn_close": "Close & Calculate",
+    "btn_locked": "Locked"
 }

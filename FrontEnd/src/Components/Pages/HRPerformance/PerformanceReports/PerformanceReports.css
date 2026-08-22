@@ -1,4 +1,4 @@
-﻿/* CSS for PerformanceReports component */
+/* CSS for PerformanceReports component */
 .performance-container {
     padding: 20px;
 }
@@ -82,24 +82,164 @@
     button.pos-per{
      height: fit-content;
     }
-    .detail-row.expanded {
-    display: table-row;
+/* ── Card & Table Container Layout ───────────────────────── */
+.PerformanceReports-container .card {
+  background: var(--bg-card);
+  backdrop-filter: blur(25px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
 }
 
-.detail-row {
-    display: none;
-    background: rgba(0, 0, 0, 0.15);
-}
-.fl-per-re{
+.PerformanceReports-container .card-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 12px;
 }
-.AIRecommendationCard{
+
+.PerformanceReports-container .table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+}
+
+.PerformanceReports-container .custom-table {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+  text-align: start;
+}
+
+.PerformanceReports-container .custom-table th {
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--glass-border);
+  white-space: nowrap;
+}
+
+.PerformanceReports-container .custom-table td {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 14px;
+  color: var(--text-main);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.PerformanceReports-container .custom-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.PerformanceReports-container .custom-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+/* ── Smooth Row Expansion & Accordion Styles ──────────── */
+.PerformanceReports-container .row-expand-arrow {
+  display: inline-block;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--primary-color);
+}
+
+.PerformanceReports-container .row-expand-arrow.expanded {
+  transform: rotate(180deg);
+}
+
+.PerformanceReports-container .clickable-row {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.PerformanceReports-container .clickable-row.active-row {
+  background-color: rgba(53, 158, 255, 0.05);
+}
+
+.PerformanceReports-container .detail-row {
+  background: rgba(15, 23, 42, 0.02);
+}
+
+[data-theme="dark"] .PerformanceReports-container .detail-row {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.PerformanceReports-container .detail-row.expanded {
+  display: table-row;
+}
+
+.PerformanceReports-container .detail-row-cell {
+  padding: 0;
+  border-bottom: 1px solid var(--border-light);
+  white-space: normal;
+}
+
+.PerformanceReports-container .detail-row-content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: smoothSlideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@keyframes smoothSlideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.PerformanceReports-container .gaps-section-title {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.PerformanceReports-container .fl-per-re {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.PerformanceReports-container .AIRecommendationCard {
   width: 50%;
+  min-width: 320px;
 }
-  td.grade-hr,th.grade-hr{
-          color: var(--primary-color);
-    }
+
+@media (max-width: 900px) {
+  .PerformanceReports-container .fl-per-re {
+    flex-direction: column;
+  }
+  .PerformanceReports-container .AIRecommendationCard {
+    width: 100%;
+  }
+}
+
+td.grade-hr, th.grade-hr {
+  color: var(--primary-color);
+}
  /* ── Start New Cycle Button ─────────────────────────────── */
     .btn-start-cycle {
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);

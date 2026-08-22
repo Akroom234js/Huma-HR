@@ -1,0 +1,59 @@
+{
+  "title": "لوحة تحكم مهام القسم",
+  "subtitle": "مراقبة وتقييم نسب إنجاز وجودة المهام لموظفي القسم",
+  "assignNewTask": "إسناد تكليف جديد",
+  "stats": {
+    "total": "إجمالي المهام",
+    "pending": "معلقة / لم تبدأ",
+    "inProgress": "قيد التنفيذ",
+    "pendingReview": "بانتظار المراجعة",
+    "needsRevision": "تحتاج تعديل",
+    "scored": "مقيّمة / مكتملة"
+  },
+  "activeTasksList": "قائمة المهام النشطة",
+  "managerPortalSub": "بوابة المدير • قسم تكنولوجيا المعلومات",
+  "searchPlaceholder": "البحث عن مهمة أو اسم موظف...",
+  "statusFilter": "الحالة",
+  "allStatuses": "جميع الحالات",
+  "priorityFilter": "الأولوية",
+  "allPriorities": "جميع الأولويات",
+  "table": {
+    "taskTitle": "عنوان التكليف",
+    "assignedTo": "الموظف المسند إليه",
+    "dueDate": "تاريخ الاستحقاق",
+    "difficulty": "الصعوبة",
+    "priority": "الأولوية",
+    "status": "الحالة",
+    "actions": "العمليات",
+    "noTasks": "لا توجد مهام مطابقة لخيارات التصفية",
+    "task": "المهمة",
+    "employee": "الموظف",
+    "score": "تقييم",
+    "details": "التفاصيل",
+    "edit": "تعديل",
+    "delete": "حذف"
+  },
+  "statuses": {
+    "pending": "معلقة",
+    "in_progress": "قيد التنفيذ",
+    "pending_review": "بانتظار المراجعة",
+    "needs_revision": "تحتاج تعديل",
+    "scored": "مقيّمة"
+  },
+  "priorities": {
+    "low": "منخفضة",
+    "medium": "متوسطة",
+    "high": "عالية",
+    "urgent": "عاجلة"
+  },
+  "alerts": {
+    "deleteConfirm": "هل أنت متأكد من رغبتك في حذف هذه المهمة نهائياً؟",
+    "deleteSuccess": "تم حذف المهمة بنجاح.",
+    "deleteError": "فشل حذف المهمة.",
+    "createSuccess": "تم إسناد التكليف بنجاح!",
+    "createError": "فشل إنشاء المهمة. يرجى التحقق من المدخلات وأن تاريخ الاستحقاق في المستقبل.",
+    "updateSuccess": "تم تعديل بيانات التكليف بنجاح!",
+    "updateError": "فشل تعديل المهمة.",
+    "unknownEmployee": "موظف غير معروف"
+  }
+}

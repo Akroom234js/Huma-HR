@@ -67,9 +67,9 @@ class PerformanceStatsController extends Controller
         }
 
         // ── متوسط تقييم الأقسام من جداول قاعدة البيانات ────────
-        $departments = Department::with(['employeeProfiles.tasks'])->get();
+        $departments = Department::with(['employees'])->get();
         $departmentAverages = $departments->map(function ($dept) use ($activeCycle) {
-            $empIds = $dept->employeeProfiles->pluck('id');
+            $empIds = $dept->employees->pluck('id');
             
             // هل يوجد تقييمات موحدة للدورة في هذا القسم؟
             $evalScore = PerformanceEvaluation::whereIn('employee_profile_id', $empIds)
@@ -96,7 +96,7 @@ class PerformanceStatsController extends Controller
                 'department_id'   => $dept->id,
                 'department_name' => $dept->name,
                 'avg_score'       => $finalDeptScore,
-                'employees_count' => $dept->employeeProfiles->count(),
+                'employees_count' => $dept->employees->count(),
             ];
         })->values();
 

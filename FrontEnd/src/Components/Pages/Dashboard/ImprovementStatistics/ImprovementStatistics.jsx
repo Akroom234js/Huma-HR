@@ -1,28 +1,73 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     ResponsiveContainer, AreaChart, Area, XAxis, YAxis,
-    CartesianGrid, Tooltip, ScatterChart, Scatter, ZAxis, Cell
+    CartesianGrid, Tooltip, ScatterChart, Scatter, Cell
 } from 'recharts';
 import './ImprovementStatistics.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
+import { useTranslation } from 'react-i18next';
+import apiClient from '../../../../apiConfig';
 
-const ImprovementStatistics = () => {
-    // هذه المصفوفات هي التي سيتم استبدالها لاحقاً ببيانات من الباك اند (API Response)
-    const departmentsData = [
-        { id: 1, name: 'Engineering', attendance: 98, tasks: 124, cost: 8500, index: 95, color: '#10b981' },
-        { id: 2, name: 'Marketing', attendance: 95, tasks: 88, cost: 5200, index: 82, color: '#f59e0b' },
-        { id: 3, name: 'Sales', attendance: 92, tasks: 156, cost: 6800, index: 91, color: '#6366f1' },
-        { id: 4, name: 'Support', attendance: 88, tasks: 210, cost: 4500, index: 75, color: '#ef4444' },
-    ];
+export default function ImprovementStatistics() {
+    const { t, i18n } = useTranslation('Dashboard/ImprovementStatistics');
+    const isAr = i18n ? i18n.language === 'ar' : false;
 
-    const monthlyTrends = [
-        { month: 'Jan', performance: 65 },
-        { month: 'Feb', performance: 72 },
-        { month: 'Mar', performance: 68 },
-        { month: 'Apr', performance: 85 },
-        { month: 'May', performance: 82 },
-        { month: 'Jun', performance: 91 },
-    ];
+    const [overallStats, setOverallStats] = useState({
+        mostProductiveDept: '---',
+        avgEmployeeCost: '---',
+        overallIndex: '---',
+        operationalEfficiency: '---'
+    });
+    const [departmentsData, setDepartmentsData] = useState([]);
+    const [monthlyTrends, setMonthlyTrends] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+
+                const res = await apiClient.get('/dashboard/improvement-stats');
+                const result = res.data;
+
+                if (result && result.status && result.data) {
+                    const apiData = result.data;
+                    const stats = apiData.stats || apiData.overall_stats || {};
+                    setOverallStats({
+                        mostProductiveDept: stats.most_productive_dept || stats.mostProductiveDept || '---',
+                        avgEmployeeCost: stats.avg_employee_cost || stats.avgEmployeeCost || '---',
+                        overallIndex: stats.overall_index || stats.overallIndex || '---',
+                        operationalEfficiency: stats.operational_efficiency || stats.operationalEfficiency || '---'
+                    });
+
+                    const rawDepts = apiData.departments || apiData.departments_data || apiData.department_stats || [];
+                    const defaultColors = ['#10b981', '#f59e0b', '#6366f1', '#ef4444', '#8b5cf6'];
+                    
+                    const formattedDepts = rawDepts.map((dept, idx) => ({
+                        id: dept.id || idx + 1,
+                        name: dept.name || dept.department_name || 'N/A',
+                        attendance: dept.attendance || dept.attendance_rate || 0,
+                        tasks: dept.tasks || dept.tasks_completed || 0,
+                        cost: dept.cost || dept.avg_cost || 0,
+                        index: dept.index || dept.performance_index || 0,
+                        color: dept.color || defaultColors[idx % defaultColors.length]
+                    }));
+                    setDepartmentsData(formattedDepts);
+                    const rawTrends = apiData.monthly_trends || apiData.monthlyTrends || apiData.trends || [];
+                    setMonthlyTrends(rawTrends);
+                }
+            } catch (err) {
+                console.error("Failed fetching improvement statistics:", err);
+                setError(t('error'));
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDashboardData();
+    }, [i18n.language]);
 
     const getIndexClass = (score) => {
         if (score >= 90) return 'is-badge-success';
@@ -30,41 +75,45 @@ const ImprovementStatistics = () => {
         return 'is-badge-danger';
     };
 
+    if (loading) return <div style={{ padding: '40px', textAlign: 'center' }}>{t('loading')}</div>;
+    if (error) return <div className="error-message" style={{ padding: '20px', color: 'red' }}>{error}</div>;
+
     return (
-        <div className="is-page">
+        <div className={`is-page ${isAr ? 'rtl' : 'ltr'}`}>
             <div className="is-theme-toggle-wrapper">
                 <ThemeToggle />
             </div>
 
             <header className="is-header">
-                <h1 className="is-title">Improvement Statistics</h1>
+                <h1 className="is-title">{t('title')}</h1>
             </header>
 
             <div className="is-content">
-                {/* الإحصائيات السريعة */}
                 <section className="is-stats-grid">
                     <div className="is-stat-card">
-                        <span className="is-stat-label">Most Productive Dept.</span>
-                        <span className="is-stat-value">Engineering</span>
+                        <span className="is-stat-label">{t('mostProductiveDept')}</span>
+                        <span className="is-stat-value">{overallStats.mostProductiveDept}</span>
                     </div>
                     <div className="is-stat-card">
-                        <span className="is-stat-label">Avg. Employee Cost</span>
-                        <span className="is-stat-value">$7,250</span>
+                        <span className="is-stat-label">{t('avgEmployeeCost')}</span>
+                        <span className="is-stat-value">
+                            {typeof overallStats.avgEmployeeCost === 'number' ? `$${overallStats.avgEmployeeCost}` : overallStats.avgEmployeeCost}
+                        </span>
                     </div>
                     <div className="is-stat-card">
-                        <span className="is-stat-label">Overall Index</span>
-                        <span className="is-stat-value">85.7%</span>
+                        <span className="is-stat-label">{t('overallIndex')}</span>
+                        <span className="is-stat-value">
+                            {overallStats.overallIndex}{typeof overallStats.overallIndex === 'number' ? '%' : ''}
+                        </span>
                     </div>
                     <div className="is-stat-card">
-                        <span className="is-stat-label">Operational Efficiency</span>
-                        <span className="is-stat-value">+12%</span>
+                        <span className="is-stat-label">{t('operationalEfficiency')}</span>
+                        <span className="is-stat-value">{overallStats.operationalEfficiency}</span>
                     </div>
                 </section>
-
-                {/* المخططات البيانية باستخدام Recharts */}
                 <section className="is-charts-grid">
                     <div className="is-chart-card">
-                        <h3 className="is-chart-title">Cost vs. Performance (Scatter)</h3>
+                        <h3 className="is-chart-title">{t('costVsPerformance')}</h3>
                         <div className="is-chart-container">
                             <ResponsiveContainer width="100%" height="100%">
                                 <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
@@ -83,7 +132,7 @@ const ImprovementStatistics = () => {
                     </div>
 
                     <div className="is-chart-card">
-                        <h3 className="is-chart-title">Company Performance Trend</h3>
+                        <h3 className="is-chart-title">{t('performanceTrend')}</h3>
                         <div className="is-chart-container">
                             <ResponsiveContainer width="100%" height="100%">
                                 <AreaChart data={monthlyTrends} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
@@ -103,16 +152,14 @@ const ImprovementStatistics = () => {
                         </div>
                     </div>
                 </section>
-
-                {/* جدول البيانات */}
                 <div className="is-table-wrapper">
                     <table className="is-table">
                         <thead>
                             <tr>
-                                <th>Department</th>
-                                <th>Attendance Rate</th>
-                                <th>Tasks Completed</th>
-                                <th>Performance Index</th>
+                                <th>{t('table.department')}</th>
+                                <th>{t('table.attendanceRate')}</th>
+                                <th>{t('table.tasksCompleted')}</th>
+                                <th>{t('table.performanceIndex')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -134,6 +181,4 @@ const ImprovementStatistics = () => {
             </div>
         </div>
     );
-};
-
-export default ImprovementStatistics;
+}

@@ -21,14 +21,14 @@ export default function PendingActions({ actions = [], onApprove, onReject }) {
                             <th>{t("pending.Grade")}</th>
                             <th>{t("pending.Recommendation")}</th>
                             <th>{t("pending.Date")}</th>
-                            <th>{t("pending  Operations") || 'Operations'}</th>
+                            <th>{t("pending.Operations") || 'العمليات'}</th>
                         </tr>
                     </thead>
                     <tbody>
                         {actions.length === 0 ? (
                             <tr>
                                 <td colSpan="7" style={{ textAlign: 'center', padding: '24px', color: '#94a3b8' }}>
-                                    لا توجد إجراءات معلقة بانتظار الموافقة حالياً
+                                    {t("no_pending") || 'لا توجد إجراءات معلقة بانتظار الموافقة حالياً'}
                                 </td>
                             </tr>
                         ) : (
@@ -54,13 +54,13 @@ export default function PendingActions({ actions = [], onApprove, onReject }) {
                                                     className="btn btn-success btn-sm"
                                                     onClick={() => onApprove && onApprove(act.id)}
                                                 >
-                                                    <i className="fa-solid fa-circle-check"></i> Approve
+                                                    <i className="fa-solid fa-circle-check"></i> {t("btn_approve") || 'اعتماد'}
                                                 </button>
                                                 <button 
                                                     className="btn btn-danger btn-sm"
                                                     onClick={() => onReject && onReject(act.id)}
                                                 >
-                                                    <i className="fa-solid fa-circle-xmark"></i> Reject
+                                                    <i className="fa-solid fa-circle-xmark"></i> {t("btn_reject") || 'رفض'}
                                                 </button>
                                             </div>
                                         </td>

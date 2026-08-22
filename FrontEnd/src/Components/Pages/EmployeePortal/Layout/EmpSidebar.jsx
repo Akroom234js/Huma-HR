@@ -100,13 +100,13 @@ const EmpSidebar = () => {
                             {/* Dashboard */}
                             <NavLink to="/portal/dashboard" className="nav-item">
                                 <span className="nav-icon material-symbols-outlined">dashboard</span>
-                                <p>{t('Dashboard') || 'Dashboard'}</p>
+                                <p>{t('Dashboard')}</p>
                             </NavLink>
 
                             {/* Profile */}
                             <NavLink to="/portal/profile" className="nav-item">
                                 <span className="nav-icon material-symbols-outlined">person</span>
-                                <p>{t('Profile') || 'My Profile'}</p>
+                                <p>{t('Profile')}</p>
                             </NavLink>
 
                             {/* My Requests (Accordion) */}
@@ -116,7 +116,7 @@ const EmpSidebar = () => {
                             >
                                 <div className="nav-item-content">
                                     <span className="nav-icon material-symbols-outlined">assignment</span>
-                                    <p>{t('My-Requests') || 'My Requests'}</p>
+                                    <p>{t('My-Requests')}</p>
                                 </div>
                             </NavLink>
 
@@ -127,14 +127,14 @@ const EmpSidebar = () => {
                             >
                                 <div className="nav-item-content">
                                     <span className="nav-icon material-symbols-outlined">fingerprint</span>
-                                    <p>{t('My-Attendance') || 'My Attendance'}</p>
+                                    <p>{t('My-Attendance')}</p>
                                 </div>
                             </NavLink>
 
                             {/* Payroll */}
                             <NavLink to="/portal/payroll" className="nav-item">
                                 <span className="nav-icon material-symbols-outlined">payments</span>
-                                <p>{t('Payroll') || 'Payroll'}</p>
+                                <p>{t('Payroll')}</p>
                             </NavLink>
 
                             {/* My Performance (Accordion) */}
@@ -145,7 +145,7 @@ const EmpSidebar = () => {
                                 >
                                     <div className="nav-item-content">
                                         <span className="nav-icon material-symbols-outlined">trending_up</span>
-                                        <p>{t('My-Performance') || 'My Performance'}</p>
+                                        <p>{t('My-Performance')}</p>
                                     </div>
                                     <span className={`material-symbols-outlined expand-icon ${openMenu === 'my_performance' ? 'expanded' : ''}`}>
                                         expand_more
@@ -153,16 +153,16 @@ const EmpSidebar = () => {
                                 </button>
                                 <div className={`sub-menu ${openMenu === 'my_performance' ? 'open' : ''}`}>
                                     <NavLink to="/portal/performance" end className="sub-nav-item">
-                                        {t('My-Tasks-Portal') || 'My Tasks Portal'}
+                                        {t('My-Tasks-Portal')}
                                     </NavLink>
                                     <NavLink to="/portal/performance/tasks/active" className="sub-nav-item">
-                                        {t('Task-Details-View') || 'Task Details View'}
+                                        {t('Task-Details-View')}
                                     </NavLink>
                                     <NavLink to="/portal/performance/report" className="sub-nav-item">
-                                        {t('Performance-Report') || 'Performance Report'}
+                                        {t('Performance-Report')}
                                     </NavLink>
                                     <NavLink to="/portal/performance/peer-review" className="sub-nav-item">
-                                        {t('Peer-Review-Form') || 'Peer Review Form'}
+                                        {t('Peer-Review-Form')}
                                     </NavLink>
                                 </div>
                             </div>                            {/* Department Performance - Flat items for Supervisor to match employee portal flat style */}
@@ -176,7 +176,7 @@ const EmpSidebar = () => {
                                         <span className="nav-icon material-symbols-outlined">
                                             manage_accounts
                                         </span>
-                                        <p>{t('Department-Tasks') || (isAr ? 'مهام القسم' : 'Department Tasks')}</p>
+                                        <p>{t('Department-Tasks')}</p>
                                     </NavLink>
 
                                     <NavLink 
@@ -184,7 +184,7 @@ const EmpSidebar = () => {
                                         className={({ isActive }) => `nav-item ai-colored ${isActive || location.pathname.startsWith('/portal/manager/tasks/score') ? 'active' : ''}`}
                                     >
                                         <span className="nav-icon material-symbols-outlined">rate_review</span>
-                                        <p>{t('Task-Evaluation') || (isAr ? 'تقييم التكليفات' : 'Task Evaluation & Details')}</p>
+                                        <p>{t('Task-Evaluation')}</p>
                                     </NavLink>
 
                                     <NavLink 
@@ -192,7 +192,7 @@ const EmpSidebar = () => {
                                         className={({ isActive }) => `nav-item ai-colored ${isActive || location.pathname.startsWith('/portal/manager/evaluate') ? 'active' : ''}`}
                                     >
                                         <span className="nav-icon material-symbols-outlined">fact_check</span>
-                                        <p>{t('Periodic-Evaluation') || (isAr ? 'التقييم الدوري' : 'Periodic Evaluation')}</p>
+                                        <p>{t('Periodic-Evaluation')}</p>
                                     </NavLink>
 
                                     <NavLink 
@@ -205,20 +205,20 @@ const EmpSidebar = () => {
                                                 <i className="fa-solid fa-sparkles"></i>
                                             </span>
                                         </span>
-                                        <p>{t('Performance-Cycles') || (isAr ? 'دورات الأداء' : 'Performance Cycles')}</p>
+                                        <p>{t('Performance-Cycles')}</p>
                                     </NavLink>
                                 </>
                             )}
                             {/* Rewards & Bonuses */}
                             <NavLink to="/portal/rewards" className="nav-item">
                                 <span className="nav-icon material-symbols-outlined">military_tech</span>
-                                <p>{t('Rewards') || 'Rewards & Bonuses'}</p>
+                                <p>{t('Rewards')}</p>
                             </NavLink>
 
                             {/* Chat & Notifications */}
                             <NavLink to="/portal/chat" className="nav-item">
                                 <span className="nav-icon material-symbols-outlined">chat</span>
-                                <p>{t('Chat') || 'Chat & Notifications'}</p>
+                                <p>{t('Chat')}</p>
                             </NavLink>
 
                         </nav>
@@ -229,7 +229,7 @@ const EmpSidebar = () => {
                         <LanSw />
                         <button onClick={handleLogout} className="nav-item logout-button">
                             <span className="nav-icon material-symbols-outlined">logout</span>
-                            <p>{t('Logout') || 'Logout'}</p>
+                            <p>{t('Logout')}</p>
                         </button>
                     </div>
                 </div>

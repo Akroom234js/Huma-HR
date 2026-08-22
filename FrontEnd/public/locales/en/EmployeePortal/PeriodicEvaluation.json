@@ -1,0 +1,15 @@
+{
+  "title": "Periodic Employee Evaluation",
+  "subtitle": "Grade the general professionalism, responsibility, and problem-solving skills for this active cycle",
+  "backToDashboard": "Back to Dashboard",
+  "cycleLabel": "Performance Cycle:",
+  "selectEmployeeTitle": "Select Employee to Evaluate:",
+  "pendingEvaluation": "Pending Evaluation",
+  "noEmployees": "No employees currently found in your department to evaluate.",
+  "loading": "Loading employees and cycles data...",
+  "alerts": {
+    "noActiveCycle": "No active performance cycle found. Please create one first.",
+    "submitSuccess": "Periodic employee evaluation submitted successfully!",
+    "submitError": "Failed to submit periodic evaluation."
+  }
+}

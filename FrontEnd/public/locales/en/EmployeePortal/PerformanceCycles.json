@@ -1,0 +1,55 @@
+{
+  "title": "Performance Cycles Management",
+  "subtitle": "Track current evaluation durations, run automated score consolidations, and inspect queue states",
+  "backToDashboard": "Back to Dashboard",
+  "cyclesCardTitle": "Active & Historical Cycles",
+  "queueEngineOnline": "Job Queue Engine Online",
+  "loading": "Loading cycles...",
+  "noCyclesFound": "No performance cycles found.",
+  "table": {
+    "cycleName": "Cycle Name",
+    "durationPeriod": "Duration Period",
+    "template": "Template",
+    "status": "Status",
+    "jobScoreState": "Background Job Score State",
+    "operations": "Operations",
+    "defaultTemplate": "Default Template",
+    "calculatedOnClose": "Calculated upon closure",
+    "viewResults": "View Results",
+    "locked": "Locked"
+  },
+  "statuses": {
+    "active": "Active",
+    "closed": "Closed",
+    "processing": "Processing",
+    "draft": "Draft"
+  },
+  "jobStates": {
+    "active": "Awaiting final closing to calculate",
+    "processing": "Processing scores and AI actions...",
+    "closed": "Processed successfully",
+    "draft": "Unopened / Draft"
+  },
+  "workersTitle": "Background Worker & Job Queue Monitor",
+  "idleBadge": "Idle",
+  "workers": {
+    "processDesc": "Computes 5-component weighted average scores. Triggered on cycle closure or manual supervisor request.",
+    "aiDesc": "Dispatches prompt data to OpenAI model to establish 3 structured competency gaps and tailored training paths.",
+    "actionsDesc": "Automates HR task triggers (notifying employees of warnings, queuing bonus forms, issuing letters of training)."
+  },
+  "modal": {
+    "cycleResults": "Cycle Results: {{name}}",
+    "loadingResults": "Loading results...",
+    "employee": "Employee",
+    "department": "Department",
+    "tasksWeight": "Tasks (40%)",
+    "managerWeight": "Manager (25%)",
+    "peerWeight": "Peers (15%)",
+    "attendanceWeight": "Attendance (10%)",
+    "overtimeWeight": "Overtime (10%)",
+    "finalScore": "Final Score",
+    "autoDecision": "Auto Decision",
+    "noRecords": "No evaluation records found for this cycle.",
+    "defaultEmployee": "Employee"
+  }
+}

@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import TaskFormModal from '../../../../../Shared/Performance/TaskFormModal/TaskFormModal';
+import { useTranslation } from 'react-i18next';
 import { getDepartmentEmployees, createTask, updateTask } from '../../../../../../services/performanceService';
 
 const AssignNewTask = ({ isModal = false, isEdit = false, taskData, onClose, onSuccess }) => {
     const navigate = useNavigate();
     const { id } = useParams();
-
-    // Check language from session storage
-    const currentLang = sessionStorage.getItem('lang') || 'en';
-    const isAr = currentLang === 'ar';
+    const { i18n } = useTranslation();
+    const isAr = i18n ? i18n.language === 'ar' : false;
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [employeesList, setEmployeesList] = useState([]);
 
@@ -29,7 +28,7 @@ const AssignNewTask = ({ isModal = false, isEdit = false, taskData, onClose, onS
             }
         };
         loadEmployees();
-    }, []);
+    }, [i18n.language]);
 
     const handleFormSubmit = async (formData) => {
         setIsSubmitting(true);
@@ -105,10 +104,9 @@ const AssignNewTask = ({ isModal = false, isEdit = false, taskData, onClose, onS
             task={mappedTask}
             employees={employeesList}
             isSubmitting={isSubmitting}
-            lang={currentLang}
+            lang={i18n.language}
         />
     );
 };
 
 export default AssignNewTask;
-

@@ -117,7 +117,7 @@ const PerformanceReports = () => {
                     </button>
                     <button className="btn btn-start-cycle" onClick={() => setIsModalOpen(true)} id="startCycleBtn">
                         <i className="fa-solid fa-circle-play"></i>
-                        <span>Start New Cycle</span>
+                        <span>{t("new.Start") || 'Start New Cycle'}</span>
                         <span className="pulse-dot"></span>
                     </button>
                 </div>
@@ -148,8 +148,8 @@ const PerformanceReports = () => {
                     </div>
                     {summary && (
                         <div style={{ fontSize: '0.9rem', color: '#64748b', display: 'flex', gap: '16px' }}>
-                            <span>Total Evaluated: <strong>{summary.evaluated} / {summary.total}</strong></span>
-                            <span>Average Score: <strong>{summary.avg_score || '-'}</strong></span>
+                            <span>{t("total_evaluated") || 'Total Evaluated'}: <strong>{summary.evaluated} / {summary.total}</strong></span>
+                            <span>{t("avg_score") || 'Average Score'}: <strong>{summary.avg_score || '-'}</strong></span>
                         </div>
                     )}
                 </div>
@@ -174,7 +174,7 @@ const PerformanceReports = () => {
                                 <tr>
                                     <td colSpan="9" style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
                                         <i className="fa-solid fa-spinner fa-spin" style={{ marginRight: '8px' }}></i>
-                                        Loading evaluations...
+                                        {t("loading") || 'Loading evaluations...'}
                                     </td>
                                 </tr>
                             ) : (

@@ -1,0 +1,59 @@
+{
+  "title": "Department Tasks Dashboard",
+  "subtitle": "Monitor and evaluate your team's task completion and quality scores",
+  "assignNewTask": "Assign New Task",
+  "stats": {
+    "total": "Total Dept Tasks",
+    "pending": "Pending / Unstarted",
+    "inProgress": "In Progress",
+    "pendingReview": "Pending Review",
+    "needsRevision": "Needs Revision",
+    "scored": "Scored / Completed"
+  },
+  "activeTasksList": "Active Tasks List",
+  "managerPortalSub": "Manager Portal • IT Division",
+  "searchPlaceholder": "Search by task title or employee name...",
+  "statusFilter": "Status",
+  "allStatuses": "All Statuses",
+  "priorityFilter": "Priority",
+  "allPriorities": "All Priorities",
+  "table": {
+    "taskTitle": "Task Title",
+    "assignedTo": "Assigned To",
+    "dueDate": "Due Date",
+    "difficulty": "Difficulty",
+    "priority": "Priority",
+    "status": "Status",
+    "actions": "Actions",
+    "noTasks": "No tasks match current filters",
+    "task": "Task",
+    "employee": "Assigned To",
+    "score": "Score",
+    "details": "Details",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "statuses": {
+    "pending": "Pending",
+    "in_progress": "In Progress",
+    "pending_review": "Pending Review",
+    "needs_revision": "Needs Revision",
+    "scored": "Scored"
+  },
+  "priorities": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "urgent": "Urgent"
+  },
+  "alerts": {
+    "deleteConfirm": "Are you sure you want to delete this task? This action is irreversible.",
+    "deleteSuccess": "Task deleted successfully.",
+    "deleteError": "Failed to delete task.",
+    "createSuccess": "Task assigned successfully!",
+    "createError": "Failed to create task. Please check input values and ensure due date is in the future.",
+    "updateSuccess": "Task assignment updated successfully!",
+    "updateError": "Failed to update task.",
+    "unknownEmployee": "Unknown Employee"
+  }
+}

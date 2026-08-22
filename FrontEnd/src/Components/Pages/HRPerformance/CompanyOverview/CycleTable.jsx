@@ -37,24 +37,24 @@ export default function CycleTable({ cycles = [], onRefresh }) {
     const getStatusBadge = (status) => {
         switch (status) {
             case 'active':
-                return <span className="badge badge-cycle-active"><i className="fa-solid fa-circle-play"></i> Active</span>;
+                return <span className="badge badge-cycle-active"><i className="fa-solid fa-circle-play"></i> {t("status.active") || 'Active'}</span>;
             case 'closed':
-                return <span className="badge badge-cycle-closed">Closed</span>;
+                return <span className="badge badge-cycle-closed">{t("status.closed") || 'Closed'}</span>;
             case 'processing':
-                return <span className="badge" style={{ backgroundColor: '#fef3c7', color: '#b45309' }}><i className="fa-solid fa-spinner fa-spin"></i> Processing</span>;
+                return <span className="badge" style={{ backgroundColor: '#fef3c7', color: '#b45309' }}><i className="fa-solid fa-spinner fa-spin"></i> {t("status.processing") || 'Processing'}</span>;
             case 'draft':
             default:
-                return <span className="badge badge-cycle-draft">Draft</span>;
+                return <span className="badge badge-cycle-draft">{t("status.draft") || 'Draft'}</span>;
         }
     };
 
     const getBgState = (status) => {
         switch (status) {
-            case 'active': return 'Awaiting final closing to calculate';
-            case 'processing': return 'Processing AI & consolidating scores...';
-            case 'closed': return 'Processed successfully';
+            case 'active': return t("bg_state.active") || 'Awaiting final closing to calculate';
+            case 'processing': return t("bg_state.processing") || 'Processing AI & consolidating scores...';
+            case 'closed': return t("bg_state.closed") || 'Processed successfully';
             case 'draft':
-            default: return 'Unopened / Draft';
+            default: return t("bg_state.draft") || 'Unopened / Draft';
         }
     };
 
@@ -71,7 +71,7 @@ export default function CycleTable({ cycles = [], onRefresh }) {
                         <tr>
                             <th>{t("cycle.Cycle")}</th>
                             <th>{t("cycle.Duration")}</th>
-                            <th>{t("cycleTracked")}</th>
+                            <th>{t("cycle.Tracked")}</th>
                             <th>{t("cycle.Status")}</th>
                             <th>{t("cycle.Background")}</th>
                             <th>{t("cycle.Operations")}</th>
@@ -81,7 +81,7 @@ export default function CycleTable({ cycles = [], onRefresh }) {
                         {cycles.length === 0 ? (
                             <tr>
                                 <td colSpan="6" style={{ textAlign: 'center', padding: '24px', color: '#94a3b8' }}>
-                                    لا توجد دورات مسجلة حالياً
+                                    {t("no_cycles") || 'لا توجد دورات مسجلة حالياً'}
                                 </td>
                             </tr>
                         ) : (
@@ -104,7 +104,7 @@ export default function CycleTable({ cycles = [], onRefresh }) {
                                                     disabled={actionLoadingId === c.id}
                                                     onClick={() => handleActivate(c.id)}
                                                 >
-                                                    {actionLoadingId === c.id ? <i className="fa-solid fa-spinner fa-spin"></i> : 'تفعيل الدورة'}
+                                                    {actionLoadingId === c.id ? <i className="fa-solid fa-spinner fa-spin"></i> : (t("btn_activate") || 'تفعيل الدورة')}
                                                 </button>
                                             )}
                                             {c.status === 'active' && (
@@ -114,12 +114,12 @@ export default function CycleTable({ cycles = [], onRefresh }) {
                                                     disabled={actionLoadingId === c.id}
                                                     onClick={() => handleClose(c.id)}
                                                 >
-                                                    {actionLoadingId === c.id ? <i className="fa-solid fa-spinner fa-spin"></i> : 'إغلاق وحساب'}
+                                                    {actionLoadingId === c.id ? <i className="fa-solid fa-spinner fa-spin"></i> : (t("btn_close") || 'إغلاق وحساب')}
                                                 </button>
                                             )}
                                             {c.status === 'closed' && (
                                                 <button className="btn btn-secondary btn-sm" disabled>
-                                                    <i className="fa-solid fa-lock"></i> Locked
+                                                    <i className="fa-solid fa-lock"></i> {t("btn_locked") || 'Locked'}
                                                 </button>
                                             )}
                                         </div>

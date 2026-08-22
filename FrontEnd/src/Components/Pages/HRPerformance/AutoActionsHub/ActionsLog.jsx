@@ -23,7 +23,7 @@ export default function ActionsLog({ logs = [] }) {
                         {logs.length === 0 ? (
                             <tr>
                                 <td colSpan="5" style={{ textAlign: 'center', padding: '24px', color: '#94a3b8' }}>
-                                    لا يوجد سجل إجراءات سابقة حتى الآن
+                                    {t("no_logs") || 'لا يوجد سجل إجراءات سابقة حتى الآن'}
                                 </td>
                             </tr>
                         ) : (
@@ -42,7 +42,7 @@ export default function ActionsLog({ logs = [] }) {
                                         <td>{dateStr}</td>
                                         <td>{approverName}</td>
                                         <td className={isApproved ? "sco-status" : "text-danger"}>
-                                            <i className={`fa-solid ${isApproved ? 'fa-circle-check' : 'fa-circle-xmark'}`}></i> {log.status?.toUpperCase()}
+                                            <i className={`fa-solid ${isApproved ? 'fa-circle-check' : 'fa-circle-xmark'}`}></i> {isApproved ? (t("status_approved") || 'معتمد') : (t("status_rejected") || 'مرفوض')}
                                         </td>
                                     </tr>
                                 );

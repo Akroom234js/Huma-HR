@@ -1,5 +1,6 @@
 import React from 'react';
 import './FinalScoreBreakdown.css';
+import { useTranslation } from 'react-i18next';
 
 const FinalScoreBreakdown = ({
     scores,
@@ -16,10 +17,11 @@ const FinalScoreBreakdown = ({
     finalScore,
     lang
 }) => {
-    const currentLang = lang || sessionStorage.getItem('lang') || 'en';
+    const { i18n } = useTranslation();
+    const currentLang = lang || (i18n ? i18n.language : sessionStorage.getItem('lang')) || 'en';
     const isAr = currentLang === 'ar';
 
-    // استخراج القيم سواء تم تمريرها كـ props مباشرة أو ككائن scores
+    // Extract values whether passed as props directly or as scores object
     const tScore = Number(scores?.components?.task ?? scores?.components?.tasks ?? taskScore ?? 0);
     const mScore = Number(scores?.components?.manager ?? managerScore ?? 0);
     const pScore = Number(scores?.components?.peer ?? scores?.components?.peers ?? peerScore ?? 0);

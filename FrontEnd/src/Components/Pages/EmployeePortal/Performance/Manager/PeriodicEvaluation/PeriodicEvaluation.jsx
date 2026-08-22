@@ -2,20 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './PeriodicEvaluation.css';
 import ManagerEvalForm from '../../../../../Shared/Performance/ManagerEvalForm/ManagerEvalForm';
+import { useTranslation } from 'react-i18next';
 import { 
     getDepartmentEmployees, 
     getPerformanceCycles, 
-    getMyTeamEvaluations, 
     submitManagerEvaluation 
 } from '../../../../../../services/performanceService';
 
 const PeriodicEvaluation = () => {
     const navigate = useNavigate();
     const { employee_id } = useParams();
-
-    // Check language
-    const currentLang = sessionStorage.getItem('lang') || 'en';
-    const isAr = currentLang === 'ar';
+    const { t, i18n } = useTranslation('EmployeePortal/PeriodicEvaluation');
+    const isAr = i18n ? i18n.language === 'ar' : false;
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -48,7 +46,7 @@ const PeriodicEvaluation = () => {
                 if (empRes.status === 'fulfilled') {
                     const rawEmp = empRes.value?.data?.data || empRes.value?.data || [];
                     employees = (Array.isArray(rawEmp) ? rawEmp : []).map(emp => {
-                        const name = emp.full_name || emp.name || 'Employee';
+                        const name = emp.full_name || emp.name || (isAr ? 'موظف' : 'Employee');
                         const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
                         return {
                             id: String(emp.id),
@@ -77,7 +75,7 @@ const PeriodicEvaluation = () => {
         };
 
         loadInitialData();
-    }, [employee_id]);
+    }, [employee_id, i18n.language]);
 
     const handleSelectEmployee = (emp) => {
         setActiveEmployee(emp);
@@ -87,7 +85,7 @@ const PeriodicEvaluation = () => {
     const handleSubmit = async (data) => {
         if (!activeEmployee) return;
         if (!selectedCycleId) {
-            alert(isAr ? 'لا توجد دورة أداء نشطة. يرجى إنشاء دورة أولاً.' : 'No active performance cycle found. Please create one first.');
+            alert(t('alerts.noActiveCycle'));
             return;
         }
 
@@ -102,14 +100,12 @@ const PeriodicEvaluation = () => {
                 notes: data.notes || null,
             });
 
-            alert(isAr 
-                ? 'تم رصد التقييم الدوري للموظف بنجاح!' 
-                : 'Periodic employee evaluation submitted successfully!');
+            alert(t('alerts.submitSuccess'));
             navigate('/portal/manager/tasks');
         } catch (error) {
             console.error("Failed to submit manager evaluation:", error);
             const errors = error.response?.data?.errors;
-            let msg = error.response?.data?.message || (isAr ? 'فشل إرسال التقييم الدوري.' : 'Failed to submit periodic evaluation.');
+            let msg = error.response?.data?.message || t('alerts.submitError');
             if (errors && typeof errors === 'object') {
                 const detailed = Object.values(errors).flat().join('\n');
                 if (detailed) msg = detailed;
@@ -124,7 +120,7 @@ const PeriodicEvaluation = () => {
         return (
             <div style={{ textAlign: 'center', padding: '80px', color: 'var(--text-color)' }}>
                 <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', color: 'var(--primary-color)', marginBottom: '16px', display: 'block' }}></i>
-                <div>{isAr ? 'جاري تحميل بيانات الموظفين والدورات...' : 'Loading employees and cycles data...'}</div>
+                <div>{t('loading')}</div>
             </div>
         );
     }
@@ -134,12 +130,12 @@ const PeriodicEvaluation = () => {
             <div className={`performance-periodic-evaluation ${isAr ? 'rtl' : 'ltr'}`}>
                 <div className="top-header">
                     <div className="page-title">
-                        <h1>{isAr ? 'التقييم الدوري للموظف' : 'Periodic Employee Evaluation'}</h1>
-                        <p>{isAr ? 'لا يوجد موظفين في قسمك حالياً لإجراء التقييم الدوري.' : 'No employees currently found in your department to evaluate.'}</p>
+                        <h1>{t('title')}</h1>
+                        <p>{t('noEmployees')}</p>
                     </div>
                     <button className="btn btn-secondary" onClick={() => navigate('/portal/manager/tasks')}>
                         <i className="fa-solid fa-arrow-left"></i>
-                        <span>{isAr ? 'العودة للوحة التحكم' : 'Back to Dashboard'}</span>
+                        <span>{t('backToDashboard')}</span>
                     </button>
                 </div>
             </div>
@@ -151,19 +147,19 @@ const PeriodicEvaluation = () => {
             {/* Header */}
             <div className="top-header">
                 <div className="page-title">
-                    <h1>{isAr ? 'التقييم الدوري للموظف' : 'Periodic Employee Evaluation'}</h1>
-                    <p>{isAr ? 'قم برصد درجات الاحترافية والمسؤولية وحل المشكلات للدورة الحالية' : 'Grade the general professionalism, responsibility, and problem-solving skills for this active cycle'}</p>
+                    <h1>{t('title')}</h1>
+                    <p>{t('subtitle')}</p>
                 </div>
                 <button className="btn btn-secondary" onClick={() => navigate('/portal/manager/tasks')}>
                     <i className="fa-solid fa-arrow-left"></i>
-                    <span>{isAr ? 'العودة للوحة التحكم' : 'Back to Dashboard'}</span>
+                    <span>{t('backToDashboard')}</span>
                 </button>
             </div>
 
             {/* Cycle Selection if multiple */}
             {cycles.length > 1 && (
                 <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{isAr ? 'دورة الأداء:' : 'Performance Cycle:'}</span>
+                    <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{t('cycleLabel')}</span>
                     <select 
                         className="select-input" 
                         value={selectedCycleId || ''} 
@@ -181,7 +177,7 @@ const PeriodicEvaluation = () => {
 
             {/* Employee Slider/Selection Row */}
             <div className="employee-slider-container">
-                <h3 className="slider-section-title">{isAr ? 'اختر موظفاً لبدء التقييم الدوري:' : 'Select Employee to Evaluate:'}</h3>
+                <h3 className="slider-section-title">{t('selectEmployeeTitle')}</h3>
                 <div className="employee-slider">
                     {allEmployees.map((emp) => {
                         const isSelected = activeEmployee?.id === emp.id;
@@ -199,7 +195,7 @@ const PeriodicEvaluation = () => {
                                     <p className="employee-slide-task-title">{emp.department}</p>
                                     <div className="employee-slide-badge-wrapper">
                                         <span className="badge badge-pending" style={{ fontSize: '9px', padding: '2px 6px' }}>
-                                            {isAr ? 'بانتظار التقييم' : 'Pending Evaluation'}
+                                            {t('pendingEvaluation')}
                                         </span>
                                     </div>
                                 </div>
@@ -215,7 +211,7 @@ const PeriodicEvaluation = () => {
                     employeeName={activeEmployee.name} 
                     onSubmit={handleSubmit} 
                     isSubmitting={isSubmitting}
-                    lang={currentLang}
+                    lang={i18n.language}
                 />
             )}
         </div>

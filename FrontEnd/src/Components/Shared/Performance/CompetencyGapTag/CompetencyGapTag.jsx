@@ -1,5 +1,6 @@
 import React from 'react';
 import './CompetencyGapTag.css';
+import { useTranslation } from 'react-i18next';
 
 const CompetencyGapTag = ({
     gapType = 'technical',
@@ -7,7 +8,8 @@ const CompetencyGapTag = ({
     score,
     lang
 }) => {
-    const currentLang = lang || sessionStorage.getItem('lang') || 'en';
+    const { i18n } = useTranslation();
+    const currentLang = lang || (i18n ? i18n.language : sessionStorage.getItem('lang')) || 'en';
     const isAr = currentLang === 'ar';
 
     const gapConfig = {

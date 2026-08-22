@@ -68,7 +68,7 @@ export default function TasksTable({ tasks = [] }) {
                         {filteredTasks.length === 0 ? (
                             <tr>
                                 <td colSpan="7" style={{ textAlign: 'center', padding: '24px', color: '#94a3b8' }}>
-                                    لا توجد مهام مطابقة لخيارات البحث
+                                    {t("table.no_tasks") || 'لا توجد مهام مطابقة لخيارات البحث'}
                                 </td>
                             </tr>
                         ) : (
@@ -85,7 +85,7 @@ export default function TasksTable({ tasks = [] }) {
                                     <td className={task.final_score !== null ? "Scored-text" : "gray-text"}>
                                         {task.final_score !== null && task.final_score !== undefined 
                                             ? `${task.final_score}/100` 
-                                            : (task.status === 'pending_review' ? 'Grading...' : '-')}
+                                            : (task.status === 'pending_review' ? (t("table.grading") || 'قيد التقييم') : '-')}
                                     </td>
                                 </tr>
                             ))

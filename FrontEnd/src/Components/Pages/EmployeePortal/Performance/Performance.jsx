@@ -1,11 +1,15 @@
 import React from "react";
 import "./Performance.css";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
+import { useTranslation } from "react-i18next";
 
 export default function PerformanceManagement() {
+  const { t, i18n } = useTranslation('EmployeePortal/PerformanceOverview');
+  const isAr = i18n ? i18n.language === 'ar' : false;
+
   return (
-    <div className="performance-page">
-      <h1 className="page-title">Performance Management</h1>
+    <div className={`performance-page ${isAr ? 'rtl' : 'ltr'}`}>
+      <h1 className="page-title">{t('title')}</h1>
 
       <div className="sm-theme-toggle-wrapper">
         <ThemeToggle />
@@ -13,11 +17,11 @@ export default function PerformanceManagement() {
 
       <div className="performance-grid">
         <div className="card total-score-card">
-          <h2>Total Score</h2>
+          <h2>{t('totalScore')}</h2>
 
           <div className="score-box">
             <span className="score">8.5</span>
-            <span className="score-total">/10</span>
+            <span className="score-total">{t('outOfTen')}</span>
           </div>
 
           <div className="progress-bar">
@@ -25,14 +29,14 @@ export default function PerformanceManagement() {
           </div>
 
           <p>
-            Your performance is rated as
+            {t('ratingDesc')}
             <br />
-            <strong>Excellent.</strong>
+            <strong>{t('excellent')}</strong>
           </p>
         </div>
 
         <div className="card evaluation-card">
-          <h2>Performance Evaluations</h2>
+          <h2>{t('evaluations')}</h2>
 
           <div className="evaluation-chart">
             <div className="bars">
@@ -44,26 +48,26 @@ export default function PerformanceManagement() {
             </div>
 
             <div className="chart-labels">
-              <span>Jan</span>
-              <span>Feb</span>
-              <span>Mar</span>
-              <span>Apr</span>
-              <span>May</span>
+              <span>{t('months.jan')}</span>
+              <span>{t('months.feb')}</span>
+              <span>{t('months.mar')}</span>
+              <span>{t('months.apr')}</span>
+              <span>{t('months.may')}</span>
             </div>
           </div>
         </div>
 
         <div className="row-flex">
           <div className="card cumulative-card">
-            <h2>Cumulative Points Overview</h2>
+            <h2>{t('cumulative')}</h2>
 
             <table className="cumulative-table">
               <thead>
                 <tr>
-                  <th>Period</th>
-                  <th>Your Score</th>
-                  <th>Benchmark</th>
-                  <th>System Management</th>
+                  <th>{t('table.period')}</th>
+                  <th>{t('table.yourScore')}</th>
+                  <th>{t('table.benchmark')}</th>
+                  <th>{t('table.status')}</th>
                 </tr>
               </thead>
 
@@ -72,31 +76,31 @@ export default function PerformanceManagement() {
                   <td>Q1 2024</td>
                   <td>8.2</td>
                   <td>7.5</td>
-                  <td className="green">On Track</td>
+                  <td className="green">{t('table.onTrack')}</td>
                 </tr>
 
                 <tr>
                   <td>Q2 2024</td>
                   <td>8.5</td>
                   <td>7.8</td>
-                  <td className="green">Exceeding</td>
+                  <td className="green">{t('table.exceeding')}</td>
                 </tr>
 
                 <tr>
                   <td>Q3 2024</td>
                   <td>8.7</td>
                   <td>8.0</td>
-                  <td className="green">Exceeding</td>
+                  <td className="green">{t('table.exceeding')}</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
           <div className="card rating-card">
-            <h2>Performance Rating</h2>
+            <h2>{t('rating')}</h2>
 
             <div className="rating-item">
-              <h3>Manager's Rating</h3>
+              <h3>{t('managerRating')}</h3>
 
               <div className="rating-row">
                 <span className="badge">Excellent</span>
@@ -105,7 +109,7 @@ export default function PerformanceManagement() {
             </div>
 
             <div className="rating-item">
-              <h3>System Rating</h3>
+              <h3>{t('systemRating')}</h3>
 
               <div className="rating-row">
                 <span className="badge">Good</span>
@@ -113,13 +117,13 @@ export default function PerformanceManagement() {
               </div>
             </div>
 
-            <button className="details-btn">Details</button>
+            <button className="details-btn">{t('details')}</button>
           </div>
         </div>
 
         <div className="row-flex">
           <div className="card trend-card">
-            <h2>Performance Trend</h2>
+            <h2>{t('trend')}</h2>
 
             <div className="trend-chart">
               <svg viewBox="0 0 300 120" preserveAspectRatio="none">
@@ -132,36 +136,36 @@ export default function PerformanceManagement() {
               </svg>
 
               <div className="chart-labels">
-                <span>Mon</span>
-                <span>Tue</span>
-                <span>Wed</span>
-                <span>Thu</span>
-                <span>Fri</span>
-                <span>Sat</span>
+                <span>{t('days.mon')}</span>
+                <span>{t('days.tue')}</span>
+                <span>{t('days.wed')}</span>
+                <span>{t('days.thu')}</span>
+                <span>{t('days.fri')}</span>
+                <span>{t('days.sat')}</span>
               </div>
             </div>
           </div>
 
           <div className="card courses-card">
             <div className="courses-header">
-              <h2>Suggested Courses</h2>
+              <h2>{t('suggestedCourses')}</h2>
 
-              <button>+ Suggest</button>
+              <button>{t('suggestBtn')}</button>
             </div>
 
             <div className="course-item">
-              <span>Advanced Communication</span>
-              <span>4 Hours</span>
+              <span>{t('courses.comm')}</span>
+              <span>4 {t('hours')}</span>
             </div>
 
             <div className="course-item">
-              <span>Project Management Basics</span>
-              <span>8 Hours</span>
+              <span>{t('courses.pm')}</span>
+              <span>8 {t('hours')}</span>
             </div>
 
             <div className="course-item">
-              <span>Leadership Skills</span>
-              <span>12 Hours</span>
+              <span>{t('courses.leadership')}</span>
+              <span>12 {t('hours')}</span>
             </div>
           </div>
         </div>

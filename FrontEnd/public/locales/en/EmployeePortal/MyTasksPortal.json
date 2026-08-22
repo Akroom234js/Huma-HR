@@ -1,0 +1,32 @@
+{
+  "title": "My Performance Tasks",
+  "subtitle": "Track your assignments, start actions, submit deliverables, and monitor score responses",
+  "stats": {
+    "assignedTasks": "Assigned Tasks",
+    "unstarted": "Unstarted (Pending)",
+    "activeProgress": "Active / Progress",
+    "submittedReview": "Submitted (Review)",
+    "requiresRevision": "Requires Revision",
+    "avgScore": "My Avg Task Score"
+  },
+  "currentDeliverables": "My Current Task Deliverables",
+  "cycleText": "Current Performance Cycle",
+  "searchPlaceholder": "Search by task title...",
+  "supervisorRemark": "Supervisor Remark:",
+  "due": "Due:",
+  "completedDate": "Completed:",
+  "penaltyActive": "Penalty Active",
+  "awaitingSupervisor": "Awaiting supervisor review...",
+  "buttons": {
+    "resubmit": "Re-Submit",
+    "details": "Details",
+    "start": "Start Task",
+    "viewGrade": "View Grade"
+  },
+  "statusScored": "Scored",
+  "excellentWork": "Excellent Work",
+  "noTasks": "No tasks currently assigned to you.",
+  "loading": "Loading tasks...",
+  "startSuccess": "Task started successfully!",
+  "startError": "Failed to start task, please try again."
+}

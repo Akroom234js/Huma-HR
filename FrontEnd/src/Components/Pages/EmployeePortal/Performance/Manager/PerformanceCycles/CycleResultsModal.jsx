@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './CycleResultsModal.css';
+import { useTranslation } from 'react-i18next';
 import { getEvaluationsByCycle } from '../../../../../../services/PerformanceHrService';
 
 const CycleResultsModal = ({ isOpen, onClose, cycle }) => {
-    const currentLang = sessionStorage.getItem('lang') || 'en';
-    const isAr = currentLang === 'ar';
+    const { t, i18n } = useTranslation('EmployeePortal/PerformanceCycles');
+    const isAr = i18n ? i18n.language === 'ar' : false;
 
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -30,11 +31,13 @@ const CycleResultsModal = ({ isOpen, onClose, cycle }) => {
 
     if (!isOpen || !cycle) return null;
 
+    const cycleTitle = cycle.title || (isAr ? cycle.nameAr : cycle.nameEn) || '';
+
     return (
         <div className={`modal-overlay cycle-results-modal-overlay ${isAr ? 'rtl' : 'ltr'}`}>
             <div className="modal-container cycle-results-modal">
                 <div className="modal-header">
-                    <h2>{isAr ? `نتائج الدورة: ${cycle.title || cycle.nameAr}` : `Cycle Results: ${cycle.title || cycle.nameEn}`}</h2>
+                    <h2>{t('modal.cycleResults', { name: cycleTitle })}</h2>
                     <button className="close-btn" onClick={onClose}>
                         <i className="fa-solid fa-times"></i>
                     </button>
@@ -43,34 +46,34 @@ const CycleResultsModal = ({ isOpen, onClose, cycle }) => {
                     {loading ? (
                         <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
                             <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', marginBottom: '12px', display: 'block' }}></i>
-                            {isAr ? 'جاري تحميل النتائج...' : 'Loading results...'}
+                            {t('modal.loadingResults')}
                         </div>
                     ) : (
                         <div className="table-wrapper">
                             <table className="custom-table">
                                 <thead>
                                     <tr>
-                                        <th>{isAr ? 'الموظف' : 'Employee'}</th>
-                                        <th>{isAr ? 'القسم' : 'Department'}</th>
-                                        <th>{isAr ? 'المهام (40%)' : 'Tasks (40%)'}</th>
-                                        <th>{isAr ? 'المدير (25%)' : 'Manager (25%)'}</th>
-                                        <th>{isAr ? 'الزملاء (15%)' : 'Peers (15%)'}</th>
-                                        <th>{isAr ? 'الحضور (10%)' : 'Attendance (10%)'}</th>
-                                        <th>{isAr ? 'الإضافي (10%)' : 'Overtime (10%)'}</th>
-                                        <th>{isAr ? 'النهائية' : 'Final Score'}</th>
-                                        <th>{isAr ? 'القرار التلقائي' : 'Auto Decision'}</th>
+                                        <th>{t('modal.employee')}</th>
+                                        <th>{t('modal.department')}</th>
+                                        <th>{t('modal.tasksWeight')}</th>
+                                        <th>{t('modal.managerWeight')}</th>
+                                        <th>{t('modal.peerWeight')}</th>
+                                        <th>{t('modal.attendanceWeight')}</th>
+                                        <th>{t('modal.overtimeWeight')}</th>
+                                        <th>{t('modal.finalScore')}</th>
+                                        <th>{t('modal.autoDecision')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {results.length === 0 ? (
                                         <tr>
                                             <td colSpan="9" style={{ textAlign: 'center', padding: '30px', color: '#94a3b8' }}>
-                                                {isAr ? 'لا توجد نتائج تقييم مرصودة لهذه الدورة بعد.' : 'No evaluation records found for this cycle.'}
+                                                {t('modal.noRecords')}
                                             </td>
                                         </tr>
                                     ) : (
                                         results.map((r) => {
-                                            const empName = r.employee?.name || (isAr ? 'موظف' : 'Employee');
+                                            const empName = r.employee?.name || t('modal.defaultEmployee');
                                             const deptName = r.department || '-';
                                             const scores = r.scores || {};
                                             const finalScore = r.final_score ?? '-';
