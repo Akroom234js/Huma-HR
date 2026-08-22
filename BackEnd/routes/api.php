@@ -188,6 +188,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/cycles',                 [PerformanceCycleController::class, 'store']);
             Route::put('/cycles/{cycle}',          [PerformanceCycleController::class, 'update']);
             Route::post('/cycles/{cycle}/activate',[PerformanceCycleController::class, 'activate']);
+            Route::post('/cycles/{cycle}/close',   [PerformanceCycleController::class, 'close']);
 
 
             // Evaluations — HR يشوف النتائج

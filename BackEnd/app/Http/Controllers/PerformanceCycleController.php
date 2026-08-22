@@ -56,12 +56,6 @@ class PerformanceCycleController extends Controller
             return $this->errorResponse('No active performance template found. Please create one first.', null, 422);
         }
 
-                $template = PerformanceTemplate::create([
-                    'name' => "Custom Template for Cycle: " . $request->title,
-                    'is_active' => false, // قالب خاص بدورة واحدة وليس عاماً للجميع
-                    'components' => $componentsData
-                ]);
-
         $cycle = DB::transaction(function () use ($request, $hrProfile, $activeTemplate) {
             return PerformanceCycle::create([
                 'title'                   => $request->title,
@@ -154,6 +148,33 @@ class PerformanceCycleController extends Controller
         return $this->successResponse(
             $this->formatCycle($cycle->fresh(['template'])),
             'Performance cycle activated successfully.'
+        );
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // إغلاق الدورة يدوياً وتشغيل حساب الأداء في الخلفية
+    // POST /performance/cycles/{cycle}/close
+    // HR فقط
+    // ─────────────────────────────────────────────────────────────
+    public function close(PerformanceCycle $cycle): JsonResponse
+    {
+        if ($cycle->status !== 'active') {
+            return $this->errorResponse(
+                'Only active cycles can be closed.',
+                null,
+                422
+            );
+        }
+
+        // تغيير الحالة إلى processing فوراً
+        $cycle->update(['status' => 'processing']);
+
+        // تشغيل الحساب في الخلفية
+        ProcessPerformanceJob::dispatch($cycle);
+
+        return $this->successResponse(
+            ['cycle_id' => $cycle->id, 'status' => 'processing'],
+            'Cycle closed. Performance scoring has started in the background.'
         );
     }
 
