@@ -1,33 +1,60 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import './EmployeeReports.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
 import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 import Avatar from '../../../Shared/Avatar/Avatar';
+import apiClient from '../../../../apiConfig';
 
-const EmployeeReports = () => {
-    const { t } = useTranslation('Dashboard/EmployeeReports');
+export default function EmployeeReports() {
+    const { t, i18n } = useTranslation('Dashboard/EmployeeReports');
+    const isAr = i18n ? i18n.language === 'ar' : false;
+
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [employees, setEmployees] = useState([]);
+    const [statsData, setStatsData] = useState({});
     const [searchTerm, setSearchTerm] = useState('');
     const [deptFilter, setDeptFilter] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
+    const [joinDateFilter, setJoinDateFilter] = useState('');
 
-    const employees = [
-        { name: 'Olivia Rhye', id: 'EMP-00123', job: 'Frontend Developer', dept: 'Engineering', date: '2022-10-15', status: 'active', img: 'https://i.pravatar.cc/150?u=olivia' },
-        { name: 'Phoenix Baker', id: 'EMP-00124', job: 'Product Designer', dept: 'Design', date: '2021-05-20', status: 'active', img: 'https://i.pravatar.cc/150?u=phoenix' },
-        { name: 'Lana Steiner', id: 'EMP-00125', job: 'Product Manager', dept: 'Product', date: '2020-01-10', status: 'onLeave', img: 'https://i.pravatar.cc/150?u=lana' },
-        { name: 'Candice Wu', id: 'EMP-00126', job: 'Backend Developer', dept: 'Engineering', date: '2023-03-01', status: 'active', img: 'https://i.pravatar.cc/150?u=candice' },
-        { name: 'Demi Wilkinson', id: 'EMP-00127', job: 'UX Researcher', dept: 'Design', date: '2022-08-12', status: 'active', img: 'https://i.pravatar.cc/150?u=demi' },
-        { name: 'Nathan Roberts', id: 'EMP-00128', job: 'QA Engineer', dept: 'Engineering', date: '2019-11-25', status: 'active', img: 'https://i.pravatar.cc/150?u=nathan' },
-    ];
+    useEffect(() => {
+        const fetchEmployeeReports = async () => {
+            try {
+                setLoading(true);
+                setError(null);
 
-    const filteredEmployees = useMemo(() => {
-        return employees.filter(emp => {
-            const matchesSearch = emp.name.toLowerCase().includes(searchTerm.toLowerCase()) || emp.id.toLowerCase().includes(searchTerm.toLowerCase());
-            const matchesDept = deptFilter === '' || emp.dept === deptFilter;
-            const matchesStatus = statusFilter === '' || emp.status === statusFilter;
-            return matchesSearch && matchesDept && matchesStatus;
-        });
-    }, [searchTerm, deptFilter, statusFilter, employees]);
+                const response = await apiClient.get('/dashboard/employee-reports', {
+                    params: {
+                        search: searchTerm,
+                        department: deptFilter,
+                        status: statusFilter,
+                        join_date: joinDateFilter,
+                    }
+                });
+
+                const result = response.data;
+                console.log("Employee Reports Result:", result);
+
+                if (result && (result.status || result.success)) {
+                    const apiData = result.data || {};
+                    setEmployees(apiData.employees || []);
+                    setStatsData(apiData.stats || {});
+                } else {
+                    setError(result.message || 'Failed to load employee reports');
+                }
+            } catch (err) {
+                console.error("Error fetching employee reports:", err);
+                const serverMsg = err.response?.data?.message || err.message || 'Error connecting to the server';
+                setError(serverMsg);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchEmployeeReports();
+    }, [searchTerm, deptFilter, statusFilter, joinDateFilter, i18n?.language]);
 
     const departmentOptions = [
         { value: '', label: t('filters.department') },
@@ -52,14 +79,22 @@ const EmployeeReports = () => {
     ];
 
     const stats = [
-        { label: t('stats.totalEmployees'), value: '1,250' },
-        { label: t('stats.newHires'), value: '15' },
-        { label: t('stats.turnover'), value: '3.2%' },
-        { label: t('stats.stabilityRate'), value: '96.8%' },
+        { label: t('stats.totalEmployees'), value: statsData.total_employees ?? '0' },
+        { label: t('stats.newHires'), value: statsData.new_hires ?? '0' },
+        { label: t('stats.turnover'), value: statsData.turnover ?? '0%' },
+        { label: t('stats.stabilityRate'), value: statsData.stability_rate ?? '0%' },
     ];
 
+    if (loading) return <div style={{ padding: '40px', textAlign: 'center' }}>{t("loading") || "Loading..."}</div>;
+    
+    if (error) return (
+        <div className="error-message" style={{ padding: '20px', color: '#ef4444', textAlign: 'center', fontWeight: 'bold' }}>
+            {error}
+        </div>
+    );
+
     return (
-        <div className="er-page">
+        <div className={`er-page ${isAr ? 'rtl' : 'ltr'}`}>
             <div className="er-theme-toggle-wrapper">
                 <ThemeToggle />
             </div>
@@ -92,8 +127,8 @@ const EmployeeReports = () => {
                             placeholder={t('filters.employmentStatus')}
                         />
                         <FilterDropdown
-                            value=""
-                            onChange={() => { }}
+                            value={joinDateFilter}
+                            onChange={setJoinDateFilter}
                             options={joinDateOptions}
                             placeholder={t('filters.joinDate')}
                         />
@@ -110,8 +145,6 @@ const EmployeeReports = () => {
                     </div>
                 ))}
             </div>
-
-            {/* Table Section */}
             <div className="er-table-card">
                 <div className="er-table-header">
                     <h2 className="er-table-title">{t('table.title')}</h2>
@@ -129,11 +162,11 @@ const EmployeeReports = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredEmployees.map((emp, idx) => (
-                                <tr key={idx}>
+                            {employees.map((emp, idx) => (
+                                <tr key={emp.id || idx}>
                                     <td>
                                         <div className="er-employee-cell">
-                                            <Avatar user={{ full_name: emp.name }} size="sm" />
+                                            <Avatar user={{ full_name: emp.name, avatar: emp.img }} size="sm" />
                                             <span className="er-employee-name">{emp.name}</span>
                                         </div>
                                     </td>
@@ -142,13 +175,13 @@ const EmployeeReports = () => {
                                     <td><span className="er-dept">{emp.dept}</span></td>
                                     <td><span className="er-date">{emp.date}</span></td>
                                     <td>
-                                        <span className={`er-status-badge er-status-${emp.status.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()}`}>
+                                        <span className={`er-status-badge er-status-${(emp.status || '').replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()}`}>
                                             {t(`status.${emp.status}`)}
                                         </span>
                                     </td>
                                 </tr>
                             ))}
-                            {filteredEmployees.length === 0 && (
+                            {employees.length === 0 && (
                                 <tr>
                                     <td colSpan="6" className="text-center" style={{ padding: '2rem', color: 'var(--text-muted)' }}>
                                         {t('table.noResults')}
@@ -161,6 +194,4 @@ const EmployeeReports = () => {
             </div>
         </div>
     );
-};
-
-export default EmployeeReports;
+}
