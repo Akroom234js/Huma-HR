@@ -144,7 +144,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/tasks/{task}',          [TaskController::class, 'show']);
     Route::put('/tasks/{task}/start',    [TaskController::class, 'start']);
-    Route::put('/tasks/{task}/complete', [TaskController::class, 'complete']);
+    Route::match(['put', 'post'], '/tasks/{task}/complete', [TaskController::class, 'complete']);
 
     // ══════════════════════════════════════════════════════════════════════
     // ✅ Performance Module

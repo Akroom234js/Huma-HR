@@ -61,9 +61,17 @@ export const requestRevision = (taskId, data) =>
 export const startTask = (taskId) =>
   apiClient.put(`/tasks/${taskId}/start`);
 
-// PUT /api/tasks/{task}/complete (إنجاز المهمة / إعادة إنجاز بعد المراجعة - موظف)
-export const completeTask = (taskId, data = {}) =>
-  apiClient.put(`/tasks/${taskId}/complete`, data);
+// POST/PUT /api/tasks/{task}/complete (إنجاز المهمة / إعادة إنجاز بعد المراجعة - موظف)
+export const completeTask = (taskId, data = {}) => {
+  if (data instanceof FormData) {
+    return apiClient.post(`/tasks/${taskId}/complete`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  }
+  return apiClient.post(`/tasks/${taskId}/complete`, data);
+};
 
 // GET /api/tasks/my-tasks (عرض مهامي - موظف)
 export const getMyTasks = () =>
