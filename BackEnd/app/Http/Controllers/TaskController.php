@@ -9,6 +9,8 @@ use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Requests\ScoreTaskRequest;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class TaskController extends Controller
@@ -193,7 +195,7 @@ class TaskController extends Controller
     // الموظف ينجز المهمة
     // PUT /tasks/{task}/complete
     // ─────────────────────────────────────────────────────────────
-    public function complete(Task $task): JsonResponse
+    public function complete(Request $request, Task $task): JsonResponse
     {
         $employeeProfile = auth()->user()->employeeProfile;
 
@@ -209,6 +211,11 @@ class TaskController extends Controller
             );
         }
 
+        $request->validate([
+            'submission_notes' => 'nullable|string|max:3000',
+            'attachment'       => 'nullable|file|max:20480', // Max 20MB
+        ]);
+
         // حساب أيام التأخير تلقائياً
         $today    = Carbon::today();
         $dueDate  = Carbon::parse($task->due_date);
@@ -216,11 +223,24 @@ class TaskController extends Controller
             ? $today->diffInDays($dueDate)
             : 0;
 
-        $task->update([
+        $updateData = [
             'status'       => 'pending_review',
             'days_late'    => $daysLate,
             'completed_at' => now(),
-        ]);
+        ];
+
+        if ($request->has('submission_notes')) {
+            $updateData['submission_notes'] = $request->input('submission_notes');
+        }
+
+        if ($request->hasFile('attachment')) {
+            if ($task->attachment) {
+                Storage::disk('public')->delete($task->attachment);
+            }
+            $updateData['attachment'] = $request->file('attachment')->store('task_attachments', 'public');
+        }
+
+        $task->update($updateData);
 
         return $this->successResponse(
             $this->formatTask($task->fresh()),
@@ -303,6 +323,9 @@ class TaskController extends Controller
             'priority'             => $task->priority,
             'status'               => $task->status,
             'manager_note'         => $task->manager_note,
+            'submission_notes'     => $task->submission_notes,
+            'attachment'           => $task->attachment,
+            'attachment_url'       => $task->attachment ? asset('storage/' . $task->attachment) : null,
             'late_penalty_per_day' => $task->late_penalty_per_day,
             'days_late'            => $task->days_late,
             'completion_score'     => $task->completion_score,

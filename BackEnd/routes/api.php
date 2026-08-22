@@ -145,7 +145,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/tasks/{task}',          [TaskController::class, 'show']);
     Route::put('/tasks/{task}/start',    [TaskController::class, 'start']);
-    Route::put('/tasks/{task}/complete', [TaskController::class, 'complete']);
+    Route::match(['put', 'post'], '/tasks/{task}/complete', [TaskController::class, 'complete']);
 
     // ══════════════════════════════════════════════════════════════════════
     // ✅ Performance Module
@@ -189,6 +189,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/cycles',                 [PerformanceCycleController::class, 'store']);
             Route::put('/cycles/{cycle}',          [PerformanceCycleController::class, 'update']);
             Route::post('/cycles/{cycle}/activate',[PerformanceCycleController::class, 'activate']);
+            Route::post('/cycles/{cycle}/close',   [PerformanceCycleController::class, 'close']);
 
 
             // Evaluations — HR يشوف النتائج

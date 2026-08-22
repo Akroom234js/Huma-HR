@@ -8,6 +8,7 @@ import TaskScoreBreakdown from '../../../../Shared/Performance/TaskScoreBreakdow
 import ThemeToggle from '../../../../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
 import { getTaskDetails, completeTask, startTask } from '../../../../../services/performanceService';
+import { STORAGE_BASE_URL } from '../../../../../apiConfig';
 
 const TaskDetailsView = () => {
     const navigate = useNavigate();
@@ -29,6 +30,9 @@ const TaskDetailsView = () => {
             const response = await getTaskDetails(activeTaskId);
             const data = response?.data?.data || response?.data;
             setTask(data);
+            if (data?.submission_notes) {
+                setSubmissionText(data.submission_notes);
+            }
         } catch (error) {
             console.error("Error loading task details:", error);
         } finally {
@@ -52,14 +56,17 @@ const TaskDetailsView = () => {
 
         try {
             setSubmitting(true);
-            await completeTask(task.id, {
-                submission_notes: submissionText,
-            });
-            alert(t('successSubmit'));
+            const formData = new FormData();
+            formData.append('submission_notes', submissionText);
+            if (selectedFile) {
+                formData.append('attachment', selectedFile);
+            }
+            await completeTask(task.id, formData);
+            alert(t('successSubmit') || (isAr ? 'تم تسليم المهمة بنجاح!' : 'Task submitted successfully!'));
             navigate('/portal/performance');
         } catch (error) {
             console.error("Error submitting task deliverable:", error);
-            alert(t('failedSubmit'));
+            alert(t('failedSubmit') || (isAr ? 'فشل تسليم المهمة.' : 'Failed to submit task.'));
         } finally {
             setSubmitting(false);
         }
@@ -208,6 +215,37 @@ const TaskDetailsView = () => {
                     <div style={{ padding: '20px', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderRadius: '8px', marginTop: '20px', textAlign: 'center', color: '#2563eb' }}>
                         <i className="fa-solid fa-clock" style={{ fontSize: '1.5rem', marginBottom: '8px', display: 'block' }}></i>
                         <strong>{isAr ? 'تم تسليم المخرجات بنجاح، وهي الآن بانتظار اعتماد وتقييم المشرف.' : 'Deliverable submitted! Currently awaiting supervisor score & evaluation.'}</strong>
+                    </div>
+                )}
+
+                {(isPendingReview || isCompleted) && (task.submission_notes || task.attachment || task.attachment_url) && (
+                    <div className="task-deliverable-summary" style={{ marginTop: '20px', padding: '18px', background: 'var(--bg-page)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                        <h4 style={{ fontSize: '15px', fontWeight: '700', color: 'var(--text-main)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <i className="fa-solid fa-file-circle-check" style={{ color: '#10b981' }}></i>
+                            {isAr ? 'بيانات ومرفقات التسليم' : 'Submitted Deliverable & Attachments'}
+                        </h4>
+                        {task.submission_notes && (
+                            <div style={{ marginBottom: '12px', fontSize: '14px', color: 'var(--text-secondary)', whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
+                                <strong style={{ color: 'var(--text-main)', display: 'block', marginBottom: '4px' }}>
+                                    {isAr ? 'ملاحظات التسليم:' : 'Submission Notes:'}
+                                </strong>
+                                {task.submission_notes}
+                            </div>
+                        )}
+                        {(task.attachment_url || task.attachment) && (
+                            <div style={{ marginTop: '12px' }}>
+                                <a
+                                    href={task.attachment_url || `${STORAGE_BASE_URL}/${task.attachment}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="btn btn-outline-primary btn-sm"
+                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 14px', borderRadius: '8px', background: 'rgba(53, 158, 255, 0.1)', color: 'var(--primary-color)', textDecoration: 'none', border: '1px solid rgba(53, 158, 255, 0.25)', fontWeight: '600', fontSize: '13px' }}
+                                >
+                                    <i className="fa-solid fa-paperclip"></i>
+                                    {isAr ? 'تحميل / معاينة الملف المرفق' : 'Download / View Attached File'}
+                                </a>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

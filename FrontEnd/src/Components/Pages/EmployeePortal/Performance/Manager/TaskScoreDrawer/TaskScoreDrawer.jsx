@@ -10,6 +10,7 @@ import {
     scoreTask, 
     requestRevision 
 } from '../../../../../../services/performanceService';
+import { STORAGE_BASE_URL } from '../../../../../../apiConfig';
 
 const TaskScoreDrawer = () => {
     const navigate = useNavigate();
@@ -116,7 +117,9 @@ const TaskScoreDrawer = () => {
                             days_late: fetchedTask.days_late || 0,
                             late_penalty_per_day: fetchedTask.late_penalty_per_day || 0,
                             scope: fetchedTask.description || t('noScope'),
-                            submission_notes: fetchedTask.manager_note || t('noNotes'),
+                            submission_notes: fetchedTask.submission_notes || '',
+                            attachment: fetchedTask.attachment || null,
+                            attachment_url: fetchedTask.attachment_url || (fetchedTask.attachment ? `${STORAGE_BASE_URL}/${fetchedTask.attachment}` : null),
                             task_score: fetchedTask.task_score || 0,
                             timeline: buildTimeline(fetchedTask)
                         };
@@ -279,7 +282,28 @@ const TaskScoreDrawer = () => {
 
                         <div className="employee-notes-box">
                             <h4 className="notes-header-title">{t('submissionNotes')}:</h4>
-                            <p className="notes-content">"{task.submission_notes}"</p>
+                            <p className="notes-content">
+                                {task.submission_notes ? `"${task.submission_notes}"` : (isAr ? 'لا توجد ملاحظات مرفقة مع التسليم.' : 'No submission notes provided.')}
+                            </p>
+
+                            {task.attachment_url && (
+                                <div className="employee-attachment-box" style={{ marginTop: '16px', paddingTop: '14px', borderTop: '1px dashed var(--border-color)' }}>
+                                    <h5 style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        <i className="fa-solid fa-paperclip" style={{ color: 'var(--primary-color)' }}></i>
+                                        <span>{isAr ? 'الملف المرفق من الموظف:' : 'Employee Attached File:'}</span>
+                                    </h5>
+                                    <a 
+                                        href={task.attachment_url} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="btn btn-outline-primary btn-sm"
+                                        style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', borderRadius: '8px', background: 'rgba(53, 158, 255, 0.08)', color: 'var(--primary-color)', textDecoration: 'none', border: '1px solid rgba(53, 158, 255, 0.3)', fontWeight: '600', fontSize: '13px' }}
+                                    >
+                                        <i className="fa-solid fa-download"></i>
+                                        <span>{isAr ? 'معاينة / تحميل المرفق' : 'Download / View Attachment'}</span>
+                                    </a>
+                                </div>
+                            )}
                         </div>
                     </div>
 

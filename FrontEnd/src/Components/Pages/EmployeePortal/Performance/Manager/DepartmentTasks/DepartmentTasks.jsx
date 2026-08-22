@@ -25,6 +25,7 @@ const DepartmentTasks = () => {
 
     const [showAssignModal, setShowAssignModal] = useState(false);
     const [editingTask, setEditingTask] = useState(null);
+    const [isModalSubmitting, setIsModalSubmitting] = useState(false);
     const [tasks, setTasks] = useState([]);
     const [employeesList, setEmployeesList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -342,6 +343,7 @@ const DepartmentTasks = () => {
                 isOpen={showAssignModal}
                 onClose={() => setShowAssignModal(false)}
                 onSubmit={async (formData) => {
+                    setIsModalSubmitting(true);
                     try {
                         const payload = {
                             employee_profile_id: Number(formData.employee_id),
@@ -361,9 +363,12 @@ const DepartmentTasks = () => {
                     } catch (error) {
                         console.error("Failed to create task:", error);
                         alert(t('alerts.createError'));
+                    } finally {
+                        setIsModalSubmitting(false);
                     }
                 }}
                 employees={employeesList}
+                isSubmitting={isModalSubmitting}
                 lang={i18n.language}
             />
 
@@ -372,6 +377,7 @@ const DepartmentTasks = () => {
                 isOpen={!!editingTask}
                 onClose={() => setEditingTask(null)}
                 onSubmit={async (formData) => {
+                    setIsModalSubmitting(true);
                     try {
                         const payload = {
                             title: formData.title,
@@ -390,6 +396,8 @@ const DepartmentTasks = () => {
                     } catch (error) {
                         console.error("Failed to update task:", error);
                         alert(t('alerts.updateError'));
+                    } finally {
+                        setIsModalSubmitting(false);
                     }
                 }}
                 task={editingTask ? {
@@ -397,6 +405,7 @@ const DepartmentTasks = () => {
                     employee_id: editingTask.employee_id
                 } : null}
                 employees={employeesList}
+                isSubmitting={isModalSubmitting}
                 lang={i18n.language}
             />
         </section>

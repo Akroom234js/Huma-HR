@@ -17,6 +17,8 @@ class Task extends Model
         'priority',
         'status',
         'manager_note',
+        'submission_notes',
+        'attachment',
         'late_penalty_per_day',
         'days_late',
         'completion_score',

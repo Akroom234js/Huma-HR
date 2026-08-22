@@ -16,7 +16,7 @@ export default function ImprovementStatistics() {
         mostProductiveDept: '---',
         avgEmployeeCost: '---',
         overallIndex: '---',
-        operationalEfficiency: '---'
+        // operationalEfficiency: '---'
     });
     const [departmentsData, setDepartmentsData] = useState([]);
     const [monthlyTrends, setMonthlyTrends] = useState([]);
@@ -39,7 +39,7 @@ export default function ImprovementStatistics() {
                         mostProductiveDept: stats.most_productive_dept || stats.mostProductiveDept || '---',
                         avgEmployeeCost: stats.avg_employee_cost || stats.avgEmployeeCost || '---',
                         overallIndex: stats.overall_index || stats.overallIndex || '---',
-                        operationalEfficiency: stats.operational_efficiency || stats.operationalEfficiency || '---'
+                        // operationalEfficiency: stats.operational_efficiency || stats.operationalEfficiency || '---'
                     });
 
                     const rawDepts = apiData.departments || apiData.departments_data || apiData.department_stats || [];
@@ -106,10 +106,10 @@ export default function ImprovementStatistics() {
                             {overallStats.overallIndex}{typeof overallStats.overallIndex === 'number' ? '%' : ''}
                         </span>
                     </div>
-                    <div className="is-stat-card">
+                    {/* <div className="is-stat-card">
                         <span className="is-stat-label">{t('operationalEfficiency')}</span>
                         <span className="is-stat-value">{overallStats.operationalEfficiency}</span>
-                    </div>
+                    </div> */}
                 </section>
                 <section className="is-charts-grid">
                     <div className="is-chart-card">

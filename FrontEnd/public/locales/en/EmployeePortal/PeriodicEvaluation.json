@@ -5,11 +5,17 @@
   "cycleLabel": "Performance Cycle:",
   "selectEmployeeTitle": "Select Employee to Evaluate:",
   "pendingEvaluation": "Pending Evaluation",
+  "evaluated": "Evaluated",
+  "summaryStats": "{{evaluated}} of {{total}} employees evaluated",
   "noEmployees": "No employees currently found in your department to evaluate.",
   "loading": "Loading employees and cycles data...",
   "alerts": {
     "noActiveCycle": "No active performance cycle found. Please create one first.",
     "submitSuccess": "Periodic employee evaluation submitted successfully!",
-    "submitError": "Failed to submit periodic evaluation."
+    "updateSuccess": "Periodic employee evaluation updated successfully!",
+    "submitError": "Failed to submit periodic evaluation.",
+    "updateError": "Failed to update periodic evaluation.",
+    "alreadyEvaluated": "This employee has already been evaluated in this cycle. You can only update the existing evaluation."
   }
 }
+
