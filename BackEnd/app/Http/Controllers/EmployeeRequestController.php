@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Department;
 use App\Models\EmployeeProfile;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class EmployeeRequestController extends Controller
 {
@@ -248,12 +249,20 @@ class EmployeeRequestController extends Controller
             $status = 'approved';
         }
 
+        $startDate = $details['start_date'] ?? null;
+        $requestDuration = (int)($details['duration'] ?? 1);
+        $endDate = $startDate
+            ? Carbon::parse($startDate)->addDays($requestDuration - 1)->format('Y-m-d')
+            : null;
+
         $employeeRequest = EmployeeRequest::create([
             'employee_profile_id' => $employeeProfileId,
             'type'                => $request->type,
             'reason'              => $request->reason ?? $request->reson,
             'details'             => $details,
             'status'              => $status,
+            'start_date'          => $startDate,
+            'end_date'            => $endDate,
         ]);
 
         // If auto-approved, deduct from balance right away and sync attendance records
