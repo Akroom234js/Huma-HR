@@ -26,6 +26,7 @@ use App\Http\Controllers\PerformanceEvaluationController;
 use App\Http\Controllers\PerformanceStatsController;
 use App\Http\Controllers\PerformanceTemplateController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
@@ -257,6 +258,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/dashboard/employee-reports', [DashboardController::class, 'employeeReports']);
         Route::get('/dashboard/improvement-stats',[DashboardController::class, 'improvementStats']);
 
+
+
         Route::get('/payroll/overview',      [PayrollController::class, 'overview']);
         Route::post('/payroll/initialize',   [PayrollController::class, 'initialize']);
         Route::get('/payroll',               [PayrollController::class, 'index']);
@@ -288,6 +291,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // ── HR فقط ───────────────────────────────────────────────────────────
     Route::middleware('role:hr')->group(function () {
+
+          // ── Reports ─────────────────────────────────────────────
+        Route::get('/reports/payroll',    [ReportController::class, 'payrollReport']);
+        Route::get('/reports/leaves',     [ReportController::class, 'leavesReport']);
+        Route::get('/reports/attendance', [ReportController::class, 'attendanceReport']);
+        Route::get('/reports/employees',  [ReportController::class, 'employeesReport']);
+
+
         Route::post('/auth/employees',   [AuthController::class,    'register']);
         Route::put('/employees/{id}',    [EmployeeController::class, 'update']);
         Route::delete('/employees/{id}', [EmployeeController::class, 'destroy']);

@@ -16,6 +16,8 @@ class EmployeeRequest extends Model
         'status',
         'reason',
         'details',
+        'start_date',
+        'end_date',
         'actioned_by',
         'actioned_at',
     ];

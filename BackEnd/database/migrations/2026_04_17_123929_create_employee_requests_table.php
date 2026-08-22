@@ -18,6 +18,8 @@ return new class extends Migration
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->text('reason')->nullable();
             $table->json('details')->nullable(); // holds dynamic data per type
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
             $table->foreignId('actioned_by')->nullable()->constrained('users');
             $table->timestamp('actioned_at')->nullable();
             $table->timestamps();
