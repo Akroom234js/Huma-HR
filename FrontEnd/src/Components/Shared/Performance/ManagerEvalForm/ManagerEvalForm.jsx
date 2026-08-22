@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ManagerEvalForm.css';
 import { useTranslation } from 'react-i18next';
 
@@ -6,7 +6,8 @@ const ManagerEvalForm = ({
     employeeName = '', 
     onSubmit, 
     isSubmitting = false, 
-    managerScore = 0, // Passed from parent/backend
+    isEvaluated = false,
+    initialValues = null,
     lang 
 }) => {
     const { i18n } = useTranslation();
@@ -18,6 +19,21 @@ const ManagerEvalForm = ({
     const [responsibility, setResponsibility] = useState(5);
     const [problemSolving, setProblemSolving] = useState(5);
     const [notes, setNotes] = useState('');
+
+    // Pre-populate or reset values when active employee or initialValues change
+    useEffect(() => {
+        if (initialValues) {
+            setProfessionalism(initialValues.professionalism !== undefined && initialValues.professionalism !== null ? Number(initialValues.professionalism) : 5);
+            setResponsibility(initialValues.responsibility !== undefined && initialValues.responsibility !== null ? Number(initialValues.responsibility) : 5);
+            setProblemSolving(initialValues.problem_solving !== undefined && initialValues.problem_solving !== null ? Number(initialValues.problem_solving) : 5);
+            setNotes(initialValues.notes || '');
+        } else {
+            setProfessionalism(5);
+            setResponsibility(5);
+            setProblemSolving(5);
+            setNotes('');
+        }
+    }, [initialValues, employeeName]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -46,6 +62,29 @@ const ManagerEvalForm = ({
                 </span>
             </h4>
 
+            {/* Informational Banner if Employee is Already Evaluated */}
+            {isEvaluated && (
+                <div className="eval-already-submitted-banner">
+                    <div className="banner-icon">
+                        <i className="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div className="banner-content">
+                        <h5>{isAr ? 'تم تقييم هذا الموظف مسبقاً في هذه الدورة' : 'Employee Already Evaluated in this Cycle'}</h5>
+                        <p>
+                            {isAr 
+                                ? 'تم رصد درجات هذا الموظف بالفعل. يمكنك تعديل الدرجات والملاحظات أدناه والضغط على "تحديث التقييم" لتعديل التقييم القائم.' 
+                                : 'An evaluation has already been submitted for this employee. You can adjust the scores and remarks below and click "Update Evaluation" to update it.'}
+                        </p>
+                        {initialValues?.submitted_at && (
+                            <span className="banner-date">
+                                <i className="fa-regular fa-clock"></i> 
+                                <span>{isAr ? `تاريخ الرصد: ${initialValues.submitted_at}` : `Recorded on: ${initialValues.submitted_at}`}</span>
+                            </span>
+                        )}
+                    </div>
+                </div>
+            )}
+
             <div className="eval-sliders-section">
                 {/* Professionalism slider */}
                 <div className="eval-range-container">
@@ -62,7 +101,7 @@ const ManagerEvalForm = ({
                         step="1"
                         className="eval-custom-range"
                         value={professionalism}
-                        onChange={(e) => setProfessionalism(parseInt(e.target.value))}
+                        onChange={(e) => setProfessionalism(parseInt(e.target.value, 10))}
                     />
                     <span className="slider-hint">
                         {isAr ? 'مدى الالتزام بالمعايير المهنية والسلوك الوظيفي' : 'Commitment to professional ethics and job behavior'}
@@ -84,7 +123,7 @@ const ManagerEvalForm = ({
                         step="1"
                         className="eval-custom-range"
                         value={responsibility}
-                        onChange={(e) => setResponsibility(parseInt(e.target.value))}
+                        onChange={(e) => setResponsibility(parseInt(e.target.value, 10))}
                     />
                     <span className="slider-hint">
                         {isAr ? 'مدى تحمل المسؤولية والالتزام بالتسليمات والمواعيد' : 'Accountability and commitment to deliverables and deadlines'}
@@ -106,7 +145,7 @@ const ManagerEvalForm = ({
                         step="1"
                         className="eval-custom-range"
                         value={problemSolving}
-                        onChange={(e) => setProblemSolving(parseInt(e.target.value))}
+                        onChange={(e) => setProblemSolving(parseInt(e.target.value, 10))}
                     />
                     <span className="slider-hint">
                         {isAr ? 'القدرة على مواجهة التحديات وابتكار حلول عملية' : 'Ability to address challenges and create practical solutions'}
@@ -147,18 +186,24 @@ const ManagerEvalForm = ({
             <div className="eval-form-actions">
                 <button 
                     type="submit" 
-                    className="eval-submit-btn" 
+                    className={`eval-submit-btn ${isEvaluated ? 'update-mode' : ''}`}
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? (
                         <>
                             <i className="fa-solid fa-circle-notch fa-spin"></i>
-                            <span>{isAr ? 'جاري إرسال التقييم...' : 'Submitting Evaluation...'}</span>
+                            <span>{isEvaluated 
+                                ? (isAr ? 'جاري تحديث التقييم...' : 'Updating Evaluation...') 
+                                : (isAr ? 'جاري إرسال التقييم...' : 'Submitting Evaluation...')}
+                            </span>
                         </>
                     ) : (
                         <>
-                            <i className="fa-solid fa-circle-check"></i>
-                            <span>{isAr ? 'اعتماد وإرسال التقييم' : 'Approve & Submit Evaluation'}</span>
+                            <i className={isEvaluated ? "fa-solid fa-pen-to-square" : "fa-solid fa-circle-check"}></i>
+                            <span>{isEvaluated 
+                                ? (isAr ? 'تحديث التقييم' : 'Update Evaluation') 
+                                : (isAr ? 'اعتماد وإرسال التقييم' : 'Approve & Submit Evaluation')}
+                            </span>
                         </>
                     )}
                 </button>
@@ -168,3 +213,4 @@ const ManagerEvalForm = ({
 };
 
 export default ManagerEvalForm;
+
