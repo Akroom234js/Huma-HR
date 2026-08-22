@@ -67,9 +67,9 @@ class ProcessPerformanceJob implements ShouldQueue
             }
         }
 
-        $this->cycle->update(['status' => 'completed']);
+        $this->cycle->update(['status' => 'closed']);
 
-        Log::info("ProcessPerformanceJob: Completed for cycle #{$this->cycle->id}");
+        Log::info("ProcessPerformanceJob: Completed for cycle #{$this->cycle->id} — status set to closed.");
     }
 
     private function processEmployee(
@@ -98,8 +98,8 @@ class ProcessPerformanceJob implements ShouldQueue
 
         $peerScore = null;
         if ($components->has('peer')) {
-            $peerScore = $peerService->calculateRawPeerScore($this->cycle->id, $employee->id) 
-                ?? ($peerService->aggregateScores($this->cycle->id)[$employee->id] ?? 0);
+            // استخدام الدرجات المُجمَّعة مسبقاً في handle() لتفادي N+1 واستدعاء $peerService خارج الـ scope
+            $peerScore = $peerScores[$employee->id] ?? 0;
         }
 
         $attendanceScore = null;
@@ -284,16 +284,18 @@ class ProcessPerformanceJob implements ShouldQueue
     private function decisionToActionType(string $decision): string
     {
         return match ($decision) {
-            'promotion_bonus'  => 'promotion',
-            'bonus'            => 'bonus',
-            'training_required'=> 'training',
-            default            => 'warning',
+            'promotion_bonus'   => 'promotion',
+            'bonus'             => 'bonus',
+            // training ليست موجودة في الـ enum — تُترجم إلى warning (HR يقرر التدريب يدوياً)
+            'training_required' => 'warning',
+            default             => 'warning',
         };
     }
 
     public function failed(\Throwable $e): void
     {
         Log::critical("ProcessPerformanceJob: All attempts failed for cycle #{$this->cycle->id}: " . $e->getMessage());
-        $this->cycle->update(['status' => 'active']);
+        // لا نُعيد إلى 'active' — نُبقي على 'processing' حتى يتمكن HR من إعادة المحاولة يدوياً
+        // $this->cycle->update(['status' => 'active']); // مُعطَّل عمداً
     }
 }
