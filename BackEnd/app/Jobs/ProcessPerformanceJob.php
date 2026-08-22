@@ -67,9 +67,9 @@ class ProcessPerformanceJob implements ShouldQueue
             }
         }
 
-        $this->cycle->update(['status' => 'closed']);
+        $this->cycle->update(['status' => 'completed']);
 
-        Log::info("ProcessPerformanceJob: Completed for cycle #{$this->cycle->id} — status set to closed.");
+        Log::info("ProcessPerformanceJob: Completed for cycle #{$this->cycle->id} — status set to completed.");
     }
 
     private function processEmployee(
