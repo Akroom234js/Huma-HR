@@ -169,6 +169,40 @@
   border-color: #cbd5e1;
 }
 
+.performance-periodic-evaluation .slider-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.performance-periodic-evaluation .slider-section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.performance-periodic-evaluation .slider-stats-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(53, 158, 255, 0.08);
+  color: var(--primary-color);
+  border: 1px solid rgba(53, 158, 255, 0.2);
+}
+
+.performance-periodic-evaluation .employee-slide-avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
 .performance-periodic-evaluation .employee-slide-avatar {
   width: 42px;
   height: 42px;
@@ -182,6 +216,34 @@
   color: var(--primary-color);
   font-size: 14px;
   flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.performance-periodic-evaluation .employee-slide-avatar.evaluated {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.performance-periodic-evaluation .avatar-evaluated-check {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #10b981;
+  color: #ffffff;
+  font-size: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.performance-periodic-evaluation.rtl .avatar-evaluated-check {
+  right: auto;
+  left: -2px;
 }
 
 .performance-periodic-evaluation .employee-slide-info {
@@ -212,4 +274,43 @@
 
 .performance-periodic-evaluation .employee-slide-badge-wrapper {
   display: flex;
+  align-items: center;
 }
+
+/* Badge styles */
+.performance-periodic-evaluation .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.performance-periodic-evaluation .badge-pending {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.performance-periodic-evaluation .badge-evaluated {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+[data-theme="light"] .performance-periodic-evaluation .badge-pending {
+  background: #fef3c7;
+  color: #d97706;
+  border-color: #fde68a;
+}
+
+[data-theme="light"] .performance-periodic-evaluation .badge-evaluated {
+  background: #d1fae5;
+  color: #059669;
+  border-color: #a7f3d0;
+}
+
+
