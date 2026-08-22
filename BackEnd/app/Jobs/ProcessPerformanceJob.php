@@ -91,9 +91,10 @@ class ProcessPerformanceJob implements ShouldQueue
 
         $managerScore = null;
         if ($components->has('manager')) {
+            $managerConfig = (array) ($components->get('manager') ?? []);
             $managerScore = $managerService->calculateManagerScore(
-                $this->cycle->id, $employee->id, $components->get('manager')
-            ) ?? 0;
+                $this->cycle->id, $employee->id, $managerConfig
+            );
         }
 
         $peerScore = null;
@@ -104,15 +105,17 @@ class ProcessPerformanceJob implements ShouldQueue
 
         $attendanceScore = null;
         if ($components->has('attendance')) {
+            $attendanceConfig = (array) ($components->get('attendance') ?? []);
             $attendanceScore = $this->calculateAttendanceScore(
-                $employee->id, $startDate, $endDate, $components->get('attendance')
+                $employee->id, $startDate, $endDate, $attendanceConfig
             );
         }
 
         $overtimeScore = null;
         if ($components->has('overtime')) {
+            $overtimeConfig = (array) ($components->get('overtime') ?? []);
             $overtimeScore = $this->calculateOvertimeScore(
-                $employee->id, $startDate, $endDate, $components->get('overtime')
+                $employee->id, $startDate, $endDate, $overtimeConfig
             );
         }
 
