@@ -178,7 +178,7 @@ const PerformanceReports = () => {
                                     </td>
                                 </tr>
                             ) : (
-                                <ReportsTable evaluations={evaluations} />
+                                <ReportsTable evaluations={evaluations} cycleId={selectedCycleId} />
                             )}
                         </tbody>
                     </table>
