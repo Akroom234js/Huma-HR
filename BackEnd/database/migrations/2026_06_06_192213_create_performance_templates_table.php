@@ -8,7 +8,8 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('performance_templates', function (Blueprint $table) {
+        if (!Schema::hasTable('performance_templates')) {
+            Schema::create('performance_templates', function (Blueprint $table) {
             $table->id();
 
             // اسم القالب — مثال: "القالب العام 2026"
@@ -23,6 +24,7 @@ return new class extends Migration
 
             $table->timestamps();
         });
+        }
     }
 
     public function down(): void
