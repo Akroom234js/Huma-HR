@@ -108,8 +108,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/requests',         [EmployeeRequestController::class, 'store']);
 
     // ── Employee Portal ───────────────────────────────────────────────────
-    Route::get('/employee/payroll', [PayrollController::class, 'employeeHistory']);
-    Route::get('/employee/rewards', [PayrollController::class, 'employeeRewards']);
+    Route::get('/employee/payroll',     [PayrollController::class, 'employeeHistory']);
+    Route::get('/employee/rewards',     [PayrollController::class, 'employeeRewards']);
+    Route::get('/employee/org-summary', [EmployeeController::class, 'orgSummary']);
 
     Route::get('/employee/recognitions',         [App\Http\Controllers\RecognitionController::class, 'index']);
     Route::post('/employee/recognitions',        [App\Http\Controllers\RecognitionController::class, 'store']);
