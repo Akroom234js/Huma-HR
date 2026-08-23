@@ -148,7 +148,7 @@ class SalaryStructureController extends Controller
                     $taxDeduction->update([
                         'amount' => $taxAmount,
                         'reason' => "Tax adjusted to {$profile->tax_percent}%",
-                        'applied_by' => auth()->user()->name ?? 'System',
+                        'applied_by' => auth()->user()->employeeProfile?->full_name ?? 'System',
                         'applied_date' => now(),
                     ]);
                 } else {
@@ -158,7 +158,7 @@ class SalaryStructureController extends Controller
                         'amount' => $taxAmount,
                         'is_addition' => false,
                         'reason' => "Tax adjusted to {$profile->tax_percent}%",
-                        'applied_by' => auth()->user()->name ?? 'System',
+                        'applied_by' => auth()->user()->employeeProfile?->full_name ?? 'System',
                         'applied_date' => now(),
                     ]);
                 }
@@ -175,7 +175,7 @@ class SalaryStructureController extends Controller
                     $insDeduction->update([
                         'amount' => $profile->insurance_amount,
                         'reason' => "Insurance adjusted",
-                        'applied_by' => auth()->user()->name ?? 'System',
+                        'applied_by' => auth()->user()->employeeProfile?->full_name ?? 'System',
                         'applied_date' => now(),
                     ]);
                 } else {
@@ -185,7 +185,7 @@ class SalaryStructureController extends Controller
                         'amount' => $profile->insurance_amount,
                         'is_addition' => false,
                         'reason' => "Insurance adjusted",
-                        'applied_by' => auth()->user()->name ?? 'System',
+                        'applied_by' => auth()->user()->employeeProfile?->full_name ?? 'System',
                         'applied_date' => now(),
                     ]);
                 }
@@ -197,12 +197,7 @@ class SalaryStructureController extends Controller
                 if ($request->has('salary')) {
                     $payroll->basic_salary = $profile->salary;
                 }
-                $additionsSum = $payroll->deductions()->where('is_addition', true)->sum('amount');
-                $deductionsSum = $payroll->deductions()->where('is_addition', false)->sum('amount');
-                
-                $payroll->bonuses_amount = $additionsSum;
-                $payroll->final_net_salary = $payroll->basic_salary + $payroll->allowances_amount + $payroll->overtime_amount + $additionsSum - $deductionsSum;
-                $payroll->save();
+                $payroll->recalculateNetSalary();
             }
         }
 

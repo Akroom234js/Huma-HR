@@ -106,6 +106,7 @@ class HrUserSeeder extends Seeder
             'salary'        => 15000.00,
             'manager_id'    => null,
             'start_date'    => '2025-01-01',
+            'date_of_birth' => '1978-04-12',
         ]);
         $bossUser->assignRole(Role::findByName('manager', 'api'));
 
@@ -125,6 +126,7 @@ class HrUserSeeder extends Seeder
             'salary'        => 7500.00,
             'manager_id'    => $bossProfile->id, // Reports to CEO
             'start_date'    => '2025-02-15',
+             'date_of_birth' => '1988-09-23', 
         ]);
         $hrUser->assignRole(Role::findByName('hr', 'api'));
 
@@ -144,6 +146,7 @@ class HrUserSeeder extends Seeder
             'salary'        => 10000.00,
             'manager_id'    => $bossProfile->id, // Reports to CEO
             'start_date'    => '2025-03-01',
+            'date_of_birth' => '1985-11-30',
         ]);
         $deptManagerUser->assignRole(Role::findByName('employee', 'api'));
         $deptManagerUser->assignRole(Role::findByName('department_manager', 'api'));
@@ -164,6 +167,7 @@ class HrUserSeeder extends Seeder
             'salary'        => 5500.00,
             'manager_id'    => $deptManagerProfile->id, // Reports to Engineering Manager
             'start_date'    => '2025-05-10',
+            'date_of_birth' => '1996-02-18', 
         ]);
         $employeeUser->assignRole(Role::findByName('employee', 'api'));
 

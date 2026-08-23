@@ -6,6 +6,7 @@ use App\Models\PayrollDeduction;
 use App\Models\PayrollRecord;
 use App\Models\EmployeeProfile;
 use App\Traits\ApiResponse;
+use App\Traits\ParsesMonthYear;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class DeductionController extends Controller
 {
-    use ApiResponse;
+    use ApiResponse, ParsesMonthYear;
 
     // GET /api/deductions
     public function index(): JsonResponse
@@ -39,17 +40,12 @@ class DeductionController extends Controller
             'month' => 'required|string', // e.g. "April 2026"
         ]);
 
-        return DB::transaction(function () use ($request) {
-            $monthYear = explode(' ', $request->month);
-            $monthName = $monthYear[0];
-            $year = $monthYear[1] ?? now()->year;
+        [$monthInt, $year] = $this->parseMonthYear($request->month);
+        if (!$monthInt) {
+            return $this->errorResponse('Invalid month format. Expected "Month Year".', 400);
+        }
 
-            $monthMap = [
-                'January' => 1, 'February' => 2, 'March' => 3, 'April' => 4,
-                'May' => 5, 'June' => 6, 'July' => 7, 'August' => 8,
-                'September' => 9, 'October' => 10, 'November' => 11, 'December' => 12
-            ];
-            $monthInt = $monthMap[$monthName] ?? now()->month;
+        return DB::transaction(function () use ($request, $monthInt, $year) {
 
             // 1. Get or Create Payroll Record
             $payroll = PayrollRecord::where('user_id', $request->user_id)
@@ -78,18 +74,13 @@ class DeductionController extends Controller
                 'is_addition' => $request->is_addition ?? false,
                 'absence_days' => $request->absence_days ?? 0,
                 'reason' => $request->reason,
-                'applied_by' => Auth::user()->name,
+                'applied_by' => Auth::user()->employeeProfile?->full_name ?? 'System',
                 'applied_date' => now(),
             ]);
 
             // 3. Update Payroll Record Net Salary
-            $additionsSum = $payroll->deductions()->where('is_addition', true)->sum('amount');
-            $deductionsSum = $payroll->deductions()->where('is_addition', false)->sum('amount');
-
-            $payroll->bonuses_amount = $additionsSum;
-            $payroll->final_net_salary = $payroll->basic_salary + $payroll->allowances_amount + $payroll->overtime_amount + $additionsSum - $deductionsSum;
-            $payroll->save();
-
+           
+            $payroll->recalculateNetSalary();
             return $this->successResponse($deduction, 'Deduction recorded and payroll updated successfully.', 201);
         });
     }
@@ -110,12 +101,7 @@ class DeductionController extends Controller
 
             // Update Payroll Record Net Salary
             $payroll = $deduction->payrollRecord;
-            $additionsSum = $payroll->deductions()->where('is_addition', true)->sum('amount');
-            $deductionsSum = $payroll->deductions()->where('is_addition', false)->sum('amount');
-
-            $payroll->bonuses_amount = $additionsSum;
-            $payroll->final_net_salary = $payroll->basic_salary + $payroll->allowances_amount + $payroll->overtime_amount + $additionsSum - $deductionsSum;
-            $payroll->save();
+            $payroll->recalculateNetSalary();
 
             return $this->successResponse($deduction, 'Deduction updated successfully.');
         });
@@ -132,12 +118,7 @@ class DeductionController extends Controller
             $deduction->delete();
 
             // Update Payroll Record Net Salary
-            $additionsSum = $payroll->deductions()->where('is_addition', true)->sum('amount');
-            $deductionsSum = $payroll->deductions()->where('is_addition', false)->sum('amount');
-
-            $payroll->bonuses_amount = $additionsSum;
-            $payroll->final_net_salary = $payroll->basic_salary + $payroll->allowances_amount + $payroll->overtime_amount + $additionsSum - $deductionsSum;
-            $payroll->save();
+            $payroll->recalculateNetSalary();
 
             return $this->successResponse(null, 'Deduction deleted and payroll updated.');
         });
