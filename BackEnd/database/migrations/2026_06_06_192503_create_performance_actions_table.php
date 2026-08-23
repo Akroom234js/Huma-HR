@@ -8,8 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('performance_actions', function (Blueprint $table) {
-            $table->id();
+        if (!Schema::hasTable('performance_actions')) {
+            Schema::create('performance_actions', function (Blueprint $table) {
+                $table->id();
 
             $table->foreignId('performance_evaluation_id')
                   ->constrained('performance_evaluations')
@@ -30,6 +31,7 @@ return new class extends Migration
 
             $table->timestamps();
         });
+        }
     }
 
     public function down(): void

@@ -8,8 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('performance_evaluations', function (Blueprint $table) {
-            $table->id();
+        if (!Schema::hasTable('performance_evaluations')) {
+            Schema::create('performance_evaluations', function (Blueprint $table) {
+                $table->id();
 
             $table->foreignId('performance_cycle_id')
                   ->constrained('performance_cycles')
@@ -56,6 +57,7 @@ return new class extends Migration
                 'cycle_employee_unique'
             );
         });
+        }
     }
 
     public function down(): void

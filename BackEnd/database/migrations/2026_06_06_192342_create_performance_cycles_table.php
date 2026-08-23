@@ -8,8 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('performance_cycles', function (Blueprint $table) {
-            $table->id();
+        if (!Schema::hasTable('performance_cycles')) {
+            Schema::create('performance_cycles', function (Blueprint $table) {
+                $table->id();
 
             $table->string('title');
             $table->date('start_date');
@@ -36,6 +37,7 @@ return new class extends Migration
 
             $table->timestamps();
         });
+        }
     }
 
     public function down(): void
