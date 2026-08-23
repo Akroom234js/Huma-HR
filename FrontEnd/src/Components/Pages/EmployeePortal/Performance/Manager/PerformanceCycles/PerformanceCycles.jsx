@@ -38,6 +38,7 @@ const PerformanceCycles = () => {
             case 'processing':
                 return t('jobStates.processing');
             case 'closed':
+            case 'completed':
                 return t('jobStates.closed');
             case 'draft':
             default:
@@ -111,7 +112,7 @@ const PerformanceCycles = () => {
                                                             <span>{t('statuses.active')}</span>
                                                         </span>
                                                     )}
-                                                    {c.status === 'closed' && (
+                                                    {(c.status === 'closed' || c.status === 'completed') && (
                                                         <span className="badge badge-cycle-closed">
                                                             <span>{t('statuses.closed')}</span>
                                                         </span>
@@ -133,8 +134,8 @@ const PerformanceCycles = () => {
                                                         <span className={`state-indicator-dot ${c.status}`}></span>
                                                         <span style={{ 
                                                             fontSize: '13px', 
-                                                            color: c.status === 'closed' ? 'var(--color-scored)' : 'var(--text-secondary)',
-                                                            fontWeight: c.status === 'closed' ? 600 : 'normal'
+                                                            color: (c.status === 'closed' || c.status === 'completed') ? 'var(--color-scored)' : 'var(--text-secondary)',
+                                                            fontWeight: (c.status === 'closed' || c.status === 'completed') ? 600 : 'normal'
                                                         }}>
                                                             {getJobStateText(c.status)}
                                                         </span>
@@ -146,7 +147,7 @@ const PerformanceCycles = () => {
                                                             <i className="fa-solid fa-clock"></i>
                                                             <span>{t('table.calculatedOnClose')}</span>
                                                         </button>
-                                                    ) : c.status === 'closed' ? (
+                                                    ) : (c.status === 'closed' || c.status === 'completed') ? (
                                                         <button className="btn btn-secondary btn-sm" onClick={() => setSelectedCycle(c)}>
                                                             <i className="fa-solid fa-chart-line"></i>
                                                             <span>{t('table.viewResults')}</span>

@@ -27,8 +27,8 @@ class PerformanceCycleController extends Controller
 
         $query = PerformanceCycle::with(['template', 'creator'])->latest();
 
-        if (! $user->hasRole('hr', 'api')) {
-            $query->where('status', 'active');
+        if (! $user->hasRole('hr', 'api') && ! $user->hasRole('admin', 'api') && ! $user->hasRole('boss', 'api')) {
+            $query->where('status', '!=', 'draft');
         }
 
         $cycles = $query->get()->map(fn($c) => $this->formatCycle($c));

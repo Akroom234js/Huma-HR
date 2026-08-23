@@ -163,12 +163,13 @@ Route::middleware('auth:sanctum')->group(function () {
         // ── أي موظف — تقييم زميل ─────────────────────────────────────────
         Route::post('/peer-evaluations', [PeerEvaluationController::class, 'store']);
 
-        // ── Manager + boss — تقييم الفريق ────────────────────────────────
+        // ── Manager + boss + HR + Admin — تقييم الفريق ونتائج الدورة ────────────────
         // ⚠️ my-team لازم قبل {managerEvaluation}
-        Route::middleware('role:manager|department_manager|boss|hr')->group(function () {
+        Route::middleware('role:manager|department_manager|boss|hr|admin')->group(function () {
             Route::get('/manager-evaluations/my-team/{cycleId}',  [ManagerEvaluationController::class, 'myTeam']);
             Route::post('/manager-evaluations',                    [ManagerEvaluationController::class, 'store']);
             Route::put('/manager-evaluations/{managerEvaluation}', [ManagerEvaluationController::class, 'update']);
+            Route::get('/evaluations/{cycleId}',                   [PerformanceEvaluationController::class, 'byCycle']);
         });
 
         // ── HR + Admin + Boss ────────────────────────────────────────────
@@ -192,8 +193,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/cycles/{cycle}/close',   [PerformanceCycleController::class, 'close']);
 
 
-            // Evaluations — HR يشوف النتائج
-            Route::get('/evaluations/{cycleId}',              [PerformanceEvaluationController::class, 'byCycle']);
+            // Evaluations — HR يشوف النتائج الفردية
             Route::get('/evaluations/{cycleId}/{employeeId}', [PerformanceEvaluationController::class, 'show']);
 
             // ══════════════════════════════════════════════════════════════════════════════
