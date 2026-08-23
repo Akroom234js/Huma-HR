@@ -10,10 +10,7 @@ echo "Running Migrations..."
 php artisan migrate --force
 
 echo "Fixing deduction_type enum (bonus/reward)..."
-php artisan db:query "ALTER TABLE payroll_deductions MODIFY COLUMN deduction_type ENUM('absence','lateness','penalty','tax','insurance','other','bonus','reward') NOT NULL" 2>/dev/null || true
-
-echo "Adding start_date/end_date to employee_requests if not exists..."
-php artisan db:query "ALTER TABLE employee_requests ADD COLUMN IF NOT EXISTS start_date DATE NULL, ADD COLUMN IF NOT EXISTS end_date DATE NULL" 2>/dev/null || true
+php artisan tinker --execute="DB::statement(\"ALTER TABLE payroll_deductions MODIFY COLUMN deduction_type ENUM('absence','lateness','penalty','tax','insurance','other','bonus','reward') NOT NULL\");" 2>/dev/null || true
 
 echo "Caching config and routes..."
 php artisan config:cache
