@@ -8,8 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('manager_evaluations', function (Blueprint $table) {
-            $table->id();
+        if (!Schema::hasTable('manager_evaluations')) {
+            Schema::create('manager_evaluations', function (Blueprint $table) {
+                $table->id();
 
             $table->foreignId('performance_cycle_id')
                   ->constrained('performance_cycles')
@@ -45,6 +46,7 @@ return new class extends Migration
                 'manager_eval_unique'
             );
         });
+        }
     }
 
     public function down(): void
