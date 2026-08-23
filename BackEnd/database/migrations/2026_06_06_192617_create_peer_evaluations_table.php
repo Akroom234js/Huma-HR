@@ -8,8 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('peer_evaluations', function (Blueprint $table) {
-            $table->id();
+        if (!Schema::hasTable('peer_evaluations')) {
+            Schema::create('peer_evaluations', function (Blueprint $table) {
+                $table->id();
 
             $table->foreignId('performance_cycle_id')
                   ->constrained('performance_cycles')
@@ -35,6 +36,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+        }
     }
 
     public function down(): void
