@@ -38,4 +38,21 @@ class PayrollRecord extends Model
     {
         return $this->hasMany(PayrollDeduction::class);
     }
+    public function recalculateNetSalary(): void
+{
+    $additionsSum  = $this->deductions()->where('is_addition', true)->sum('amount');
+    $deductionsSum = $this->deductions()->where('is_addition', false)->sum('amount');
+
+    // bonuses_amount هون بس للعرض/التقارير — ما بتنضاف مرة ثانية بالمعادلة تحت
+    // لأنها أصلاً محسوبة ضمن additionsSum
+    $this->bonuses_amount = $additionsSum;
+
+    $this->final_net_salary = $this->basic_salary
+        + $this->allowances_amount
+        + $this->overtime_amount
+        + $additionsSum
+        - $deductionsSum;
+
+    $this->save();
+}
 }

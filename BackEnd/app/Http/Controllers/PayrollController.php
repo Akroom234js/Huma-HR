@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\PayrollRecord;
 use App\Models\PayrollDeduction;
 use App\Traits\ApiResponse;
+use App\Traits\ParsesMonthYear;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class PayrollController extends Controller
 {
-    use ApiResponse;
+    use ApiResponse, ParsesMonthYear;
 
     // GET /api/payroll
     public function index(Request $request): JsonResponse
@@ -19,18 +20,7 @@ class PayrollController extends Controller
         $month = $request->month;
         $year = $request->year;
 
-        if ($month && !is_numeric($month)) {
-            $monthYear = explode(' ', $month);
-            $monthName = $monthYear[0];
-            $year = $monthYear[1] ?? now()->year;
-
-            $monthMap = [
-                'January' => 1, 'February' => 2, 'March' => 3, 'April' => 4,
-                'May' => 5, 'June' => 6, 'July' => 7, 'August' => 8,
-                'September' => 9, 'October' => 10, 'November' => 11, 'December' => 12
-            ];
-            $month = $monthMap[$monthName] ?? null;
-        }
+        [$month, $year] = $this->parseMonthYear($request->month, (int)$request->year);
 
         $payroll = PayrollRecord::with([
                 'user.employeeProfile.department', 
@@ -195,18 +185,7 @@ class PayrollController extends Controller
         $month = $request->month;
         $year = $request->year;
 
-        if ($month && !is_numeric($month)) {
-            $monthYear = explode(' ', $month);
-            $monthName = $monthYear[0];
-            $year = $monthYear[1] ?? now()->year;
-
-            $monthMap = [
-                'January' => 1, 'February' => 2, 'March' => 3, 'April' => 4,
-                'May' => 5, 'June' => 6, 'July' => 7, 'August' => 8,
-                'September' => 9, 'October' => 10, 'November' => 11, 'December' => 12
-            ];
-            $month = $monthMap[$monthName] ?? null;
-        }
+        [$month, $year] = $this->parseMonthYear($request->month, (int)$request->year);
 
         $query = PayrollRecord::query()
             ->when($month, function ($q) use ($month) {
@@ -278,22 +257,10 @@ class PayrollController extends Controller
                 'month' => 'required|string', // e.g. "April 2026"
             ]);
 
-            $monthYear = explode(' ', $request->month);
-            if (count($monthYear) < 2) {
+            [$monthInt, $year] = $this->parseMonthYear($request->month);
+            if (!$monthInt) {
                 return $this->errorResponse('Invalid month format. Expected "Month Year".', 400);
             }
-            
-            $monthName = $monthYear[0];
-            $year = $monthYear[1];
-
-            // Map month name to integer
-            $monthMap = [
-                'January' => 1, 'February' => 2, 'March' => 3, 'April' => 4,
-                'May' => 5, 'June' => 6, 'July' => 7, 'August' => 8,
-                'September' => 9, 'October' => 10, 'November' => 11, 'December' => 12
-            ];
-
-            $monthInt = $monthMap[$monthName] ?? now()->month;
 
             $activeEmployees = \App\Models\EmployeeProfile::where('employment_status', 'active')->get();
             $createdCount = 0;
@@ -347,10 +314,7 @@ class PayrollController extends Controller
                     }
 
                     // Update final net salary after auto-deductions
-                    $additionsSum = $payroll->deductions()->where('is_addition', true)->sum('amount');
-                    $deductionsSum = $payroll->deductions()->where('is_addition', false)->sum('amount');
-                    $payroll->final_net_salary = $payroll->basic_salary + $payroll->allowances_amount + $payroll->bonuses_amount + $payroll->overtime_amount + $additionsSum - $deductionsSum;
-                    $payroll->save();
+                    $payroll->recalculateNetSalary();
 
                     $createdCount++;
                 } else if ($payroll->status === 'unpaid') {
@@ -403,10 +367,7 @@ class PayrollController extends Controller
                     }
 
                     // Update final net salary
-                    $additionsSum = $payroll->deductions()->where('is_addition', true)->sum('amount');
-                    $deductionsSum = $payroll->deductions()->where('is_addition', false)->sum('amount');
-                    $payroll->final_net_salary = $payroll->basic_salary + $payroll->allowances_amount + $payroll->bonuses_amount + $payroll->overtime_amount + $additionsSum - $deductionsSum;
-                    $payroll->save();
+                    $payroll->recalculateNetSalary();
 
                     $updatedCount++;
                 }
@@ -447,11 +408,7 @@ class PayrollController extends Controller
         $payroll->update($request->only(['basic_salary', 'allowances_amount', 'notes']));
         
         // Recalculate Net
-        $additions = $payroll->deductions()->where('is_addition', true)->sum('amount');
-        $deductions = $payroll->deductions()->where('is_addition', false)->sum('amount');
-        $payroll->final_net_salary = $payroll->basic_salary + $payroll->allowances_amount + $payroll->overtime_amount + $additions - $deductions;
-        $payroll->save();
-
+        $payroll->recalculateNetSalary();
         return $this->successResponse($payroll, 'Payroll updated successfully.');
     }
 

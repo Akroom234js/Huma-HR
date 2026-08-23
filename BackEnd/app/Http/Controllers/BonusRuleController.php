@@ -7,13 +7,14 @@ use App\Models\PayrollRecord;
 use App\Models\PayrollDeduction;
 use App\Models\EmployeeProfile;
 use App\Traits\ApiResponse;
+use App\Traits\ParsesMonthYear;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class BonusRuleController extends Controller
 {
-    use ApiResponse;
+    use ApiResponse, ParsesMonthYear;
 
     public function index(): JsonResponse
     {
@@ -62,16 +63,10 @@ class BonusRuleController extends Controller
             'month' => 'required|string', // e.g. "April 2026"
         ]);
 
-        $monthYear = explode(' ', $request->month);
-        $monthName = $monthYear[0];
-        $year = $monthYear[1] ?? now()->year;
-
-        $monthMap = [
-            'January' => 1, 'February' => 2, 'March' => 3, 'April' => 4,
-            'May' => 5, 'June' => 6, 'July' => 7, 'August' => 8,
-            'September' => 9, 'October' => 10, 'November' => 11, 'December' => 12
-        ];
-        $monthInt = $monthMap[$monthName] ?? now()->month;
+        [$monthInt, $year] = $this->parseMonthYear($request->month);
+        if (!$monthInt) {
+            return $this->errorResponse('Invalid month format. Expected "Month Year".', 400);
+        }
 
         $rules = BonusRule::where('is_active', true)->get();
         $appliedCount = 0;
@@ -122,12 +117,7 @@ class BonusRuleController extends Controller
                     ]);
 
                     // Update PayrollRecord
-                    $additionsSum = $record->deductions()->where('is_addition', true)->sum('amount');
-                    $deductionsSum = $record->deductions()->where('is_addition', false)->sum('amount');
-                    
-                    $record->bonuses_amount = $additionsSum;
-                    $record->final_net_salary = $record->basic_salary + $record->allowances_amount + $record->overtime_amount + $additionsSum - $deductionsSum;
-                    $record->save();
+                    $record->recalculateNetSalary();
 
                     $appliedCount++;
                 }

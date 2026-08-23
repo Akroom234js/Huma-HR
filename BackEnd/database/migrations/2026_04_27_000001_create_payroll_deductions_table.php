@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('payroll_deductions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('payroll_record_id')->constrained('payroll_records')->onDelete('cascade');
-            $table->enum('deduction_type', ['absence', 'lateness', 'penalty', 'tax', 'insurance', 'other']);
+            $table->enum('deduction_type', ['absence', 'lateness', 'penalty', 'tax', 'insurance', 'other', 'bonus', 'reward']);
             $table->decimal('amount', 15, 2);
             $table->integer('absence_days')->default(0);
             $table->text('reason')->nullable();
