@@ -1,0 +1,27 @@
+{
+  "pageTitle": "تقارير وكشوف الرواتب",
+  "latestNetPaid": "آخر صافي راتب مستلم",
+  "totalBonusesYearly": "إجمالي المكافآت (السنوية)",
+  "totalDeductionsYearly": "إجمالي الاستقطاعات (السنوية)",
+  "historyTitle": "سجل دورات الرواتب السابقة",
+  "searchPlaceholder": "بحث...",
+  "filter": {
+    "last6Months": "آخر 6 أشهر",
+    "thisYear": "هذا العام"
+  },
+  "loading": "جاري التحميل...",
+  "noRecords": "لا توجد سجلات رواتب متاحة.",
+  "table": {
+    "month": "الشهر",
+    "salaries": "الأساسي",
+    "allowances": "البدلات",
+    "bonuses": "المكافآت",
+    "tax": "الضرائب",
+    "insurance": "التأمينات",
+    "absences": "الخصومات والغياب",
+    "net": "الصافي",
+    "status": "الحالة",
+    "paid": "تم الصرف",
+    "pending": "معلق"
+  }
+}

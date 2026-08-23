@@ -1,13 +1,23 @@
 import React from "react";
 import "./Dashboard.css";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const { t, i18n } = useTranslation("EmployeePortal/Dashboard");
+  const isAr = i18n ? i18n.language === "ar" : false;
+  const navigate = useNavigate();
+
+  const storedUser = localStorage.getItem("user");
+  const user = storedUser ? JSON.parse(storedUser) : null;
+  const userName = user?.name || user?.full_name || (isAr ? "الموظف" : "John Doe");
+
   return (
-    <div className="dashboard-page">
+    <div className={`dashboard-page ${isAr ? "rtl" : "ltr"}`}>
       <div className="dashboard-header">
-        <h1>Employee Dashboard</h1>
-        <p>Welcome, John Doe. Here is your overview.</p>
+        <h1>{t("title")}</h1>
+        <p>{isAr ? `مرحباً بك، ${userName}. إليك نظرة عامة على أدائك وبياناتك.` : `Welcome, ${userName}. Here is your overview.`}</p>
         <div className="em-theme-toggle-wrapper">
           <ThemeToggle />
         </div>
@@ -16,7 +26,7 @@ const Dashboard = () => {
       <div className="top-cards">
         <div className="dashboard-card">
           <div className="card-top">
-            <span>Leave Balance</span>
+            <span>{t("leaveBalance")}</span>
             <span className="material-symbols-outlined card-icon">
               calendar_month
             </span>
@@ -24,26 +34,26 @@ const Dashboard = () => {
 
           <div className="card-bottom">
             <h2>14</h2>
-            <p>days</p>
+            <p>{t("days")}</p>
           </div>
         </div>
 
         <div className="dashboard-card">
           <div className="card-top">
-            <span>Attendance</span>
+            <span>{t("attendance")}</span>
             <span className="material-symbols-outlined card-icon">
               check_circle
             </span>
           </div>
 
           <div className="card-bottom">
-            <h2>Present</h2>
+            <h2>{t("present")}</h2>
           </div>
         </div>
 
         <div className="dashboard-card">
           <div className="card-top">
-            <span>Total Salary</span>
+            <span>{t("totalSalary")}</span>
             <span className="material-symbols-outlined card-icon">
               payments
             </span>
@@ -56,7 +66,7 @@ const Dashboard = () => {
 
         <div className="dashboard-card">
           <div className="card-top">
-            <span>Performance</span>
+            <span>{t("performance")}</span>
             <span className="material-symbols-outlined card-icon">
               trending_up
             </span>
@@ -71,25 +81,25 @@ const Dashboard = () => {
 
         <div className="dashboard-card notification-card">
           <div className="card-top">
-            <span>Notifications</span>
+            <span>{t("notifications")}</span>
             <span className="material-symbols-outlined card-icon">
               notifications
             </span>
           </div>
 
           <ul className="notification-list">
-            <li>Your leave request was approved.</li>
-            <li>New company policy updated.</li>
-            <li>Performance review is scheduled.</li>
-            <li>Team meeting at 3 PM today.</li>
-            <li>Submit your timesheet by EOD.</li>
+            <li>{t("notif1")}</li>
+            <li>{t("notif2")}</li>
+            <li>{t("notif3")}</li>
+            <li>{t("notif4")}</li>
+            <li>{t("notif5")}</li>
           </ul>
         </div>
       </div>
 
       <div className="bottom-section">
         <div className="chart-card">
-          <h3>Performance Evolution</h3>
+          <h3>{t("performanceEvolution")}</h3>
           <div className="chart-placeholder">
             <svg
               className="chart-svg"
@@ -109,53 +119,53 @@ const Dashboard = () => {
             </svg>
 
             <div className="months">
-              <span>Jan</span>
-              <span>Feb</span>
-              <span>Mar</span>
-              <span>Apr</span>
-              <span>May</span>
-              <span>Jun</span>
+              <span>{t("months.jan")}</span>
+              <span>{t("months.feb")}</span>
+              <span>{t("months.mar")}</span>
+              <span>{t("months.apr")}</span>
+              <span>{t("months.may")}</span>
+              <span>{t("months.jun")}</span>
             </div>
           </div>
         </div>
 
         <div className="right-side2">
           <div className="quick-card">
-            <h3>Quick Actions</h3>
-            <p>Need to take time off?</p>
+            <h3>{t("quickActions")}</h3>
+            <p>{t("needTimeOff")}</p>
 
-            <button className="request">
+            <button className="request" onClick={() => navigate("/portal/my-requests/leaves")}>
               <span className="material-symbols-outlined">add</span>
-              Submit Leave Request
+              {t("submitLeave")}
             </button>
           </div>
 
           <div className="request-card">
-            <h3>Pending Requests</h3>
+            <h3>{t("pendingRequests")}</h3>
 
             <table>
               <thead>
                 <tr>
-                  <th>TYPE</th>
-                  <th>DATE</th>
-                  <th>STATUS</th>
+                  <th>{t("table.type")}</th>
+                  <th>{t("table.date")}</th>
+                  <th>{t("table.status")}</th>
                 </tr>
               </thead>
 
               <tbody>
                 <tr>
-                  <td>Vacation</td>
+                  <td>{t("table.vacation")}</td>
                   <td>2024-09-01</td>
                   <td>
-                    <span className="pending">Pending</span>
+                    <span className="pending">{t("table.pending")}</span>
                   </td>
                 </tr>
 
                 <tr>
-                  <td>Sick Leave</td>
+                  <td>{t("table.sickLeave")}</td>
                   <td>2024-07-22</td>
                   <td>
-                    <span className="rejected">Rejected</span>
+                    <span className="rejected">{t("table.rejected")}</span>
                   </td>
                 </tr>
               </tbody>
@@ -168,42 +178,42 @@ const Dashboard = () => {
         <div className="extra-row">
           {/* Leave Overview */}
           <div className="extra-card">
-            <h3>Leaves Overview</h3>
+            <h3>{t("leavesOverview")}</h3>
 
             <div className="info-row">
-              <span>Leave ID:</span>
+              <span>{t("leaveId")}</span>
               <strong>L-78923</strong>
             </div>
 
             <div className="info-row">
-              <span>Leave Type:</span>
-              <strong>Annual</strong>
+              <span>{t("leaveType")}</span>
+              <strong>{t("annual")}</strong>
             </div>
 
             <div className="info-row">
-              <span>Last Applied:</span>
+              <span>{t("lastApplied")}</span>
               <strong>2024-03-10</strong>
             </div>
 
             <div className="info-row">
-              <span>Last Leave Type:</span>
-              <strong>Sick Leave</strong>
+              <span>{t("lastLeaveType")}</span>
+              <strong>{t("table.sickLeave")}</strong>
             </div>
 
-            <button className="green-btn">Details</button>
+            <button className="green-btn" onClick={() => navigate("/portal/my-requests/leaves")}>{t("details")}</button>
           </div>
 
           {/* Leave Balance */}
           <div className="extra-card">
-            <h3>Leave Balance</h3>
+            <h3>{t("leaveBalance")}</h3>
 
             <div className="leave-balance-box">
               <h2>14</h2>
-              <span>days</span>
+              <span>{t("days")}</span>
             </div>
 
             <p className="leave-note">
-              Current Leave Balance. Can include past leaves from supervisor.
+              {t("leaveNote")}
             </p>
           </div>
         </div>
@@ -211,27 +221,27 @@ const Dashboard = () => {
         {/* Salary Breakdown */}
         <div className="salary-breakdown-card">
           <div className="salary-header">
-            <h3>Salary Breakdown</h3>
+            <h3>{t("salaryBreakdown")}</h3>
 
-            <button className="download-btn">
+            <button className="download-btn" onClick={() => navigate("/portal/payroll")}>
               <span className="material-symbols-outlined">download</span>
-              Download
+              {t("download")}
             </button>
           </div>
 
           <div className="salary-boxes">
             <div className="salary-box">
-              <span>Gross Salary</span>
+              <span>{t("grossSalary")}</span>
               <h2>$7,500</h2>
             </div>
 
             <div className="salary-box">
-              <span>Bonuses</span>
+              <span>{t("bonuses")}</span>
               <h2>$500</h2>
             </div>
 
             <div className="salary-box deduction">
-              <span>Deductions</span>
+              <span>{t("deductions")}</span>
               <h2>-$250</h2>
             </div>
           </div>
@@ -241,41 +251,41 @@ const Dashboard = () => {
         <div className="extra-row">
           {/* Attendance */}
           <div className="extra-card">
-            <h3>Attendance Summary</h3>
+            <h3>{t("attendanceSummary")}</h3>
 
             <div className="info-row">
-              <span>Daily Working Hours</span>
+              <span>{t("dailyHours")}</span>
               <strong>8 hrs</strong>
             </div>
 
             <div className="info-row">
-              <span>Days Present Count</span>
+              <span>{t("daysPresent")}</span>
               <strong>19</strong>
             </div>
 
             <div className="info-row">
-              <span>Days Absent Count</span>
+              <span>{t("daysAbsent")}</span>
               <strong className="danger-text">2</strong>
             </div>
 
-            <button className="green-btn">Details</button>
+            <button className="green-btn" onClick={() => navigate("/portal/my-requests/attendance")}>{t("details")}</button>
           </div>
 
           <div className="extra-card">
-            <h3>Performance Summary</h3>
+            <h3>{t("performanceSummary")}</h3>
 
             <div className="info-row">
-              <span>Total Score</span>
+              <span>{t("totalScore")}</span>
               <strong>92/100</strong>
             </div>
 
             <div className="info-row">
-              <span>Manager's Rating</span>
+              <span>{t("managerRating")}</span>
 
-              <strong className="success-text">Exceeds Expectations</strong>
+              <strong className="success-text">{t("exceedsExpectations")}</strong>
             </div>
 
-            <button className="green-btn">Details</button>
+            <button className="green-btn" onClick={() => navigate("/portal/performance/report")}>{t("details")}</button>
           </div>
         </div>
 
@@ -283,31 +293,31 @@ const Dashboard = () => {
         <div className="extra-row">
           {/* Rewards */}
           <div className="extra-card">
-            <h3>Rewards Overview</h3>
+            <h3>{t("rewardsOverview")}</h3>
 
             <div className="info-row">
-              <span>Annual Reward</span>
+              <span>{t("annualReward")}</span>
               <strong>$1,200</strong>
             </div>
 
-            <button className="green-btn">Details</button>
+            <button className="green-btn" onClick={() => navigate("/portal/rewards")}>{t("details")}</button>
           </div>
 
           {/* Organizational */}
           <div className="extra-card">
-            <h3>Organizational Structure</h3>
+            <h3>{t("orgStructure")}</h3>
 
             <div className="info-row">
-              <span>Company Employees</span>
+              <span>{t("companyEmployees")}</span>
               <strong>1,250</strong>
             </div>
 
             <div className="info-row">
-              <span>Department Employees</span>
+              <span>{t("deptEmployees")}</span>
               <strong>42</strong>
             </div>
 
-            <button className="green-btn">Details</button>
+            <button className="green-btn" onClick={() => navigate("/portal/profile")}>{t("details")}</button>
           </div>
         </div>
       </div>

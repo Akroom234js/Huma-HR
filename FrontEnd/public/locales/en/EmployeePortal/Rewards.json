@@ -1,0 +1,18 @@
+{
+  "pageTitle": "Rewards & Bonuses",
+  "totalRewardsTitle": "Total Rewards/Bonuses ({{year}})",
+  "receivedRecognition": "Received Recognition",
+  "noRecognitions": "No recognitions received yet.",
+  "historyTitle": "Rewards & Bonuses History",
+  "table": {
+    "dateReceived": "DATE RECEIVED",
+    "rewardType": "REWARD/BONUS TYPE",
+    "amount": "AMOUNT/VALUE",
+    "reason": "REASON/DESCRIPTION",
+    "awardedBy": "AWARDED BY"
+  },
+  "noRewards": "No rewards recorded yet.",
+  "policyTitle": "📋 Policy Information",
+  "policyText": "Our rewards and bonus program is designed to recognize the hard work and dedication of our employees. For detailed information on eligibility and criteria, please refer to the official",
+  "policyLink": "Company Rewards Policy document."
+}

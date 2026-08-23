@@ -1,0 +1,11 @@
+{
+  "pageTitle": "Chat & Notification",
+  "contacts": "Contacts",
+  "myChats": "My Chats",
+  "notifications": "Notifications ({{count}})",
+  "newChat": "New Chat",
+  "loading": "Loading...",
+  "typeMessage": "Type message...",
+  "send": "Send",
+  "selectChatPrompt": "Select chat or contact to start"
+}
