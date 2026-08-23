@@ -9,6 +9,9 @@ php artisan storage:link --force
 echo "Running Migrations..."
 php artisan migrate --force
 
+echo "Running Seeders..."
+php artisan db:seed --force
+
 echo "Fixing deduction_type enum (bonus/reward)..."
 php artisan tinker --execute="DB::statement(\"ALTER TABLE payroll_deductions MODIFY COLUMN deduction_type ENUM('absence','lateness','penalty','tax','insurance','other','bonus','reward') NOT NULL\");" 2>/dev/null || true
 
