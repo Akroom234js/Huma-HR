@@ -6,27 +6,45 @@
   "todayStatus": "Today's Status",
   "status": "Status",
   "present": "Present",
+  "late": "Late",
   "absent": "Absent",
+  "notCheckedIn": "Not Checked In",
   "unknown": "Unknown",
   "checkInTime": "Check-in Time",
   "checkOutTime": "Check-out Time",
   "hoursWorkedToday": "Hours Worked Today",
-  "trendsTitle": "Attendance Trends over Time",
+  "live": "(Live)",
+  "branch": "Branch",
+  "trendsTitle": "Weekly Attendance Trends",
   "hours": "Hours",
-  "historicalAttendance": "Historical Attendance",
+  "historicalAttendance": "Historical Attendance Log",
   "table": {
     "date": "Date",
     "checkIn": "Check-in",
     "checkOut": "Check-out",
     "hoursWorked": "Hours Worked",
-    "late": "(Late)"
+    "status": "Status",
+    "branch": "Branch",
+    "late": "(Late)",
+    "empty": "No attendance records found."
+  },
+  "days": {
+    "Mon": "Mon",
+    "Tue": "Tue",
+    "Wed": "Wed",
+    "Thu": "Thu",
+    "Fri": "Fri",
+    "Sat": "Sat",
+    "Sun": "Sun"
   },
   "alerts": {
     "geoNotSupported": "Your browser does not support geolocation.",
-    "permissionDenied": "Please grant GPS location permission to check-in/checkout.",
-    "posUnavailable": "Device could not determine GPS location.",
+    "permissionDenied": "Please grant GPS location access to record attendance.",
+    "posUnavailable": "Device could not determine GPS location. Please check connectivity.",
     "timeout": "Location request timed out. Please try again.",
-    "checkinFail": "Check-in failed, please try again.",
-    "checkoutFail": "Checkout failed, please try again."
+    "checkinSuccess": "Check-in recorded successfully!",
+    "checkoutSuccess": "Checkout recorded successfully!",
+    "checkinFail": "Check-in failed. Please try again.",
+    "checkoutFail": "Checkout failed. Please try again."
   }
 }

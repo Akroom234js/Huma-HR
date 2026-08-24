@@ -1,11 +1,23 @@
 {
-  "pageTitle": "المحادثات والإشعارات",
-  "contacts": "جهات الاتصال",
-  "myChats": "محادثاتي",
-  "notifications": "الإشعارات ({{count}})",
+  "pageTitle": "المحادثات والتواصل الداخلي",
+  "tabs": {
+    "chats": "المحادثات",
+    "contacts": "الزملاء",
+    "notifications": "التنبيهات"
+  },
+  "searchPlaceholder": "ابحث عن زميل أو محادثة...",
+  "noChats": "لا توجد محادثات نشطة حالياً.",
+  "noContacts": "لم يتم العثور على زملاء مطابقين للبحث.",
+  "noNotifications": "لا توجد إشعارات جديدة.",
+  "startChatWith": "بدء محادثة مع {{name}}",
   "newChat": "محادثة جديدة",
-  "loading": "جاري التحميل...",
-  "typeMessage": "اكتب رسالتك هنا...",
+  "onlineStatus": "عضو نشط بالفريق",
+  "loading": "جاري تحميل الرسائل...",
+  "typeMessage": "اكتب رسالتك هنا... (اضغط Enter للإرسال)",
   "send": "إرسال",
-  "selectChatPrompt": "اختر محادثة أو جهة اتصال للبدء"
+  "sending": "جاري الإرسال...",
+  "selectChatPrompt": "اختر محادثة أو زميل عمل من القائمة لبدء التواصل",
+  "markAllAsRead": "تحديد الكل كمقروء",
+  "today": "اليوم",
+  "yesterday": "أمس"
 }
