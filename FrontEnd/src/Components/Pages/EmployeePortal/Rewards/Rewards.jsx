@@ -6,11 +6,11 @@ import { getEmployeeRecognitions, getEmployeeRewards } from "../../../../service
 import { useTranslation } from "react-i18next";
 
 const BADGE_MAP = {
-  rockstar: { iconClass: "bi bi-star-fill", labelKey: "badges.rockstar", color: "#d97706", bg: "#fef3c7" },
-  teamplayer: { iconClass: "bi bi-people-fill", labelKey: "badges.teamplayer", color: "#2563eb", bg: "#dbeafe" },
-  innovator: { iconClass: "bi bi-lightbulb-fill", labelKey: "badges.innovator", color: "#059669", bg: "#d1fae5" },
-  leader: { iconClass: "bi bi-award-fill", labelKey: "badges.leader", color: "#7c3aed", bg: "#ede9fe" },
-  creative: { iconClass: "bi bi-palette-fill", labelKey: "badges.creative", color: "#db2777", bg: "#fce7f3" },
+  rockstar: { iconClass: "bi bi-star-fill", labelKey: "badges.rockstar", color: "#f59e0b", bg: "rgba(245, 158, 11, 0.12)" },
+  teamplayer: { iconClass: "bi bi-people-fill", labelKey: "badges.teamplayer", color: "#359EFF", bg: "rgba(53, 158, 255, 0.12)" },
+  innovator: { iconClass: "bi bi-lightbulb-fill", labelKey: "badges.innovator", color: "#10b981", bg: "rgba(16, 185, 129, 0.12)" },
+  leader: { iconClass: "bi bi-award-fill", labelKey: "badges.leader", color: "#8b5cf6", bg: "rgba(139, 92, 246, 0.12)" },
+  creative: { iconClass: "bi bi-palette-fill", labelKey: "badges.creative", color: "#ec4899", bg: "rgba(236, 72, 153, 0.12)" },
 };
 
 export default function RewardsBonuses() {
@@ -112,7 +112,7 @@ export default function RewardsBonuses() {
           <div className="card recognition-card">
             <div className="recognition-card-header">
               <div className="card-title-group">
-                <i className="bi bi-award card-title-icon"></i>
+                <i className="bi bi-award-fill card-title-icon"></i>
                 <h2>{t("receivedRecognition")}</h2>
               </div>
               <button
@@ -239,7 +239,7 @@ export default function RewardsBonuses() {
                       <td>
                         <span className="reward-type-badge">{reward.type}</span>
                       </td>
-                      <td className="amount-cell green">{formatCurrency(reward.amount)} $</td>
+                      <td className="amount-cell primary-val">{formatCurrency(reward.amount)} $</td>
                       <td className="reason-cell">{reward.reason}</td>
                       <td>
                         <span className="awarded-by-badge">
