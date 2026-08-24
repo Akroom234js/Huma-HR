@@ -1,11 +1,23 @@
 {
-  "pageTitle": "Chat & Notification",
-  "contacts": "Contacts",
-  "myChats": "My Chats",
-  "notifications": "Notifications ({{count}})",
-  "newChat": "New Chat",
-  "loading": "Loading...",
-  "typeMessage": "Type message...",
+  "pageTitle": "Internal Chat & Communication",
+  "tabs": {
+    "chats": "Conversations",
+    "contacts": "Colleagues",
+    "notifications": "Alerts"
+  },
+  "searchPlaceholder": "Search colleagues or conversations...",
+  "noChats": "No active conversations found.",
+  "noContacts": "No colleagues found matching your search.",
+  "noNotifications": "No new notifications.",
+  "startChatWith": "Start conversation with {{name}}",
+  "newChat": "New Conversation",
+  "onlineStatus": "Active Team Member",
+  "loading": "Loading messages...",
+  "typeMessage": "Type a message... (Press Enter to send)",
   "send": "Send",
-  "selectChatPrompt": "Select chat or contact to start"
+  "sending": "Sending...",
+  "selectChatPrompt": "Select a conversation or colleague from the list to start messaging",
+  "markAllAsRead": "Mark all as read",
+  "today": "Today",
+  "yesterday": "Yesterday"
 }
