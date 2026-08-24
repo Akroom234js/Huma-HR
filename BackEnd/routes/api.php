@@ -318,8 +318,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/salary-structures',        [SalaryStructureController::class, 'store']);
         Route::put('/salary-structures/{id}',    [SalaryStructureController::class, 'update']);
         Route::delete('/salary-structures/{id}', [SalaryStructureController::class, 'destroy']);
-        Route::post('/salary-adjustments', [SalaryAdjustmentController::class, 'store']);
-        Route::post('/leave-types', [EmployeeRequestController::class, 'storeLeaveType']);
+        Route::post('/leave-types',                     [EmployeeRequestController::class, 'storeLeaveType']);
+        Route::put('/leave-types/{id}',                 [EmployeeRequestController::class, 'updateLeaveType']);
+        Route::delete('/leave-types/{id}',              [EmployeeRequestController::class, 'deleteLeaveType']);
+        Route::get('/employee-balances',                [EmployeeRequestController::class, 'getAllEmployeeBalances']);
+        Route::put('/employee-balances/{employeeProfileId}/{leaveTypeId}', [EmployeeRequestController::class, 'updateEmployeeBalance']);
 
         // ATS
         Route::post('/job-postings',                       [JobPostingController::class,  'store']);

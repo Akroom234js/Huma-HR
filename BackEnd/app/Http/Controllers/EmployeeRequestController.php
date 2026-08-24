@@ -93,7 +93,7 @@ class EmployeeRequestController extends Controller
         $request->validate([
             'nameEn'            => 'required|string',
             'nameAr'            => 'nullable|string',
-            'allocation'        => 'required|integer|min:1',
+            'allocation'        => 'required|integer|min:1|max:365',
             'descEn'            => 'nullable|string',
             'descAr'            => 'nullable|string',
             'isPaid'            => 'nullable|boolean',
@@ -103,7 +103,7 @@ class EmployeeRequestController extends Controller
         $leaveType = LeaveType::create([
             'name_en'           => $request->nameEn,
             'name_ar'           => $request->nameAr,
-            'allocation'        => $request->allocation,
+            'allocation'        => (int)$request->allocation,
             'desc_en'           => $request->descEn,
             'desc_ar'           => $request->descAr,
             'is_paid'           => $request->isPaid ?? false,
@@ -111,6 +111,122 @@ class EmployeeRequestController extends Controller
         ]);
 
         return $this->successResponse($leaveType, 'Leave type created successfully.', 201);
+    }
+
+    // PUT /api/leave-types/{id} (HR Only)
+    public function updateLeaveType(Request $request, int $id): JsonResponse
+    {
+        $leaveType = LeaveType::find($id);
+        if (!$leaveType) {
+            return $this->errorResponse('Leave type not found.', 404);
+        }
+
+        $request->validate([
+            'nameEn'            => 'required|string',
+            'nameAr'            => 'nullable|string',
+            'allocation'        => 'required|integer|min:1|max:365',
+            'descEn'            => 'nullable|string',
+            'descAr'            => 'nullable|string',
+            'isPaid'            => 'nullable|boolean',
+            'requiresApproval'  => 'nullable|boolean',
+        ]);
+
+        $newAllocation = (int)$request->allocation;
+
+        $leaveType = DB::transaction(function () use ($leaveType, $request, $newAllocation) {
+            $leaveType->update([
+                'name_en'           => $request->nameEn,
+                'name_ar'           => $request->nameAr,
+                'allocation'        => $newAllocation,
+                'desc_en'           => $request->descEn,
+                'desc_ar'           => $request->descAr,
+                'is_paid'           => $request->isPaid ?? false,
+                'requires_approval' => $request->requiresApproval ?? true,
+            ]);
+
+            // Cascade allocation update to all existing employees
+            $balances = LeaveBalance::where('leave_type_id', $leaveType->id)->get();
+            foreach ($balances as $balance) {
+                $used = (int)$balance->used;
+                $balance->allocated = $newAllocation;
+                $balance->remaining = max(0, $newAllocation - $used);
+                $balance->save();
+            }
+
+            return $leaveType;
+        });
+
+        return $this->successResponse($leaveType, 'Leave type and employee balances updated successfully.');
+    }
+
+    // DELETE /api/leave-types/{id} (HR Only)
+    public function deleteLeaveType(int $id): JsonResponse
+    {
+        $leaveType = LeaveType::find($id);
+        if (!$leaveType) {
+            return $this->errorResponse('Leave type not found.', 404);
+        }
+
+        // Check if there are active employee requests linked to this leave type
+        $hasRequests = EmployeeRequest::where(function ($query) use ($leaveType) {
+            $query->where('type', $leaveType->name_en)
+                  ->orWhere('details->leave_type_id', $leaveType->id);
+        })->exists();
+
+        if ($hasRequests) {
+            return $this->errorResponse('Cannot delete this leave type because there are employee requests linked to it. You may modify its allocation instead.', 400);
+        }
+
+        DB::transaction(function () use ($leaveType) {
+            LeaveBalance::where('leave_type_id', $leaveType->id)->delete();
+            $leaveType->delete();
+        });
+
+        return $this->successResponse(null, 'Leave type deleted successfully.');
+    }
+
+    // GET /api/employee-balances (HR Only)
+    public function getAllEmployeeBalances(): JsonResponse
+    {
+        $employees = EmployeeProfile::with(['department', 'leaveBalances.leaveType'])
+            ->where('employment_status', 'active')
+            ->orderBy('full_name', 'asc')
+            ->get();
+
+        return $this->successResponse($employees, 'All employee leave balances retrieved successfully.');
+    }
+
+    // PUT /api/employee-balances/{employeeProfileId}/{leaveTypeId} (HR Only)
+    public function updateEmployeeBalance(Request $request, int $employeeProfileId, int $leaveTypeId): JsonResponse
+    {
+        $request->validate([
+            'allocated' => 'required|integer|min:0|max:365',
+            'used'      => 'nullable|integer|min:0|max:365',
+        ]);
+
+        $balance = LeaveBalance::firstOrCreate(
+            [
+                'employee_profile_id' => $employeeProfileId,
+                'leave_type_id'       => $leaveTypeId,
+            ],
+            [
+                'allocated' => (int)$request->allocated,
+                'used'      => 0,
+                'remaining' => (int)$request->allocated,
+            ]
+        );
+
+        $allocated = (int)$request->allocated;
+        $used = $request->has('used') ? (int)$request->used : (int)$balance->used;
+        $remaining = max(0, $allocated - $used);
+
+        $balance->update([
+            'allocated' => $allocated,
+            'used'      => $used,
+            'remaining' => $remaining,
+        ]);
+
+        return $this->successResponse($balance->load('leaveType'), 'Employee leave balance updated successfully.');
     }
 
     // GET /api/my-leave-balances (Employee)
