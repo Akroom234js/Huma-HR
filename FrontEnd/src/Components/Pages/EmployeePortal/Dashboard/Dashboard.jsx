@@ -63,11 +63,22 @@ const Dashboard = () => {
           setProfile(profileRes.value.data?.data || profileRes.value.data);
         }
 
-        // 2. Leave Balances
+        // 2. Leave Balances (Annual Leave specifically)
         if (leaveBalancesRes.status === "fulfilled") {
           const balances = leaveBalancesRes.value.data?.data || [];
-          const totalRemaining = balances.reduce((acc, curr) => acc + (Number(curr.remaining) || 0), 0);
-          setLeaveBalance(totalRemaining);
+          const annualBalanceObj = balances.find(
+            (b) =>
+              b.leave_type?.name_en?.toLowerCase().includes("annual") ||
+              b.leave_type?.name_ar?.includes("سنو") ||
+              b.leave_type_id === 2
+          );
+          if (annualBalanceObj) {
+            setLeaveBalance(Number(annualBalanceObj.remaining) || 0);
+          } else if (balances.length > 0) {
+            setLeaveBalance(Number(balances[0].remaining) || 0);
+          } else {
+            setLeaveBalance(0);
+          }
         }
 
         // 3. Today Attendance

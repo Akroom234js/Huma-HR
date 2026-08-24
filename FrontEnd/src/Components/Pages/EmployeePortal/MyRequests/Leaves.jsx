@@ -7,7 +7,9 @@ import Requestaleave from './Requestaleave';
 import apiClient from '../../../../apiConfig';
 
 const Leaves = () => {
-    const { t } = useTranslation("EmployeePortal/EmployeePortalLeaves");
+    const { t, i18n } = useTranslation("EmployeePortal/EmployeePortalLeaves");
+    const isAr = i18n.language === "ar";
+
     const [leaveType, setLeaveType] = useState("");
     const [status, setStatus] = useState("");
     
@@ -44,31 +46,40 @@ const Leaves = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedReason, setSelectedReason] = useState("");
 
-    // Stat configurations (dynamic based on balances from backend)
-    const Type = balances.map(b => {
-        const nameEn = b.leave_type?.name_en || 'Leave';
-        const nameAr = b.leave_type?.name_ar || '';
-        let icon = 'event_available';
-        if (nameEn.toLowerCase().includes('sick')) {
-            icon = 'medication';
-        } else if (nameEn.toLowerCase().includes('annual')) {
-            icon = 'flight_takeoff';
-        } else if (nameEn.toLowerCase().includes('emergency')) {
-            icon = 'emergency';
-        } else if (nameEn.toLowerCase().includes('personal')) {
-            icon = 'person';
+    // Dynamic stats based on leave balances from backend (Cleanly localized per language)
+    const statCards = useMemo(() => {
+        if (!balances || balances.length === 0) {
+            return [
+                { label: isAr ? "رصيد إجازة سنوية" : "Annual Leave Balance", value: "0", icon: "flight_takeoff" },
+                { label: isAr ? "رصيد إجازة مرضية" : "Sick Leave Balance", value: "0", icon: "medication" }
+            ];
         }
-        return {
-            label: `${nameEn} Balance ${nameAr ? `(${nameAr})` : ''}`,
-            value: String(b.remaining),
-            icon: icon
-        };
-    });
 
-    const displayType = Type.length > 0 ? Type : [
-        { label: t('stats.sick') || "Sick Leave Balance", value: "0", icon: "medication" },
-        { label: t('stats.Annual') || "Annual Leave Balance", value: "0", icon: "flight_takeoff" }
-    ];
+        return balances.map(b => {
+            const nameEn = b.leave_type?.name_en || 'Leave';
+            const nameAr = b.leave_type?.name_ar || 'إجازة';
+            const name = isAr ? nameAr : nameEn;
+            const label = isAr ? `رصيد ${name}` : `${name} Balance`;
+
+            let icon = 'event_available';
+            const lowerEn = nameEn.toLowerCase();
+            if (lowerEn.includes('sick')) {
+                icon = 'medication';
+            } else if (lowerEn.includes('annual') || lowerEn.includes('vacation')) {
+                icon = 'flight_takeoff';
+            } else if (lowerEn.includes('emergency')) {
+                icon = 'emergency';
+            } else if (lowerEn.includes('personal')) {
+                icon = 'person';
+            }
+
+            return {
+                label: label,
+                value: String(b.remaining ?? 0),
+                icon: icon
+            };
+        });
+    }, [balances, isAr]);
 
     // Filter logic with mapping database fields for all kinds of requests
     const filteredLeaves = useMemo(() => {
@@ -91,74 +102,91 @@ const Leaves = () => {
                     case 'sick':
                     case 'annual':
                     case 'emergency':
-                    case 'personal':
+                    case 'personal': {
                         const start = details.start_date || item.dates || '-';
                         const dur = details.duration || item.duration || 1;
                         let end = details.end_date || item.datee;
                         if (!end && start && start !== '-') {
                             try {
                                 const startDateObj = new Date(start);
-                                startDateObj.setDate(startDateObj.getDate() + dur - 1);
+                                startDateObj.setDate(startDateObj.getDate() + Number(dur) - 1);
                                 end = startDateObj.toISOString().split('T')[0];
                             } catch (e) {
                                 end = '-';
                             }
                         }
-                        typeLabel = details.leave_type_name || item.type || 'Leave';
-                        description = `From: ${start} To: ${end}`;
-                        durationText = `${dur} Days`;
+                        typeLabel = isAr ? (details.leave_type_name_ar || details.leave_type_name || t("types.vacation")) : (details.leave_type_name || t("types.vacation"));
+                        description = isAr ? `من: ${start} إلى: ${end}` : `From: ${start} To: ${end}`;
+                        durationText = `${dur} ${t("Days")}`;
                         break;
+                    }
                         
                     case 'advance':
-                        typeLabel = 'Advance Request';
-                        description = `Amount: ${details.amount || '-'} | Installments: ${details.installments || '-'} Months`;
+                        typeLabel = t("types.advance");
+                        description = isAr
+                            ? `المبلغ: $${details.amount || '-'} | الأقساط: ${details.installments || '-'} أشهر`
+                            : `Amount: $${details.amount || '-'} | Installments: ${details.installments || '-'} Months`;
                         durationText = '-';
                         break;
                         
                     case 'equipment':
-                        typeLabel = 'Equipment Request';
-                        description = `Device: ${details.deviceType || '-'} | Specs: ${details.specs || '-'}`;
+                        typeLabel = t("types.equipment");
+                        description = isAr
+                            ? `الجهاز: ${details.deviceType || '-'} | المواصفات: ${details.specs || '-'}`
+                            : `Device: ${details.deviceType || '-'} | Specs: ${details.specs || '-'}`;
                         durationText = '-';
                         break;
                         
                     case 'compensation':
-                        typeLabel = 'Compensation Request';
-                        description = `Amount: ${details.amount || '-'} | Category: ${details.category || '-'}`;
+                        typeLabel = t("types.compensation");
+                        description = isAr
+                            ? `المبلغ: $${details.amount || '-'} | البند: ${details.category || '-'}`
+                            : `Amount: $${details.amount || '-'} | Category: ${details.category || '-'}`;
                         durationText = '-';
                         break;
                         
                     case 'data-update':
-                        typeLabel = 'Data Update';
-                        description = `Field: ${details.field || '-'} | Proposed: ${details.after || '-'}`;
+                        typeLabel = t("types.dataUpdate");
+                        description = isAr
+                            ? `البيان: ${details.field || '-'} | القيمة المقترحة: ${details.after || '-'}`
+                            : `Field: ${details.field || '-'} | Proposed: ${details.after || '-'}`;
                         durationText = '-';
                         break;
                         
                     case 'resignation':
-                        typeLabel = 'Resignation';
-                        description = `Last Day: ${details.lastWorkingDay || '-'}`;
+                        typeLabel = t("types.resignation");
+                        description = isAr
+                            ? `آخر يوم عمل: ${details.lastWorkingDay || '-'}`
+                            : `Last Day: ${details.lastWorkingDay || '-'}`;
                         durationText = '-';
                         break;
                         
                     case 'transfer':
-                        typeLabel = 'Transfer';
-                        description = `Current: ${details.currentDept || '-'} → New: ${details.newDept || '-'}`;
+                        typeLabel = t("types.transfer");
+                        description = isAr
+                            ? `القسم الحالي: ${details.currentDept || '-'} ← الجديد: ${details.newDept || '-'}`
+                            : `Current: ${details.currentDept || '-'} → New: ${details.newDept || '-'}`;
                         durationText = '-';
                         break;
                         
                     case 'promotion':
-                        typeLabel = 'Promotion';
-                        description = `Current: ${details.currentTitle || '-'} → Proposed: ${details.proposedTitle || '-'}`;
+                        typeLabel = t("types.promotion");
+                        description = isAr
+                            ? `المسمى الحالي: ${details.currentTitle || '-'} ← المقترح: ${details.proposedTitle || '-'}`
+                            : `Current: ${details.currentTitle || '-'} → Proposed: ${details.proposedTitle || '-'}`;
                         durationText = '-';
                         break;
                         
                     case 'experience-certificate':
-                        typeLabel = 'Exp. Certificate';
-                        description = `Purpose: ${details.purpose || '-'}`;
+                        typeLabel = t("types.expCertificate");
+                        description = isAr
+                            ? `الغرض: ${details.purpose || '-'}`
+                            : `Purpose: ${details.purpose || '-'}`;
                         durationText = '-';
                         break;
                         
                     default:
-                        typeLabel = item.type || 'Request';
+                        typeLabel = item.type || t("types.vacation");
                         description = item.reason || '-';
                         durationText = '-';
                         break;
@@ -169,29 +197,24 @@ const Leaves = () => {
                     type: typeLabel,
                     description: description,
                     duration: durationText,
-                    status: item.status,
-                    Discounts: details.discounts !== undefined ? details.discounts : '-',
+                    status: item.status || 'pending',
                     reson: item.reason || '-'
                 };
             });
-    }, [leavesList, leaveType, status]);
+    }, [leavesList, leaveType, status, isAr, t]);
 
     // Handlers for Request a leave modal
     const handleOpenRequestModal = () => {
         setIsRequestModalOpen(true);
         document.body.style.overflow = 'hidden';
-        const element = document.querySelector('.reqleaveco');
-        if (element) element.className = 'reqleavecovi';
     };
 
     const handleCloseRequestModal = () => {
         setIsRequestModalOpen(false);
         document.body.style.overflow = 'auto';
-        const element = document.querySelector('.reqleavecovi');
-        if (element) element.className = 'reqleaveco';
     };
 
-    const handleAddLeaveRequest = (newLeave) => {
+    const handleAddLeaveRequest = () => {
         fetchData();
         handleCloseRequestModal();
     };
@@ -201,50 +224,44 @@ const Leaves = () => {
         setSelectedReason(reason);
         setModalOpen(true);
         document.body.style.overflow = 'hidden';
-        const themeToggle = document.querySelector(".mobile-toggle");
-        if (themeToggle) themeToggle.style.zIndex = "-1";
     };
 
     const closeModal = () => {
         setModalOpen(false);
         setSelectedReason("");
         document.body.style.overflow = 'auto';
-        const themeToggle = document.querySelector(".mobile-toggle");
-        if (themeToggle) themeToggle.style.zIndex = "10";
     };
 
     return (
-        <div className="portal-page-container-leaves fade-in-section">
-            {/* Dynamic + Legacy wrapper synchronization for Requestaleave */}
-            <div className={isRequestModalOpen ? "reqleavecovi" : "reqleaveco"}>
-                <Requestaleave 
-                    isOpen={isRequestModalOpen} 
-                    onClose={handleCloseRequestModal} 
-                    onSubmit={handleAddLeaveRequest}
-                    leaveTypes={leaveTypes}
-                />
-            </div>
+        <div className={`portal-page-container-leaves fade-in-section ${isAr ? "rtl" : "ltr"}`}>
+            {/* Modal for Submitting New Request */}
+            <Requestaleave 
+                isOpen={isRequestModalOpen} 
+                onClose={handleCloseRequestModal} 
+                onSubmit={handleAddLeaveRequest}
+                leaveTypes={leaveTypes}
+            />
 
             {/* Page Header */}
             <div className="leaves-portal-header-wrapper">
                 <div className="leaves-portal-title-area">
-                    <div>
-                        <span className="premium-subtitle">Employee Portal</span>
-                        <h1>{t("title") || "My Requests"}</h1>
-                    </div>
-                    <button className="premium-btn-primary" onClick={handleOpenRequestModal} type="button">
-                        <span className="btn-glow-text">{t("SubmitRequest") || "Submit Request"}</span>
-                        <span className="material-symbols-outlined">add</span>
-                    </button>
+                    <span className="premium-subtitle">{t("subtitle")}</span>
+                    <h1>{t("title")}</h1>
                 </div>
-                <div className="leaves-theme-toggle">
-                    <ThemeToggle />
+                <div className="leaves-header-actions-wrapper">
+                    <button className="premium-btn-primary" onClick={handleOpenRequestModal} type="button">
+                        <span className="material-symbols-outlined">add</span>
+                        <span className="btn-glow-text">{t("SubmitRequest")}</span>
+                    </button>
+                    <div className="leaves-theme-toggle">
+                        <ThemeToggle />
+                    </div>
                 </div>
             </div>
 
             {/* Premium Stats Grid */}
             <div className="premium-stats-grid">
-                {displayType.map((s, i) => (
+                {statCards.map((s, i) => (
                     <div className="premium-stat-card" key={i}>
                         <div className="stat-card-header">
                             <span className="premium-stat-label">{s.label}</span>
@@ -266,33 +283,33 @@ const Leaves = () => {
                 <div className="filter-section-header">
                     <div className="section-title-with-icon">
                         <span className="material-symbols-outlined">history</span>
-                        <h3>{t("log") || "Requests Log"}</h3>
+                        <h3>{t("log")}</h3>
                     </div>
                     <div className="filters-controls-row">
                         <FilterDropdown
                             value={leaveType}
                             onChange={setLeaveType}
                             options={[
-                                { value: "", label: t('filters.leave_type') || "All Request Types" }, 
-                                { value: "vacation", label: "Vacation / Leave" },
-                                { value: "advance", label: "Advance Request" },
-                                { value: "equipment", label: "Equipment Request" },
-                                { value: "compensation", label: "Compensation" },
-                                { value: "data-update", label: "Data Update" },
-                                { value: "resignation", label: "Resignation" },
-                                { value: "transfer", label: "Transfer" },
-                                { value: "promotion", label: "Promotion" },
-                                { value: "experience-certificate", label: "Exp. Certificate" }
+                                { value: "", label: t('types.all') }, 
+                                { value: "vacation", label: t('types.vacation') },
+                                { value: "advance", label: t('types.advance') },
+                                { value: "equipment", label: t('types.equipment') },
+                                { value: "compensation", label: t('types.compensation') },
+                                { value: "data-update", label: t('types.dataUpdate') },
+                                { value: "resignation", label: t('types.resignation') },
+                                { value: "transfer", label: t('types.transfer') },
+                                { value: "promotion", label: t('types.promotion') },
+                                { value: "experience-certificate", label: t('types.expCertificate') }
                             ]}
                         />
                         <FilterDropdown
                             value={status}
                             onChange={setStatus}
                             options={[
-                                { value: "", label: t('filters.status') || "All Statuses" }, 
-                                { value: "approved", label: t('status.approved') || "Approved" }, 
-                                { value: "pending", label: t('status.pending') || "Pending" }, 
-                                { value: "rejected", label: t('status.rejected') || "Rejected" }
+                                { value: "", label: t('filters.status') }, 
+                                { value: "approved", label: t('status.approved') }, 
+                                { value: "pending", label: t('status.pending') }, 
+                                { value: "rejected", label: t('status.rejected') }
                             ]}
                         />
                     </div>
@@ -303,11 +320,11 @@ const Leaves = () => {
                     <table className="premium-data-table">
                         <thead>
                             <tr>
-                                <th>{t("TypeLeave") || "Request Type"}</th>
-                                <th>{t('Description') || "Description / Details"}</th>
-                                <th>{t('duration') || "Duration"}</th>
-                                <th>{t('statusleave') || "Status"}</th>
-                                <th>{t('Details') || "Details"}</th>
+                                <th>{t("TypeLeave")}</th>
+                                <th>{t('Description')}</th>
+                                <th>{t('duration')}</th>
+                                <th>{t('statusleave')}</th>
+                                <th>{t('Details')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -316,49 +333,51 @@ const Leaves = () => {
                                     <td colSpan="5" className="premium-empty-cell">
                                         <div className="empty-state-content">
                                             <span className="material-symbols-outlined premium-spinner">sync</span>
-                                            <p>Loading requests...</p>
+                                            <p>{t("loading")}</p>
                                         </div>
                                     </td>
                                 </tr>
-                            ) : filteredLeaves.length > 0 ? filteredLeaves.map(row => (
-                                <tr key={row.id} className="premium-table-row">
-                                    <td className="type-column-bold">
-                                        <div className="type-badge-inline">
-                                            <span className="material-symbols-outlined icon-xs">
-                                                {row.type.toLowerCase().includes('sick') ? 'medical_services' : 
-                                                 (row.type.toLowerCase().includes('annual') || row.type.toLowerCase().includes('vacation') ? 'beach_access' : 'assignment')}
+                            ) : filteredLeaves.length > 0 ? (
+                                filteredLeaves.map(row => (
+                                    <tr key={row.id} className="premium-table-row">
+                                        <td className="type-column-bold">
+                                            <div className="type-badge-inline">
+                                                <span className="material-symbols-outlined icon-xs">
+                                                    {String(row.type).toLowerCase().includes('sick') || String(row.type).includes('مرض') ? 'medical_services' : 
+                                                     (String(row.type).toLowerCase().includes('annual') || String(row.type).includes('سنو') ? 'beach_access' : 'assignment')}
+                                                </span>
+                                                {row.type}
+                                            </div>
+                                        </td>
+                                        <td>{row.description}</td>
+                                        <td><strong>{row.duration}</strong></td>
+                                        <td>
+                                            <span className={`premium-status-badge ${row.status.toLowerCase()}`}>
+                                                {t(`status.${row.status.toLowerCase()}`, row.status)}
                                             </span>
-                                            {row.type}
-                                        </div>
-                                    </td>
-                                    <td>{row.description}</td>
-                                    <td><strong>{row.duration}</strong></td>
-                                    <td>
-                                        <span className={`premium-status-badge ${row.status.toLowerCase()}`}>
-                                            {row.status}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        {row.status.toLowerCase() === "rejected" ? (
-                                            <button 
-                                                className="premium-btn-view" 
-                                                onClick={() => openModal(row.reson)}
-                                                type="button"
-                                            >
-                                                <span className="material-symbols-outlined icon-view">visibility</span>
-                                                {t('View') || "View"}
-                                            </button>
-                                        ) : (
-                                            <span className="empty-dash">-</span>
-                                        )}
-                                    </td>
-                                </tr>
-                            )) : (
+                                        </td>
+                                        <td>
+                                            {row.status.toLowerCase() === "rejected" ? (
+                                                <button 
+                                                    className="premium-btn-view" 
+                                                    onClick={() => openModal(row.reson)}
+                                                    type="button"
+                                                >
+                                                    <span className="material-symbols-outlined icon-view">visibility</span>
+                                                    {t('View')}
+                                                </button>
+                                            ) : (
+                                                <span className="empty-dash">-</span>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
                                 <tr>
                                     <td colSpan="5" className="premium-empty-cell">
                                         <div className="empty-state-content">
                                             <span className="material-symbols-outlined empty-icon">search_off</span>
-                                            <p>{t('NoData', 'No matching records found')}</p>
+                                            <p>{t('NoData')}</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -372,11 +391,11 @@ const Leaves = () => {
             <div className="premium-card-section policy-section">
                 <div className="policy-header">
                     <span className="material-symbols-outlined">policy</span>
-                    <h3 className="PolicyOverview">{t("PolicyOverview") || "Policy Overview"}</h3>
+                    <h3 className="PolicyOverview">{t("PolicyOverview")}</h3>
                 </div>
                 <div className="policy-body">
                     <div className="policy-group">
-                        <h4>{t("Types") || "Leave Types & Allocations"}</h4>
+                        <h4>{t("Types")}</h4>
                         <ul className="premium-policy-list">
                             <li>
                                 <div className="policy-type-meta">
@@ -386,23 +405,23 @@ const Leaves = () => {
                             </li>
                             <li>
                                 <div className="policy-type-meta">
-                                    <span className="premium-policy-badge bg-blue">{t("Type.Annual") || "Annual"}</span>
+                                    <span className="premium-policy-badge bg-blue">{t("Annual")}</span>
                                 </div>
-                                <p className="policy-type-description">Standard leave provision intended for rest, recreation, and personal obligations.</p>
+                                <p className="policy-type-description">{t("Annual1")}</p>
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>
 
-            {/* Premium Reason Modal Overlay with Backdrop Blur */}
+            {/* Reason Modal Overlay */}
             {modalOpen && (
                 <div className="premium-modal-overlay" onClick={closeModal}>
                     <div className="premium-modal-card" onClick={e => e.stopPropagation()}>
                         <div className="premium-modal-header">
                             <div className="modal-title-with-icon">
                                 <span className="material-symbols-outlined text-red">info</span>
-                                <h3>{t('MoreDetails') || "Rejection Details"}</h3>
+                                <h3>{t('MoreDetails')}</h3>
                             </div>
                             <button className="premium-close-icon" onClick={closeModal} aria-label="Close">
                                 <i className="bi bi-x-lg"></i>
@@ -410,13 +429,13 @@ const Leaves = () => {
                         </div>
                         <div className="premium-modal-body">
                             <div className="reason-container">
-                                <strong>Reason provided by Reviewer:</strong>
+                                <strong>{t("reviewerReason")}</strong>
                                 <p className="premium-reason-text">{selectedReason}</p>
                             </div>
                         </div>
                         <div className="premium-modal-footer">
                             <button className="premium-btn-secondary" onClick={closeModal}>
-                                Close
+                                {t("close")}
                             </button>
                         </div>
                     </div>

@@ -182,10 +182,7 @@ const Profile = () => {
   // Helper to format currency
   const formatCurrency = (val) => {
     if (val === null || val === undefined) return "-";
-    return new Intl.NumberFormat(i18n.language === "ar" ? "ar-SA" : "en-US", {
-      style: "currency",
-      currency: "SAR",
-    }).format(val);
+    return `$${Number(val).toLocaleString()}`;
   };
 
   return (
