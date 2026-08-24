@@ -1,13 +1,58 @@
 {
-    "Requestaleave": "طلب إجازة",
+    "modalTitle": "تقديم طلب جديد",
+    "requestCategory": "تصنيف الطلب",
+    "categories": {
+        "vacation": "إجازة",
+        "advance": "طلب سلفة مالية",
+        "equipment": "طلب عهدة / أجهزة",
+        "compensation": "طلب تعويض مالي",
+        "dataUpdate": "تعديل بيانات الموظف",
+        "resignation": "تقديم استقالة",
+        "transfer": "طلب نقل قسم",
+        "promotion": "طلب ترقية وظيفية",
+        "expCertificate": "طلب شهادة خبرة"
+    },
     "type": "نوع الإجازة",
     "Dates": "تاريخ البدء",
     "duration": "عدد الأيام",
-    "reason": "سبب الطلب",
-    "placeholder": "أدخل سببك",
-    "click": "انقر لتحميل",
-    "attah": "إرفاق مستند طبي (اختياري)",
-  "cancel":"إلغاء",
-  "confirm":"تأكيد"
-
+    "reason": "سبب وملاحظات الطلب",
+    "placeholder": "اكتب تفاصيل أو سبب الطلب...",
+    "click": "انقر لاختيار ملف",
+    "attah": "إرفاق مستند أو تقرير (اختياري)",
+    "cancel": "إلغاء",
+    "confirm": "إرسال الطلب",
+    "submitting": "جاري الإرسال...",
+    "advance": {
+        "amount": "مبلغ السلفة المطلوب ($)",
+        "installments": "عدد أشهر السداد (الأقساط)"
+    },
+    "equipment": {
+        "deviceType": "نوع الجهاز / العهدة",
+        "specs": "المواصفات والاحتياجات المطلوبة"
+    },
+    "compensation": {
+        "amount": "مبلغ التعويض ($)",
+        "category": "بند التعويض (سفر، ضيافة، مصاريف تشغيلية)",
+        "date": "تاريخ الصرف الفعلي"
+    },
+    "dataUpdate": {
+        "fieldName": "البيان المراد تعديله",
+        "oldValue": "القيمة الحالية",
+        "newValue": "القيمة الجديدة المقترحة"
+    },
+    "resignation": {
+        "lastWorkingDay": "آخر يوم عمل مقترح"
+    },
+    "transfer": {
+        "currentDept": "القسم الحالي",
+        "newDept": "القسم المطلوب النقل إليه",
+        "newTitle": "المسمى المقترح بعد النقل"
+    },
+    "promotion": {
+        "proposedTitle": "المسمى الوظيفي المطلوب",
+        "proposedSalary": "الراتب المقترح ($)"
+    },
+    "expCertificate": {
+        "purpose": "الغرض من شهادة الخبرة (جهة التقديم)"
+    }
 }

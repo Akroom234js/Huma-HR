@@ -3,10 +3,14 @@ import React, { useEffect, useState } from "react";
 import apiClient from "../../../../apiConfig";
 import "./Chat.css";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
+import { useTranslation } from "react-i18next";
 
 const BASE_IMAGE_URL = "http://127.0.0.1:8000/storage";
 
 const Chat = () => {
+    const { t, i18n } = useTranslation("EmployeePortal/Chat");
+    const isAr = i18n ? i18n.language === "ar" : false;
+
     const [chats, setChats] = useState([]);
     const [contacts, setContacts] = useState([]);
     const [selectedChat, setSelectedChat] = useState(null);
@@ -14,8 +18,8 @@ const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
-const [notifications, setNotifications] = useState([]);
-const [unreadCount, setUnreadCount] = useState(0);
+    const [notifications, setNotifications] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(0);
     const storedUser = localStorage.getItem("user");
     const currentUserId = storedUser
         ? JSON.parse(storedUser).id
@@ -193,57 +197,56 @@ const handleNotificationClick = async (
     );
 
     return (
-        <div className="cn-page">
+        <div className={`cn-page ${isAr ? "rtl" : "ltr"}`}>
             <div className="cn-theme-toggle-wrapper">
                 <ThemeToggle />
             </div>
 
             <header className="cn-header">
-                <h1>Chat & Notification</h1>
+                <h1>{t("pageTitle")}</h1>
             </header>
 
             <div className="cn-chat-layout">
                 <div className="cn-sidebar">
-                  <div className="cn-section">
-    <h3>Contacts</h3>
+                    <div className="cn-section">
+                        <h3>{t("contacts")}</h3>
 
-    {contacts.map((c) => (
-        <div
-            key={c.user_id}
-            className={`cn-contact ${
-                selectedRecipient === c.user_id
-                    ? "active"
-                    : ""
-            }`}
-            onClick={() => {
-                setSelectedRecipient(c.user_id);
-                setSelectedChat(null);
-                setMessages([]);
-            }}
-        >
-            <img
-                className="cn-contact-avatar"
-                src={
-                    c.profile_pic
-                        ? `${BASE_IMAGE_URL}/${c.profile_pic}`
-                        : "https://i.pravatar.cc/100"
-                }
-                alt={c.full_name}
-            />
+                        {contacts.map((c) => (
+                            <div
+                                key={c.user_id}
+                                className={`cn-contact ${
+                                    selectedRecipient === c.user_id
+                                        ? "active"
+                                        : ""
+                                }`}
+                                onClick={() => {
+                                    setSelectedRecipient(c.user_id);
+                                    setSelectedChat(null);
+                                    setMessages([]);
+                                }}
+                            >
+                                <img
+                                    className="cn-contact-avatar"
+                                    src={
+                                        c.profile_pic
+                                            ? `${BASE_IMAGE_URL}/${c.profile_pic}`
+                                            : "https://i.pravatar.cc/100"
+                                    }
+                                    alt={c.full_name}
+                                />
 
-            <div className="cn-contact-info">
-                <h4>{c.full_name}</h4>
-
-                <p>{c.job_title}</p>
-            </div>
-        </div>
-    ))}
-</div>
+                                <div className="cn-contact-info">
+                                    <h4>{c.full_name}</h4>
+                                    <p>{c.job_title}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 
                     <hr />
 
                     <div className="cn-section">
-<h3>My Chats</h3>
+                        <h3>{t("myChats")}</h3>
                         {chats.map((chat) => (
                             <div
                                 key={chat.id}
@@ -257,90 +260,65 @@ const handleNotificationClick = async (
                                     setSelectedRecipient(null);
                                 }}
                             >
-                              
-                                 <img
-            className="cn-sidebar-avatar"
-            src={
-                chat.other_participant?.profile_pic
-                    ? `${BASE_IMAGE_URL}/${chat.other_participant.profile_pic}`
-                    : "https://i.pravatar.cc/100"
-            }
-            alt={
-                chat.other_participant?.full_name
-            }
-        />
+                                <img
+                                    className="cn-sidebar-avatar"
+                                    src={
+                                        chat.other_participant?.profile_pic
+                                            ? `${BASE_IMAGE_URL}/${chat.other_participant.profile_pic}`
+                                            : "https://i.pravatar.cc/100"
+                                    }
+                                    alt={chat.other_participant?.full_name}
+                                />
 
                                 <div>
-                                    <h4>
-                                        {
-                                            chat.other_participant
-                                                ?.full_name
-                                        }
-                                    </h4>
-                                    <p>
-                                        {
-                                            chat.last_message
-                                                ?.body
-                                        }
-                                    </p>
+                                    <h4>{chat.other_participant?.full_name}</h4>
+                                    <p>{chat.last_message?.body}</p>
                                 </div>
                             </div>
                         ))}
                     </div>
+
                     <div className="cn-section">
-    <h3>
-        Notifications ({unreadCount})
-    </h3>
+                        <h3>{t("notifications", { count: unreadCount })}</h3>
 
-    {notifications.map((notification) => (
-        <div
-            key={notification.id}
-            className="cn-chat-item"
-            onClick={() => handleNotificationClick(notification)}
-        >
-            <div className="cn-chat-info">
-                <h4>{notification.title}</h4>
+                        {notifications.map((notification) => (
+                            <div
+                                key={notification.id}
+                                className="cn-chat-item"
+                                onClick={() => handleNotificationClick(notification)}
+                            >
+                                <div className="cn-chat-info">
+                                    <h4>{notification.title}</h4>
+                                    <p>{notification.body}</p>
+                                </div>
 
-                <p>{notification.body}</p>
-            </div>
-
-            {!notification.read_at && (
-                <span className="cn-unread-badge">
-                    •
-                </span>
-            )}
-        </div>
-    ))}
-</div>
+                                {!notification.read_at && (
+                                    <span className="cn-unread-badge">•</span>
+                                )}
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 <div className="cn-chat-area">
-
                     {currentChat || selectedRecipient ? (
                         <>
-                         
                             <div className="cn-chat-header">
                                 <h3>
                                     {currentChat
-                                        ? currentChat.other_participant
-                                              ?.full_name
-                                        : "New Chat"}
+                                        ? currentChat.other_participant?.full_name
+                                        : t("newChat")}
                                 </h3>
                             </div>
                             <div className="cn-messages">
                                 {loading ? (
-                                    <p>Loading...</p>
+                                    <p>{t("loading")}</p>
                                 ) : (
                                     messages.map((msg) => (
                                         <div
                                             key={msg.id}
                                             className={`cn-message ${
-                                                Number(
-                                                    msg.sender_id
-                                                ) ===
-                                                Number(
-                                                    currentUserId
-                                                )
+                                                Number(msg.sender_id) === Number(currentUserId)
                                                     ? "sent"
                                                     : "received"
                                             }`}
@@ -353,25 +331,20 @@ const handleNotificationClick = async (
                             <div className="cn-message-input">
                                 <input
                                     value={message}
-                                    onChange={(e) =>
-                                        setMessage(
-                                            e.target.value
-                                        )
-                                    }
-                                    placeholder="Type message..."
+                                    onChange={(e) => setMessage(e.target.value)}
+                                    placeholder={t("typeMessage")}
                                 />
 
                                 <button onClick={handleSend}>
-                                    Send
+                                    {t("send")}
                                 </button>
                             </div>
                         </>
                     ) : (
                         <div className="cn-empty-chat">
-                            <p style={{textAlign:"center",
-                              marginTop:"30%"
-                            }}>
-Select chat or contact</p>
+                            <p style={{ textAlign: "center", marginTop: "30%" }}>
+                                {t("selectChatPrompt")}
+                            </p>
                         </div>
                     )}
                 </div>

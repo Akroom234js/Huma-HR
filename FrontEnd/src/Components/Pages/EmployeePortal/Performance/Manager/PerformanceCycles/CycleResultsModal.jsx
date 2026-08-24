@@ -34,11 +34,11 @@ const CycleResultsModal = ({ isOpen, onClose, cycle }) => {
     const cycleTitle = cycle.title || (isAr ? cycle.nameAr : cycle.nameEn) || '';
 
     return (
-        <div className={`modal-overlay cycle-results-modal-overlay ${isAr ? 'rtl' : 'ltr'}`}>
-            <div className="modal-container cycle-results-modal">
+        <div className={`cycle-results-modal-overlay ${isAr ? 'rtl' : 'ltr'}`} onClick={onClose}>
+            <div className="cycle-results-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
                     <h2>{t('modal.cycleResults', { name: cycleTitle })}</h2>
-                    <button className="close-btn" onClick={onClose}>
+                    <button className="close-btn" onClick={onClose} aria-label="Close">
                         <i className="fa-solid fa-times"></i>
                     </button>
                 </div>

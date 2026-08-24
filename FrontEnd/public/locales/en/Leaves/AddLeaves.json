@@ -1,16 +1,17 @@
 {
-    "add":"Add New Leave Type",
-    "name":"Leave Type Name in english",
-    "name1":"Leave Type Name in arabic",
-    "Allocation":"Default Allocation (Days)",
-    "number":"e.g 15",
-    "DescriptionPolicy":"Description/Policy in english",
-    "DescriptionPolicy1":"Description/Policy in arabic",
-    "details":"Enter details about the leave policy...",
-    "details1":"Enter details about the leave policy in arabic...",
-    "Paid":"Is Paid Leave?",
-    "Approval":"Requires Approval?",
-    
-      "cancel":"Cancel",
-      "submit":"Submit"
+    "add": "Add New Leave Type",
+    "edit": "Edit Leave Type Policy",
+    "name": "Leave Type Name (English)",
+    "name1": "Leave Type Name (Arabic)",
+    "Allocation": "Default Allocation (Days)",
+    "number": "e.g. 21",
+    "DescriptionPolicy": "Policy Description (English)",
+    "DescriptionPolicy1": "Policy Description (Arabic)",
+    "details": "Enter eligibility criteria in English...",
+    "details1": "Enter eligibility criteria in Arabic...",
+    "Paid": "Paid Leave",
+    "Approval": "Requires Approval",
+    "cancel": "Cancel",
+    "submit": "Save Changes",
+    "create": "Create Leave Type"
 }

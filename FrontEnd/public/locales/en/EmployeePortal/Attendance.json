@@ -1,0 +1,32 @@
+{
+  "pageTitle": "Attendance Management",
+  "checkIn": "Check-in",
+  "checkOut": "Checkout",
+  "loading": "Loading...",
+  "todayStatus": "Today's Status",
+  "status": "Status",
+  "present": "Present",
+  "absent": "Absent",
+  "unknown": "Unknown",
+  "checkInTime": "Check-in Time",
+  "checkOutTime": "Check-out Time",
+  "hoursWorkedToday": "Hours Worked Today",
+  "trendsTitle": "Attendance Trends over Time",
+  "hours": "Hours",
+  "historicalAttendance": "Historical Attendance",
+  "table": {
+    "date": "Date",
+    "checkIn": "Check-in",
+    "checkOut": "Check-out",
+    "hoursWorked": "Hours Worked",
+    "late": "(Late)"
+  },
+  "alerts": {
+    "geoNotSupported": "Your browser does not support geolocation.",
+    "permissionDenied": "Please grant GPS location permission to check-in/checkout.",
+    "posUnavailable": "Device could not determine GPS location.",
+    "timeout": "Location request timed out. Please try again.",
+    "checkinFail": "Check-in failed, please try again.",
+    "checkoutFail": "Checkout failed, please try again."
+  }
+}

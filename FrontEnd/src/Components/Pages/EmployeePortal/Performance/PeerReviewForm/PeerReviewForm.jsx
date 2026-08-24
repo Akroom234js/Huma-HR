@@ -45,11 +45,16 @@ const PeerReviewForm = () => {
                     const cycleData = Array.isArray(rawCycle?.data) 
                         ? rawCycle.data 
                         : (Array.isArray(rawCycle) ? rawCycle : []);
-                    setCyclesList(cycleData);
                     
-                    // Auto-select active or latest cycle if available
-                    const active = cycleData.find(c => c.status === 'active') || cycleData[0];
-                    if (active) setSelectedCycle(active.id);
+                    // Filter only active performance cycles for peer submissions
+                    const activeCycles = cycleData.filter(c => c.status === 'active');
+                    setCyclesList(activeCycles);
+                    
+                    if (activeCycles.length > 0) {
+                        setSelectedCycle(activeCycles[0].id);
+                    } else {
+                        setSelectedCycle('');
+                    }
                 }
             } catch (err) {
                 console.error("Error loading peer review metadata:", err);
@@ -136,9 +141,15 @@ const PeerReviewForm = () => {
                         <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', marginBottom: '12px', display: 'block' }}></i>
                         {t('loadingData')}
                     </div>
+                ) : cyclesList.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '50px 20px', color: 'var(--text-secondary)' }}>
+                        <i className="fa-solid fa-calendar-xmark" style={{ fontSize: '3rem', color: '#94a3b8', marginBottom: '16px', display: 'block' }}></i>
+                        <h3 style={{ marginBottom: '8px', color: 'var(--text-main)', fontSize: '1.25rem' }}>{t('noActiveCycleTitle')}</h3>
+                        <p style={{ margin: 0, fontSize: '0.95rem', maxWidth: '500px', marginInline: 'auto', lineHeight: '1.6' }}>{t('noActiveCycleDesc')}</p>
+                    </div>
                 ) : (
                     <form onSubmit={handleSubmit} className="peer-actual-form">
-                        {cyclesList.length > 0 && (
+                        {cyclesList.length > 1 && (
                             <div className="peer-form-group">
                                 <label>{t('selectCycle')}</label>
                                 <select
@@ -152,7 +163,7 @@ const PeerReviewForm = () => {
                                     </option>
                                     {cyclesList.map(c => (
                                         <option key={c.id} value={c.id}>
-                                            {c.title} ({c.status})
+                                            {c.title}
                                         </option>
                                     ))}
                                 </select>

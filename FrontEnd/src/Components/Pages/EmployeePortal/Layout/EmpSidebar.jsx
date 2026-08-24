@@ -6,6 +6,7 @@ import apiClient from '../../../../apiConfig';
 import logo from '../../../../assets/logo.png';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
+import { getPerformanceCycles } from '../../../../services/performanceService';
 
 const EmpSidebar = () => {
     const location = useLocation();
@@ -43,6 +44,28 @@ const EmpSidebar = () => {
         else if (isManagerPerformanceActive) setOpenMenu('manager_performance');
         else setOpenMenu(null);
     }, [location.pathname]);
+
+    // Check if there are active performance cycles
+    const [hasActiveCycle, setHasActiveCycle] = useState(false);
+
+    useEffect(() => {
+        if (!isSupervisor) return;
+        let isMounted = true;
+        getPerformanceCycles()
+            .then((res) => {
+                if (!isMounted) return;
+                const cycles = res?.data?.data || res?.data || [];
+                const active = Array.isArray(cycles) && cycles.some((c) => c.status === 'active');
+                setHasActiveCycle(active);
+            })
+            .catch(() => {
+                if (isMounted) setHasActiveCycle(false);
+            });
+
+        return () => {
+            isMounted = false;
+        };
+    }, [isSupervisor, location.pathname]);
 
     const handleSectionToggle = (menu, firstLink) => {
         if (firstLink) {
@@ -201,9 +224,11 @@ const EmpSidebar = () => {
                                     >
                                         <span className="nav-icon material-symbols-outlined" style={{ position: 'relative' }}>
                                             published_with_changes
-                                            <span className="ai-indicator-sparkle">
-                                                <i className="fa-solid fa-sparkles"></i>
-                                            </span>
+                                            {hasActiveCycle && (
+                                                <span className="ai-indicator-sparkle">
+                                                    <i className="fa-solid fa-sparkles"></i>
+                                                </span>
+                                            )}
                                         </span>
                                         <p>{t('Performance-Cycles')}</p>
                                     </NavLink>

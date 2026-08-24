@@ -26,5 +26,7 @@
   "noColleagues": "No colleagues found in your department.",
   "loadingData": "Loading data...",
   "selectCycleAlert": "Please select a performance cycle first.",
-  "defaultComment": "Positive collaboration and effective communication."
+  "defaultComment": "Positive collaboration and effective communication.",
+  "noActiveCycleTitle": "No Active Performance Cycle",
+  "noActiveCycleDesc": "Peer reviews and feedback can only be submitted during active performance cycles initiated by HR."
 }

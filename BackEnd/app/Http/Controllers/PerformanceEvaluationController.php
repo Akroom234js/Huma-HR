@@ -61,10 +61,18 @@ class PerformanceEvaluationController extends Controller
             return $this->errorResponse('Performance cycle not found.', null, 404);
         }
 
-        $evaluations = PerformanceEvaluation::with(['employee', 'department', 'actions'])
-            ->where('performance_cycle_id', $cycleId)
-            ->get()
-            ->map(fn($e) => $this->formatEvaluation($e));
+        $user = auth()->user();
+        $query = PerformanceEvaluation::with(['employee', 'department', 'actions'])
+            ->where('performance_cycle_id', $cycleId);
+
+        if (! $user->hasRole('hr', 'api') && ! $user->hasRole('admin', 'api') && ! $user->hasRole('boss', 'api')) {
+            $deptId = $user->employeeProfile?->department_id;
+            if ($deptId) {
+                $query->where('department_id', $deptId);
+            }
+        }
+
+        $evaluations = $query->get()->map(fn($e) => $this->formatEvaluation($e));
 
         return $this->successResponse([
             'cycle' => [
