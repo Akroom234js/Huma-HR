@@ -68,7 +68,7 @@ class RecognitionController extends Controller
             'sender_id' => $senderProfile->id,
             'message' => $request->message,
             'badge_type' => $request->badge_type,
-            'is_public' => false,
+            'is_public' => $request->boolean('is_public', false),
         ]);
 
         // Send Notification
@@ -115,7 +115,7 @@ class RecognitionController extends Controller
         $recognition->update([
             'message' => $request->message,
             'badge_type' => $request->badge_type,
-            'is_public' => false,
+            'is_public' => $request->boolean('is_public', $recognition->is_public),
         ]);
 
         return $this->successResponse($recognition->load([

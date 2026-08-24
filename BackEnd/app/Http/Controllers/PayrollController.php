@@ -124,68 +124,89 @@ class PayrollController extends Controller
     {
         $userId = Auth::id();
         
-        // Fetch payroll records for this user with deductions (which include additions)
+        // Fetch valid payroll records for this user with additions
         $payrollRecords = PayrollRecord::with(['deductions' => function ($q) {
                 $q->where('is_addition', true);
             }])
             ->where('user_id', $userId)
+            ->whereNotIn('status', ['cancelled', 'draft'])
             ->get();
             
         $bonuses = [];
         $totalAmount = 0;
-        $currentYear = now()->year;
+        $currentYear = (int) now()->year;
         
         foreach ($payrollRecords as $record) {
-            // Bonuses are from is_addition deductions
+            // Bonuses and additions from payroll deductions
             foreach ($record->deductions as $deduction) {
+                $dateObj = null;
+                if ($deduction->applied_date) {
+                    $dateObj = \Carbon\Carbon::parse($deduction->applied_date);
+                } elseif ($record->paid_date) {
+                    $dateObj = \Carbon\Carbon::parse($record->paid_date);
+                } elseif ($record->created_at) {
+                    $dateObj = \Carbon\Carbon::parse($record->created_at);
+                } else {
+                    $dateObj = \Carbon\Carbon::create($record->payroll_year, $record->payroll_month, 1);
+                }
+
+                $formattedDate = $dateObj ? $dateObj->format('Y-m-d') : now()->format('Y-m-d');
+                $year = $dateObj ? $dateObj->year : (int)$record->payroll_year;
+                $amount = round((float) $deduction->amount, 2);
+
+                // Format friendly reward type
+                $rawType = strtolower($deduction->deduction_type ?? 'bonus');
+                $rewardType = match ($rawType) {
+                    'bonus' => 'Performance Bonus',
+                    'reward' => 'Recognition Reward',
+                    'allowance' => 'Special Allowance',
+                    'other' => 'Incentive Award',
+                    default => ucfirst($rawType) . ' Bonus'
+                };
+
                 $bonuses[] = [
-                    'id' => $deduction->id,
-                    'date_received' => $deduction->applied_date ?? $record->paid_date ?? $record->created_at,
-                    'type' => $deduction->reason ?? 'Performance Bonus',
-                    'amount' => $deduction->amount,
-                    'reason' => $deduction->reason ?? 'Exceeding target expectations',
-                    'awarded_by' => $deduction->applied_by ?? 'Management',
+                    'id' => (string) $deduction->id,
+                    'date_received' => $formattedDate,
+                    'type' => $rewardType,
+                    'amount' => $amount,
+                    'reason' => $deduction->reason ?: 'Exceeding target expectations',
+                    'awarded_by' => $deduction->applied_by ?: 'Management',
                 ];
                 
-                $year = null;
-                if ($deduction->applied_date) {
-                    $year = \Carbon\Carbon::parse($deduction->applied_date)->year;
-                } else if ($record->paid_date) {
-                    $year = \Carbon\Carbon::parse($record->paid_date)->year;
-                } else {
-                    $year = $record->payroll_year;
-                }
-                
-                if ($year == $currentYear) {
-                    $totalAmount += $deduction->amount;
+                if ($year === $currentYear) {
+                    $totalAmount += $amount;
                 }
             }
             
-            // Also overtime_amount is an addition!
-            if ($record->overtime_amount > 0) {
+            // Overtime payment as an addition
+            if ((float) $record->overtime_amount > 0) {
+                $otDateObj = $record->paid_date ? \Carbon\Carbon::parse($record->paid_date) : ($record->created_at ? \Carbon\Carbon::parse($record->created_at) : \Carbon\Carbon::create($record->payroll_year, $record->payroll_month, 1));
+                $otFormattedDate = $otDateObj ? $otDateObj->format('Y-m-d') : now()->format('Y-m-d');
+                $otAmount = round((float) $record->overtime_amount, 2);
+
                 $bonuses[] = [
                     'id' => 'ot-' . $record->id,
-                    'date_received' => $record->paid_date ?? $record->created_at,
+                    'date_received' => $otFormattedDate,
                     'type' => 'Overtime Payment',
-                    'amount' => $record->overtime_amount,
+                    'amount' => $otAmount,
                     'reason' => "Payment for {$record->overtime_hours} overtime hours",
                     'awarded_by' => 'System',
                 ];
                 
-                if ($record->payroll_year == $currentYear) {
-                    $totalAmount += $record->overtime_amount;
+                if ((int) $record->payroll_year === $currentYear) {
+                    $totalAmount += $otAmount;
                 }
             }
         }
         
         // Sort bonuses by date descending
         usort($bonuses, function ($a, $b) {
-            return strtotime($b['date_received']) - strtotime($a['date_received']);
+            return strcmp($b['date_received'], $a['date_received']);
         });
         
         return $this->successResponse([
             'bonuses' => $bonuses,
-            'total_amount' => $totalAmount,
+            'total_amount' => round($totalAmount, 2),
             'current_year' => $currentYear,
         ], 'Employee rewards retrieved successfully.');
     }

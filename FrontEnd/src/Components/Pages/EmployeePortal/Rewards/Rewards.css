@@ -1,20 +1,27 @@
-.portal-page-container {
-  padding: 2rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 50vh;
-}
-
-.portal-page-container h1 {
-  font-size: 2rem;
-  color: var(--text-color, #333);
-}
+/* Rewards & Bonuses Distinctive Styles */
 
 .rewards-page {
   padding: 2rem;
-  background: var(--bg-page);
+  background: var(--bg-page, #f8fafc);
   min-height: 100vh;
+  color: var(--text-main, #0f172a);
+}
+
+.rewards-header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.rewards-header-wrapper .page-title {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: var(--text-main, #0f172a);
+  margin: 0;
+  letter-spacing: -0.02em;
 }
 
 .rewards-grid {
@@ -29,180 +36,805 @@
   flex-wrap: wrap;
 }
 
-.card {
-  background: var(--bg-card);
+/* Card Container */
+.rewards-page .card {
+  background: var(--bg-card, #ffffff);
   border-radius: 20px;
-  padding: 1.5rem;
-  border: 1px solid var(--border-color);
-
+  padding: 1.75rem;
+  border: 1px solid var(--border-color, #e2e8f0);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
   box-sizing: border-box;
   min-width: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.card h2 {
-  margin-bottom: 1rem;
-  color: var(--text-main);
+.rewards-page .card:hover {
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.07);
 }
 
-.rewards-total-card {
-  flex: 1 1 280px;
-
+.card-title-group {
   display: flex;
-  justify-content: center;
   align-items: center;
+  gap: 0.6rem;
 }
 
-.recognition-card {
-  flex: 2 1 600px;
+.card-title-icon {
+  font-size: 1.35rem;
+  color: #16a34a;
+}
+
+.rewards-page .card h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-main, #0f172a);
+  letter-spacing: -0.01em;
+}
+
+/* Total Card */
+.rewards-total-card {
+  flex: 1 1 320px;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, var(--bg-card, #ffffff) 0%, rgba(22, 163, 74, 0.06) 100%);
+  border-left: 4px solid #16a34a;
+}
+
+.rewards-page.rtl .rewards-total-card {
+  border-left: 1px solid var(--border-color, #e2e8f0);
+  border-right: 4px solid #16a34a;
 }
 
 .rewards-total-content {
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  align-items: flex-start;
+  gap: 1.25rem;
+  width: 100%;
 }
 
-.reward-icon {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-
+.reward-icon-wrapper {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
   display: flex;
   justify-content: center;
   align-items: center;
-
   background: #dcfce7;
-  font-size: 2rem;
+  color: #16a34a;
+  font-size: 1.65rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.15);
 }
-div.brspan{
+
+.rewards-total-info {
+  display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 0.35rem;
 }
-div.del-ed{
-position: relative;
-top: 5px;
+
+.rewards-badge-highlight {
+  display: inline-block;
+  align-self: flex-start;
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+  padding: 0.15rem 0.55rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
 }
-.rewards-total-content p {
-  color: var(--text-secondary);
-  margin-bottom: 0.3rem;
-}
-div.SendRecognition{
-    display: none;
-    background-color: var(--bg-card, 1);
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 10000;
-    align-items: center;
-    justify-content: space-around;
-    background-color: rgb(17 24 39 / 0.4);
-    width: 100%;
-    height: 100vb;
-}
-.rewards-total-content h2 {
-  font-size: 2rem;
+
+.rewards-total-title {
+  color: var(--text-secondary, #64748b);
+  font-size: 0.9rem;
+  font-weight: 600;
   margin: 0;
 }
-div.recognition-card div div.recognition-con,div.card-len div.recognition-con{
-  overflow: scroll;
-  height: 300px;
 
+.rewards-total-value {
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: #16a34a;
+  margin: 0.1rem 0;
+  letter-spacing: -0.02em;
 }
-.recognition-box {
-  background: var(--bg-page);
-  border-radius: 16px;
-  padding: 1rem;
-  margin-bottom: 8px;
+
+.rewards-total-subtitle {
+  color: var(--text-secondary, #94a3b8);
+  font-size: 0.775rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Recognition Card */
+.recognition-card {
+  flex: 2 1 600px;
   display: flex;
-  gap: 1rem;
+  flex-direction: column;
+}
+
+.recognition-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.btn-send-recognition {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+  transition: all 0.2s ease;
+}
+
+.btn-send-recognition:hover {
+  background: #15803d;
+  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-send-recognition:active {
+  transform: translateY(0);
+}
+
+.recognition-con {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.rewards-page.rtl .recognition-con {
+  padding-right: 0;
+  padding-left: 0.25rem;
+}
+
+.empty-recognition-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  background: var(--bg-page, #f8fafc);
+  border-radius: 14px;
+  border: 1px dashed var(--border-color, #cbd5e1);
+}
+
+.empty-icon {
+  font-size: 2rem;
+  color: #94a3b8;
+  margin-bottom: 0.5rem;
+}
+
+.no-data-msg {
+  color: var(--text-secondary, #64748b);
+  font-size: 0.9rem;
+  margin: 0;
+  max-width: 420px;
+  line-height: 1.5;
+}
+
+/* Recognition Item Box */
+.recognition-box {
+  background: var(--bg-page, #f8fafc);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 16px;
+  padding: 1.15rem;
+  display: flex;
+  gap: 1.1rem;
   align-items: flex-start;
-      color: var(--text-secondary);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.recognition-box:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transform: translateY(-1px);
+}
+
+.recognition-avatar-wrapper {
+  flex-shrink: 0;
 }
 
 .recognition-avatar {
-  width: 55px;
-  height: 55px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
-.recognition-box p {
+.recognition-avatar-initial {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  color: #0369a1;
+  font-weight: 700;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(3, 105, 161, 0.1);
+}
+
+.recognition-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.recognition-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.recognition-sender-info {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.recognition-sender-name {
+  font-weight: 700;
+  color: var(--text-main, #0f172a);
+  font-size: 0.95rem;
+}
+
+.recognition-sender-title {
+  color: var(--text-secondary, #64748b);
+  font-size: 0.825rem;
+  font-weight: 500;
+}
+
+.recognition-badge-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+  border: 1px solid;
+  font-size: 0.775rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.badge-icon-sm {
+  font-size: 0.85rem;
+}
+
+.recognition-message {
+  margin: 0.35rem 0 0.65rem 0;
   line-height: 1.6;
-  color: var(--text-main);
+  color: var(--text-main, #1e293b);
+  font-size: 0.925rem;
+  font-style: normal;
+  background: var(--bg-card, #ffffff);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  border-left: 3px solid #16a34a;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
-.recognition-box span {
-  color: #16a34a;
-  font-weight: 600;
+.rewards-page.rtl .recognition-message {
+  border-left: none;
+  border-right: 3px solid #16a34a;
 }
 
+.recognition-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.rewards-page.rtl .recognition-footer {
+  justify-content: flex-start;
+}
+
+.recognition-date {
+  color: var(--text-secondary, #94a3b8);
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* History Table */
 .rewards-history-card {
-  overflow-x: auto;
+  width: 100%;
 }
 
 .table-wrapper {
   overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid var(--border-color, #e2e8f0);
 }
 
 .rewards-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 900px;
+  min-width: 700px;
 }
 
 .rewards-table thead {
-  background: var(--bg-page);
+  background: var(--bg-page, #f8fafc);
 }
 
 .rewards-table th {
-  padding: 1rem;
+  padding: 0.95rem 1.15rem;
   text-align: left;
-  font-size: 13px;
-  color: var(--text-secondary);
+  font-size: 0.775rem;
+  font-weight: 700;
+  color: var(--text-secondary, #64748b);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.rewards-page.rtl .rewards-table th {
+  text-align: right;
 }
 
 .rewards-table td {
-  padding: 1rem;
-  border-top: 1px solid var(--border-color);
-  color: var(--text-main);
-  line-height: 1.5;
+  padding: 1rem 1.15rem;
+  border-top: 1px solid var(--border-color, #e2e8f0);
+  color: var(--text-main, #0f172a);
+  font-size: 0.875rem;
+  vertical-align: middle;
+}
+
+.rewards-page.rtl .rewards-table td {
+  text-align: right;
 }
 
 .rewards-table tbody tr:hover {
-  background: rgba(37, 99, 235, 0.05);
+  background: rgba(22, 163, 74, 0.03);
 }
 
-.green {
+.date-cell {
+  color: var(--text-secondary, #475569);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.date-icon {
+  margin-right: 0.4rem;
   color: #16a34a;
-  font-weight: 700;
-}
-div.rewards-history-card.card-len{
-  height: 500px;
-
-}
-.policy-card p {
-  line-height: 1.8;
-  color: var(--text-secondary);
 }
 
-.policy-link {
-  color: #16a34a;
+.rewards-page.rtl .date-icon {
+  margin-right: 0;
+  margin-left: 0.4rem;
+}
+
+.reward-type-badge {
+  display: inline-block;
+  background: #f1f5f9;
+  color: #334155;
+  padding: 0.25rem 0.7rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
   font-weight: 600;
 }
-@media (max-width: 1101px) {  div.recognition-card div div.recognition-con,div.card-len div.recognition-con{
-  overflow: scroll;
-  height: 500px;
 
+.awarded-by-badge {
+  display: inline-flex;
+  align-items: center;
+  background: #eef2ff;
+  color: #4f46e5;
+  padding: 0.25rem 0.65rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
-div.rewards-history-card.card-len{
-  height: 500px;
- 
 
-}
+.amount-cell.green {
+  color: #16a34a;
+  font-weight: 800;
+  font-size: 0.95rem;
+  white-space: nowrap;
 }
 
+.table-loading-cell,
+.table-empty-cell {
+  text-align: center !important;
+  padding: 2.5rem !important;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.empty-table-icon {
+  font-size: 2rem;
+  color: #cbd5e1;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+/* Policy Card */
+.policy-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.policy-icon {
+  font-size: 1.3rem;
+  color: #16a34a;
+}
+
+.policy-card p {
+  line-height: 1.7;
+  color: var(--text-secondary, #475569);
+  margin: 0;
+  font-size: 0.925rem;
+}
+
+.policy-link-btn {
+  background: none;
+  border: none;
+  color: #16a34a;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font-size: inherit;
+  font-family: inherit;
+  transition: color 0.15s ease;
+}
+
+.policy-link-btn:hover {
+  color: #15803d;
+}
+
+/* Modal Overlay & Containers */
+.recognition-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(5px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.recognition-modal-container,
+.policy-modal-container {
+  background: var(--bg-card, #ffffff);
+  border-radius: 22px;
+  width: 100%;
+  max-width: 540px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  box-shadow: 0 25px 35px -5px rgba(0, 0, 0, 0.15), 0 10px 15px -5px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalFadeIn 0.22s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.recognition-modal-header,
+.policy-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.35rem 1.75rem;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+}
+
+.recognition-modal-title-group,
+.policy-modal-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.modal-title-icon {
+  font-size: 1.35rem;
+  color: #16a34a;
+}
+
+.recognition-modal-header h3,
+.policy-modal-header h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-main, #0f172a);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.recognition-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: var(--text-secondary, #94a3b8);
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.recognition-modal-close:hover {
+  background: var(--bg-page, #f1f5f9);
+  color: var(--text-main, #0f172a);
+}
+
+/* Modal Form Styles */
+.recognition-form {
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+}
+
+.recognition-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.recognition-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-main, #334155);
+}
+
+.recognition-select,
+.recognition-textarea {
+  width: 100%;
+  padding: 0.75rem 0.95rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color, #cbd5e1);
+  background: var(--bg-page, #ffffff);
+  color: var(--text-main, #0f172a);
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.recognition-select:focus,
+.recognition-textarea:focus {
+  outline: none;
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+}
+
+.recognition-badge-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.55rem;
+}
+
+.badge-picker-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.75rem;
+  background: var(--bg-page, #f8fafc);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.badge-picker-btn.active {
+  background: #f0fdf4;
+  border-color: #16a34a;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
+}
+
+.badge-picker-icon {
+  font-size: 1.05rem;
+  color: #16a34a;
+}
+
+.badge-picker-text {
+  font-size: 0.775rem;
+  font-weight: 600;
+  color: var(--text-main, #334155);
+  text-align: start;
+}
+
+.recognition-checkbox-group {
+  display: flex;
+  align-items: center;
+}
+
+.recognition-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #475569);
+  cursor: pointer;
+}
+
+.recognition-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.rewards-page.rtl .recognition-modal-actions {
+  justify-content: flex-end;
+}
+
+.btn-recognition-cancel {
+  background: var(--bg-page, #f1f5f9);
+  color: var(--text-main, #475569);
+  border: 1px solid var(--border-color, #cbd5e1);
+  padding: 0.65rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-recognition-cancel:hover {
+  background: #e2e8f0;
+}
+
+.btn-recognition-submit {
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  padding: 0.65rem 1.45rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+  transition: all 0.15s ease;
+}
+
+.btn-recognition-submit:hover:not(:disabled) {
+  background: #15803d;
+  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-recognition-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Alerts inside modal */
+.recognition-alert {
+  margin: 1.25rem 1.75rem 0 1.75rem;
+  padding: 0.85rem 1.15rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.recognition-alert.error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.recognition-alert.success {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+/* Policy Modal Details */
+.policy-modal-content {
+  padding: 1.75rem;
+  overflow-y: auto;
+  max-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.policy-intro {
+  font-size: 0.925rem;
+  color: var(--text-secondary, #475569);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.policy-section h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main, #0f172a);
+  margin: 0 0 0.35rem 0;
+  display: flex;
+  align-items: center;
+}
+
+.policy-section p {
+  font-size: 0.875rem;
+  color: var(--text-secondary, #64748b);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.policy-modal-footer {
+  padding: 1.15rem 1.75rem;
+  border-top: 1px solid var(--border-color, #e2e8f0);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-policy-close {
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(22, 163, 74, 0.15);
+  border-top-color: #16a34a;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  margin: 1.5rem auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Media Queries */
 @media (max-width: 992px) {
   .rewards-page {
-    padding: 1.5rem;
+    padding: 1.25rem;
   }
 
   .row-flex {
@@ -212,68 +844,26 @@ div.rewards-history-card.card-len{
   .rewards-total-card,
   .recognition-card {
     width: 100%;
+    flex: 1 1 auto;
   }
-  div.recognition-card div div.recognition-con,div.card-len div.recognition-con{
-  overflow: scroll;
-  height: 500px;
-
-}
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .rewards-page {
-    padding: 1rem;
+    padding: 0.85rem;
   }
 
-  .card {
-    padding: 1rem;
-    border-radius: 16px;
+  .rewards-header-wrapper .page-title {
+    font-size: 1.45rem;
   }
 
-  .recognition-box {
-    flex-direction: column;
-  }
-
-  .rewards-total-content {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .rewards-total-content h2 {
-    font-size: 1.7rem;
+  .recognition-badge-picker {
+    grid-template-columns: 1fr;
   }
 
   .rewards-table th,
   .rewards-table td {
-    font-size: 12px;
-    padding: 0.8rem;
-  }
-  div.recognition-card div div.recognition-con,div.card-len div.recognition-con{
-  overflow: scroll;
-  height: 500px;
-
-}
-}
-
-@media (max-width: 480px) {
-  .rewards-page {
-    padding: 0.8rem;
-  }
-div.recognition-card div div.recognition-con,div.card-len div.recognition-con{
-  overflow: scroll;
-  height: 500px;
-
-}
-  .card {
-    padding: 0.9rem;
-  }
-
-  .rewards-total-content h2 {
-    font-size: 1.5rem;
-  }
-
-  .recognition-box p,
-  .policy-card p {
-    font-size: 13px;
+    padding: 0.75rem 0.85rem;
+    font-size: 0.8rem;
   }
 }

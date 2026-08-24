@@ -1,18 +1,53 @@
 {
-  "pageTitle": "Rewards & Bonuses",
-  "totalRewardsTitle": "Total Rewards/Bonuses ({{year}})",
-  "receivedRecognition": "Received Recognition",
-  "noRecognitions": "No recognitions received yet.",
-  "historyTitle": "Rewards & Bonuses History",
+  "pageTitle": "Rewards & Professional Recognition",
+  "totalRewardsTitle": "Accumulated Rewards & Incentives ({{year}})",
+  "totalRewardsSubtitle": "Total validated earnings and performance bonuses for the current fiscal year",
+  "receivedRecognition": "Peer Recognition & Appreciation",
+  "sendRecognitionBtn": "Send Recognition Card",
+  "noRecognitions": "No recognition cards recorded yet. Be the first to appreciate a colleague's outstanding efforts.",
+  "historyTitle": "Rewards & Compensation Log",
   "table": {
-    "dateReceived": "DATE RECEIVED",
-    "rewardType": "REWARD/BONUS TYPE",
-    "amount": "AMOUNT/VALUE",
-    "reason": "REASON/DESCRIPTION",
-    "awardedBy": "AWARDED BY"
+    "dateReceived": "Effective Date",
+    "rewardType": "Reward Category",
+    "amount": "Disbursed Value",
+    "reason": "Achievement Justification",
+    "awardedBy": "Authorized By"
   },
-  "noRewards": "No rewards recorded yet.",
-  "policyTitle": "📋 Policy Information",
-  "policyText": "Our rewards and bonus program is designed to recognize the hard work and dedication of our employees. For detailed information on eligibility and criteria, please refer to the official",
-  "policyLink": "Company Rewards Policy document."
+  "noRewards": "No formal reward disbursements recorded for this account.",
+  "policyTitle": "Corporate Incentive & Recognition Policy",
+  "policyText": "Our recognition ecosystem celebrates exemplary performance, continuous dedication, and peer collaboration. For full criteria, evaluation standards, and disbursement terms, review the",
+  "policyLink": "Official Corporate Rewards Framework.",
+  "badges": {
+    "rockstar": "Excellence & High Performance",
+    "teamplayer": "Team Collaboration & Support",
+    "innovator": "Innovation & Proactive Initiative",
+    "leader": "Leadership & Impact",
+    "creative": "Creative Problem Solving"
+  },
+  "sendModal": {
+    "title": "Grant Recognition Card to a Colleague",
+    "colleagueLabel": "Select Colleague",
+    "colleaguePlaceholder": "-- Select a team member --",
+    "badgeLabel": "Recognition Distinction",
+    "messageLabel": "Citation & Message of Appreciation",
+    "messagePlaceholder": "Highlight their specific impact, dedication, or project contribution...",
+    "isPublicLabel": "Feature this recognition on the company-wide recognition board",
+    "cancel": "Discard",
+    "submit": "Submit Recognition",
+    "sending": "Submitting...",
+    "success": "Recognition card successfully delivered to your colleague!",
+    "error": "Unable to submit recognition card at this time. Please retry.",
+    "validationRequired": "Please select a team member and compose a recognition citation."
+  },
+  "policyModal": {
+    "title": "Corporate Recognition & Incentive Governance",
+    "intro": "This framework defines the formal guidelines governing performance-based bonuses, individual milestone rewards, and peer-to-peer recognition programs within the organization.",
+    "sec1Title": "1. Eligibility & Performance Metrics",
+    "sec1Text": "Active team members are eligible for incentives aligned with quarterly objectives, documented merit milestones, and exceptional leadership actions verified by department management.",
+    "sec2Title": "2. Reward Structures & Distinctions",
+    "sec2Text": "Recognition categories encompass merit bonuses, approved overtime premiums, specialized project allowances, and organizational peer commendation badges.",
+    "sec3Title": "3. Disbursement & Payroll Integration",
+    "sec3Text": "All monetary awards and approved overtime adjustments are seamlessly integrated into the monthly payroll disbursement following administrative sign-off.",
+    "close": "Close Framework"
+  }
 }
