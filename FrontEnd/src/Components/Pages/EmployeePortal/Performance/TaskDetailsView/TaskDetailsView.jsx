@@ -7,7 +7,7 @@ import ManagerNoteBox from '../../../../Shared/Performance/ManagerNoteBox/Manage
 import TaskScoreBreakdown from '../../../../Shared/Performance/TaskScoreBreakdown/TaskScoreBreakdown';
 import ThemeToggle from '../../../../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
-import { getTaskDetails, completeTask, startTask } from '../../../../../services/performanceService';
+import { getTaskDetails, completeTask } from '../../../../../services/performanceService';
 import { STORAGE_BASE_URL } from '../../../../../apiConfig';
 
 const TaskDetailsView = () => {
@@ -75,8 +75,8 @@ const TaskDetailsView = () => {
     if (loading) {
         return (
             <div className="task-details-container" style={{ textAlign: 'center', padding: '60px' }}>
-                <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2.5rem', color: '#6366f1' }}></i>
-                <p style={{ marginTop: '16px', color: '#64748b' }}>{t('loading')}</p>
+                <div className="spinner-border spinner-border-sm me-2" role="status"></div>
+                <p style={{ marginTop: '16px', color: 'var(--text-muted, #64748b)' }}>{t('loading')}</p>
             </div>
         );
     }
@@ -86,7 +86,7 @@ const TaskDetailsView = () => {
             <div className="task-details-container" style={{ textAlign: 'center', padding: '60px' }}>
                 <h2>{t('taskNotFound')}</h2>
                 <button className="btn-back" onClick={() => navigate('/portal/performance')} style={{ marginTop: '16px' }}>
-                    {t('backBtn')}
+                    <i className="bi bi-arrow-left me-1"></i> {t('backBtn')}
                 </button>
             </div>
         );
@@ -99,48 +99,48 @@ const TaskDetailsView = () => {
     const breakdownData = task.final_score !== null && task.final_score !== undefined ? {
         completionScore: task.completion_score ?? 100,
         qualityScore: task.quality_score ?? 100,
-        daysLate: task.days_late ?? 0,
-        penaltyPoints: task.penalty_points ?? 0,
-        finalScore: task.final_score
+        penaltyDeduction: task.penalty_points ?? 0,
+        finalGrade: task.final_score,
+        managerFeedback: task.manager_note,
+        reviewedAt: task.reviewed_at
     } : null;
 
     return (
         <div className={`task-details-container ${isAr ? 'rtl' : 'ltr'}`}>
             <div className="details-header-section">
-                <div className="title-block">
+                <div>
                     <h1>{t('title')}</h1>
                     <p className="subtitle">{t('subtitle')}</p>
                 </div>
-
-                <div className="sm-theme-toggle-wrapper">
-                    <ThemeToggle />
-                </div>
-
                 <button className="btn-back" onClick={() => navigate('/portal/performance')}>
-                    <i className="fa-solid fa-arrow-left"></i>
-                    {t('backBtn')}
+                    <i className="bi bi-arrow-left me-1"></i> {t('backBtn')}
                 </button>
             </div>
 
-            {task.due_date && <DeadlineAlert dueDate={task.due_date} lang={i18n.language} />}
+            <div className="sm-theme-toggle-wrapper">
+                <ThemeToggle />
+            </div>
 
             <div className="details-main-card">
                 <div className="card-header-flex">
                     <h2 className="main-task-title">{task.title}</h2>
-                    <span className={`status-revision-badge ${task.status}`}>
-                        STATUS: {task.status?.toUpperCase().replace('_', ' ')}
-                    </span>
+                    {isRevision && (
+                        <span className="status-revision-badge">
+                            <i className="bi bi-exclamation-triangle-fill me-1"></i> {t('revisionRequested')}
+                        </span>
+                    )}
                 </div>
 
+                <DeadlineAlert 
+                    dueDate={task.due_date} 
+                    isCompleted={isCompleted}
+                    penaltyPerDay={task.late_penalty_per_day}
+                    lang={i18n.language}
+                />
+
                 <div className="task-specifications-block">
-                    <h3>{t('specifications')}</h3>
-                    <p>{task.description || (isAr ? 'لا يوجد وصف مفصل لهذه المهمة.' : 'No detailed description provided.')}</p>
-                    
-                    <div style={{ display: 'flex', gap: '16px', marginTop: '12px', fontSize: '0.875rem', color: '#64748b' }}>
-                        {task.difficulty && <span><strong>{t('difficulty')}</strong> {task.difficulty}</span>}
-                        {task.priority && <span><strong>{t('priority')}</strong> {task.priority}</span>}
-                        {task.due_date && <span><strong>{t('dueDate')}</strong> {task.due_date}</span>}
-                    </div>
+                    <h3>{t('taskSpecs')}</h3>
+                    <p>{task.description || t('noDescription')}</p>
                 </div>
 
                 {task.manager_note && (
@@ -151,120 +151,115 @@ const TaskDetailsView = () => {
                     />
                 )}
 
-                {/* Show submission form only if active/progress or revision */}
-                {!isCompleted && !isPendingReview && (
-                    <form onSubmit={handleSubmit} className="submission-form">
-                        <div className="form-group">
-                            <label className="required-label">
-                                {t('submissionLabel')}
-                            </label>
-                            <textarea
-                                className="form-textarea"
-                                value={submissionText}
-                                onChange={(e) => setSubmissionText(e.target.value)}
-                                placeholder={t('submissionPlaceholder')}
-                                rows={5}
-                                required
-                            />
-                        </div>
+                {/* Submissions Section */}
+                <div className="submission-form">
+                    <h3>{t('deliverableSection')}</h3>
 
-                        <div className="form-group">
-                            <label>{t('attachFiles')}</label>
-                            <div className="file-upload-wrapper">
-                                <label className="file-upload-btn">
-                                    {t('chooseFile')}
+                    {isCompleted ? (
+                        <div className="submission-read-only">
+                            <div className="form-group">
+                                <label>{t('notesLabel')}</label>
+                                <div className="form-textarea" style={{ background: 'var(--bg-page, #f5f7f8)', minHeight: '80px' }}>
+                                    {task.submission_notes || t('noNotesSubmitted')}
+                                </div>
+                            </div>
+
+                            {task.attachment_path && (
+                                <div className="form-group">
+                                    <label>{t('attachmentLabel')}</label>
+                                    <div className="file-upload-wrapper">
+                                        <i className="bi bi-paperclip"></i>
+                                        <a 
+                                            href={`${STORAGE_BASE_URL}/${task.attachment_path}`} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="file-name-text"
+                                            style={{ color: 'var(--primary-color, #359EFF)', textDecoration: 'underline' }}
+                                        >
+                                            {t('downloadDeliverable')}
+                                        </a>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-group">
+                                <label className="required-label">{t('submissionNotes')}</label>
+                                <textarea
+                                    className="form-textarea"
+                                    rows="4"
+                                    placeholder={t('notesPlaceholder')}
+                                    value={submissionText}
+                                    onChange={(e) => setSubmissionText(e.target.value)}
+                                    required
+                                    disabled={submitting || isPendingReview}
+                                ></textarea>
+                            </div>
+
+                            <div className="form-group">
+                                <label>{t('attachment')}</label>
+                                <div className="file-upload-wrapper">
                                     <input
                                         type="file"
-                                        onChange={handleFileChange}
+                                        id="task-file-upload"
                                         style={{ display: 'none' }}
+                                        onChange={handleFileChange}
+                                        disabled={submitting || isPendingReview}
                                     />
-                                </label>
-                                <span className="file-name-text">
-                                    {selectedFile ? selectedFile.name : t('noFile')}
-                                </span>
+                                    <label htmlFor="task-file-upload" className="file-upload-btn">
+                                        <i className="bi bi-cloud-upload me-1"></i> {t('chooseFile')}
+                                    </label>
+                                    <span className="file-name-text">
+                                        {selectedFile ? selectedFile.name : (task.attachment_path ? t('existingFile') : t('noFileChosen'))}
+                                    </span>
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="form-actions-buttons">
-                            <button
-                                type="button"
-                                className="btn-cancel"
-                                onClick={() => navigate('/portal/performance')}
-                            >
-                                {t('cancel')}
-                            </button>
-                            <button 
-                                type="submit" 
-                                className="btn-submit-deliverable"
-                                disabled={submitting}
-                            >
-                                {submitting ? (
-                                    <i className="fa-solid fa-spinner fa-spin"></i>
-                                ) : (
-                                    <>
-                                        <i className="fa-solid fa-paper-plane"></i>
-                                        {isRevision ? t('resubmit') : t('submit')}
-                                    </>
-                                )}
-                            </button>
-                        </div>
-                    </form>
-                )}
+                            {!isPendingReview && (
+                                <div className="form-actions-buttons">
+                                    <button 
+                                        type="button" 
+                                        className="btn-cancel"
+                                        onClick={() => navigate('/portal/performance')}
+                                        disabled={submitting}
+                                    >
+                                        {t('cancel')}
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        className="btn-submit-deliverable"
+                                        disabled={submitting}
+                                    >
+                                        {submitting ? (
+                                            <>
+                                                <span className="spinner-border spinner-border-sm me-1"></span>
+                                                {t('submitting')}
+                                            </>
+                                        ) : (
+                                            <>
+                                                <i className="bi bi-send-fill me-1"></i>
+                                                {isRevision ? t('resubmitBtn') : t('submitBtn')}
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            )}
+                        </form>
+                    )}
+                </div>
 
-                {isPendingReview && (
-                    <div style={{ padding: '20px', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderRadius: '8px', marginTop: '20px', textAlign: 'center', color: '#2563eb' }}>
-                        <i className="fa-solid fa-clock" style={{ fontSize: '1.5rem', marginBottom: '8px', display: 'block' }}></i>
-                        <strong>{isAr ? 'تم تسليم المخرجات بنجاح، وهي الآن بانتظار اعتماد وتقييم المشرف.' : 'Deliverable submitted! Currently awaiting supervisor score & evaluation.'}</strong>
-                    </div>
-                )}
-
-                {(isPendingReview || isCompleted) && (task.submission_notes || task.attachment || task.attachment_url) && (
-                    <div className="task-deliverable-summary" style={{ marginTop: '20px', padding: '18px', background: 'var(--bg-page)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-                        <h4 style={{ fontSize: '15px', fontWeight: '700', color: 'var(--text-main)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <i className="fa-solid fa-file-circle-check" style={{ color: '#10b981' }}></i>
-                            {isAr ? 'بيانات ومرفقات التسليم' : 'Submitted Deliverable & Attachments'}
-                        </h4>
-                        {task.submission_notes && (
-                            <div style={{ marginBottom: '12px', fontSize: '14px', color: 'var(--text-secondary)', whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
-                                <strong style={{ color: 'var(--text-main)', display: 'block', marginBottom: '4px' }}>
-                                    {isAr ? 'ملاحظات التسليم:' : 'Submission Notes:'}
-                                </strong>
-                                {task.submission_notes}
-                            </div>
-                        )}
-                        {(task.attachment_url || task.attachment) && (
-                            <div style={{ marginTop: '12px' }}>
-                                <a
-                                    href={task.attachment_url || `${STORAGE_BASE_URL}/${task.attachment}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="btn btn-outline-primary btn-sm"
-                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 14px', borderRadius: '8px', background: 'rgba(53, 158, 255, 0.1)', color: 'var(--primary-color)', textDecoration: 'none', border: '1px solid rgba(53, 158, 255, 0.25)', fontWeight: '600', fontSize: '13px' }}
-                                >
-                                    <i className="fa-solid fa-paperclip"></i>
-                                    {isAr ? 'تحميل / معاينة الملف المرفق' : 'Download / View Attached File'}
-                                </a>
-                            </div>
-                        )}
+                {/* Score Breakdown when graded */}
+                {breakdownData && (
+                    <div className="grades-breakdown-section">
+                        <h3 className="section-title-secondary">{t('gradeBreakdown')}</h3>
+                        <TaskScoreBreakdown 
+                            data={breakdownData} 
+                            lang={i18n.language}
+                        />
                     </div>
                 )}
             </div>
-
-            {breakdownData && (
-                <div className="grades-breakdown-section">
-                    <h3 className="section-title-secondary">
-                        {t('breakdownTitle')}
-                    </h3>
-                    <TaskScoreBreakdown 
-                        completionScore={breakdownData.completionScore}
-                        qualityScore={breakdownData.qualityScore}
-                        daysLate={breakdownData.daysLate}
-                        totalPenalty={breakdownData.penaltyPoints}
-                        finalScore={breakdownData.finalScore}
-                        lang={i18n.language}
-                    />
-                </div>
-            )}
         </div>
     );
 };
