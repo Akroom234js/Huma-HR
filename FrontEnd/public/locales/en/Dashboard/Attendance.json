@@ -12,8 +12,18 @@
         "avgHours": "Average Working Hours",
         "latenessCount": "Total Lateness Count"
     },
+    "settingsHub": {
+        "badge": "Settings & Policies",
+        "title": "Attendance Configuration & Policies",
+        "subtitle": "Configure departmental shift hours, grace periods, and GPS geofenced office branches",
+        "tabWorkHours": "Department Work Hours",
+        "tabGeofencing": "Geofencing & Locations",
+        "hideSettings": "Close Settings",
+        "showSettings": "Configure Settings",
+        "noDepartments": "No departments created yet. Please add departments in Department Management to configure work hours."
+    },
     "workHours": {
-        "sectionTitle": "Work Hours Settings",
+        "sectionTitle": "Department Work Hours",
         "sectionSubtitle": "Configure daily work hours and grace period per department",
         "startTime": "Start Time",
         "endTime": "End Time",
@@ -23,7 +33,48 @@
         "edit": "Edit",
         "save": "Save",
         "cancel": "Cancel",
-        "saved": "Saved"
+        "saved": "Saved",
+        "errorSave": "Failed to update department work hours. Please verify input values and connection."
+    },
+    "geofencing": {
+        "sectionTitle": "Geofencing & Office Locations",
+        "sectionSubtitle": "Set geographical coordinates for company branches and allowed attendance radius",
+        "searchPlaceholder": "Search city, district, or street name on map...",
+        "searchBtn": "Search Location",
+        "searching": "Searching...",
+        "clickMapHint": "Click on map to automatically set Latitude & Longitude:",
+        "branchName": "Branch / Location Name",
+        "branchNamePlaceholder": "e.g. Main Office...",
+        "latitude": "Latitude",
+        "latitudePlaceholder": "e.g. 33.5138...",
+        "longitude": "Longitude",
+        "longitudePlaceholder": "e.g. 36.2765...",
+        "radius": "Allowed Radius (Meters)",
+        "addBranchBtn": "Add Location",
+        "savingBranch": "Saving...",
+        "table": {
+            "branchName": "Branch Name",
+            "latitude": "Latitude",
+            "longitude": "Longitude",
+            "radius": "Allowed Radius",
+            "status": "Status",
+            "actions": "Actions",
+            "meters": "meters",
+            "active": "Active",
+            "inactive": "Disabled",
+            "delete": "Delete",
+            "noLocations": "No office locations registered yet. Use the form above to add your first branch!"
+        },
+        "alerts": {
+            "enterSearch": "Please enter a place name to search.",
+            "found": "Location found: ",
+            "notFound": "Location not found. Please try a more specific query.",
+            "searchFailed": "Location search failed. Please check internet connectivity.",
+            "fillAll": "Please fill all required location fields.",
+            "addedSuccess": "Office location added successfully!",
+            "failedAdd": "Failed to save location. Please check server connection.",
+            "confirmDelete": "Are you sure you want to delete this office branch location?"
+        }
     },
     "table": {
         "title": "Attendance Table",
@@ -51,5 +102,7 @@
         "Fri": "Fri",
         "Sat": "Sat",
         "Sun": "Sun"
-    }
+    },
+    "loading": "Loading attendance records...",
+    "error": "Error connecting to the server."
 }

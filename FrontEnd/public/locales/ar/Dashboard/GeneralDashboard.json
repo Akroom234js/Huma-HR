@@ -4,9 +4,10 @@
     "newthismonth":"جديد هذا الشهر",
     "High":"مرتفع",
     "Low":"منخفض",
+    "PerformanceRate": "معدل الأداء",
     "DailyAttendancePercentage":"نسبة الحضور اليومية",
     "EmployeesonLeaveToday":"الموظفين الذين في إجازة اليوم",
-       "OvertimeHours":"ساعات العمل الإضافي ",
+    "OvertimeHours":"ساعات العمل الإضافي ",
     "fromlastmonth":" من الشهر الماضي",
     "MonthlySalaryCost":"تكلفة الراتب الشهري",
     "Approx":"تقريبًا",
@@ -22,6 +23,12 @@
     "Attendance":"حضور",
     "Productivity":"إنتاجية",
     "JobSatisfaction":"الرضا الوظيفي",
+    "Job Satisfaction": "الرضا الوظيفي",
     "ThisMonth":"هذا الشهر",
-    "LastMonth":"الشهر الماضي"
+    "LastMonth":"الشهر الماضي",
+    "Total": "الإجمالي",
+    "Sick": "مرضي",
+    "Annual": "سنوي",
+    "loading": "جاري التحميل...",
+    "error_loading": "فشل تحميل بيانات لوحة التحكم"
 }
