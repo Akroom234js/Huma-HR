@@ -15,6 +15,7 @@ i18n
 
 		ns: [
 			'Sidebar/Sidebar',
+			'Dashboard/GeneralDashboard',
 			'EmployeeMovement/EmployeeMovement',
 			'SalaryManagement/SalaryStructure',
 			'Dashboard/EmployeeReports',

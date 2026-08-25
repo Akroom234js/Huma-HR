@@ -130,6 +130,8 @@ class DashboardController extends Controller
                     'new_this_month'               => $newThisMonth ?: 5,
                     'performance_rate'             => $performanceRate,
                     'employees_on_leave_today'      => $leavesTodayCount ?: 8,
+                    'sick_leaves_count'            => $sickLeavesCount,
+                    'annual_leaves_count'          => $annualLeavesCount,
                     'leave_breakdown'              => $leaveBreakdown,
                     'overtime_hours'               => round($overtimeHours),
                     'overtime_growth_percent'      => 2,
