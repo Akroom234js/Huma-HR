@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 class AIResumeEvaluationService
 {
     private string $apiKey;
-    private string $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+    private string $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
     public function __construct()
     {
