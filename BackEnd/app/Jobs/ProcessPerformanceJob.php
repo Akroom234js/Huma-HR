@@ -12,6 +12,7 @@ use App\Models\DepartmentHour;
 use App\Services\TaskPerformanceService;
 use App\Services\PeerEvaluationService;
 use App\Services\ManagerEvaluationService;
+use App\Services\AIPerformanceCoachingService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -24,6 +25,7 @@ use Carbon\Carbon;
 class ProcessPerformanceJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    
 
     public int $tries   = 3;
     public int $timeout = 300;
@@ -33,7 +35,8 @@ class ProcessPerformanceJob implements ShouldQueue
     public function handle(
         TaskPerformanceService    $taskService,
         PeerEvaluationService     $peerService,
-        ManagerEvaluationService  $managerService
+        ManagerEvaluationService  $managerService,
+        AIPerformanceCoachingService $aiCoachingService
     ): void {
         Log::info("ProcessPerformanceJob: Starting for cycle #{$this->cycle->id} — {$this->cycle->title}");
 
@@ -59,9 +62,7 @@ class ProcessPerformanceJob implements ShouldQueue
 
         foreach ($employees as $employee) {
             try {
-                DB::transaction(function () use ($employee, $components, $taskService, $managerService, $peerScores) {
-                    $this->processEmployee($employee, $components, $taskService, $managerService, $peerScores);
-                });
+                $this->processEmployee($employee, $components, $taskService, $managerService, $peerScores, $aiCoachingService);
             } catch (\Exception $e) {
                 Log::error("ProcessPerformanceJob: Failed for employee #{$employee->id}: " . $e->getMessage());
             }
@@ -77,7 +78,8 @@ class ProcessPerformanceJob implements ShouldQueue
         \Illuminate\Support\Collection $components,
         TaskPerformanceService   $taskService,
         ManagerEvaluationService $managerService,
-        array $peerScores
+        array $peerScores,
+        AIPerformanceCoachingService $aiCoachingService
     ): void {
         $startDate = Carbon::parse($this->cycle->start_date);
         $endDate   = Carbon::parse($this->cycle->end_date);
@@ -141,65 +143,62 @@ class ProcessPerformanceJob implements ShouldQueue
 
         $decision = $this->determineDecision($finalScore);
 
-        // توليد التوصيات والتحليل بالذكاء الاصطناعي بناءً على نقاط القوة والفجوات
-        $aiAnalysis = [
-            'technical_rating' => $taskScore >= 80 ? 'Proficient' : 'Developing',
-            'leadership_rating' => $managerScore >= 80 ? 'High' : 'Moderate',
-            'collaboration_rating' => $peerScore >= 80 ? 'Exemplary' : 'Standard',
-            'peer_summary' => "Demonstrates strong initiative, high reliability in delivery, and consistent collaboration across engineering milestones.",
+        // ── استدعاء AI Coaching — خارج أي DB transaction (شبكة خارجية) ── //
+        $componentLabels = [
+            'tasks'      => 'Task Completion',
+            'manager'    => 'Manager Evaluation',
+            'peer'       => 'Peer Collaboration',
+            'attendance' => 'Attendance',
+            'overtime'   => 'Overtime Contribution',
         ];
 
-        $aiRecommendations = [
-            [
-                'title'          => 'Advanced Systems & Architecture Mastery',
-                'course_name'    => 'Agile & Performance Mastery',
-                'description'    => 'Targeted technical training focusing on high-scalability workflows and best practices.',
-                'matching_score' => 94,
-            ],
-            [
-                'title'          => 'Strategic Collaboration & Cross-Functional Delivery',
-                'course_name'    => 'Collaborative Leadership in Tech',
-                'description'    => 'Enhance communication, asynchronous collaboration, and cross-team productivity.',
-                'matching_score' => 88,
-            ]
-        ];
-
-        // حفظ التقييم النهائي
-        $evaluation = PerformanceEvaluation::updateOrCreate(
-            [
-                'performance_cycle_id' => $this->cycle->id,
-                'employee_profile_id'  => $employee->id,
-            ],
-            [
-                'department_id'      => $employee->department_id,
-                'employment_status'  => $employee->employment_status,
-                'tasks_score'        => $taskScore,
-                'manager_score'      => $managerScore,
-                'peer_score'         => $peerScore,
-                'attendance_score'   => $attendanceScore,
-                'overtime_score'     => $overtimeScore,
-                'self_score'         => $selfScore,
-                'final_score'        => $finalScore,
-                'status'             => 'evaluated',
-                'ai_analysis'        => $aiAnalysis,
-                'ai_recommendations' => $aiRecommendations,
-                'evaluated_at'       => now(),
-            ]
+        $aiResult = $aiCoachingService->analyzeAndRecommend(
+            $scoreMap,
+            $componentLabels,
+            $employee->job_title ?? 'Employee'
         );
 
-        if (! PerformanceAction::where('performance_evaluation_id', $evaluation->id)->exists()) {
-            $hrProfile = EmployeeProfile::whereHas('user', function ($q) {
-                $q->whereHas('roles', fn($r) => $r->where('name', 'hr')->where('guard_name', 'api'));
-            })->first();
+        $aiAnalysis = $aiResult['analysis'];
+        $aiRecommendations = $aiResult['recommendations'];
 
-            PerformanceAction::create([
-                'performance_evaluation_id' => $evaluation->id,
-                'action_type'               => $this->decisionToActionType($decision),
-                'details'                   => "Auto-generated. Final score: {$finalScore}. Decision: {$decision}.",
-                'status'                    => 'pending_approval',
-                'created_by'                => $hrProfile?->id ?? $employee->manager_id,
-            ]);
-        }
+        // ── من هون لتحت: DB transaction قصيرة. writes فقط، بدون أي استدعاء شبكة ── //
+        DB::transaction(function () use ($employee, $taskScore, $managerScore, $peerScore, $attendanceScore, $overtimeScore, $selfScore, $finalScore, $decision, $aiAnalysis, $aiRecommendations) {
+            $evaluation = PerformanceEvaluation::updateOrCreate(
+                [
+                    'performance_cycle_id' => $this->cycle->id,
+                    'employee_profile_id'  => $employee->id,
+                ],
+                [
+                    'department_id'      => $employee->department_id,
+                    'employment_status'  => $employee->employment_status,
+                    'tasks_score'        => $taskScore,
+                    'manager_score'      => $managerScore,
+                    'peer_score'         => $peerScore,
+                    'attendance_score'   => $attendanceScore,
+                    'overtime_score'     => $overtimeScore,
+                    'self_score'         => $selfScore,
+                    'final_score'        => $finalScore,
+                    'status'             => 'evaluated',
+                    'ai_analysis'        => $aiAnalysis,
+                    'ai_recommendations' => $aiRecommendations,
+                    'evaluated_at'       => now(),
+                ]
+            );
+
+            if (! PerformanceAction::where('performance_evaluation_id', $evaluation->id)->exists()) {
+                $hrProfile = EmployeeProfile::whereHas('user', function ($q) {
+                    $q->whereHas('roles', fn($r) => $r->where('name', 'hr')->where('guard_name', 'api'));
+                })->first();
+
+                PerformanceAction::create([
+                    'performance_evaluation_id' => $evaluation->id,
+                    'action_type'               => $this->decisionToActionType($decision),
+                    'details'                   => "Auto-generated. Final score: {$finalScore}. Decision: {$decision}.",
+                    'status'                    => 'pending_approval',
+                    'created_by'                => $hrProfile?->id ?? $employee->manager_id,
+                ]);
+            }
+        });
 
         Log::info("ProcessPerformanceJob: Employee #{$employee->id} — final_score: {$finalScore} — decision: {$decision}");
     }
