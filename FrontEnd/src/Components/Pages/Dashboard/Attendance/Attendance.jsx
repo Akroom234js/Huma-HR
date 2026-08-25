@@ -10,8 +10,6 @@ import 'leaflet/dist/leaflet.css';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-
-
 const calcHours = (start, end) => {
     if (!start || !end || !String(start).includes(':') || !String(end).includes(':')) return '—';
     const [sh, sm] = String(start).split(':').map(Number);
@@ -22,7 +20,6 @@ const calcHours = (start, end) => {
     const m = diff % 60;
     return m > 0 ? `${h}h ${m}m` : `${h}h`;
 };
-
 
 const Accordion = ({ open, children }) => {
     const innerRef = useRef(null);
@@ -55,7 +52,8 @@ const Accordion = ({ open, children }) => {
 };
 
 const Attendance = () => {
-    const { t } = useTranslation('Dashboard/Attendance');
+    const { t, i18n } = useTranslation('Dashboard/Attendance');
+    const isAr = i18n?.language === 'ar';
 
     const [attendanceRecords, setAttendanceRecords] = useState([]);
     const [attendanceStats, setAttendanceStats] = useState({
@@ -75,12 +73,16 @@ const Attendance = () => {
     const attendanceAbortRef = useRef(null);
     const attendanceFirstRender = useRef(true);
 
-    const [showWorkHours, setShowWorkHours] = useState(false);
+    // Settings Hub State
+    const [showSettingsHub, setShowSettingsHub] = useState(false);
+    const [activeSettingsTab, setActiveSettingsTab] = useState('workHours'); // 'workHours' | 'geofencing'
+
+    // Department Hours State
     const [deptHours, setDeptHours]         = useState([]);
     const [editingDept, setEditingDept]     = useState(null);
     const [saved, setSaved]                 = useState(null);
 
-    const [showLocations, setShowLocations] = useState(false);
+    // Geofencing Locations State
     const [officeLocations, setOfficeLocations] = useState([]);
     const [locName, setLocName] = useState('');
     const [locLat, setLocLat] = useState('');
@@ -142,7 +144,7 @@ const Attendance = () => {
                 setAttendanceRecords(records);
             } else {
                 setAttendanceRecords([]);
-                setAttendanceError(result.message || 'Failed to fetch attendance records.');
+                setAttendanceError(result.message || t('error'));
             }
         } catch (error) {
             if (error?.name === 'CanceledError' || error?.code === 'ERR_CANCELED') {
@@ -153,7 +155,7 @@ const Attendance = () => {
             setAttendanceError(
                 error?.response?.data?.message ||
                 error?.message ||
-                'Error connecting to the server.'
+                t('error')
             );
         } finally {
             if (!controller.signal.aborted) {
@@ -238,17 +240,14 @@ const Attendance = () => {
     };
 
     useEffect(() => {
-        if (showLocations && mapRef.current) {
+        if (showSettingsHub && activeSettingsTab === 'geofencing' && mapRef.current) {
             const timer = setTimeout(() => {
                 if (!mapInstance.current && mapRef.current) {
-                    const defaultSyriaLat = 34.8021;
-                    const defaultSyriaLon = 38.9968;
+                    const defaultLat = parseFloat(locLat) || 33.5138;
+                    const defaultLon = parseFloat(locLon) || 36.2765;
+                    const startZoom = (locLat && locLon) ? 13 : 8; 
 
-                    const startLat = parseFloat(locLat) || defaultSyriaLat;
-                    const startLon = parseFloat(locLon) || defaultSyriaLon;
-                    const startZoom = (locLat && locLon) ? 13 : 7; 
-
-                    mapInstance.current = L.map(mapRef.current).setView([startLat, startLon], startZoom);
+                    mapInstance.current = L.map(mapRef.current).setView([defaultLat, defaultLon], startZoom);
                     
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         attribution: '&copy; OpenStreetMap contributors'
@@ -261,41 +260,30 @@ const Attendance = () => {
                     });
 
                     if (locLat && locLon) {
-                        updateMarker(startLat, startLon, locRadius);
-                    } else {
-                        if (navigator.geolocation) {
-                            navigator.geolocation.getCurrentPosition(
-                                (position) => {
-                                    const { latitude, longitude } = position.coords;
-                                    setLocLat(latitude.toFixed(6));
-                                    setLocLon(longitude.toFixed(6));
-                                    if (mapInstance.current) {
-                                        mapInstance.current.setView([latitude, longitude], 15);
-                                        updateMarker(latitude, longitude, locRadius);
-                                    }
-                                },
-                                (error) => {
-                                    console.log("GPS permission denied or unavailable. Fallback to Syria center.");
-                                },
-                                { enableHighAccuracy: true, timeout: 6000 }
-                            );
-                        }
+                        updateMarker(defaultLat, defaultLon, locRadius);
+                    } else if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                            (position) => {
+                                const { latitude, longitude } = position.coords;
+                                setLocLat(latitude.toFixed(6));
+                                setLocLon(longitude.toFixed(6));
+                                if (mapInstance.current) {
+                                    mapInstance.current.setView([latitude, longitude], 15);
+                                    updateMarker(latitude, longitude, locRadius);
+                                }
+                            },
+                            () => {},
+                            { enableHighAccuracy: true, timeout: 6000 }
+                        );
                     }
+                } else if (mapInstance.current) {
+                    mapInstance.current.invalidateSize();
                 }
             }, 300);
 
-            return () => {
-                clearTimeout(timer);
-            };
-        } else {
-            if (mapInstance.current) {
-                mapInstance.current.remove();
-                mapInstance.current = null;
-                markerRef.current = null;
-                circleRef.current = null;
-            }
+            return () => clearTimeout(timer);
         }
-    }, [showLocations]);
+    }, [showSettingsHub, activeSettingsTab]);
 
     useEffect(() => {
         if (mapInstance.current && locLat && locLon && locRadius) {
@@ -340,7 +328,7 @@ const Attendance = () => {
     const handleSearchLocation = async (e) => {
         if (e) e.preventDefault();
         if (!searchQuery || !searchQuery.trim()) {
-            alert("يرجى إدخال اسم مكان للبحث عنه");
+            alert(t('geofencing.alerts.enterSearch'));
             return;
         }
         setIsSearchingMap(true);
@@ -360,13 +348,13 @@ const Attendance = () => {
                     mapInstance.current.setView(position, 15);
                     updateMarker(parsedLat, parsedLon, locRadius);
                 }
-                alert(`تم العثور على: ${display_name}`);
+                alert(`${t('geofencing.alerts.found')}${display_name}`);
             } else {
-                alert("لم يتم العثور على الموقع المطلوب، يرجى كتابة اسم آخر أو مكان أدق.");
+                alert(t('geofencing.alerts.notFound'));
             }
         } catch (error) {
             console.error("Geocoding failed", error);
-            alert("فشل البحث عن الموقع، يرجى التحقق من الاتصال بالإنترنت والمحاولة مجدداً.");
+            alert(t('geofencing.alerts.searchFailed'));
         } finally {
             setIsSearchingMap(false);
         }
@@ -375,7 +363,7 @@ const Attendance = () => {
     const handleAddLocation = async (e) => {
         e.preventDefault();
         if (!locName || !locLat || !locLon || !locRadius) {
-            alert("يرجى ملء جميع الحقول المطلوبة");
+            alert(t('geofencing.alerts.fillAll'));
             return;
         }
         setIsSavingLoc(true);
@@ -401,22 +389,14 @@ const Attendance = () => {
                 circleRef.current = null;
             }
             if (mapInstance.current) {
-                mapInstance.current.setView([34.8021, 38.9968], 7);
+                mapInstance.current.setView([33.5138, 36.2765], 8);
             }
 
             fetchLocations();
-            alert("تم إضافة موقع الفرع بنجاح!");
+            alert(t('geofencing.alerts.addedSuccess'));
         } catch (error) {
             console.error("Failed to save location", error);
-            const serverMsg = error.response?.data?.message || error.response?.data?.error || "";
-            const validationErrors = error.response?.data?.errors;
-            let detail = "";
-            if (validationErrors && typeof validationErrors === 'object') {
-                detail = Object.values(validationErrors).flat().join(" | ");
-            } else if (validationErrors) {
-                detail = String(validationErrors);
-            }
-            alert(`فشل إضافة الموقع الجغرافي: ${serverMsg} ${detail ? `(${detail})` : ''}. يرجى التحقق من الاتصال بالخادم وقيم الحقول المدخلة.`);
+            alert(t('geofencing.alerts.failedAdd'));
         } finally {
             setIsSavingLoc(false);
         }
@@ -434,7 +414,7 @@ const Attendance = () => {
     };
 
     const handleDeleteLocation = async (id) => {
-        if (!window.confirm("هل أنت متأكد من حذف موقع هذا الفرع؟")) return;
+        if (!window.confirm(t('geofencing.alerts.confirmDelete'))) return;
         try {
             await apiClient.delete(`/office-locations/${id}`);
             fetchLocations();
@@ -488,7 +468,7 @@ const Attendance = () => {
             fetchDepartmentHours();
         } catch (error) {
             console.error("Failed to update department work hours", error);
-            alert("فشل حفظ إعدادات ساعات العمل للقسم. يرجى التحقق من القيم المدخلة والاتصال بالخادم.");
+            alert(t('workHours.errorSave'));
         }
     };
 
@@ -533,7 +513,7 @@ const Attendance = () => {
     ];
 
     return (
-        <div className="at-page">
+        <div className={`at-page ${isAr ? 'rtl' : 'ltr'}`}>
 
             <div className="at-theme-toggle-wrapper">
                 <ThemeToggle />
@@ -542,8 +522,8 @@ const Attendance = () => {
             <header className="at-header">
                 <h1 className="at-title">{t('title')}</h1>
             </header>
-
             
+            {/* Stats Row */}
             <div className="at-stats-row">
                 {stats.map((s, i) => (
                     <div key={i} className="at-stat-card">
@@ -553,280 +533,327 @@ const Attendance = () => {
                 ))}
             </div>
 
-            <div className="at-workhours-card">
-                <button
-                    className="at-workhours-toggle"
-                    onClick={() => setShowWorkHours(v => !v)}
-                    aria-expanded={showWorkHours}
-                >
-                    <div className="at-workhours-toggle-left">
-                        <span className="material-symbols-outlined at-wh-icon">schedule</span>
+            {/* ══════════════════════════════════════════════════════════════════
+                ✨ UNIFIED ATTENDANCE CONFIGURATION & POLICIES HUB (Clean & Clear UX)
+               ══════════════════════════════════════════════════════════════════ */}
+            <div className="at-settings-hub-card">
+                <div className="at-settings-hub-header">
+                    <div className="at-settings-hub-header-left">
+                        <div className="at-settings-hub-icon-wrapper">
+                            <span className="material-symbols-outlined at-settings-main-icon">tune</span>
+                        </div>
                         <div>
-                            <span className="at-workhours-title">{t('workHours.sectionTitle')}</span>
-                            <span className="at-workhours-subtitle">{t('workHours.sectionSubtitle')}</span>
+                            <div className="at-settings-hub-title-row">
+                                <span className="at-settings-hub-title">{t('settingsHub.title')}</span>
+                                <span className="at-settings-hub-badge">{t('settingsHub.badge')}</span>
+                            </div>
+                            <span className="at-settings-hub-subtitle">{t('settingsHub.subtitle')}</span>
                         </div>
                     </div>
-                    <span className={`material-symbols-outlined at-wh-chevron ${showWorkHours ? 'open' : ''}`}>
-                        expand_more
-                    </span>
-                </button>
 
-                <Accordion open={showWorkHours}>
-                    <div className="at-workhours-body">
-                        {deptHours.length === 0 ? (
-                            <div style={{ textAlign: 'center', padding: '30px', color: '#888', direction: 'rtl', width: '100%' }}>
-                                ⚠️ لم يتم إنشاء أي أقسام في الشركة بعد. يرجى إضافة الأقسام أولاً في صفحة إدارة الأقسام لتتمكن من ضبط ساعات العمل الخاصة بها.
-                            </div>
-                        ) : (
-                            deptHours.map(d => {
-                                const isEditing = editingDept === d.dept;
-                                const justSaved = saved === d.dept;
-                                return (
-                                    <div key={d.dept} className={`at-dept-row ${isEditing ? 'editing' : ''}`}>
+                    <button
+                        type="button"
+                        className={`at-settings-toggle-btn ${showSettingsHub ? 'active' : ''}`}
+                        onClick={() => setShowSettingsHub(v => !v)}
+                        aria-expanded={showSettingsHub}
+                    >
+                        <span className="material-symbols-outlined">
+                            {showSettingsHub ? 'expand_less' : 'settings'}
+                        </span>
+                        <span>{showSettingsHub ? t('settingsHub.hideSettings') : t('settingsHub.showSettings')}</span>
+                    </button>
+                </div>
 
-                                        <div className="at-dept-name">
-                                            <span className="material-symbols-outlined at-dept-icon">corporate_fare</span>
-                                            <span>{d.dept}</span>
-                                        </div>
+                <Accordion open={showSettingsHub}>
+                    <div className="at-settings-hub-body">
+                        {/* Segmented Tab Navigation */}
+                        <div className="at-settings-tabs-bar">
+                            <button
+                                type="button"
+                                className={`at-settings-tab-btn ${activeSettingsTab === 'workHours' ? 'active' : ''}`}
+                                onClick={() => setActiveSettingsTab('workHours')}
+                            >
+                                <span className="material-symbols-outlined">schedule</span>
+                                <span>{t('settingsHub.tabWorkHours')}</span>
+                            </button>
+                            <button
+                                type="button"
+                                className={`at-settings-tab-btn ${activeSettingsTab === 'geofencing' ? 'active' : ''}`}
+                                onClick={() => setActiveSettingsTab('geofencing')}
+                            >
+                                <span className="material-symbols-outlined">pin_drop</span>
+                                <span>{t('settingsHub.tabGeofencing')}</span>
+                            </button>
+                        </div>
 
-                                        <div className="at-dept-field">
-                                            <label className="at-field-label">{t('workHours.startTime')}</label>
-                                            <input type="time" className="at-time-input" value={d.startTime}
-                                                disabled={!isEditing}
-                                                onChange={e => handleHourChange(d.dept, 'startTime', e.target.value)} />
-                                        </div>
-
-                                        <div className="at-dept-field">
-                                            <label className="at-field-label">{t('workHours.endTime')}</label>
-                                            <input type="time" className="at-time-input" value={d.endTime}
-                                                disabled={!isEditing}
-                                                onChange={e => handleHourChange(d.dept, 'endTime', e.target.value)} />
-                                        </div>
-
-                                        <div className="at-dept-field">
-                                            <label className="at-field-label">{t('workHours.totalHours')}</label>
-                                            <span className="at-total-hours">{calcHours(d.startTime, d.endTime)}</span>
-                                        </div>
-
-                                        <div className="at-dept-field">
-                                            <label className="at-field-label">{t('workHours.gracePeriod')}</label>
-                                            <input type="number" min="0" max="60" className="at-grace-input"
-                                                value={d.gracePeriod} disabled={!isEditing}
-                                                onChange={e => handleHourChange(d.dept, 'gracePeriod', e.target.value)} />
-                                        </div>
-
-                                        <div className="at-dept-field at-dept-days-field">
-                                            <label className="at-field-label">{t('workHours.workDays')}</label>
-                                            <div className="at-days-pills">
-                                                {WEEKDAYS.map(day => (
-                                                    <button key={day}
-                                                        className={`at-day-pill ${d.workDays.includes(day) ? 'active' : ''} ${!isEditing ? 'readonly' : ''}`}
-                                                        onClick={() => isEditing && toggleDay(d.dept, day)}
-                                                        disabled={!isEditing}
-                                                        title={t(`days.${day}`)}>
-                                                        {t(`days.${day}`)}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        <div className="at-dept-actions">
-                                            {isEditing ? (
-                                                <>
-                                                    <button className="at-btn-save" onClick={() => handleSave(d.dept)}>
-                                                        <span className="material-symbols-outlined">check</span>
-                                                        {t('workHours.save')}
-                                                    </button>
-                                                    <button className="at-btn-cancel" onClick={() => setEditingDept(null)}>
-                                                        {t('workHours.cancel')}
-                                                    </button>
-                                                </>
-                                            ) : (
-                                                <button className={`at-btn-edit ${justSaved ? 'saved' : ''}`}
-                                                    onClick={() => setEditingDept(d.dept)}>
-                                                    {justSaved
-                                                        ? <><span className="material-symbols-outlined">check_circle</span>{t('workHours.saved')}</>
-                                                        : <><span className="material-symbols-outlined">edit</span>{t('workHours.edit')}</>
-                                                    }
-                                                </button>
-                                            )}
-                                        </div>
+                        {/* 🕒 TAB 1: Department Work Hours */}
+                        {activeSettingsTab === 'workHours' && (
+                            <div className="at-settings-tab-pane">
+                                {deptHours.length === 0 ? (
+                                    <div className="at-empty-dept-alert">
+                                        ⚠️ {t('settingsHub.noDepartments')}
                                     </div>
-                                );
-                            })
+                                ) : (
+                                    deptHours.map(d => {
+                                        const isEditing = editingDept === d.dept;
+                                        const justSaved = saved === d.dept;
+                                        return (
+                                            <div key={d.dept} className={`at-dept-row ${isEditing ? 'editing' : ''}`}>
+                                                <div className="at-dept-name">
+                                                    <span className="material-symbols-outlined at-dept-icon">corporate_fare</span>
+                                                    <span>{d.dept}</span>
+                                                </div>
+
+                                                <div className="at-dept-field">
+                                                    <label className="at-field-label">{t('workHours.startTime')}</label>
+                                                    <input
+                                                        type="time"
+                                                        className="at-time-input"
+                                                        value={d.startTime}
+                                                        disabled={!isEditing}
+                                                        onChange={e => handleHourChange(d.dept, 'startTime', e.target.value)}
+                                                    />
+                                                </div>
+
+                                                <div className="at-dept-field">
+                                                    <label className="at-field-label">{t('workHours.endTime')}</label>
+                                                    <input
+                                                        type="time"
+                                                        className="at-time-input"
+                                                        value={d.endTime}
+                                                        disabled={!isEditing}
+                                                        onChange={e => handleHourChange(d.dept, 'endTime', e.target.value)}
+                                                    />
+                                                </div>
+
+                                                <div className="at-dept-field">
+                                                    <label className="at-field-label">{t('workHours.totalHours')}</label>
+                                                    <span className="at-total-hours">{calcHours(d.startTime, d.endTime)}</span>
+                                                </div>
+
+                                                <div className="at-dept-field">
+                                                    <label className="at-field-label">{t('workHours.gracePeriod')}</label>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        max="60"
+                                                        className="at-grace-input"
+                                                        value={d.gracePeriod}
+                                                        disabled={!isEditing}
+                                                        onChange={e => handleHourChange(d.dept, 'gracePeriod', e.target.value)}
+                                                    />
+                                                </div>
+
+                                                <div className="at-dept-field at-dept-days-field">
+                                                    <label className="at-field-label">{t('workHours.workDays')}</label>
+                                                    <div className="at-days-pills">
+                                                        {WEEKDAYS.map(day => (
+                                                            <button
+                                                                key={day}
+                                                                type="button"
+                                                                className={`at-day-pill ${d.workDays.includes(day) ? 'active' : ''} ${!isEditing ? 'readonly' : ''}`}
+                                                                onClick={() => isEditing && toggleDay(d.dept, day)}
+                                                                disabled={!isEditing}
+                                                                title={t(`days.${day}`)}
+                                                            >
+                                                                {t(`days.${day}`)}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                <div className="at-dept-actions">
+                                                    {isEditing ? (
+                                                        <>
+                                                            <button type="button" className="at-btn-save" onClick={() => handleSave(d.dept)}>
+                                                                <span className="material-symbols-outlined">check</span>
+                                                                {t('workHours.save')}
+                                                            </button>
+                                                            <button type="button" className="at-btn-cancel" onClick={() => setEditingDept(null)}>
+                                                                {t('workHours.cancel')}
+                                                            </button>
+                                                        </>
+                                                    ) : (
+                                                        <button
+                                                            type="button"
+                                                            className={`at-btn-edit ${justSaved ? 'saved' : ''}`}
+                                                            onClick={() => setEditingDept(d.dept)}
+                                                        >
+                                                            {justSaved ? (
+                                                                <>
+                                                                    <span className="material-symbols-outlined">check_circle</span>
+                                                                    {t('workHours.saved')}
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <span className="material-symbols-outlined">edit</span>
+                                                                    {t('workHours.edit')}
+                                                                </>
+                                                            )}
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                )}
+                            </div>
+                        )}
+
+                        {/* 📍 TAB 2: Geofencing & Locations */}
+                        {activeSettingsTab === 'geofencing' && (
+                            <div className="at-settings-tab-pane">
+                                {/* Search Map Input */}
+                                <div className="at-map-search-row">
+                                    <input 
+                                        type="text" 
+                                        className="at-search-input" 
+                                        placeholder={t('geofencing.searchPlaceholder')}
+                                        value={searchQuery}
+                                        onChange={e => setSearchQuery(e.target.value)}
+                                        onKeyDown={e => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                handleSearchLocation(e);
+                                            }
+                                        }}
+                                    />
+                                    <button 
+                                        type="button" 
+                                        className="at-btn-save" 
+                                        onClick={handleSearchLocation}
+                                        disabled={isSearchingMap}
+                                    >
+                                        <span className="material-symbols-outlined">search</span>
+                                        <span>{isSearchingMap ? t('geofencing.searching') : t('geofencing.searchBtn')}</span>
+                                    </button>
+                                </div>
+
+                                {/* Leaflet Map Div Container */}
+                                <div className="at-map-container-wrapper">
+                                    <label className="at-map-hint">
+                                        {t('geofencing.clickMapHint')}
+                                    </label>
+                                    <div 
+                                        ref={mapRef} 
+                                        className="at-leaflet-map-div"
+                                    />
+                                </div>
+
+                                {/* Form to Add Location */}
+                                <form onSubmit={handleAddLocation} className="at-geo-grid-form">
+                                    <div className="at-form-group">
+                                        <label>{t('geofencing.branchName')}</label>
+                                        <input
+                                            type="text"
+                                            className="at-time-input"
+                                            placeholder={t('geofencing.branchNamePlaceholder')}
+                                            value={locName}
+                                            onChange={e => setLocName(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="at-form-group">
+                                        <label>{t('geofencing.latitude')}</label>
+                                        <input
+                                            type="text"
+                                            className="at-time-input"
+                                            placeholder={t('geofencing.latitudePlaceholder')}
+                                            value={locLat}
+                                            onChange={e => setLocLat(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="at-form-group">
+                                        <label>{t('geofencing.longitude')}</label>
+                                        <input
+                                            type="text"
+                                            className="at-time-input"
+                                            placeholder={t('geofencing.longitudePlaceholder')}
+                                            value={locLon}
+                                            onChange={e => setLocLon(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="at-form-group">
+                                        <label>{t('geofencing.radius')}</label>
+                                        <input
+                                            type="number"
+                                            min="10"
+                                            max="5000"
+                                            className="at-grace-input"
+                                            value={locRadius}
+                                            onChange={e => setLocRadius(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <button type="submit" className="at-btn-save" style={{ height: '40px', width: '100%', cursor: 'pointer' }} disabled={isSavingLoc}>
+                                            <span className="material-symbols-outlined">add_location</span>
+                                            {isSavingLoc ? t('geofencing.savingBranch') : t('geofencing.addBranchBtn')}
+                                        </button>
+                                    </div>
+                                </form>
+
+                                {/* Locations Table */}
+                                <div className="at-table-wrapper">
+                                    <table className="at-table">
+                                        <thead>
+                                            <tr>
+                                                <th>{t('geofencing.table.branchName')}</th>
+                                                <th>{t('geofencing.table.latitude')}</th>
+                                                <th>{t('geofencing.table.longitude')}</th>
+                                                <th>{t('geofencing.table.radius')}</th>
+                                                <th>{t('geofencing.table.status')}</th>
+                                                <th>{t('geofencing.table.actions')}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {officeLocations.map(loc => (
+                                                <tr key={loc.id}>
+                                                    <td style={{ fontWeight: 'bold' }}>{loc.name}</td>
+                                                    <td>{parseFloat(loc.latitude).toFixed(6)}</td>
+                                                    <td>{parseFloat(loc.longitude).toFixed(6)}</td>
+                                                    <td>{loc.radius_meters} {t('geofencing.table.meters')}</td>
+                                                    <td>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleToggleLocation(loc.id, loc.is_active)}
+                                                            className={`at-loc-status-btn ${loc.is_active ? 'active' : 'inactive'}`}
+                                                        >
+                                                            {loc.is_active ? t('geofencing.table.active') : t('geofencing.table.inactive')}
+                                                        </button>
+                                                    </td>
+                                                    <td>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleDeleteLocation(loc.id)}
+                                                            className="at-btn-cancel"
+                                                            style={{ color: '#ef4444' }}
+                                                        >
+                                                            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>delete</span>
+                                                            {t('geofencing.table.delete')}
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {officeLocations.length === 0 && (
+                                                <tr>
+                                                    <td colSpan="6" className="at-no-results">
+                                                        {t('geofencing.table.noLocations')}
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         )}
                     </div>
                 </Accordion>
             </div>
 
-            <div className="at-workhours-card" style={{ marginTop: '20px' }}>
-                <button
-                    className="at-workhours-toggle"
-                    onClick={() => setShowLocations(v => !v)}
-                    aria-expanded={showLocations}
-                >
-                    <div className="at-workhours-toggle-left">
-                        <span className="material-symbols-outlined at-wh-icon" style={{ color: '#4ade80' }}>pin_drop</span>
-                        <div>
-                            <span className="at-workhours-title">إعدادات المواقع الجغرافية (Geofencing)</span>
-                            <span className="at-workhours-subtitle">تحديد الإحداثيات الجغرافية لفروع الشركة والقطر المسموح به للحضور</span>
-                        </div>
-                    </div>
-                    <span className={`material-symbols-outlined at-wh-chevron ${showLocations ? 'open' : ''}`}>
-                        expand_more
-                    </span>
-                </button>
-
-                <Accordion open={showLocations}>
-                    <div className="at-workhours-body" style={{ flexDirection: 'column', gap: '20px', padding: '20px' }}>
-                        <div style={{ display: 'flex', gap: '10px', width: '100%', direction: 'rtl', marginBottom: '10px' }}>
-                            <input 
-                                type="text" 
-                                className="at-search-input" 
-                                style={{ flex: 1, color: '#fff', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', height: '40px', padding: '0 15px', borderRadius: '8px' }} 
-                                placeholder="🔍 ابحث عن مدينة، منطقة، أو شارع لتحديده على الخريطة..." 
-                                value={searchQuery}
-                                onChange={e => setSearchQuery(e.target.value)}
-                                onKeyDown={e => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        handleSearchLocation(e);
-                                    }
-                                }}
-                            />
-                            <button 
-                                type="button" 
-                                className="at-btn-save" 
-                                style={{ height: '40px', background: 'rgba(74,222,128,0.2)', color: '#4ade80', border: '1px solid rgba(74,222,128,0.4)', borderRadius: '8px', padding: '0 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }} 
-                                onClick={handleSearchLocation}
-                                disabled={isSearchingMap}
-                            >
-                                {isSearchingMap ? (
-                                    <span>جاري البحث...</span>
-                                ) : (
-                                    <>
-                                        <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>search</span>
-                                        <span>بحث</span>
-                                    </>
-                                )}
-                            </button>
-                        </div>
-
-                        {/* Leaflet Map Div Container */}
-                        <div style={{ width: '100%' }}>
-                            <label style={{ fontSize: '13px', color: '#888', display: 'block', marginBottom: '8px', textAlign: 'right', direction: 'rtl' }}>
-                                📍 انقر على الخريطة لتحديد خط الطول والعرض تلقائياً:
-                            </label>
-                            <div 
-                                ref={mapRef} 
-                                style={{ 
-                                    height: '300px', 
-                                    width: '100%', 
-                                    borderRadius: '8px', 
-                                    border: '1px solid rgba(255,255,255,0.1)',
-                                    background: 'rgba(0,0,0,0.3)',
-                                    zIndex: 1
-                                }} 
-                            />
-                        </div>
-
-                        {/* Form to Add Location */}
-                        <form onSubmit={handleAddLocation} style={{
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-                            gap: '15px',
-                            alignItems: 'end',
-                            background: 'rgba(255,255,255,0.05)',
-                            padding: '15px',
-                            borderRadius: '8px',
-                            width: '100%'
-                        }}>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                                <label style={{ fontSize: '12px', color: '#888' }}>اسم الفرع/الموقع</label>
-                                <input type="text" className="at-time-input" placeholder="الفرع الرئيسي..." value={locName} onChange={e => setLocName(e.target.value)} required style={{ color: '#fff', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)' }} />
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                                <label style={{ fontSize: '12px', color: '#888' }}>خط العرض (Latitude)</label>
-                                <input type="text" className="at-time-input" placeholder="31.963158..." value={locLat} onChange={e => setLocLat(e.target.value)} required style={{ color: '#fff', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)' }} />
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                                <label style={{ fontSize: '12px', color: '#888' }}>خط الطول (Longitude)</label>
-                                <input type="text" className="at-time-input" placeholder="35.930359..." value={locLon} onChange={e => setLocLon(e.target.value)} required style={{ color: '#fff', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)' }} />
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                                <label style={{ fontSize: '12px', color: '#888' }}>القطر المسموح (متر)</label>
-                                <input type="number" min="10" max="5000" className="at-grace-input" value={locRadius} onChange={e => setLocRadius(e.target.value)} required style={{ color: '#fff', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)' }} />
-                            </div>
-                            <div>
-                                <button type="submit" className="at-btn-save" style={{ height: '40px', width: '100%', cursor: 'pointer' }} disabled={isSavingLoc}>
-                                    <span className="material-symbols-outlined">add_location</span>
-                                    إضافة الموقع
-                                </button>
-                            </div>
-                        </form>
-
-                     
-                        <div style={{ width: '100%', overflowX: 'auto' }}>
-                            <table className="at-table" style={{ background: 'transparent' }}>
-                                <thead>
-                                    <tr>
-                                        <th style={{ padding: '10px' }}>اسم الفرع</th>
-                                        <th style={{ padding: '10px' }}>خط العرض (Latitude)</th>
-                                        <th style={{ padding: '10px' }}>خط الطول (Longitude)</th>
-                                        <th style={{ padding: '10px' }}>القطر الجغرافي</th>
-                                        <th style={{ padding: '10px' }}>الحالة</th>
-                                        <th style={{ padding: '10px' }}>الإجراءات</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {officeLocations.map(loc => (
-                                        <tr key={loc.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                            <td style={{ padding: '12px', fontWeight: 'bold' }}>{loc.name}</td>
-                                            <td style={{ padding: '12px' }}>{parseFloat(loc.latitude).toFixed(6)}</td>
-                                            <td style={{ padding: '12px' }}>{parseFloat(loc.longitude).toFixed(6)}</td>
-                                            <td style={{ padding: '12px' }}>{loc.radius_meters} متر</td>
-                                            <td style={{ padding: '12px' }}>
-                                                <button
-                                                    onClick={() => handleToggleLocation(loc.id, loc.is_active)}
-                                                    style={{
-                                                        border: 'none',
-                                                        padding: '4px 10px',
-                                                        borderRadius: '12px',
-                                                        fontSize: '11px',
-                                                        cursor: 'pointer',
-                                                        fontWeight: 'bold',
-                                                        background: loc.is_active ? 'rgba(74,222,128,0.2)' : 'rgba(239,68,68,0.2)',
-                                                        color: loc.is_active ? '#4ade80' : '#ef4444'
-                                                    }}
-                                                >
-                                                    {loc.is_active ? 'نشط' : 'معطل'}
-                                                </button>
-                                            </td>
-                                            <td style={{ padding: '12px' }}>
-                                                <button
-                                                    onClick={() => handleDeleteLocation(loc.id)}
-                                                    className="at-btn-cancel"
-                                                    style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444', padding: '6px 12px', cursor: 'pointer' }}
-                                                >
-                                                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>delete</span>
-                                                    حذف
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    {officeLocations.length === 0 && (
-                                        <tr>
-                                            <td colSpan="6" style={{ textAlign: 'center', padding: '20px', color: '#888' }}>
-                                                لم يتم إدخال أي مواقع فروع للشركة بعد. يرجى استخدام النموذج أعلاه لإضافة موقعك الأول!
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </Accordion>
-            </div>
+            {/* Filter Section */}
             <div className="at-filter-card">
                 <div className="at-all-filt">
                     <input
@@ -863,6 +890,7 @@ const Attendance = () => {
                 </div>
             </div>
 
+            {/* Attendance Main Table */}
             <div className="at-table-card">
                 <div className="at-table-header">
                     <h2 className="at-table-title">{t('table.title')}</h2>
@@ -885,12 +913,12 @@ const Attendance = () => {
                             {attendanceLoading ? (
                                 <tr>
                                     <td colSpan="8" className="at-no-results">
-                                        {t('loading') || 'Loading attendance records...'}
+                                        {t('loading')}
                                     </td>
                                 </tr>
                             ) : attendanceError ? (
                                 <tr>
-                                    <td colSpan="8" className="at-no-results">
+                                    <td colSpan="8" className="at-no-results" style={{ color: '#ef4444', fontWeight: 'bold' }}>
                                         {attendanceError}
                                     </td>
                                 </tr>
@@ -898,7 +926,6 @@ const Attendance = () => {
                                 filteredData.map((row, i) => {
                                     const employeeName = row.name || row.full_name || '—';
                                     const employeeId = row.employee_id || row.id || '—';
-                                    const department = row.dept || row.department || '—';
                                     const timeIn = row.timeIn || row.time_in || '—';
                                     const timeOut = row.timeOut || row.time_out || '—';
                                     const duration = row.duration || '—';
@@ -915,12 +942,7 @@ const Attendance = () => {
                                                         <img
                                                             src={row.img}
                                                             alt={employeeName}
-                                                            style={{
-                                                                width: '32px',
-                                                                height: '32px',
-                                                                borderRadius: '50%',
-                                                                objectFit: 'cover'
-                                                            }}
+                                                            className="at-avatar"
                                                         />
                                                     ) : (
                                                         <Avatar
