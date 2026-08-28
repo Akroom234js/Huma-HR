@@ -190,7 +190,7 @@ export default function Home() {
       showNotification(t("notifications.loginSuccess"), "success");
       setTimeout(() => {
         if (data.user.role === "hr") {
-          navigate("/employees/all");
+          navigate("/dashboard/general");
         } else if (data.user.role === "employee" || data.user.role === "department supervisor") {
           navigate("/portal/dashboard");
         } else {

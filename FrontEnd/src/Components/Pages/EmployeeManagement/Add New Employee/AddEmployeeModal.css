@@ -273,3 +273,139 @@
 [data-theme="dark"] .aem-section-header {
   border-color: rgba(255,255,255,0.08) !important;
 }
+
+/* --- Employment Status Slider / Segmented Control --- */
+.aem-status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.aem-status-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main, #111827);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.aem-status-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+
+.aem-status-badge.active {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.aem-status-badge.on_leave {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.aem-status-badge.inactive {
+  background: rgba(107, 114, 128, 0.12);
+  color: #6b7280;
+  border: 1px solid rgba(107, 114, 128, 0.3);
+}
+
+.aem-status-badge.terminated {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.aem-status-slider-track {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--bg-page, #f3f4f6);
+  padding: 5px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color, #e5e7eb);
+  gap: 6px;
+  box-sizing: border-box;
+}
+
+[data-theme="dark"] .aem-status-slider-track {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.aem-status-slider-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 8px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary, #6b7280);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.aem-status-slider-btn .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.aem-status-slider-btn:hover {
+  color: var(--text-main, #111827);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .aem-status-slider-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #f3f4f6;
+}
+
+.aem-status-slider-btn.active.active-status {
+  background: #10b981;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.35);
+}
+
+.aem-status-slider-btn.active.on_leave-status {
+  background: #f59e0b;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.35);
+}
+
+.aem-status-slider-btn.active.inactive-status {
+  background: #6b7280;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 2px 10px rgba(107, 114, 128, 0.35);
+}
+
+.aem-status-slider-btn.active.terminated-status {
+  background: #ef4444;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.35);
+}
+
+.aem-status-hint {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-secondary, #6b7280);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

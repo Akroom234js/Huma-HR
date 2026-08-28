@@ -77,8 +77,8 @@ class DashboardController extends Controller
                     ->value('total_ot') ?? 76;
             }
 
-            // Monthly Salary Cost
-            $monthlySalaryCost = (float)EmployeeProfile::where('employment_status', '!=', 'terminated')->sum('salary');
+            // Monthly Salary Cost (Only active employees)
+            $monthlySalaryCost = (float)EmployeeProfile::where('employment_status', 'active')->sum('salary');
             if ($monthlySalaryCost == 0) {
                 $monthlySalaryCost = (float)PayrollRecord::where('payroll_month', Carbon::now()->format('F'))
                     ->where('payroll_year', Carbon::now()->year)
