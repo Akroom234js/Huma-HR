@@ -7,6 +7,7 @@ import './ImprovementStatistics.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
 import apiClient from '../../../../apiConfig';
+import DashboardLoader from '../../../Shared/DashboardLoader/DashboardLoader';
 
 export default function ImprovementStatistics() {
     const { t, i18n } = useTranslation('Dashboard/ImprovementStatistics');
@@ -75,7 +76,7 @@ export default function ImprovementStatistics() {
         return 'is-badge-danger';
     };
 
-    if (loading) return <div style={{ padding: '40px', textAlign: 'center' }}>{t('loading')}</div>;
+    if (loading) return <DashboardLoader text={t('loading') || "Loading Improvement Statistics..."} fullPage size="lg" />;
     if (error) return <div className="error-message" style={{ padding: '20px', color: 'red' }}>{error}</div>;
 
     return (

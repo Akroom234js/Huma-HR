@@ -4,6 +4,7 @@ import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 import { useTranslation } from "react-i18next";
 import { getPerformanceStats, getPerformanceCycles, getEvaluationsByCycle } from '../../../../services/PerformanceHrService';
+import DashboardLoader from '../../../Shared/DashboardLoader/DashboardLoader';
 
 const OverallPerformance = () => {
     const { t } = useTranslation("Dashboard/OverallPerformance");
@@ -108,6 +109,10 @@ const OverallPerformance = () => {
         setSelectedEmployee(emp);
         setIsModalOpen(true);
     };
+
+    if (loading) {
+        return <DashboardLoader text={t('loading') || "Loading Performance Dashboard..."} fullPage size="lg" />;
+    }
 
     return (
         <div className="op-page">

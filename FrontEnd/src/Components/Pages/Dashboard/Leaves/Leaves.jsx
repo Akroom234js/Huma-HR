@@ -5,6 +5,7 @@ import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 import { useTranslation } from "react-i18next";
 import Avatar from '../../../Shared/Avatar/Avatar';
 import apiClient from '../../../../apiConfig';
+import DashboardLoader from '../../../Shared/DashboardLoader/DashboardLoader';
 
 const Leaves = () => {
     const { t } = useTranslation("Dashboard/Leaves");
@@ -70,6 +71,37 @@ const Leaves = () => {
         ];
     }, [dashboardData]);
 
+    const dynamicPieGradient = useMemo(() => {
+        if (!distribution || distribution.length === 0) {
+            return 'conic-gradient(#e2e8f0 0% 100%)';
+        }
+
+        const colorMap = {
+            'bg-blue': 'var(--primary-color, #359EFF)',
+            'bg-amber': 'var(--amber-500, #f59e0b)',
+            'bg-red': 'var(--red-500, #ef4444)',
+            'bg-emerald': 'var(--emerald-500, #10b981)',
+            'bg-purple': '#8b5cf6'
+        };
+
+        const totalPercent = distribution.reduce((sum, item) => sum + (Number(item.percent) || 0), 0);
+        if (totalPercent === 0) {
+            return 'conic-gradient(#e2e8f0 0% 100%)';
+        }
+
+        let current = 0;
+        const segments = distribution.map((item, index) => {
+            const color = colorMap[item.color] || 'var(--primary-color, #359EFF)';
+            const start = current;
+            const itemPercent = ((Number(item.percent) || 0) / totalPercent) * 100;
+            current += itemPercent;
+            const end = index === distribution.length - 1 ? 100 : current;
+            return `${color} ${start.toFixed(1)}% ${end.toFixed(1)}%`;
+        });
+
+        return `conic-gradient(${segments.join(', ')})`;
+    }, [distribution]);
+
     const trends = useMemo(() => {
         return dashboardData?.trends || [
             { label: 'Q1', percent: 0 },
@@ -102,14 +134,7 @@ const Leaves = () => {
     };
 
     if (loading) {
-        return (
-            <div className="portal-page-container-leaves fade-in-section" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
-                <div className="premium-spinner-container" style={{ textAlign: 'center' }}>
-                    <div className="premium-spinner"></div>
-                    <p style={{ marginTop: '1rem', color: 'var(--text-secondary)' }}>Loading Dashboard Analytics...</p>
-                </div>
-            </div>
-        );
+        return <DashboardLoader text={t('loading') || "Loading Leave Analytics..."} fullPage size="lg" />;
     }
 
     return (
@@ -247,12 +272,9 @@ const Leaves = () => {
                         <h3>{t('reports.distribution') || "Leave Type Distribution"}</h3>
                     </div>
                     <div className="chart-preview-container">
-                        <div className="premium-pie-mock">
-                            <div className="pie-slice annual"></div>
-                            <div className="pie-slice sick"></div>
-                            <div className="pie-slice emergency"></div>
+                        <div className="premium-pie-mock" style={{ background: dynamicPieGradient }}>
                             <div className="pie-inner-circle">
-                                <span className="pie-total-label">Total</span>
+                                <span className="pie-total-label">{t('table.total') || "Total"}</span>
                                 <span className="pie-total-val">100%</span>
                             </div>
                         </div>
