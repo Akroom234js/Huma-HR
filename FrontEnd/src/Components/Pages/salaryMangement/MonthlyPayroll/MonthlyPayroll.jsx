@@ -3,9 +3,11 @@ import { useTranslation } from 'react-i18next';
 import './MonthlyPayroll.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import apiClient from "../../../../apiConfig";
+import { useNotification } from '../../../Notification/NotificationContext';
 
 const MonthlyPayroll = () => {
     const { t } = useTranslation('SalaryManagement/MonthlyPayroll');
+    const { showSuccess, showError, showWarning, showInfo } = useNotification();
     const [details, setDetails] = useState([]);
     const [payrollData, setPayrollData] = useState([]);
     const [departments, setDepartments] = useState([]);
@@ -41,12 +43,11 @@ const MonthlyPayroll = () => {
             const res = await apiClient.post('/payroll/initialize', {
                 month: selectedMonth
             });
-            alert(res.data.message || "Payroll initialized successfully.");
+            showSuccess(res.data.message || "Payroll initialized successfully.");
             fetchPayroll();
         } catch (error) {
             console.error("Initialization failed", error);
-            const errorMsg = error.response?.data?.message || "Failed to initialize payroll.";
-            alert(errorMsg);
+            showError(error, "Failed to initialize payroll.");
         } finally {
             setIsInitializing(false);
         }
@@ -196,12 +197,12 @@ const MonthlyPayroll = () => {
         if (!selectedMonth) return;
         try {
             const res = await apiClient.post('/bonus-rules/apply', { month: selectedMonth });
-            alert(res.data.message);
+            showSuccess(res.data?.message || "Bonus rules applied successfully.");
             fetchPayroll();
             fetchStats();
         } catch (error) {
             console.error("Failed to apply bonus rules", error);
-            alert("Application failed.");
+            showError(error, "Application failed.");
         }
     };
 
@@ -214,8 +215,10 @@ const MonthlyPayroll = () => {
             await apiClient.post('/bonus-rules', dataToSubmit);
             setIsBonusModalOpen(false);
             fetchBonusRules();
+            showSuccess("Bonus rule saved successfully.");
         } catch (error) {
             console.error("Failed to save bonus rule", error);
+            showError(error, "Failed to save bonus rule.");
         }
     };
 
@@ -230,9 +233,10 @@ const MonthlyPayroll = () => {
             fetchPayroll();
             fetchStats();
             if (activeTab === 'deductions') fetchAllAdjustments();
+            showSuccess(dataToSubmit.is_addition ? "Addition recorded successfully." : "Deduction recorded successfully.");
         } catch (error) {
             console.error("Failed to save deduction", error);
-            alert("Failed to save adjustment. Make sure the employee has a payroll record for this month.");
+            showError(error, "Failed to save adjustment. Make sure the employee has a payroll record for this month.");
         }
     };
 

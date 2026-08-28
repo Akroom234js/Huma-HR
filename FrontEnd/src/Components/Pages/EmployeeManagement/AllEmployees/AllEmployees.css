@@ -152,9 +152,20 @@ td {
   color: #15803d;
 }
 
+.status.on_leave,
 .status.leave {
   background-color: #fef9c3;
   color: #a16207;
+}
+
+.status.inactive {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.status.terminated {
+  background-color: #fee2e2;
+  color: #b91c1c;
 }
 .actions button {
   border-radius: 8px;

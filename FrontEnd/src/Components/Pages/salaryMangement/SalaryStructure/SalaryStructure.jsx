@@ -4,9 +4,11 @@ import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
 import apiClient from '../../../../apiConfig';
 import Avatar from '../../../Shared/Avatar/Avatar';
+import { useNotification } from '../../../Notification/NotificationContext';
 
 const SalaryStructure = () => {
     const { t } = useTranslation('SalaryManagement/SalaryStructure');
+    const { showSuccess, showError } = useNotification();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isEmpModalOpen, setIsEmpModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -45,8 +47,10 @@ const SalaryStructure = () => {
             // Refresh both because position changes affect employees
             fetchSalaryStructures();
             fetchEmployees();
+            showSuccess("Salary structure updated successfully.");
         } catch (error) {
             console.error('Error updating salary structure:', error);
+            showError(error, "Failed to update salary structure.");
         }
     };
 
@@ -66,9 +70,10 @@ const SalaryStructure = () => {
             await apiClient.patch(`/salary-structures/employees/${selectedEmployee.id}`, empEditData);
             setIsEmpModalOpen(false);
             fetchEmployees();
+            showSuccess("Employee salary updated successfully.");
         } catch (error) {
             console.error('Error updating employee salary:', error);
-            alert(error.response?.data?.message || "Update failed");
+            showError(error, "Update failed.");
         }
     };
 

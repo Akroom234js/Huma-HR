@@ -26,6 +26,7 @@ const AddEmployeeModal = ({
     joiningDate: "",
     basicSalary: "",
     directManager: "",
+    employmentStatus: "active",
     profilePicture: null,
   };
 
@@ -52,6 +53,7 @@ const AddEmployeeModal = ({
         joiningDate: editingEmployee.joiningDate || "",
         basicSalary: editingEmployee.basicSalary || "",
         directManager: editingEmployee.directManager || "",
+        employmentStatus: editingEmployee.employmentStatus || editingEmployee.employment_status || "active",
         profilePicture: null,
       });
       setPreviewImage(editingEmployee.profilePicUrl || null);
@@ -338,6 +340,46 @@ const AddEmployeeModal = ({
                     onChange={handleChange}
                   />
                 </div>
+
+                {/* Employment Status Slider */}
+                <div className="aem-field aem-full">
+                  <div className="aem-status-header">
+                    <span className="aem-status-title">
+                      <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--primary-color)' }}>badge</span>
+                      Employment Status
+                    </span>
+                    <span className={`aem-status-badge ${formData.employmentStatus || 'active'}`}>
+                      {formData.employmentStatus === 'active' && 'Active (Full Operations & Payroll)'}
+                      {formData.employmentStatus === 'on_leave' && 'On Leave (Active Contract)'}
+                      {formData.employmentStatus === 'inactive' && 'Inactive (Suspended from Payroll)'}
+                      {formData.employmentStatus === 'terminated' && 'Terminated (Excluded from all calculations)'}
+                    </span>
+                  </div>
+
+                  <div className="aem-status-slider-track" role="radiogroup" aria-label="Employment Status">
+                    {[
+                      { id: 'active', label: 'Active', icon: 'check_circle' },
+                      { id: 'on_leave', label: 'On Leave', icon: 'flight_takeoff' },
+                      { id: 'inactive', label: 'Inactive', icon: 'pause_circle' },
+                      { id: 'terminated', label: 'Terminated', icon: 'cancel' }
+                    ].map((st) => (
+                      <button
+                        key={st.id}
+                        type="button"
+                        className={`aem-status-slider-btn ${formData.employmentStatus === st.id ? `active ${st.id}-status` : ''}`}
+                        onClick={() => setFormData(prev => ({ ...prev, employmentStatus: st.id }))}
+                      >
+                        <span className="material-symbols-outlined">{st.icon}</span>
+                        <span>{st.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <span className="aem-status-hint">
+                    <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>info</span>
+                    Setting status to Inactive or Terminated automatically stops payroll generation and operational calculations for this employee.
+                  </span>
+                </div>
+
                 <div className="aem-field aem-full">
                   <label>Profile Picture</label>
                   {previewImage && (

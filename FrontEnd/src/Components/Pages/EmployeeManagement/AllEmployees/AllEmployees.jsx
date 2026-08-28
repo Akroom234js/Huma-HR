@@ -158,6 +158,7 @@ const AllEmployees = () => {
         basicSalary: e.salary,
         directManager: e.manager_id,
         profilePicUrl: e.profile_pic,
+        employmentStatus: e.employment_status || 'active',
       });
       setIsModalOpen(true);
     } catch (error) {
@@ -199,7 +200,7 @@ const AllEmployees = () => {
       // التعديل هنا: إرسال القيمة باسم 'salary' لتطابق الموديل في Laravel
       if (data.basicSalary) formData.append("salary", data.basicSalary);
 
-      formData.append("employment_status", "active");
+      formData.append("employment_status", data.employmentStatus || "active");
 
       if (editingEmployee) {
         formData.append("_method", "PUT");
@@ -296,8 +297,8 @@ const AllEmployees = () => {
                 <td>{e.department?.name || e.department}</td>
                 <td>{e.job_title}</td>
                 <td>
-                  <span className={`status ${e.employment_status?.toLowerCase() === "active" ? "active" : "leave"}`}>
-                    {e.employment_status || "Active"}
+                  <span className={`status ${e.employment_status?.toLowerCase() || "active"}`}>
+                    {e.employment_status ? e.employment_status.replace('_', ' ') : "Active"}
                   </span>
                 </td>
                 <td className="actions">

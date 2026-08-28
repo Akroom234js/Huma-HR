@@ -3,9 +3,11 @@ import "./DeductionsPenalties.css";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
 import apiClient from "../../../../apiConfig";
 import { useTranslation } from "react-i18next";
+import { useNotification } from "../../../Notification/NotificationContext";
 
 const DeductionsPenalties = () => {
   const { t } = useTranslation('SalaryManagement/DeductionsPenalties');
+  const { showSuccess, showError, showWarning } = useNotification();
   const [employees, setEmployees] = useState([]);
   const [deductions, setDeductions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -59,7 +61,7 @@ const DeductionsPenalties = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.user_id || !formData.amount || !formData.month) {
-      alert("Please fill in all required fields.");
+      showWarning("Please fill in all required fields.");
       return;
     }
 
@@ -69,7 +71,7 @@ const DeductionsPenalties = () => {
         is_addition: formData.category === "addition"
       };
       await apiClient.post('/deductions', payload);
-      alert(formData.category === "addition" ? "Addition recorded!" : "Deduction recorded!");
+      showSuccess(formData.category === "addition" ? "Addition recorded successfully!" : "Deduction recorded successfully!");
       setFormData({
         user_id: "",
         category: "deduction",
@@ -82,7 +84,7 @@ const DeductionsPenalties = () => {
       fetchDeductions();
     } catch (err) {
       console.error("Error submitting deduction", err);
-      alert("Failed to record deduction.");
+      showError(err, "Failed to record deduction.");
     } finally {
       setIsSubmitting(false);
     }

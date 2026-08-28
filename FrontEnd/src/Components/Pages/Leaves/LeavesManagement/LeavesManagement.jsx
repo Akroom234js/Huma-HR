@@ -5,10 +5,12 @@ import './LeavesManagement.css';
 import { useTranslation } from 'react-i18next';
 import Avatar from '../../../Shared/Avatar/Avatar';
 import apiClient from '../../../../apiConfig';
+import { useNotification } from '../../../Notification/NotificationContext';
 
 export default function LeavesManagement() {
     const { t, i18n } = useTranslation('Leaves/LeavesManagement');
     const isAr = i18n.language === 'ar';
+    const { showSuccess, showError, showWarning } = useNotification();
 
     // Sub-navigation tabs: 'requests' or 'balances'
     const [activeSubTab, setActiveSubTab] = useState('requests');
@@ -94,9 +96,10 @@ export default function LeavesManagement() {
             await apiClient.patch(`/requests/${id}/status`, { status, reason });
             fetchRequests();
             fetchEmployeeBalances();
+            showSuccess(status === 'approved' ? (t('approveSuccess') || 'Request approved successfully.') : (t('rejectSuccess') || 'Request rejected successfully.'));
         } catch (error) {
             console.error('Error updating request status:', error);
-            alert(error.response?.data?.message || 'Failed to update status.');
+            showError(error, 'Failed to update status.');
         }
     };
 
@@ -120,17 +123,17 @@ export default function LeavesManagement() {
         try {
             if (typeData.id) {
                 await apiClient.put(`/leave-types/${typeData.id}`, typeData);
-                alert(t('updateSuccess') || 'Leave type updated successfully.');
+                showSuccess(t('updateSuccess') || 'Leave type updated successfully.');
             } else {
                 await apiClient.post('/leave-types', typeData);
-                alert(t('addSuccess') || 'Leave type created successfully.');
+                showSuccess(t('addSuccess') || 'Leave type created successfully.');
             }
             fetchLeaveTypes();
             fetchEmployeeBalances();
             handleCloseModal();
         } catch (error) {
             console.error('Error saving leave type:', error);
-            alert(error.response?.data?.message || 'Failed to save leave type.');
+            showError(error, 'Failed to save leave type.');
         }
     };
 
@@ -141,12 +144,12 @@ export default function LeavesManagement() {
 
         try {
             await apiClient.delete(`/leave-types/${id}`);
-            alert(t('deleteSuccess') || 'Leave type deleted successfully.');
+            showSuccess(t('deleteSuccess') || 'Leave type deleted successfully.');
             fetchLeaveTypes();
             fetchEmployeeBalances();
         } catch (error) {
             console.error('Error deleting leave type:', error);
-            alert(error.response?.data?.message || t('deleteError') || 'Failed to delete leave type.');
+            showError(error, t('deleteError') || 'Failed to delete leave type.');
         }
     };
 
@@ -192,12 +195,12 @@ export default function LeavesManagement() {
                     used: Number(editingEmployeeBalance.used) || 0
                 }
             );
-            alert(t('balanceUpdateSuccess') || 'Employee balance updated successfully.');
+            showSuccess(t('balanceUpdateSuccess') || 'Employee balance updated successfully.');
             setEditingEmployeeBalance(null);
             fetchEmployeeBalances();
         } catch (error) {
             console.error('Error adjusting employee balance:', error);
-            alert(error.response?.data?.message || 'Failed to adjust employee balance.');
+            showError(error, 'Failed to adjust employee balance.');
         }
     };
 

@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import './Notification.css';
 
-const Notification = ({ message, type = 'info', onClose, duration = 5000 }) => {
+const Notification = ({ message, type = 'info', onClose, duration = 4500 }) => {
     useEffect(() => {
         if (duration) {
             const timer = setTimeout(() => {
-                onClose();
+                onClose?.();
             }, duration);
             return () => clearTimeout(timer);
         }
@@ -14,22 +14,27 @@ const Notification = ({ message, type = 'info', onClose, duration = 5000 }) => {
     const getIcon = () => {
         switch (type) {
             case 'success': return 'check_circle';
-            case 'error': return 'error';
-            case 'warning': return 'warning';
-            default: return 'info';
+            case 'error': return 'error_outline';
+            case 'warning': return 'warning_amber';
+            default: return 'notifications_active';
         }
     };
 
     return (
-        <div className={`notification-toast ${type}`}>
+        <div className={`notification-toast ${type}`} role="alert">
             <div className="notification-content">
-                <span className="material-icons notification-icon">{getIcon()}</span>
+                <div className="notification-icon-wrapper">
+                    <span className="material-icons notification-icon">{getIcon()}</span>
+                </div>
                 <p className="notification-message">{message}</p>
             </div>
-            <button className="notification-close" onClick={onClose}>
+            <button className="notification-close" onClick={onClose} aria-label="Close notification">
                 <span className="material-icons">close</span>
             </button>
-            <div className="notification-progress"></div>
+            <div 
+                className="notification-progress" 
+                style={{ animationDuration: `${duration}ms` }}
+            ></div>
         </div>
     );
 };

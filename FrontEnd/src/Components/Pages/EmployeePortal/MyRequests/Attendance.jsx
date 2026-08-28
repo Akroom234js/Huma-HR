@@ -24,6 +24,11 @@ const Attendance = () => {
   const [initialLoading, setInitialLoading] = useState(true);
   const [alertInfo, setAlertInfo] = useState(null);
 
+  // Late Check-in Reason Modal States
+  const [showLateModal, setShowLateModal] = useState(false);
+  const [latenessReason, setLatenessReason] = useState("");
+  const [lateError, setLateError] = useState("");
+
   const showAlert = (message, type = "info") => {
     setAlertInfo({ message, type });
     setTimeout(() => {
@@ -121,11 +126,32 @@ const Attendance = () => {
     loadAllData();
   }, [loadAllData]);
 
-  const handleCheckin = async () => {
+  // Check if current time is past start time + grace period
+  const isLateCheckin = useCallback(() => {
+    if (todayStatus?.is_late_now !== undefined) {
+      return Boolean(todayStatus.is_late_now);
+    }
+    if (todayStatus?.start_time) {
+      const now = new Date();
+      const parts = todayStatus.start_time.split(":");
+      const shiftStart = new Date();
+      shiftStart.setHours(
+        parseInt(parts[0], 10),
+        parseInt(parts[1], 10) + (parseInt(todayStatus.grace_period, 10) || 15),
+        parseInt(parts[2] || 0, 10),
+        0
+      );
+      return now > shiftStart;
+    }
+    return false;
+  }, [todayStatus]);
+
+  const executeCheckin = async (reason = null) => {
     try {
       setLoading(true);
       const location = await getCurrentLocation();
-      const response = await apiClient.post("/employee/attendance/checkin", location);
+      const payload = reason ? { ...location, lateness_reason: reason } : location;
+      const response = await apiClient.post("/employee/attendance/checkin", payload);
       await loadAllData();
       showAlert(response.data?.message || t("alerts.checkinSuccess"), "success");
     } catch (error) {
@@ -147,6 +173,27 @@ const Attendance = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCheckin = () => {
+    if (isLateCheckin()) {
+      setLatenessReason("");
+      setLateError("");
+      setShowLateModal(true);
+    } else {
+      executeCheckin();
+    }
+  };
+
+  const handleConfirmLateCheckin = async (e) => {
+    e?.preventDefault();
+    if (!latenessReason.trim()) {
+      setLateError(t("lateModal.requiredError"));
+      return;
+    }
+    setShowLateModal(false);
+    await executeCheckin(latenessReason.trim());
+    setLatenessReason("");
   };
 
   const handleCheckOut = async () => {
@@ -298,71 +345,59 @@ const Attendance = () => {
 
             <div className="status-row highlight-row">
               <span className="status-label">
-                {t("hoursWorkedToday")}
+                {t("hoursWorkedToday")}{" "}
                 {todayStatus?.is_live && (
-                  <span className="live-indicator-pill">
-                    <span className="pulsing-dot"></span>
-                    {t("live")}
-                  </span>
+                  <span className="live-indicator">{t("live")}</span>
                 )}
               </span>
-              <strong className="hours-value">
-                {todayStatus?.hours_worked !== null && todayStatus?.hours_worked !== undefined
-                  ? convertHours(todayStatus.hours_worked)
-                  : "--h --m"}
-              </strong>
+              <span className="status-value highlight-value">
+                {convertHours(todayStatus?.hours_worked)}
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Weekly Trends Chart */}
+        {/* Trends Chart Card */}
         <div className="card chart-card">
-          <div className="card-title-group mb-2">
-            <i className="bi bi-graph-up-arrow card-icon"></i>
-            <h2>{t("trendsTitle")}</h2>
+          <div className="card-header-flex">
+            <div className="card-title-group">
+              <i className="bi bi-graph-up-arrow card-icon"></i>
+              <h2>{t("trendsTitle")}</h2>
+            </div>
+            <span className="chart-unit-tag">{t("hours")}</span>
           </div>
 
-          <div className="chart-box">
+          <div className="chart-wrapper">
             {chartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={chartData} margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(200, 200, 200, 0.15)" />
-                  <XAxis dataKey="day" stroke="var(--text-secondary, #64748b)" fontSize={12} />
-                  <YAxis
-                    stroke="var(--text-secondary, #64748b)"
-                    fontSize={12}
-                    label={{
-                      value: t("hours"),
-                      angle: -90,
-                      position: "insideLeft",
-                      fill: "var(--text-secondary, #64748b)",
-                      fontSize: 11,
-                    }}
-                  />
+                <LineChart data={chartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" opacity={0.6} />
+                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: "var(--text-secondary)", fontSize: 12 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: "var(--text-secondary)", fontSize: 12 }} domain={[0, "auto"]} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "var(--bg-card, #ffffff)",
-                      borderColor: "var(--border-color, #e2e8f0)",
-                      borderRadius: "12px",
-                      color: "var(--text-main, #0f172a)",
+                      backgroundColor: "var(--bg-card)",
+                      borderColor: "var(--border-color)",
+                      borderRadius: "10px",
+                      color: "var(--text-main)",
+                      fontSize: "12px",
                       boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                     }}
-                    formatter={(val) => [`${val} ${t("hours")}`, t("hoursWorkedToday")]}
                   />
                   <Line
                     type="monotone"
                     dataKey="attendance"
-                    stroke="#359EFF"
+                    name={t("hours")}
+                    stroke="var(--primary-color, #359EFF)"
                     strokeWidth={3}
-                    dot={{ r: 4, fill: "#359EFF" }}
-                    activeDot={{ r: 6, fill: "#2b8de8" }}
+                    dot={{ r: 4, fill: "var(--primary-color, #359EFF)" }}
+                    activeDot={{ r: 6 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className="chart-empty-state">
-                <i className="bi bi-bar-chart"></i>
-                <p>{t("table.empty")}</p>
+              <div className="chart-placeholder">
+                <span className="text-muted">No trend data available</span>
               </div>
             )}
           </div>
@@ -370,15 +405,15 @@ const Attendance = () => {
       </div>
 
       {/* Historical Attendance Table */}
-      <div className="card table-card full-width">
-        <div className="card-header-flex mb-3">
+      <div className="card table-card">
+        <div className="card-header-flex">
           <div className="card-title-group">
             <i className="bi bi-table card-icon"></i>
             <h2>{t("historicalAttendance")}</h2>
           </div>
         </div>
 
-        <div className="table-responsive">
+        <div className="table-wrapper">
           <table className="attendance-table">
             <thead>
               <tr>
@@ -390,12 +425,12 @@ const Attendance = () => {
                 <th>{t("table.branch")}</th>
               </tr>
             </thead>
-
             <tbody>
               {initialLoading ? (
                 <tr>
                   <td colSpan="6" className="table-empty-cell">
                     <div className="attendance-spinner"></div>
+                    <div style={{ marginTop: "0.5rem" }}>{t("loading")}</div>
                   </td>
                 </tr>
               ) : attendanceHistory.length === 0 ? (
@@ -444,6 +479,80 @@ const Attendance = () => {
           </table>
         </div>
       </div>
+
+      {/* ══════════════════════════════════════════════════════════════════
+          ✨ LATE CHECK-IN REASON POPUP MODAL
+         ══════════════════════════════════════════════════════════════════ */}
+      {showLateModal && (
+        <div className="late-modal-overlay" onClick={() => setShowLateModal(false)}>
+          <div className="late-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="late-modal-header">
+              <div className="late-modal-icon-wrapper">
+                <i className="bi bi-exclamation-diamond-fill"></i>
+              </div>
+              <div className="late-modal-title-group">
+                <h3>{t("lateModal.title")}</h3>
+                <p>{t("lateModal.subtitle")}</p>
+              </div>
+              <button
+                type="button"
+                className="late-modal-close-btn"
+                onClick={() => setShowLateModal(false)}
+                aria-label="Close"
+              >
+                <i className="bi bi-x-lg"></i>
+              </button>
+            </div>
+
+            <form onSubmit={handleConfirmLateCheckin}>
+              <div className="late-modal-body">
+                <div className="late-modal-field">
+                  <label htmlFor="lateness-reason-input" className="late-modal-label">
+                    {t("lateModal.reasonLabel")}
+                  </label>
+                  <textarea
+                    id="lateness-reason-input"
+                    className="late-modal-textarea"
+                    placeholder={t("lateModal.reasonPlaceholder")}
+                    value={latenessReason}
+                    onChange={(e) => {
+                      setLatenessReason(e.target.value);
+                      if (lateError) setLateError("");
+                    }}
+                    rows={4}
+                    autoFocus
+                    required
+                  />
+                  {lateError && (
+                    <span style={{ color: "#ef4444", fontSize: "0.85rem", fontWeight: 600 }}>
+                      {lateError}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="late-modal-actions">
+                <button
+                  type="button"
+                  className="late-btn-cancel"
+                  onClick={() => setShowLateModal(false)}
+                  disabled={loading}
+                >
+                  {t("lateModal.cancelBtn")}
+                </button>
+                <button
+                  type="submit"
+                  className="late-btn-confirm"
+                  disabled={loading}
+                >
+                  <i className="bi bi-check2-circle"></i>
+                  <span>{loading ? t("loading") : t("lateModal.confirmBtn")}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
