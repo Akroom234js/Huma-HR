@@ -49,6 +49,20 @@ class AttendanceController extends Controller
                 ->where('date', $today)
                 ->first();
 
+            $deptName = $employee->department ? $employee->department->name : null;
+            $deptHour = null;
+            if ($deptName) {
+                $deptHour = \App\Models\DepartmentHour::where('dept', $deptName)->first();
+            }
+
+            $startTimeString = $deptHour ? $deptHour->start_time : '09:00:00';
+            $gracePeriodMinutes = $deptHour ? (int)$deptHour->grace_period : 15;
+            $startTime = Carbon::parse($startTimeString);
+            $checkInLimit = Carbon::today()
+                ->setTime($startTime->hour, $startTime->minute, $startTime->second)
+                ->addMinutes($gracePeriodMinutes);
+            $isLateNow = Carbon::now()->greaterThan($checkInLimit);
+
             if (!$record) {
                 return $this->successResponse([
                     'status' => 'not_checked_in',
@@ -57,6 +71,9 @@ class AttendanceController extends Controller
                     'hours_worked' => null,
                     'is_live' => false,
                     'is_late' => false,
+                    'is_late_now' => $isLateNow,
+                    'start_time' => $startTimeString,
+                    'grace_period' => $gracePeriodMinutes,
                     'branch_name' => null,
                 ], 'Today\'s attendance retrieved successfully.');
             }
@@ -79,6 +96,10 @@ class AttendanceController extends Controller
                 'hours_worked' => $hoursWorked,
                 'is_live' => $isLive,
                 'is_late' => $record->status === 'late',
+                'is_late_now' => $isLateNow,
+                'start_time' => $startTimeString,
+                'grace_period' => $gracePeriodMinutes,
+                'lateness_reason' => $record->lateness_reason,
                 'branch_name' => $record->officeLocation ? $record->officeLocation->name : null,
             ], 'Today\'s attendance retrieved successfully.');
         } catch (\Exception $e) {
@@ -93,8 +114,9 @@ class AttendanceController extends Controller
     {
         try {
             $request->validate([
-                'latitude' => 'required|numeric|between:-90,90',
-                'longitude' => 'required|numeric|between:-180,180',
+                'latitude'        => 'required|numeric|between:-90,90',
+                'longitude'       => 'required|numeric|between:-180,180',
+                'lateness_reason' => 'nullable|string|max:500',
             ]);
 
             $employee = auth()->user()->employeeProfile;
@@ -145,7 +167,7 @@ class AttendanceController extends Controller
             }
 
             $startTimeString = $deptHour ? $deptHour->start_time : '09:00:00';
-            $gracePeriodMinutes = $deptHour ? $deptHour->grace_period : 15;
+            $gracePeriodMinutes = $deptHour ? (int)$deptHour->grace_period : 15;
 
             $startTime = Carbon::parse($startTimeString);
             $checkInLimit = Carbon::today()
@@ -156,6 +178,8 @@ class AttendanceController extends Controller
                 $status = 'late';
             }
 
+            $latenessReason = $status === 'late' ? $request->input('lateness_reason') : null;
+
             // 5. التحقق من وجود سجل حضور مسبق لليوم
             $existing = AttendanceRecord::where('employee_profile_id', $employee->id)
                 ->where('date', $today)
@@ -164,24 +188,25 @@ class AttendanceController extends Controller
             if ($existing) {
                 if ($existing->check_out) {
                     $existing->update([
-                        'check_in' => Carbon::now()->toTimeString(),
-                        'check_out' => null,
-                        'hours_worked' => null,
-                        'latitude_in' => $request->latitude,
-                        'longitude_in' => $request->longitude,
-                        'latitude_out' => null,
-                        'longitude_out' => null,
+                        'check_in'           => Carbon::now()->toTimeString(),
+                        'check_out'          => null,
+                        'hours_worked'       => null,
+                        'latitude_in'        => $request->latitude,
+                        'longitude_in'       => $request->longitude,
+                        'latitude_out'       => null,
+                        'longitude_out'      => null,
                         'office_location_id' => $nearestLocation->id,
                         'distance_in_meters' => round($minDistance),
-                        'status' => $status,
+                        'status'             => $status,
+                        'lateness_reason'    => $latenessReason ?: $existing->lateness_reason,
                     ]);
 
                     return $this->successResponse([
-                        'check_in' => Carbon::parse($existing->check_in)->format('h:i A'),
-                        'status' => $existing->status,
-                        'branch_name' => $nearestLocation->name,
+                        'check_in'        => Carbon::parse($existing->check_in)->format('h:i A'),
+                        'status'          => $existing->status,
+                        'branch_name'     => $nearestLocation->name,
                         'distance_meters' => round($minDistance),
-                        'reopened' => true
+                        'reopened'        => true
                     ], 'Attendance shift resumed and checked in successfully.', 200);
                 }
 
@@ -191,19 +216,20 @@ class AttendanceController extends Controller
             // 6. حفظ السجل
             $record = AttendanceRecord::create([
                 'employee_profile_id' => $employee->id,
-                'date' => $today,
-                'check_in' => Carbon::now()->toTimeString(),
-                'latitude_in' => $request->latitude,
-                'longitude_in' => $request->longitude,
-                'office_location_id' => $nearestLocation->id,
-                'distance_in_meters' => round($minDistance),
-                'status' => $status,
+                'date'                => $today,
+                'check_in'            => Carbon::now()->toTimeString(),
+                'latitude_in'         => $request->latitude,
+                'longitude_in'        => $request->longitude,
+                'office_location_id'  => $nearestLocation->id,
+                'distance_in_meters'  => round($minDistance),
+                'status'              => $status,
+                'lateness_reason'     => $latenessReason,
             ]);
 
             return $this->successResponse([
-                'check_in' => Carbon::parse($record->check_in)->format('h:i A'),
-                'status' => $record->status,
-                'branch_name' => $nearestLocation->name,
+                'check_in'        => Carbon::parse($record->check_in)->format('h:i A'),
+                'status'          => $record->status,
+                'branch_name'     => $nearestLocation->name,
                 'distance_meters' => round($minDistance),
             ], 'Check-in recorded successfully!', 201);
         } catch (\Illuminate\Validation\ValidationException $e) {

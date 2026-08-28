@@ -79,10 +79,13 @@ import PerformanceCycles from './Components/Pages/EmployeePortal/Performance/Man
 
 
 
+import { NotificationProvider } from './Components/Notification/NotificationContext';
+
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <NotificationProvider>
+      <BrowserRouter>
+        <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Navigate to="/" replace />} />
@@ -275,8 +278,8 @@ function App() {
 
 
       </Routes>
-
     </BrowserRouter>
+    </NotificationProvider>
   );
 }
 

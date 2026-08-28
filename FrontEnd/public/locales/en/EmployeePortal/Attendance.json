@@ -46,5 +46,14 @@
     "checkoutSuccess": "Checkout recorded successfully!",
     "checkinFail": "Check-in failed. Please try again.",
     "checkoutFail": "Checkout failed. Please try again."
+  },
+  "lateModal": {
+    "title": "Late Check-in Notice",
+    "subtitle": "You are checking in past the scheduled shift start time and grace period.",
+    "reasonLabel": "Please state the reason for lateness to log in the system:",
+    "reasonPlaceholder": "e.g. Heavy traffic, urgent family matter, doctor appointment...",
+    "confirmBtn": "Confirm & Check In",
+    "cancelBtn": "Cancel",
+    "requiredError": "Please provide a reason for lateness to proceed."
   }
 }

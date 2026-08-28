@@ -5,6 +5,8 @@ import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 import { useTranslation } from 'react-i18next';
 import Avatar from '../../../Shared/Avatar/Avatar';
 import apiClient from '../../../../apiConfig';
+import { useNotification } from '../../../Notification/NotificationContext';
+import DashboardLoader from '../../../Shared/DashboardLoader/DashboardLoader';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -54,6 +56,8 @@ const Accordion = ({ open, children }) => {
 const Attendance = () => {
     const { t, i18n } = useTranslation('Dashboard/Attendance');
     const isAr = i18n?.language === 'ar';
+    const isRtl = isAr;
+    const { showSuccess, showError, showWarning, showInfo } = useNotification();
 
     const [attendanceRecords, setAttendanceRecords] = useState([]);
     const [attendanceStats, setAttendanceStats] = useState({
@@ -328,7 +332,7 @@ const Attendance = () => {
     const handleSearchLocation = async (e) => {
         if (e) e.preventDefault();
         if (!searchQuery || !searchQuery.trim()) {
-            alert(t('geofencing.alerts.enterSearch'));
+            showWarning(t('geofencing.alerts.enterSearch'));
             return;
         }
         setIsSearchingMap(true);
@@ -348,13 +352,13 @@ const Attendance = () => {
                     mapInstance.current.setView(position, 15);
                     updateMarker(parsedLat, parsedLon, locRadius);
                 }
-                alert(`${t('geofencing.alerts.found')}${display_name}`);
+                showSuccess(`${t('geofencing.alerts.found')}${display_name}`);
             } else {
-                alert(t('geofencing.alerts.notFound'));
+                showWarning(t('geofencing.alerts.notFound'));
             }
         } catch (error) {
             console.error("Geocoding failed", error);
-            alert(t('geofencing.alerts.searchFailed'));
+            showError(t('geofencing.alerts.searchFailed'));
         } finally {
             setIsSearchingMap(false);
         }
@@ -363,7 +367,7 @@ const Attendance = () => {
     const handleAddLocation = async (e) => {
         e.preventDefault();
         if (!locName || !locLat || !locLon || !locRadius) {
-            alert(t('geofencing.alerts.fillAll'));
+            showWarning(t('geofencing.alerts.fillAll'));
             return;
         }
         setIsSavingLoc(true);
@@ -393,10 +397,10 @@ const Attendance = () => {
             }
 
             fetchLocations();
-            alert(t('geofencing.alerts.addedSuccess'));
+            showSuccess(t('geofencing.alerts.addedSuccess'));
         } catch (error) {
             console.error("Failed to save location", error);
-            alert(t('geofencing.alerts.failedAdd'));
+            showError(error, t('geofencing.alerts.failedAdd'));
         } finally {
             setIsSavingLoc(false);
         }
@@ -408,8 +412,10 @@ const Attendance = () => {
                 is_active: !currentStatus
             });
             fetchLocations();
+            showSuccess(currentStatus ? 'Location deactivated' : 'Location activated');
         } catch (error) {
             console.error("Failed to toggle location status", error);
+            showError(error, 'Failed to update location status');
         }
     };
 
@@ -418,8 +424,10 @@ const Attendance = () => {
         try {
             await apiClient.delete(`/office-locations/${id}`);
             fetchLocations();
+            showSuccess('Location deleted successfully');
         } catch (error) {
             console.error("Failed to delete location", error);
+            showError(error, 'Failed to delete location');
         }
     };
 
@@ -466,9 +474,10 @@ const Attendance = () => {
             setSaved(deptName);
             setTimeout(() => setSaved(null), 2000);
             fetchDepartmentHours();
+            showSuccess('Work hours saved successfully');
         } catch (error) {
             console.error("Failed to update department work hours", error);
-            alert(t('workHours.errorSave'));
+            showError(error, t('workHours.errorSave'));
         }
     };
 
@@ -912,8 +921,8 @@ const Attendance = () => {
                         <tbody>
                             {attendanceLoading ? (
                                 <tr>
-                                    <td colSpan="8" className="at-no-results">
-                                        {t('loading')}
+                                    <td colSpan="8" className="at-no-results py-5">
+                                        <DashboardLoader text={t('loading') || "Loading Attendance Records..."} size="md" />
                                     </td>
                                 </tr>
                             ) : attendanceError ? (

@@ -10,6 +10,7 @@ import CategoryFilter from './Navigation/CategoryFilter/CategoryFilter';
 import RequestList from './Requests/RequestList/RequestList';
 import Pagination from './UI/Pagination/Pagination';
 import apiClient from '../../../apiConfig';
+import { useNotification } from '../../Notification/NotificationContext';
 
 const TYPE_CONFIG = {
     'vacation': { icon: 'event', label: 'Annual Leave' },
@@ -26,6 +27,7 @@ const TYPE_CONFIG = {
 const Requests = () => {
     const { category = 'all' } = useParams();
     const navigate = useNavigate();
+    const { showSuccess, showError } = useNotification();
     const [activeTab, setActiveTab] = useState('all');
     const [requests, setRequests] = useState([]);
     const [stats, setStats] = useState({ pending: 0, approved: 0, rejected: 0 });
@@ -88,9 +90,10 @@ const Requests = () => {
         try {
             await apiClient.patch(`/requests/${id}/status`, { status, reason });
             fetchRequests();
+            showSuccess(status === 'approved' ? 'Request approved successfully.' : 'Request rejected successfully.');
         } catch (error) {
             console.error('Failed to update request status', error);
-            alert(error.response?.data?.message || 'Failed to update status.');
+            showError(error, 'Failed to update status.');
         }
     };
 
