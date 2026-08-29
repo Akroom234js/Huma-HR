@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './PerformanceCycles.css';
 import CycleResultsModal from './CycleResultsModal';
 import { useTranslation } from 'react-i18next';
+import DashboardLoader from '../../../../../Shared/DashboardLoader/DashboardLoader';
 import { getPerformanceCycles } from '../../../../../../services/performanceService';
 
 const PerformanceCycles = () => {
@@ -71,10 +72,7 @@ const PerformanceCycles = () => {
                 </div>
 
                 {isLoading ? (
-                    <div style={{ textAlign: 'center', padding: '50px', color: 'var(--text-secondary)' }}>
-                        <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', marginBottom: '12px', display: 'block' }}></i>
-                        {t('loading')}
-                    </div>
+                    <DashboardLoader text={t('loading')} size="lg" />
                 ) : (
                     <div className="table-wrapper">
                         <table className="custom-table">
@@ -119,8 +117,8 @@ const PerformanceCycles = () => {
                                                     )}
                                                     {c.status === 'processing' && (
                                                         <span className="badge" style={{ backgroundColor: '#fef3c7', color: '#b45309' }}>
-                                                            <i className="fa-solid fa-spinner fa-spin"></i>
-                                                            <span>{t('statuses.processing')}</span>
+                                                            <DashboardLoader size="xs" inline text="" />
+                                                            <span style={{ marginInlineStart: '4px' }}>{t('statuses.processing')}</span>
                                                         </span>
                                                     )}
                                                     {c.status === 'draft' && (

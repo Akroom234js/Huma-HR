@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import TaskFormModal from '../../../../../Shared/Performance/TaskFormModal/TaskFormModal';
 import { useTranslation } from 'react-i18next';
+import { useNotification } from '../../../../../Notification/NotificationContext';
 import { getDepartmentEmployees, createTask, updateTask } from '../../../../../../services/performanceService';
 
 const AssignNewTask = ({ isModal = false, isEdit = false, taskData, onClose, onSuccess }) => {
@@ -9,6 +10,7 @@ const AssignNewTask = ({ isModal = false, isEdit = false, taskData, onClose, onS
     const { id } = useParams();
     const { i18n } = useTranslation();
     const isAr = i18n ? i18n.language === 'ar' : false;
+    const { showSuccess, showError } = useNotification();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [employeesList, setEmployeesList] = useState([]);
 
@@ -43,7 +45,7 @@ const AssignNewTask = ({ isModal = false, isEdit = false, taskData, onClose, onS
                     late_penalty_per_day: Number(formData.late_penalty_per_day)
                 };
                 const res = await updateTask(taskData?.id || id, payload);
-                alert(isAr ? 'تم تعديل بيانات التكليف بنجاح!' : 'Task assignment updated successfully!');
+                showSuccess(isAr ? 'تم تعديل بيانات التكليف بنجاح!' : 'Task assignment updated successfully!');
                 if (isModal) {
                     if (onSuccess && res.data?.data) {
                         onSuccess(res.data.data);
@@ -63,7 +65,7 @@ const AssignNewTask = ({ isModal = false, isEdit = false, taskData, onClose, onS
                     late_penalty_per_day: Number(formData.late_penalty_per_day)
                 };
                 const res = await createTask(payload);
-                alert(isAr ? 'تم إسناد التكليف بنجاح وإشعار الموظف!' : 'Task assigned successfully and employee notified!');
+                showSuccess(isAr ? 'تم إسناد التكليف بنجاح وإشعار الموظف!' : 'Task assigned successfully and employee notified!');
                 if (isModal) {
                     if (onSuccess && res.data?.data) {
                         onSuccess(res.data.data);
@@ -75,7 +77,7 @@ const AssignNewTask = ({ isModal = false, isEdit = false, taskData, onClose, onS
             }
         } catch (error) {
             console.error("Failed to submit task form:", error);
-            alert(isAr ? 'حدث خطأ أثناء حفظ التكليف.' : 'An error occurred while saving task.');
+            showError(isAr ? 'حدث خطأ أثناء حفظ التكليف.' : 'An error occurred while saving task.');
         } finally {
             setIsSubmitting(false);
         }
