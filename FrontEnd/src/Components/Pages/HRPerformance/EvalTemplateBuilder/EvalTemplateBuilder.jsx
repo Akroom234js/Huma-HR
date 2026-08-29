@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import './EvalTemplateBuilder.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
+import { useNotification } from '../../../Notification/NotificationContext';
+import DashboardLoader from '../../../Shared/DashboardLoader/DashboardLoader';
 import {
   getPerformanceTemplates,
   createPerformanceTemplate,
@@ -140,6 +142,7 @@ function SubRow({ label, field, value, unit, min, max, onChange, hasMaxScore, ma
 /* ─── main component ──────────────────────────────────────── */
 export default function EvalTemplateBuilder() {
   const { t } = useTranslation('HrPerformance/EvalTemplateBuilder');
+  const { showSuccess, showError, showWarning } = useNotification();
   const [template, setTemplate] = useState(() => {
     const defaultTpl = deepClone(DEFAULT_TEMPLATE);
     defaultTpl.name = t('default_template_name');
@@ -327,7 +330,7 @@ export default function EvalTemplateBuilder() {
     if (!window.confirm('هل أنت متأكد من رغبتك في حذف هذا القالب؟')) return;
     try {
       await deletePerformanceTemplate(id);
-      alert('تم حذف القالب بنجاح.');
+      showSuccess('تم حذف القالب بنجاح.');
       const list = await loadAllTemplates();
       if (templateId === id && list.length > 0) {
         applyTemplateToEditor(list[0]);
@@ -335,7 +338,7 @@ export default function EvalTemplateBuilder() {
     } catch (err) {
       console.error("Failed to delete template:", err);
       const msg = err.response?.data?.message || 'تعذر حذف القالب لأنه مستخدم في دورات أداء.';
-      alert(msg);
+      showError(msg);
     }
   };
 
@@ -364,7 +367,7 @@ export default function EvalTemplateBuilder() {
 
   const handleSave = async (saveAsNew = false) => {
     if (!weightsOk) {
-      alert(`مجموع أوزان المعايير الحالية هو (${totalWeight}%)، ويجب أن يساوي 100% تماماً.`);
+      showWarning(`مجموع أوزان المعايير الحالية هو (${totalWeight}%)، ويجب أن يساوي 100% تماماً.`);
       return;
     }
     const payload = buildPayload(saveAsNew);
@@ -377,6 +380,7 @@ export default function EvalTemplateBuilder() {
         if (res.data?.data?.id) setTemplateId(res.data.data.id);
       }
       setSaved(true);
+      showSuccess(saveAsNew ? 'تم حفظ القالب كنسخة جديدة بنجاح!' : 'تم حفظ معايير القالب بنجاح!');
       await loadAllTemplates();
       setTimeout(() => setSaved(false), 3000);
     } catch (error) {
@@ -387,7 +391,7 @@ export default function EvalTemplateBuilder() {
         const detailed = Object.values(errors).flat().join('\n');
         if (detailed) msg = detailed;
       }
-      alert(msg);
+      showError(msg);
     } finally {
       setIsSaving(false);
     }
@@ -479,12 +483,12 @@ export default function EvalTemplateBuilder() {
               disabled={!weightsOk || isSaving}
               style={{ padding: '10px 16px' }}
             >
-              <span className="material-symbols-outlined">add_circle</span>
+              {isSaving ? <DashboardLoader size="xs" inline text="" /> : <span className="material-symbols-outlined">add_circle</span>}
               {t('save_as_new') || 'حفظ كنسخة جديدة'}
             </button>
           )}
           <button className="etb-save-btn" onClick={() => handleSave(false)} disabled={!weightsOk || isSaving}>
-            <span className="material-symbols-outlined">{saved ? 'check_circle' : 'save'}</span>
+            {isSaving ? <DashboardLoader size="xs" inline text="" /> : <span className="material-symbols-outlined">{saved ? 'check_circle' : 'save'}</span>}
             {saved ? t('saved') : (templateId ? (t('save_changes') || 'حفظ التعديلات') : t('save_template'))}
           </button>
         </div>
