@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import apiClient from '../../../../apiConfig';
 import Avatar from '../../../Shared/Avatar/Avatar';
 import { useNotification } from '../../../Notification/NotificationContext';
+import DashboardLoader from '../../../Shared/DashboardLoader/DashboardLoader';
 
 const SalaryStructure = () => {
     const { t } = useTranslation('SalaryManagement/SalaryStructure');
@@ -47,10 +48,10 @@ const SalaryStructure = () => {
             // Refresh both because position changes affect employees
             fetchSalaryStructures();
             fetchEmployees();
-            showSuccess("Salary structure updated successfully.");
+            showSuccess(t('StructureUpdated', "Salary structure updated successfully."));
         } catch (error) {
             console.error('Error updating salary structure:', error);
-            showError(error, "Failed to update salary structure.");
+            showError(error, t('StructureUpdateError', "Failed to update salary structure."));
         }
     };
 
@@ -70,10 +71,10 @@ const SalaryStructure = () => {
             await apiClient.patch(`/salary-structures/employees/${selectedEmployee.id}`, empEditData);
             setIsEmpModalOpen(false);
             fetchEmployees();
-            showSuccess("Employee salary updated successfully.");
+            showSuccess(t('EmpSalaryUpdated', "Employee salary updated successfully."));
         } catch (error) {
             console.error('Error updating employee salary:', error);
-            showError(error, "Update failed.");
+            showError(error, t('EmpSalaryUpdateError', "Update failed."));
         }
     };
 
@@ -170,19 +171,29 @@ const SalaryStructure = () => {
                             <tbody>
                                 {loading ? (
                                     <tr>
-                                        <td colSpan="7" className="text-center py-4">{t('table.loading', 'Loading...')}</td>
+                                        <td colSpan="7" style={{ padding: '3rem 1rem', textAlign: 'center' }}>
+                                            <DashboardLoader text={t('table.loading', 'Loading salary structures...')} size="md" />
+                                        </td>
                                     </tr>
-                                ) : filteredData.map((row, idx) => (
-                                    <tr key={idx}>
-                                        <td className="font-medium">{row.title}</td>
-                                        <td className="text-right">${Number(row.min_salary).toLocaleString()}</td>
-                                        <td className="text-right">${Number(row.max_salary).toLocaleString()}</td>
-                                        <td className="text-center">${Number(row.allowances).toLocaleString()}</td>
-                                        <td className="text-center">{row.tax_percent}%</td>
-                                        <td className="text-center">${Number(row.insurance_amount).toLocaleString()}</td>
-                                        <td className="text-center">${Number(row.min_salary).toLocaleString()} - ${Number(row.max_salary).toLocaleString()}</td>
+                                ) : filteredData.length > 0 ? (
+                                    filteredData.map((row, idx) => (
+                                        <tr key={idx}>
+                                            <td className="font-medium">{row.title}</td>
+                                            <td className="text-right">${Number(row.min_salary).toLocaleString()}</td>
+                                            <td className="text-right">${Number(row.max_salary).toLocaleString()}</td>
+                                            <td className="text-center">${Number(row.allowances).toLocaleString()}</td>
+                                            <td className="text-center">{row.tax_percent}%</td>
+                                            <td className="text-center">${Number(row.insurance_amount).toLocaleString()}</td>
+                                            <td className="text-center">${Number(row.min_salary).toLocaleString()} - ${Number(row.max_salary).toLocaleString()}</td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary, #64748b)' }}>
+                                            {t('table.noResults', 'No results found')}
+                                        </td>
                                     </tr>
-                                ))}
+                                )}
                             </tbody>
                         </table>
                     </div>
@@ -217,26 +228,40 @@ const SalaryStructure = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredEmployees.map((emp, idx) => (
-                                    <tr key={idx}>
-                                        <td>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                <Avatar user={emp} size="sm" />
-                                                <span>{emp.full_name}</span>
-                                            </div>
-                                        </td>
-                                        <td>{emp.job_title}</td>
-                                        <td className="text-right" style={{ fontWeight: '600' }}>${Number(emp.salary).toLocaleString()}</td>
-                                        <td className="text-center">${Number(emp.allowances).toLocaleString()}</td>
-                                        <td className="text-center">{emp.tax_percent}%</td>
-                                        <td className="text-center">${Number(emp.insurance_amount).toLocaleString()}</td>
-                                        <td className="text-center">
-                                            <button onClick={() => handleOpenEmpEdit(emp)} className="btn-edit-salary">
-                                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>settings</span>
-                                            </button>
+                                {loading ? (
+                                    <tr>
+                                        <td colSpan="7" style={{ padding: '3rem 1rem', textAlign: 'center' }}>
+                                            <DashboardLoader text={t('table.loadingEmployees', 'Loading employee salaries...')} size="md" />
                                         </td>
                                     </tr>
-                                ))}
+                                ) : filteredEmployees.length > 0 ? (
+                                    filteredEmployees.map((emp, idx) => (
+                                        <tr key={idx}>
+                                            <td>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                    <Avatar user={emp} size="sm" />
+                                                    <span>{emp.full_name}</span>
+                                                </div>
+                                            </td>
+                                            <td>{emp.job_title}</td>
+                                            <td className="text-right" style={{ fontWeight: '600' }}>${Number(emp.salary).toLocaleString()}</td>
+                                            <td className="text-center">${Number(emp.allowances).toLocaleString()}</td>
+                                            <td className="text-center">{emp.tax_percent}%</td>
+                                            <td className="text-center">${Number(emp.insurance_amount).toLocaleString()}</td>
+                                            <td className="text-center">
+                                                <button onClick={() => handleOpenEmpEdit(emp)} className="btn-edit-salary">
+                                                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>settings</span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary, #64748b)' }}>
+                                            {t('table.noResults', 'No results found')}
+                                        </td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>

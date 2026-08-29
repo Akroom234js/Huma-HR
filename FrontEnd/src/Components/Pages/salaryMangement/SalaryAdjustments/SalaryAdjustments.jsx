@@ -3,9 +3,12 @@ import { useTranslation } from 'react-i18next';
 import './SalaryAdjustments.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import apiClient from '../../../../apiConfig';
+import { useNotification } from '../../../Notification/NotificationContext';
+import DashboardLoader from '../../../Shared/DashboardLoader/DashboardLoader';
 
 const SalaryAdjustments = () => {
     const { t } = useTranslation('SalaryManagement/SalaryAdjustments');
+    const { showError } = useNotification();
     
     // States for data
     const [adjustmentsData, setAdjustmentsData] = useState([]);
@@ -33,6 +36,7 @@ const SalaryAdjustments = () => {
             setStats(data.stats || {});
         } catch (error) {
             console.error('Error fetching salary adjustments:', error);
+            showError(error, t('FetchError', 'Failed to load salary adjustments history.'));
         } finally {
             setLoading(false);
         }
@@ -161,7 +165,9 @@ const SalaryAdjustments = () => {
                         <tbody>
                              {loading ? (
                                  <tr>
-                                     <td colSpan="8" style={{textAlign: 'center', padding: '30px'}}>{t('Loading', 'Loading...')}</td>
+                                     <td colSpan="8" style={{ padding: '3rem 1rem', textAlign: 'center' }}>
+                                         <DashboardLoader text={t('Loading', 'Loading adjustments history...')} size="md" />
+                                     </td>
                                  </tr>
                              ) : filteredData.length > 0 ? filteredData.map(row => {
                                  const initials = row.employee?.full_name?.split(' ').map(n => n[0]).join('').toUpperCase() || '??';

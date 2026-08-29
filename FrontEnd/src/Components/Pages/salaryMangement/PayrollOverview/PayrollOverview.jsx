@@ -4,11 +4,15 @@ import apiClient from "../../../../apiConfig";
 import "./PayrollOverview.css";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { useTranslation } from "react-i18next";
+import { useNotification } from "../../../Notification/NotificationContext";
+import DashboardLoader from "../../../Shared/DashboardLoader/DashboardLoader";
 
 const COLORS = ["#2563eb", "#3b82f6", "#60a5fa", "#cbd5e1"];
 
 const PayrollOverview = () => {
   const { t } = useTranslation('SalaryManagement/PayrollOverview');
+  const { showError } = useNotification();
+  const [isLoading, setIsLoading] = useState(true);
 
   const [overviewData, setOverviewData] = useState({
     total_payroll_amount: 0,
@@ -36,11 +40,21 @@ const PayrollOverview = () => {
   }, [selectedMonth]);
 
   const fetchOverview = async () => {
+    setIsLoading(true);
     try {
       const response = await apiClient.get('/payroll/overview', { params: { month: selectedMonth } });
-      setOverviewData(response.data.data);
+      setOverviewData(response.data?.data || {
+        total_payroll_amount: 0,
+        total_paid: 0,
+        total_records: 0,
+        avg_salary: 0,
+        department_distribution: []
+      });
     } catch (error) {
       console.error('Error fetching payroll overview:', error);
+      showError(error, t('FetchError', 'Failed to load payroll overview.'));
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -143,18 +157,27 @@ const PayrollOverview = () => {
           </thead>
 
           <tbody>
-            {overviewData.department_distribution && overviewData.department_distribution.map((dept, index) => (
-              <tr key={index}>
-                <td>{dept.name}</td>
-                <td>${Number(dept.total_payroll).toLocaleString()}</td>
-                <td>${Number(dept.avg_salary).toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
-                <td>{dept.employee_count}</td>
-                <td>{dept.value}%</td>
-              </tr>
-            ))}
-            {(!overviewData.department_distribution || overviewData.department_distribution.length === 0) && (
+            {isLoading ? (
               <tr>
-                <td colSpan="5" style={{ textAlign: 'center' }}>{t('NoData', 'No data available')}</td>
+                <td colSpan="5" style={{ padding: '3rem 1rem', textAlign: 'center' }}>
+                  <DashboardLoader text={t('Loading', 'Loading payroll overview...')} size="md" />
+                </td>
+              </tr>
+            ) : overviewData.department_distribution && overviewData.department_distribution.length > 0 ? (
+              overviewData.department_distribution.map((dept, index) => (
+                <tr key={index}>
+                  <td><strong>{dept.name}</strong></td>
+                  <td>${Number(dept.total_payroll).toLocaleString()}</td>
+                  <td>${Number(dept.avg_salary).toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
+                  <td>{dept.employee_count}</td>
+                  <td>{dept.value}%</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary, #64748b)' }}>
+                  {t('NoData', 'No data available')}
+                </td>
               </tr>
             )}
           </tbody>
