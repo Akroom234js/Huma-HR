@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './ManagerEvalForm.css';
 import { useTranslation } from 'react-i18next';
+import DashboardLoader from '../../DashboardLoader/DashboardLoader';
 
 const ManagerEvalForm = ({ 
     employeeName = '', 
@@ -191,8 +192,8 @@ const ManagerEvalForm = ({
                 >
                     {isSubmitting ? (
                         <>
-                            <i className="fa-solid fa-circle-notch fa-spin"></i>
-                            <span>{isEvaluated 
+                            <DashboardLoader size="xs" inline text="" />
+                            <span style={{ marginInlineStart: '6px' }}>{isEvaluated 
                                 ? (isAr ? 'جاري تحديث التقييم...' : 'Updating Evaluation...') 
                                 : (isAr ? 'جاري إرسال التقييم...' : 'Submitting Evaluation...')}
                             </span>

@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import './PeerReviewForm.css';
+import { useNotification } from '../../../Notification/NotificationContext';
+import DashboardLoader from '../../DashboardLoader/DashboardLoader';
 
 const PeerReviewForm = ({ employees = [], onSubmit, isSubmitting = false, lang }) => {
     const currentLang = lang || sessionStorage.getItem('lang') || 'en';
     const isAr = currentLang === 'ar';
+    const { showWarning } = useNotification();
 
     // State variables
     const [selectedEmployeeId, setSelectedEmployeeId] = useState('');
@@ -14,7 +17,7 @@ const PeerReviewForm = ({ employees = [], onSubmit, isSubmitting = false, lang }
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!selectedEmployeeId) {
-            alert(isAr ? 'الرجاء اختيار الزميل أولاً' : 'Please select a colleague first');
+            showWarning(isAr ? 'الرجاء اختيار الزميل أولاً' : 'Please select a colleague first');
             return;
         }
         if (onSubmit) {
@@ -132,8 +135,8 @@ const PeerReviewForm = ({ employees = [], onSubmit, isSubmitting = false, lang }
             >
                 {isSubmitting ? (
                     <>
-                        <i className="fa-solid fa-circle-notch fa-spin"></i>
-                        <span>{isAr ? 'جاري التشفير والإرسال...' : 'Encrypting & Submitting...'}</span>
+                        <DashboardLoader size="xs" inline text="" />
+                        <span style={{ marginInlineStart: '6px' }}>{isAr ? 'جاري التشفير والإرسال...' : 'Encrypting & Submitting...'}</span>
                     </>
                 ) : (
                     <>
