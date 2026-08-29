@@ -49,7 +49,7 @@ class ProcessPerformanceJob implements ShouldQueue
         }
 
         // ✅ components — مش config
-        $components = collect($template->components ?? [])->filter(fn($c) => !empty($c['is_active']));
+        $components = collect($template->components ?? [])->filter(fn($c) => !isset($c['is_active']) || !empty($c['is_active']));
 
         // ✅ تجميع كل درجات peer دفعة واحدة لتفادي N+1
         $peerScores = $components->has('peer')
