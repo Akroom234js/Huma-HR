@@ -1,0 +1,12 @@
+{
+    "subtitle": "Company Structure",
+    "page-title": "Organizational Chart",
+    "all-departments": "All Departments",
+    "vacant-only": "Vacant Only",
+    "btn-vertical": "Vertical",
+    "btn-horizontal": "Horizontal",
+    "vacant": "Vacant",
+    "loading": "Loading chart...",
+    "error-load": "Failed to load org chart.",
+    "btn-retry": "Retry"
+}

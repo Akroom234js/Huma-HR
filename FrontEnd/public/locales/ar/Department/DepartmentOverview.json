@@ -1,0 +1,21 @@
+{
+    "page-title": "نظرة عامة على الأقسام",
+    "total-departments": "إجمالي الأقسام",
+    "avg-employees": "متوسط الموظفين / قسم",
+    "highest-headcount": "الأعلى عدداً للموظفين",
+    "total-budget": "إجمالي ميزانية الكادر",
+    "chart-distribution-title": "توزيع الموظفين حسب القسم",
+    "chart-budget-title": "توزيع الميزانية",
+    "th-dept-name": "اسم القسم",
+    "th-dept-head": "رئيس القسم",
+    "th-employees": "عدد الموظفين",
+    "th-open-positions": "الشواغر المتاحة",
+    "th-annual-budget": "الميزانية السنوية",
+    "th-actions": "الإجراءات",
+    "delete": "حذف القسم",
+    "confirm-delete": "هل أنت متأكد من رغبتك في حذف قسم \"{{name}}\"؟",
+    "toast-delete-success": "تم حذف القسم بنجاح.",
+    "toast-delete-error": "فشل حذف القسم.",
+    "no-data": "لم يتم العثور على بيانات.",
+    "loading": "جاري تحميل بيانات الأقسام..."
+}
