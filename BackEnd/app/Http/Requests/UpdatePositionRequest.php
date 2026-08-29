@@ -16,11 +16,19 @@ class UpdatePositionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'         => 'sometimes|string|max:255',
-            'department_id' => 'sometimes|nullable|exists:departments,id',
-            'description'   => 'sometimes|nullable|string',
-            'requirements'  => 'sometimes|nullable|string',
-            'reporting_to'  => 'sometimes|nullable|string',
+            'title'              => 'sometimes|string|max:255',
+            'department_id'      => 'sometimes|nullable|exists:departments,id',
+            'openings'           => 'sometimes|nullable|integer|min:1',
+            'parent_position_id' => 'sometimes|nullable|exists:positions,id',
+            'is_managerial'      => 'sometimes|boolean',
+            'description'        => 'sometimes|nullable|string',
+            'requirements'       => 'sometimes|nullable|string',
+            'reporting_to'       => 'sometimes|nullable|string',
+            'min_salary'         => 'sometimes|nullable|numeric|min:0',
+            'max_salary'         => 'sometimes|nullable|numeric|min:0',
+            'tax_percent'        => 'sometimes|nullable|numeric|min:0|max:100',
+            'insurance_amount'   => 'sometimes|nullable|numeric|min:0',
+            'allowances'         => 'sometimes|nullable|numeric|min:0',
         ];
     }
 

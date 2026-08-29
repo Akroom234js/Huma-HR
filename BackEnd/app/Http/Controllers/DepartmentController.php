@@ -110,17 +110,21 @@ class DepartmentController extends Controller
     }
 
     /**
-     * حذف القسم (بشرط عدم وجود موظفين مرتبين به).
+     * حذف القسم (بشرط عدم وجود موظفين أو مناصب مرتبطة به).
      */
     public function destroy(int $id): JsonResponse
     {
         $department = Department::find($id);
         if (!$department) {
-            return $this->errorResponse('Department not found.', 404);
+            return $this->errorResponse('Department not found.', null, 404);
         }
 
         if ($department->employees()->exists()) {
-            return $this->errorResponse('Cannot delete department with assigned employees.', 422);
+            return $this->errorResponse('Cannot delete department with assigned employees. Please reassign or remove employees first.', null, 422);
+        }
+
+        if (\App\Models\Position::where('department_id', $id)->exists()) {
+            return $this->errorResponse('Cannot delete department with existing positions. Please reassign or delete positions first.', null, 422);
         }
 
         $department->delete();
@@ -153,6 +157,7 @@ class DepartmentController extends Controller
         ]);
 
         $tableData = $departments->map(fn($d) => [
+            'id' => $d->id,
             'name' => $d->name,
             'head' => $d->head ? $d->head->full_name : '—', 
             'count' => $d->employees_count,
