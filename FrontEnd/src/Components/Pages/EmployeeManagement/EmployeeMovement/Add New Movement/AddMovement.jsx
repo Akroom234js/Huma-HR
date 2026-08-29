@@ -2,9 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import './AddMovement.css';
 import { useTranslation } from 'react-i18next';
 import apiClient from '../../../../../apiConfig';
+import DashboardLoader from '../../../../Shared/DashboardLoader/DashboardLoader';
+import { useNotification } from '../../../../Notification/NotificationContext';
 
 const AddMovement = ({ onAddMovement }) => {
-    const { t } = useTranslation('EmployeeMovement/EmployeeMovement');
+    const { t, i18n } = useTranslation('EmployeeMovement/EmployeeMovement');
+    const isAr = i18n?.language === 'ar';
+    const { showSuccess, showError, showWarning } = useNotification();
+
     const [showMovementModal, setShowMovementModal] = useState(false);
     const [modalStep, setModalStep] = useState('selection'); // 'selection', 'promotion', or 'transfer'
     const [positionsList, setPositionsList] = useState([]);
@@ -88,7 +93,7 @@ const AddMovement = ({ onAddMovement }) => {
         if (showMovementModal) {
             fetchFilters();
         }
-    }, [showMovementModal]);
+    }, [showMovementModal, fetchFilters]);
 
     const handleEmployeeSelect = (emp) => {
         setSelectedEmployee(emp);
@@ -100,7 +105,7 @@ const AddMovement = ({ onAddMovement }) => {
 
     const handleConfirm = async () => {
         if (!selectedEmployee || !formData.effectiveDate) {
-            alert('Please fill in all required fields');
+            showWarning(t('toast-fill-fields') || 'Please fill in all required fields');
             return;
         }
 
@@ -136,14 +141,14 @@ const AddMovement = ({ onAddMovement }) => {
             }
 
             await apiClient.post('/employee-movements', payload);
-            alert('Movement recorded successfully!');
+            showSuccess(t('toast-movement-success') || 'Movement recorded successfully!');
             onAddMovement(); // Refresh the list in parent
             setShowMovementModal(false);
             resetForm();
         } catch (error) {
             console.error("Failed to save movement", error);
-            const errorMsg = error.response?.data?.message || 'Error saving movement';
-            alert(errorMsg);
+            const errorMsg = error.response?.data?.message || t('toast-movement-error') || 'Error saving movement';
+            showError(errorMsg);
         } finally {
             setIsLoading(false);
         }
@@ -179,7 +184,7 @@ const AddMovement = ({ onAddMovement }) => {
 
             {/* Movement Modal */}
             {showMovementModal && (
-                <div className="em-modal-overlay" onClick={() => setShowMovementModal(false)}>
+                <div className={`em-modal-overlay ${isAr ? 'rtl' : 'ltr'}`} onClick={() => setShowMovementModal(false)}>
                     <div className="em-modal-container" onClick={(e) => e.stopPropagation()}>
                         <div className={`em-modal-wrapper step-${modalStep}`}>
                             {/* Step 1: Selection */}
@@ -379,8 +384,12 @@ const AddMovement = ({ onAddMovement }) => {
                                         {t('btn-back')}
                                     </button>
                                     <div className="em-footer-actions">
-                                        <button className="em-confirm-btn" onClick={handleConfirm}>
-                                            <span className="material-symbols-outlined">check</span>
+                                        <button className="em-confirm-btn" onClick={handleConfirm} disabled={isLoading}>
+                                            {isLoading ? (
+                                                <DashboardLoader size="xs" inline />
+                                            ) : (
+                                                <span className="material-symbols-outlined">check</span>
+                                            )}
                                             {t('btn-confirm-promotion')}
                                         </button>
                                     </div>
@@ -513,8 +522,12 @@ const AddMovement = ({ onAddMovement }) => {
                                         {t('btn-back')}
                                     </button>
                                     <div className="em-footer-actions">
-                                        <button className="em-confirm-btn" onClick={handleConfirm}>
-                                            <span className="material-symbols-outlined">check</span>
+                                        <button className="em-confirm-btn" onClick={handleConfirm} disabled={isLoading}>
+                                            {isLoading ? (
+                                                <DashboardLoader size="xs" inline />
+                                            ) : (
+                                                <span className="material-symbols-outlined">check</span>
+                                            )}
                                             {t('btn-confirm-transfer')}
                                         </button>
                                     </div>
@@ -673,8 +686,12 @@ const AddMovement = ({ onAddMovement }) => {
                                         {t('btn-back')}
                                     </button>
                                     <div className="em-footer-actions">
-                                        <button className="em-confirm-btn" onClick={handleConfirm}>
-                                            <span className="material-symbols-outlined">payments</span>
+                                        <button className="em-confirm-btn" onClick={handleConfirm} disabled={isLoading}>
+                                            {isLoading ? (
+                                                <DashboardLoader size="xs" inline />
+                                            ) : (
+                                                <span className="material-symbols-outlined">payments</span>
+                                            )}
                                             {t('btn-confirm-salary')}
                                         </button>
                                     </div>
@@ -797,8 +814,12 @@ const AddMovement = ({ onAddMovement }) => {
                                         {t('btn-back')}
                                     </button>
                                     <div className="em-footer-actions">
-                                        <button className="em-confirm-btn" onClick={handleConfirm}>
-                                            <span className="material-symbols-outlined">check</span>
+                                        <button className="em-confirm-btn" onClick={handleConfirm} disabled={isLoading}>
+                                            {isLoading ? (
+                                                <DashboardLoader size="xs" inline />
+                                            ) : (
+                                                <span className="material-symbols-outlined">check</span>
+                                            )}
                                             {t('btn-confirm-transfer')}
                                         </button>
                                     </div>

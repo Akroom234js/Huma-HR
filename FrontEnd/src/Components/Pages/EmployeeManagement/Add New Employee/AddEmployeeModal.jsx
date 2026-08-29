@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import "./AddEmployeeModal.css";
+import { useTranslation } from "react-i18next";
 import apiClient from "../../../../apiConfig";
+import DashboardLoader from "../../../Shared/DashboardLoader/DashboardLoader";
 
 const AddEmployeeModal = ({
   isOpen,
@@ -12,6 +14,8 @@ const AddEmployeeModal = ({
   positionOptions = [],
   managerOptions = [],
 }) => {
+  const { t, i18n } = useTranslation("AllEmployees/AllEmployees");
+  const isAr = i18n?.language === "ar";
   const emptyForm = {
     email: "",
     password: "",
@@ -34,6 +38,7 @@ const AddEmployeeModal = ({
   const [previewImage, setPreviewImage] = useState(null);
   const [deptPositions, setDeptPositions] = useState([]);
   const [deptManagers, setDeptManagers] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Reset form when modal opens or editingEmployee changes
   useEffect(() => {
@@ -129,22 +134,29 @@ const AddEmployeeModal = ({
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave(formData);
-    onClose();
+    setIsSubmitting(true);
+    try {
+      await onSave(formData);
+      onClose();
+    } catch (err) {
+      console.error("Failed to save employee", err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return ReactDOM.createPortal(
-    <div className="aem-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    <div className={`aem-overlay ${isAr ? 'rtl' : 'ltr'}`} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="aem-container">
         {/* Header */}
         <div className="aem-header">
           <div className="aem-header-title">
             <span className="aem-breadcrumb">
-              Employee Management &gt; {editingEmployee ? "Edit Employee" : "Add New Employee"}
+              {t('modal-breadcrumb')} &gt; {editingEmployee ? t('modal-edit-title') : t('modal-add-title')}
             </span>
-            <h2>{editingEmployee ? "Edit Employee" : "Add New Employee"}</h2>
+            <h2>{editingEmployee ? t('modal-edit-title') : t('modal-add-title')}</h2>
           </div>
           <button type="button" className="aem-close-btn" onClick={onClose}>
             <span className="material-symbols-outlined">close</span>
@@ -160,28 +172,28 @@ const AddEmployeeModal = ({
               <div className="aem-section-header">
                 <span className="material-symbols-outlined">person</span>
                 <div>
-                  <h3>Personal Information</h3>
-                  <p>Basic details and login credentials.</p>
+                  <h3>{t('sec-personal-title')}</h3>
+                  <p>{t('sec-personal-desc')}</p>
                 </div>
               </div>
               <div className="aem-grid">
                 <div className="aem-field">
-                  <label>Full Name</label>
+                  <label>{t('field-fullname')}</label>
                   <input
                     type="text"
                     name="fullName"
-                    placeholder="e.g. John Doe"
+                    placeholder={t('placeholder-fullname')}
                     value={formData.fullName}
                     required
                     onChange={handleChange}
                   />
                 </div>
                 <div className="aem-field">
-                  <label>Email Address</label>
+                  <label>{t('field-email')}</label>
                   <input
                     type="email"
                     name="email"
-                    placeholder="john.doe@company.com"
+                    placeholder={t('placeholder-email')}
                     value={formData.email}
                     required
                     onChange={handleChange}
@@ -189,42 +201,42 @@ const AddEmployeeModal = ({
                 </div>
                 <div className="aem-field">
                   <label>
-                    Password
+                    {t('field-password')}
                     {editingEmployee && (
-                      <span className="aem-label-hint">(اتركه فارغاً إذا لا تريد تغييره)</span>
+                      <span className="aem-label-hint">{isAr ? " (اتركه فارغاً إذا لا تريد تغييره)" : " (Leave blank to keep unchanged)"}</span>
                     )}
                   </label>
                   <input
                     type="password"
                     name="password"
-                    placeholder={editingEmployee ? "••••••••" : "Huma@2024!"}
+                    placeholder={editingEmployee ? "••••••••" : "••••••••"}
                     value={formData.password}
                     required={!editingEmployee}
                     onChange={handleChange}
                   />
                 </div>
                 <div className="aem-field aem-full">
-                  <label>Address</label>
+                  <label>{t('field-address')}</label>
                   <input
                     type="text"
                     name="address"
-                    placeholder="Street address, City, State, Zip"
+                    placeholder={t('placeholder-address')}
                     value={formData.address}
                     onChange={handleChange}
                   />
                 </div>
                 <div className="aem-field">
-                  <label>Phone Number</label>
+                  <label>{t('field-phone')}</label>
                   <input
                     type="tel"
                     name="phone"
-                    placeholder="+1 234 567 890"
+                    placeholder={t('placeholder-phone')}
                     value={formData.phone}
                     onChange={handleChange}
                   />
                 </div>
                 <div className="aem-field">
-                  <label>Date of Birth</label>
+                  <label>{t('field-dob')}</label>
                   <input
                     type="date"
                     name="dob"
@@ -233,11 +245,11 @@ const AddEmployeeModal = ({
                   />
                 </div>
                 <div className="aem-field aem-full">
-                  <label>Emergency Contact</label>
+                  <label>{t('field-emergency')}</label>
                   <input
                     type="text"
                     name="emergencyContact"
-                    placeholder="Name - Phone Number"
+                    placeholder={t('placeholder-emergency')}
                     value={formData.emergencyContact}
                     onChange={handleChange}
                   />
@@ -250,13 +262,13 @@ const AddEmployeeModal = ({
               <div className="aem-section-header">
                 <span className="material-symbols-outlined">badge</span>
                 <div>
-                  <h3>Employment &amp; Contract</h3>
-                  <p>Role definition and organizational placement.</p>
+                  <h3>{t('sec-employment-title')}</h3>
+                  <p>{t('sec-employment-desc')}</p>
                 </div>
               </div>
               <div className="aem-grid">
                 <div className="aem-field">
-                  <label>Start Date</label>
+                  <label>{t('field-joining-date')}</label>
                   <input
                     type="date"
                     name="joiningDate"
@@ -266,13 +278,13 @@ const AddEmployeeModal = ({
                   />
                 </div>
                 <div className="aem-field">
-                  <label>Department</label>
+                  <label>{t('field-department')}</label>
                   <select
                     name="department"
                     value={formData.department}
                     onChange={handleChange}
                   >
-                    <option value="">Select Department</option>
+                    <option value="">{t('placeholder-select-dept')}</option>
                     {departmentOptions
                       .filter((d) => d.value)
                       .map((d) => (
@@ -283,14 +295,14 @@ const AddEmployeeModal = ({
                   </select>
                 </div>
                 <div className="aem-field">
-                  <label>Job Title</label>
+                  <label>{t('field-job-title')}</label>
                   <select
                     name="jobTitle"
                     value={formData.jobTitle}
                     required
                     onChange={handleChange}
                   >
-                    <option value="">Select Position</option>
+                    <option value="">{t('placeholder-select-pos')}</option>
                     {shownPositions.map((pos) => (
                       <option key={pos.value} value={pos.value}>
                         {pos.label}
@@ -299,13 +311,13 @@ const AddEmployeeModal = ({
                   </select>
                 </div>
                 <div className="aem-field">
-                  <label>Direct Supervisor</label>
+                  <label>{t('field-supervisor')}</label>
                   <select
                     name="directManager"
                     value={formData.directManager}
                     onChange={handleChange}
                   >
-                    <option value="">Select Supervisor</option>
+                    <option value="">{t('placeholder-select-manager')}</option>
                     {shownManagers.map((m) => (
                       <option key={m.value} value={m.value}>
                         {m.label}
@@ -314,28 +326,28 @@ const AddEmployeeModal = ({
                   </select>
                 </div>
                 <div className="aem-field">
-                  <label>Employee ID</label>
+                  <label>{t('field-employee-id')}</label>
                   <input
                     type="text"
                     name="employeeId"
-                    placeholder="Auto-generated if left blank"
+                    placeholder={t('placeholder-employee-id')}
                     value={formData.employeeId}
                     onChange={handleChange}
                   />
                 </div>
                 <div className="aem-field">
                   <label>
-                    Basic Salary
+                    {t('field-salary')}
                     {selectedPosition && (
                       <span className="aem-salary-hint">
-                        (Range: ${selectedPosition.min_salary} – ${selectedPosition.max_salary})
+                        ({isAr ? "النطاق:" : "Range:"} ${selectedPosition.min_salary} – ${selectedPosition.max_salary})
                       </span>
                     )}
                   </label>
                   <input
                     type="number"
                     name="basicSalary"
-                    placeholder="Enter amount"
+                    placeholder={t('placeholder-salary')}
                     value={formData.basicSalary}
                     onChange={handleChange}
                   />
@@ -346,22 +358,19 @@ const AddEmployeeModal = ({
                   <div className="aem-status-header">
                     <span className="aem-status-title">
                       <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--primary-color)' }}>badge</span>
-                      Employment Status
+                      {t('field-status')}
                     </span>
                     <span className={`aem-status-badge ${formData.employmentStatus || 'active'}`}>
-                      {formData.employmentStatus === 'active' && 'Active (Full Operations & Payroll)'}
-                      {formData.employmentStatus === 'on_leave' && 'On Leave (Active Contract)'}
-                      {formData.employmentStatus === 'inactive' && 'Inactive (Suspended from Payroll)'}
-                      {formData.employmentStatus === 'terminated' && 'Terminated (Excluded from all calculations)'}
+                      {t(`status-${formData.employmentStatus || 'active'}`)}
                     </span>
                   </div>
 
                   <div className="aem-status-slider-track" role="radiogroup" aria-label="Employment Status">
                     {[
-                      { id: 'active', label: 'Active', icon: 'check_circle' },
-                      { id: 'on_leave', label: 'On Leave', icon: 'flight_takeoff' },
-                      { id: 'inactive', label: 'Inactive', icon: 'pause_circle' },
-                      { id: 'terminated', label: 'Terminated', icon: 'cancel' }
+                      { id: 'active', label: t('status-active'), icon: 'check_circle' },
+                      { id: 'on_leave', label: t('status-on_leave'), icon: 'flight_takeoff' },
+                      { id: 'inactive', label: t('status-inactive'), icon: 'pause_circle' },
+                      { id: 'terminated', label: t('status-terminated'), icon: 'cancel' }
                     ].map((st) => (
                       <button
                         key={st.id}
@@ -374,14 +383,10 @@ const AddEmployeeModal = ({
                       </button>
                     ))}
                   </div>
-                  <span className="aem-status-hint">
-                    <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>info</span>
-                    Setting status to Inactive or Terminated automatically stops payroll generation and operational calculations for this employee.
-                  </span>
                 </div>
 
                 <div className="aem-field aem-full">
-                  <label>Profile Picture</label>
+                  <label>{t('field-profile-pic')}</label>
                   {previewImage && (
                     <img
                       src={previewImage}
@@ -403,12 +408,16 @@ const AddEmployeeModal = ({
 
           {/* Footer */}
           <div className="aem-footer">
-            <button type="button" className="aem-btn-cancel" onClick={onClose}>
-              Cancel
+            <button type="button" className="aem-btn-cancel" onClick={onClose} disabled={isSubmitting}>
+              {t('btn-cancel')}
             </button>
-            <button type="submit" className="aem-btn-save">
-              <span className="material-symbols-outlined">check_circle</span>
-              {editingEmployee ? "Update Employee" : "Create Account"}
+            <button type="submit" className="aem-btn-save" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <DashboardLoader size="xs" inline />
+              ) : (
+                <span className="material-symbols-outlined">check_circle</span>
+              )}
+              {editingEmployee ? t('btn-save-update') : t('btn-save-create')}
             </button>
           </div>
         </form>
