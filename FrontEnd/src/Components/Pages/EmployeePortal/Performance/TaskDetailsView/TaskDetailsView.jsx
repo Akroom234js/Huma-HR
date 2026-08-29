@@ -7,6 +7,8 @@ import ManagerNoteBox from '../../../../Shared/Performance/ManagerNoteBox/Manage
 import TaskScoreBreakdown from '../../../../Shared/Performance/TaskScoreBreakdown/TaskScoreBreakdown';
 import ThemeToggle from '../../../../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
+import { useNotification } from '../../../../Notification/NotificationContext';
+import DashboardLoader from '../../../../Shared/DashboardLoader/DashboardLoader';
 import { getTaskDetails, completeTask } from '../../../../../services/performanceService';
 import { STORAGE_BASE_URL } from '../../../../../apiConfig';
 
@@ -16,6 +18,7 @@ const TaskDetailsView = () => {
     const activeTaskId = id || taskId;
     const { t, i18n } = useTranslation('EmployeePortal/TaskDetailsView');
     const isAr = i18n ? i18n.language === 'ar' : false;
+    const { showSuccess, showError } = useNotification();
 
     const [task, setTask] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -62,23 +65,18 @@ const TaskDetailsView = () => {
                 formData.append('attachment', selectedFile);
             }
             await completeTask(task.id, formData);
-            alert(t('successSubmit') || (isAr ? 'تم تسليم المهمة بنجاح!' : 'Task submitted successfully!'));
+            showSuccess(t('successSubmit') || (isAr ? 'تم تسليم المهمة بنجاح!' : 'Task submitted successfully!'));
             navigate('/portal/performance');
         } catch (error) {
             console.error("Error submitting task deliverable:", error);
-            alert(t('failedSubmit') || (isAr ? 'فشل تسليم المهمة.' : 'Failed to submit task.'));
+            showError(t('failedSubmit') || (isAr ? 'فشل تسليم المهمة.' : 'Failed to submit task.'));
         } finally {
             setSubmitting(false);
         }
     };
 
     if (loading) {
-        return (
-            <div className="task-details-container" style={{ textAlign: 'center', padding: '60px' }}>
-                <div className="spinner-border spinner-border-sm me-2" role="status"></div>
-                <p style={{ marginTop: '16px', color: 'var(--text-muted, #64748b)' }}>{t('loading')}</p>
-            </div>
-        );
+        return <DashboardLoader text={t('loading')} fullPage size="lg" />;
     }
 
     if (!task) {
@@ -233,8 +231,8 @@ const TaskDetailsView = () => {
                                     >
                                         {submitting ? (
                                             <>
-                                                <span className="spinner-border spinner-border-sm me-1"></span>
-                                                {t('submitting')}
+                                                <DashboardLoader size="xs" inline text="" />
+                                                <span style={{ marginInlineStart: '6px' }}>{t('submitting')}</span>
                                             </>
                                         ) : (
                                             <>

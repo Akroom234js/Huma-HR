@@ -5,6 +5,7 @@ import DecisionBadge from "../../../../Shared/Performance/DecisionBadge/Decision
 import CompetencyGapTag from "../../../../Shared/Performance/CompetencyGapTag/CompetencyGapTag";
 import ScoreWeightBar from "../../../../Shared/Performance/ScoreWeightBar/ScoreWeightBar";
 import AIRecommendationCard from "../../../../Shared/Performance/AIRecommendationCard/AIRecommendationCard";
+import DashboardLoader from "../../../../Shared/DashboardLoader/DashboardLoader";
 import { useTranslation } from "react-i18next";
 import { getMyEvaluation } from "../../../../../services/performanceService";
 
@@ -32,12 +33,7 @@ const PerformanceReport = () => {
   }, [i18n.language]);
 
   if (loading) {
-    return (
-      <div className={`performance-report-container ${isAr ? 'rtl' : 'ltr'}`} style={{ textAlign: 'center', padding: '60px' }}>
-        <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2.5rem', color: '#6366f1' }}></i>
-        <p style={{ marginTop: '16px', color: '#64748b' }}>{t('loadingText')}</p>
-      </div>
-    );
+    return <DashboardLoader text={t('loadingText')} fullPage size="lg" />;
   }
 
   const finalScore = Number(evaluation?.final_score ?? 0);

@@ -40,14 +40,17 @@ const Leaves = () => {
     // Fallbacks to mock data if backend has no records yet
     const stats = useMemo(() => {
         if (dashboardData?.stats) {
-            return dashboardData.stats.map(s => ({
-                label: t(`stats.${s.label.toLowerCase().replace(' ', '_')}`) || s.label,
-                value: s.value,
-                icon: s.icon
-            }));
+            return dashboardData.stats.map(s => {
+                const key = s.label.toLowerCase().replace(/ /g, '_');
+                return {
+                    label: t(`stats.${key}`) || t(`stats.${key.replace('_requests', '')}`) || s.label,
+                    value: s.value,
+                    icon: s.icon
+                };
+            });
         }
         return [
-            { label: t('stats.pending') || "Pending Requests", value: "0", icon: "pending_actions" },
+            { label: t('stats.pending_requests') || t('stats.pending') || "Pending Requests", value: "0", icon: "pending_actions" },
             { label: t('stats.annual_balance') || "Annual Balance", value: "0 Days", icon: "account_balance" },
             { label: t('stats.highest_requester') || "Highest Requester", value: "None", icon: "person_alert" },
             { label: t('stats.used_days') || "Used Days", value: "0", icon: "calendar_today" }
@@ -57,6 +60,40 @@ const Leaves = () => {
     const leaveRequests = useMemo(() => {
         return dashboardData?.leave_requests || [];
     }, [dashboardData]);
+
+    const departmentOptions = useMemo(() => {
+        const depts = new Set();
+        leaveRequests.forEach(req => {
+            if (req.dept && req.dept !== 'General') depts.add(req.dept);
+        });
+        if (depts.size === 0) {
+            ['IT', 'Marketing', 'HR', 'Engineering', 'Design', 'Product Management'].forEach(d => depts.add(d));
+        }
+        return [
+            { value: "", label: t('filters.department') || "All Departments" },
+            ...Array.from(depts).map(d => ({ value: d, label: d }))
+        ];
+    }, [leaveRequests, t]);
+
+    const leaveTypeOptions = useMemo(() => {
+        const types = new Set();
+        leaveRequests.forEach(req => {
+            if (req.type) types.add(req.type);
+        });
+        ['Annual', 'Sick', 'Emergency', 'Vacation', 'Unpaid'].forEach(lt => types.add(lt));
+
+        return [
+            { value: "", label: t('filters.leave_type') || "All Leave Types" },
+            ...Array.from(types).map(lt => ({ value: lt, label: lt }))
+        ];
+    }, [leaveRequests, t]);
+
+    const statusOptions = useMemo(() => [
+        { value: "", label: t('filters.status') || "All Statuses" },
+        { value: "approved", label: t('status.approved') || "Approved" },
+        { value: "pending", label: t('status.pending') || "Pending" },
+        { value: "rejected", label: t('status.rejected') || "Rejected" }
+    ], [t]);
 
     const calculatedImpacts = useMemo(() => {
         return dashboardData?.department_impact || [];
@@ -113,10 +150,30 @@ const Leaves = () => {
 
     const filteredRequests = useMemo(() => {
         return leaveRequests.filter(req => {
-            const matchSearch = !searchTerm || req.name.toLowerCase().includes(searchTerm.toLowerCase()) || (req.reason && req.reason.toLowerCase().includes(searchTerm.toLowerCase()));
-            const matchDept = !dept || req.dept.toLowerCase() === dept.toLowerCase();
-            const matchType = !leaveType || req.type.toLowerCase() === leaveType.toLowerCase();
-            const matchStatus = !status || req.status.toLowerCase() === status.toLowerCase();
+            const term = searchTerm.trim().toLowerCase();
+            const matchSearch = !term ||
+                (req.name && req.name.toLowerCase().includes(term)) ||
+                (req.reason && req.reason.toLowerCase().includes(term)) ||
+                (req.type && req.type.toLowerCase().includes(term)) ||
+                (req.dept && req.dept.toLowerCase().includes(term));
+
+            const matchDept = !dept ||
+                (req.dept && (
+                    req.dept.toLowerCase() === dept.toLowerCase() ||
+                    req.dept.toLowerCase().includes(dept.toLowerCase()) ||
+                    dept.toLowerCase().includes(req.dept.toLowerCase())
+                ));
+
+            const matchType = !leaveType ||
+                (req.type && (
+                    req.type.toLowerCase() === leaveType.toLowerCase() ||
+                    req.type.toLowerCase().includes(leaveType.toLowerCase()) ||
+                    leaveType.toLowerCase().includes(req.type.toLowerCase())
+                ));
+
+            const matchStatus = !status ||
+                (req.status && req.status.toLowerCase() === status.toLowerCase());
+
             return matchSearch && matchDept && matchType && matchStatus;
         });
     }, [leaveRequests, searchTerm, dept, leaveType, status]);
@@ -187,32 +244,17 @@ const Leaves = () => {
                         <FilterDropdown
                             value={dept}
                             onChange={setDept}
-                            options={[
-                                { value: "", label: t('filters.department') || "All Departments" }, 
-                                { value: "it", label: "IT" }, 
-                                { value: "marketing", label: "Marketing" }, 
-                                { value: "hr", label: "HR" }
-                            ]}
+                            options={departmentOptions}
                         />
                         <FilterDropdown
                             value={leaveType}
                             onChange={setLeaveType}
-                            options={[
-                                { value: "", label: t('filters.leave_type') || "All Leave Types" }, 
-                                { value: "annual", label: "Annual" }, 
-                                { value: "sick", label: "Sick" }, 
-                                { value: "emergency", label: "Emergency" }
-                            ]}
+                            options={leaveTypeOptions}
                         />
                         <FilterDropdown
                             value={status}
                             onChange={setStatus}
-                            options={[
-                                { value: "", label: t('filters.status') || "All Statuses" }, 
-                                { value: "approved", label: t('status.approved') || "Approved" }, 
-                                { value: "pending", label: t('status.pending') || "Pending" }, 
-                                { value: "rejected", label: t('status.rejected') || "Rejected" }
-                            ]}
+                            options={statusOptions}
                         />
                     </div>
                 </div>

@@ -10,6 +10,8 @@ import CycleTable from './CycleTable';
 import { getPerformanceStats, getPerformanceCycles } from '../../../../services/PerformanceHrService';
 import { getDepartmentTasks } from '../../../../services/performanceService';
 
+import DashboardLoader from '../../../Shared/DashboardLoader/DashboardLoader';
+
 const CompanyOverview = () => {
     const { t } = useTranslation("HrPerformance/CompanyOverview");
     const [stats, setStats] = useState(null);
@@ -57,10 +59,7 @@ const CompanyOverview = () => {
             </div>
 
             {isLoading ? (
-                <div style={{ textAlign: 'center', padding: '60px', color: '#64748b' }}>
-                    <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2.5rem', marginBottom: '16px', display: 'block' }}></i>
-                    <span>جاري تحميل بيانات الأداء المؤسسي...</span>
-                </div>
+                <DashboardLoader text={t("loading") || "جاري تحميل بيانات الأداء المؤسسي..."} size="lg" />
             ) : (
                 <>
                     <Card stats={stats} /> 

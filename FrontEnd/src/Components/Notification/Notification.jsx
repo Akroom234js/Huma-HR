@@ -1,7 +1,11 @@
 import React, { useEffect } from 'react';
 import './Notification.css';
+import { useTranslation } from 'react-i18next';
 
 const Notification = ({ message, type = 'info', onClose, duration = 4500 }) => {
+    const { i18n } = useTranslation();
+    const isAr = i18n?.language === 'ar';
+
     useEffect(() => {
         if (duration) {
             const timer = setTimeout(() => {
@@ -21,14 +25,14 @@ const Notification = ({ message, type = 'info', onClose, duration = 4500 }) => {
     };
 
     return (
-        <div className={`notification-toast ${type}`} role="alert">
+        <div className={`notification-toast ${type} ${isAr ? 'rtl' : 'ltr'}`} dir={isAr ? 'rtl' : 'ltr'} role="alert">
             <div className="notification-content">
                 <div className="notification-icon-wrapper">
                     <span className="material-icons notification-icon">{getIcon()}</span>
                 </div>
                 <p className="notification-message">{message}</p>
             </div>
-            <button className="notification-close" onClick={onClose} aria-label="Close notification">
+            <button className="notification-close" onClick={onClose} aria-label={isAr ? "إغلاق الإشعار" : "Close notification"}>
                 <span className="material-icons">close</span>
             </button>
             <div 

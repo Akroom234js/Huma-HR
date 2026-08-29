@@ -93,9 +93,6 @@ class DashboardController extends Controller
                 ->where('created_at', '>=', $currentMonthStart)
                 ->distinct('employee_profile_id')
                 ->count('employee_profile_id');
-            if ($employeesOnLeaveThisMonth === 0) {
-                $employeesOnLeaveThisMonth = 15;
-            }
 
             // Employees late today
             $employeesLateToday = AttendanceRecord::where('date', $today)
@@ -126,18 +123,18 @@ class DashboardController extends Controller
 
             return $this->successResponse([
                 'stats' => [
-                    'total_employees'              => $totalEmployees ?: 125,
-                    'new_this_month'               => $newThisMonth ?: 5,
+                    'total_employees'              => $totalEmployees,
+                    'new_this_month'               => $newThisMonth,
                     'performance_rate'             => $performanceRate,
-                    'employees_on_leave_today'      => $leavesTodayCount ?: 8,
+                    'employees_on_leave_today'      => min($leavesTodayCount, $totalEmployees),
                     'sick_leaves_count'            => $sickLeavesCount,
                     'annual_leaves_count'          => $annualLeavesCount,
                     'leave_breakdown'              => $leaveBreakdown,
                     'overtime_hours'               => round($overtimeHours),
                     'overtime_growth_percent'      => 2,
                     'monthly_salary_cost'          => round($monthlySalaryCost),
-                    'employees_on_leave_this_month' => $employeesOnLeaveThisMonth,
-                    'employees_late_today'         => $employeesLateToday ?: 3,
+                    'employees_on_leave_this_month' => min($employeesOnLeaveThisMonth, $totalEmployees),
+                    'employees_late_today'         => min($employeesLateToday, $totalEmployees),
                     'avg_performance_rating'       => $avgRating,
                     'performance_growth_quarter'   => 0.3,
                 ],
@@ -168,14 +165,11 @@ class DashboardController extends Controller
             $lateTodayCount = $todayRecords->where('status', 'late')->count();
 
             $avgHoursVal = $todayRecords->where('hours_worked', '>', 0)->avg('hours_worked');
-            $avgHours = $avgHoursVal ? round($avgHoursVal, 1) . 'h' : '8.2h';
+            $avgHours = $avgHoursVal ? round($avgHoursVal, 1) . 'h' : '0h';
 
             $latenessMonthCount = AttendanceRecord::where('date', '>=', $currentMonthStart)
                 ->where('status', 'late')
                 ->count();
-            if ($latenessMonthCount === 0) {
-                $latenessMonthCount = 89;
-            }
 
             // 2. جلب الموظفين وسجلات الحضور لليوم المحدد
             $query = EmployeeProfile::with(['department', 'user']);
@@ -245,10 +239,12 @@ class DashboardController extends Controller
                 ];
             }
 
+            $totalActiveCount = count($records);
+
             return $this->successResponse([
                 'stats' => [
-                    'present_today'  => $presentTodayCount ?: count($records),
-                    'late_today'     => $lateTodayCount ?: 12,
+                    'present_today'  => min($presentTodayCount, $totalActiveCount),
+                    'late_today'     => min($lateTodayCount, $totalActiveCount),
                     'avg_hours'      => $avgHours,
                     'lateness_count' => $latenessMonthCount,
                 ],

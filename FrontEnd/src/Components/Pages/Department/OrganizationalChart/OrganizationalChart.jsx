@@ -15,6 +15,8 @@ import "./OrganizationalChart.css";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
 import Avatar from "../../../Shared/Avatar/Avatar";
 import apiClient from "../../../../apiConfig";
+import { useTranslation } from "react-i18next";
+import DashboardLoader from "../../../Shared/DashboardLoader/DashboardLoader";
 
 /* ── Dagre Layout Engine ─────────────────────────────────────────────── */
 const nodeWidth = 230;
@@ -51,6 +53,8 @@ const getLayoutedElements = (nodes, edges, direction = "TB") => {
 
 /* ── Custom Node Component ───────────────────────────────────────────── */
 const OrgNode = ({ data }) => {
+  const { t } = useTranslation('Department/OrganizationalChart');
+
   return (
     <div
       className={[
@@ -86,7 +90,7 @@ const OrgNode = ({ data }) => {
               <span className="material-symbols-outlined">person_add</span>
             </div>
             <div className="occ-info">
-              <span className="occ-card-name occ-vacant-label">Vacant</span>
+              <span className="occ-card-name occ-vacant-label">{t('vacant')}</span>
               <span className="occ-card-title">{data.title}</span>
             </div>
           </>
@@ -102,6 +106,9 @@ const nodeTypes = { orgNode: OrgNode };
 
 /* ── Main Component ──────────────────────────────────────────────────── */
 const OrganizationalChart = () => {
+  const { t, i18n } = useTranslation('Department/OrganizationalChart');
+  const isAr = i18n?.language === 'ar';
+
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [loading, setLoading] = useState(false);
@@ -130,12 +137,12 @@ const OrganizationalChart = () => {
         setNodes([...layoutedNodes]);
         setEdges([...layoutedEdges]);
       } catch (err) {
-        setError(err.response?.data?.message || "Failed to load org chart.");
+        setError(err.response?.data?.message || t('error-load'));
       } finally {
         setLoading(false);
       }
     },
-    [direction, setNodes, setEdges]
+    [direction, setNodes, setEdges, t]
   );
 
   /* ── Fetch department list for filter ────────────────────────────── */
@@ -174,11 +181,11 @@ const OrganizationalChart = () => {
 
   /* ── Render ──────────────────────────────────────────────────────── */
   return (
-    <div className="org-chart-wrapper">
+    <div className={`org-chart-wrapper ${isAr ? 'rtl' : 'ltr'}`}>
       <div className="chart-header">
         <div className="chart-title-area">
-          <span className="org-subtitle">Company Structure</span>
-          <h1>Organizational Chart</h1>
+          <span className="org-subtitle">{t('subtitle')}</span>
+          <h1>{t('page-title')}</h1>
         </div>
         <div className="controls-btns">
           <select
@@ -186,7 +193,7 @@ const OrganizationalChart = () => {
             value={deptFilter}
             onChange={(e) => setDeptFilter(e.target.value)}
           >
-            <option value="">All Departments</option>
+            <option value="">{t('all-departments')}</option>
             {departments.map((d) => (
               <option key={d.id} value={d.id}>
                 {d.name}
@@ -201,7 +208,7 @@ const OrganizationalChart = () => {
               onChange={(e) => setVacantOnly(e.target.checked)}
               className="org-toggle-input"
             />
-            <span className="org-toggle-text">Vacant Only</span>
+            <span className="org-toggle-text">{t('vacant-only')}</span>
           </label>
 
           <button
@@ -209,14 +216,14 @@ const OrganizationalChart = () => {
             onClick={() => handleLayout("TB")}
           >
             <span className="material-symbols-outlined">vertical_distribute</span>
-            Vertical
+            {t('btn-vertical')}
           </button>
           <button
             className={`org-layout-btn ${direction === "LR" ? "active" : ""}`}
             onClick={() => handleLayout("LR")}
           >
             <span className="material-symbols-outlined">horizontal_distribute</span>
-            Horizontal
+            {t('btn-horizontal')}
           </button>
           <ThemeToggle />
         </div>
@@ -226,17 +233,14 @@ const OrganizationalChart = () => {
         <div className="org-error-banner">
           <span className="material-symbols-outlined">error</span>
           {error}
-          <button onClick={() => fetchChart(deptFilter || null)}>Retry</button>
+          <button onClick={() => fetchChart(deptFilter || null)}>{t('btn-retry')}</button>
         </div>
       )}
 
       <div style={{ width: "100%", height: "80vh" }} className="flow-container">
         {loading && (
           <div className="org-state-overlay">
-            <div className="org-loader-content">
-              <div className="org-spinner"></div>
-              <p>Loading chart...</p>
-            </div>
+            <DashboardLoader text={t('loading')} size="lg" />
           </div>
         )}
 

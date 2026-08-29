@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './CycleResultsModal.css';
 import { useTranslation } from 'react-i18next';
+import DashboardLoader from '../../../../../Shared/DashboardLoader/DashboardLoader';
 import { getEvaluationsByCycle } from '../../../../../../services/PerformanceHrService';
 
 const CycleResultsModal = ({ isOpen, onClose, cycle }) => {
@@ -44,9 +45,8 @@ const CycleResultsModal = ({ isOpen, onClose, cycle }) => {
                 </div>
                 <div className="modal-body">
                     {loading ? (
-                        <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
-                            <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', marginBottom: '12px', display: 'block' }}></i>
-                            {t('modal.loadingResults')}
+                        <div style={{ textAlign: 'center', padding: '40px' }}>
+                            <DashboardLoader text={t('modal.loadingResults')} size="md" />
                         </div>
                     ) : (
                         <div className="table-wrapper">

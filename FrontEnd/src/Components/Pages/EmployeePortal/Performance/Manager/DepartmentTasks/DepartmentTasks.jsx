@@ -6,6 +6,8 @@ import PriorityBadge from '../../../../../Shared/Performance/PriorityBadge/Prior
 import StatusBadge from '../../../../../Shared/Performance/StatusBadge/StatusBadge';
 import TaskFormModal from '../../../../../Shared/Performance/TaskFormModal/TaskFormModal';
 import { useTranslation } from 'react-i18next';
+import { useNotification } from '../../../../../Notification/NotificationContext';
+import DashboardLoader from '../../../../../Shared/DashboardLoader/DashboardLoader';
 import { 
     getDepartmentTasks, 
     getDepartmentEmployees, 
@@ -18,6 +20,7 @@ const DepartmentTasks = () => {
     const navigate = useNavigate();
     const { t, i18n } = useTranslation('EmployeePortal/DepartmentTasks');
     const isAr = i18n ? i18n.language === 'ar' : false;
+    const { showSuccess, showError } = useNotification();
 
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
@@ -84,10 +87,12 @@ const DepartmentTasks = () => {
     // Success handlers
     const handleAssignSuccess = (newTask) => {
         setTasks([newTask, ...tasks]);
+        showSuccess(t('alerts.createSuccess') || (isAr ? 'تم إسناد المهمة بنجاح!' : 'Task assigned successfully!'));
     };
 
     const handleEditSuccess = (updatedTask) => {
         setTasks(tasks.map(t => t.id === updatedTask.id ? { ...t, ...updatedTask } : t));
+        showSuccess(t('alerts.updateSuccess') || (isAr ? 'تم تحديث بيانات المهمة بنجاح!' : 'Task updated successfully!'));
     };
 
     // Handle delete
@@ -96,9 +101,10 @@ const DepartmentTasks = () => {
             try {
                 await deleteTask(id);
                 setTasks(tasks.filter(t => t.id !== id));
+                showSuccess(t('alerts.deleteSuccess') || (isAr ? 'تم حذف المهمة بنجاح.' : 'Task deleted successfully.'));
             } catch (error) {
                 console.error("Failed to delete task:", error);
-                alert(t('alerts.deleteError'));
+                showError(t('alerts.deleteError'));
             }
         }
     };
@@ -119,6 +125,10 @@ const DepartmentTasks = () => {
     const reviewCount = tasks.filter(t => t.status === 'pending_review').length;
     const revisionCount = tasks.filter(t => t.status === 'needs_revision').length;
     const scoredCount = tasks.filter(t => t.status === 'scored').length;
+
+    if (isLoading) {
+        return <DashboardLoader text={t('loading') || (isAr ? 'جاري تحميل مهام القسم...' : 'Loading department tasks...')} fullPage size="lg" />;
+    }
 
     return (
         <section className={`tab-content active performance-department-tasks ${isAr ? 'rtl' : 'ltr'}`}>
@@ -362,7 +372,7 @@ const DepartmentTasks = () => {
                         setShowAssignModal(false);
                     } catch (error) {
                         console.error("Failed to create task:", error);
-                        alert(t('alerts.createError'));
+                        showError(t('alerts.createError'));
                     } finally {
                         setIsModalSubmitting(false);
                     }
@@ -395,7 +405,7 @@ const DepartmentTasks = () => {
                         setEditingTask(null);
                     } catch (error) {
                         console.error("Failed to update task:", error);
-                        alert(t('alerts.updateError'));
+                        showError(t('alerts.updateError'));
                     } finally {
                         setIsModalSubmitting(false);
                     }

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import ReportsTable from './ReportsTable';
 import CycleModal from './CycleModal';
+import DashboardLoader from '../../../Shared/DashboardLoader/DashboardLoader';
 import { getPerformanceCycles, getEvaluationsByCycle } from '../../../../services/PerformanceHrService';
 
 const PerformanceReports = () => {
@@ -172,9 +173,8 @@ const PerformanceReports = () => {
                         <tbody>
                             {isTableLoading ? (
                                 <tr>
-                                    <td colSpan="9" style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
-                                        <i className="fa-solid fa-spinner fa-spin" style={{ marginRight: '8px' }}></i>
-                                        {t("loading") || 'Loading evaluations...'}
+                                    <td colSpan="9" style={{ textAlign: 'center', padding: '30px' }}>
+                                        <DashboardLoader text={t("loading") || 'Loading evaluations...'} size="md" />
                                     </td>
                                 </tr>
                             ) : (

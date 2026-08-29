@@ -5,6 +5,7 @@ import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 import { useTranslation } from 'react-i18next';
 import AddMovement from './Add New Movement/AddMovement';
 import apiClient from '../../../../apiConfig';
+import DashboardLoader from '../../../Shared/DashboardLoader/DashboardLoader';
 
 const policyItems = [
     {
@@ -26,6 +27,7 @@ const policyItems = [
 
 const EmployeeMovement = () => {
     const { t, i18n } = useTranslation('EmployeeMovement/EmployeeMovement');
+    const isAr = i18n?.language === 'ar';
     const [searchQuery, setSearchQuery] = useState('');
     const [typeFilter, setTypeFilter] = useState('');
     const [departmentFilter, setDepartmentFilter] = useState('');
@@ -112,7 +114,7 @@ const EmployeeMovement = () => {
     };
 
     return (
-        <div className="em-page">
+        <div className={`em-page ${isAr ? 'rtl' : 'ltr'}`}>
             <div className="em-theme-toggle-wrapper">
                 <ThemeToggle />
             </div>
@@ -193,22 +195,29 @@ const EmployeeMovement = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {movements.map((item, index) => (
-                                <tr key={index}>
-                                    <td className="em-name-cell">{item.name}</td>
-                                    <td>{item.id}</td>
-                                    <td>{item.date}</td>
-                                    <td>
-                                        <span className={`em-badge em-badge-${item.typeKey.replace('type-', '')}`}>
-                                            {t(item.typeKey)}
-                                        </span>
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan="7" style={{ padding: '3.5rem 1rem', textAlign: 'center' }}>
+                                        <DashboardLoader text={t('loading') || "Loading Movements..."} size="md" />
                                     </td>
-                                    <td>{item.previousValue}</td>
-                                    <td>{item.newValue}</td>
-                                    <td>{item.changedBy}</td>
                                 </tr>
-                            ))}
-                            {movements.length === 0 && (
+                            ) : movements.length > 0 ? (
+                                movements.map((item, index) => (
+                                    <tr key={index}>
+                                        <td className="em-name-cell">{item.name}</td>
+                                        <td>{item.id}</td>
+                                        <td>{item.date}</td>
+                                        <td>
+                                            <span className={`em-badge em-badge-${item.typeKey.replace('type-', '')}`}>
+                                                {t(item.typeKey)}
+                                            </span>
+                                        </td>
+                                        <td>{item.previousValue}</td>
+                                        <td>{item.newValue}</td>
+                                        <td>{item.changedBy}</td>
+                                    </tr>
+                                ))
+                            ) : (
                                 <tr>
                                     <td colSpan="7" className="em-no-data">
                                         {t('no-data')}

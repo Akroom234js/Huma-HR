@@ -5,12 +5,15 @@ import StatusBadge from "../../../../Shared/Performance/StatusBadge/StatusBadge"
 import ManagerNoteBox from "../../../../Shared/Performance/ManagerNoteBox/ManagerNoteBox";
 import ThemeToggle from '../../../../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
+import { useNotification } from '../../../../Notification/NotificationContext';
+import DashboardLoader from '../../../../Shared/DashboardLoader/DashboardLoader';
 import { getMyTasks, startTask } from '../../../../../services/performanceService';
 
 const MyTasksPortal = () => {
     const navigate = useNavigate();
     const { t, i18n } = useTranslation('EmployeePortal/MyTasksPortal');
     const isAr = i18n ? i18n.language === 'ar' : false;
+    const { showSuccess, showError } = useNotification();
 
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -38,10 +41,11 @@ const MyTasksPortal = () => {
         try {
             setActionLoadingId(taskId);
             await startTask(taskId);
+            showSuccess(isAr ? 'تم بدء العمل على المهمة بنجاح!' : 'Task started successfully!');
             await fetchTasks();
         } catch (error) {
             console.error("Failed to start task:", error);
-            alert(t('startError'));
+            showError(t('startError'));
         } finally {
             setActionLoadingId(null);
         }
@@ -152,9 +156,8 @@ const MyTasksPortal = () => {
                 </div>
 
                 {loading ? (
-                    <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted, #64748b)' }}>
-                        <div className="spinner-border spinner-border-sm me-2" role="status"></div>
-                        {t('loading')}
+                    <div style={{ textAlign: 'center', padding: '40px' }}>
+                        <DashboardLoader text={t('loading')} size="md" />
                     </div>
                 ) : filteredTasks.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted, #64748b)' }}>
@@ -246,7 +249,7 @@ const MyTasksPortal = () => {
                                                     disabled={actionLoadingId === taskItem.id}
                                                     onClick={() => handleStart(taskItem.id)}
                                                 >
-                                                    {actionLoadingId === taskItem.id ? <span className="spinner-border spinner-border-sm"></span> : t('buttons.start')}
+                                                    {actionLoadingId === taskItem.id ? <DashboardLoader size="xs" inline text="" /> : t('buttons.start')}
                                                 </button>
                                             )}
                                             {normStatus === 'scored' && (

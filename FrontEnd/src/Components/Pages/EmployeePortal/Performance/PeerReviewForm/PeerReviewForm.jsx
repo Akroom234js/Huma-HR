@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import './PeerReviewForm.css';
 import ThemeToggle from '../../../../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
+import { useNotification } from '../../../../Notification/NotificationContext';
+import DashboardLoader from '../../../../Shared/DashboardLoader/DashboardLoader';
 import { getDepartmentEmployees, getPerformanceCycles, submitPeerEvaluation } from '../../../../../services/performanceService';
 
 const PeerReviewForm = () => {
     const { t, i18n } = useTranslation('EmployeePortal/PeerReviewForm');
     const isAr = i18n ? i18n.language === 'ar' : false;
+    const { showSuccess, showError, showWarning } = useNotification();
 
     const [colleaguesList, setColleaguesList] = useState([]);
     const [cyclesList, setCyclesList] = useState([]);
@@ -76,7 +79,7 @@ const PeerReviewForm = () => {
         e.preventDefault();
         if (!selectedColleague) return;
         if (!selectedCycle) {
-            alert(t('selectCycleAlert'));
+            showWarning(t('selectCycleAlert'));
             return;
         }
 
@@ -90,7 +93,7 @@ const PeerReviewForm = () => {
                 comment: comment.trim() || t('defaultComment')
             });
 
-            alert(t('successMsg'));
+            showSuccess(t('successMsg'));
             handleClear();
         } catch (error) {
             console.error("Error submitting peer review:", error);
@@ -102,19 +105,14 @@ const PeerReviewForm = () => {
                     serverMsg = errors[firstKey][0];
                 }
             }
-            alert(serverMsg || t('errorMsg'));
+            showError(serverMsg || t('errorMsg'));
         } finally {
             setSubmitting(false);
         }
     };
 
     if (loading) {
-        return (
-            <div className="peer-review-portal-container" style={{ textAlign: 'center', padding: '60px' }}>
-                <div className="spinner-border spinner-border-sm me-2" role="status"></div>
-                <p style={{ marginTop: '16px', color: 'var(--text-muted, #64748b)' }}>{t('loading')}</p>
-            </div>
-        );
+        return <DashboardLoader text={t('loading')} fullPage size="lg" />;
     }
 
     return (
@@ -263,8 +261,8 @@ const PeerReviewForm = () => {
                         >
                             {submitting ? (
                                 <>
-                                    <span className="spinner-border spinner-border-sm me-1"></span>
-                                    {t('submitting')}
+                                    <DashboardLoader size="xs" inline text="" />
+                                    <span style={{ marginInlineStart: '6px' }}>{t('submitting')}</span>
                                 </>
                             ) : (
                                 <>

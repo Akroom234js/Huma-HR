@@ -421,13 +421,18 @@ div.infocardsalary div {
     text-align: end;
 }
 
-div.salaryinfocard div.infocard {
+div.salaryinfocard,
+div.cardsalary {
+    display: none;
+}
+
+div.salaryinfocard div.infocard,
+div.cardsalary div.cardsalaryinfo {
     border: 1px solid var(--border-color);
     margin-bottom: 15px;
     border-radius: 12px;
     padding: 15px;
     background-color: var(--bg-card);
-    display: none;
     box-shadow: 0 2px 8px rgba(0,0,0,0.02);
 }
 
@@ -450,10 +455,15 @@ div.salaryinfocard div.infocard {
         max-width: 100%;
     }
     div.tablesalary{
-        display: none;
+        display: none !important;
     }
-    div.salaryinfocard div.infocard{
-        display: block;
+    div.salaryinfocard,
+    div.cardsalary {
+        display: block !important;
+    }
+    div.salaryinfocard div.infocard,
+    div.cardsalary div.cardsalaryinfo {
+        display: block !important;
     }
 }
 @media (max-width:600px){

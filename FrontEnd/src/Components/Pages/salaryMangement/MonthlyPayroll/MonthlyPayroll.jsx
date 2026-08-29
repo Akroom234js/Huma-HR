@@ -4,6 +4,7 @@ import './MonthlyPayroll.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import apiClient from "../../../../apiConfig";
 import { useNotification } from '../../../Notification/NotificationContext';
+import DashboardLoader from '../../../Shared/DashboardLoader/DashboardLoader';
 
 const MonthlyPayroll = () => {
     const { t } = useTranslation('SalaryManagement/MonthlyPayroll');
@@ -43,11 +44,12 @@ const MonthlyPayroll = () => {
             const res = await apiClient.post('/payroll/initialize', {
                 month: selectedMonth
             });
-            showSuccess(res.data.message || "Payroll initialized successfully.");
+            showSuccess(res.data?.message || t('InitSuccess', "Monthly payroll generated successfully."));
             fetchPayroll();
+            fetchStats();
         } catch (error) {
             console.error("Initialization failed", error);
-            showError(error, "Failed to initialize payroll.");
+            showError(error, t('InitError', "Failed to initialize payroll."));
         } finally {
             setIsInitializing(false);
         }
@@ -132,20 +134,26 @@ const MonthlyPayroll = () => {
     };
 
     const fetchBonusRules = async () => {
+        setIsLoading(true);
         try {
             const res = await apiClient.get('/bonus-rules');
-            setBonusRules(res.data.data);
+            setBonusRules(res.data.data || []);
         } catch (error) {
             console.error("Failed to fetch bonus rules", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const fetchAllAdjustments = async () => {
+        setIsLoading(true);
         try {
             const res = await apiClient.get('/deductions');
-            setAllAdjustments(res.data.data);
+            setAllAdjustments(res.data.data || []);
         } catch (error) {
             console.error("Failed to fetch adjustments", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -164,32 +172,38 @@ const MonthlyPayroll = () => {
     const handlePayEmployee = async (id) => {
         try {
             await apiClient.patch(`/payroll/${id}/pay`);
+            showSuccess(t('PaySuccess', "Payment marked as paid."));
             fetchPayroll();
             fetchStats();
         } catch (error) {
             console.error("Payment failed", error);
+            showError(error, t('PayError', "Payment failed."));
         }
     };
 
     const handleRevertPayment = async (id) => {
-        if (!window.confirm("Revert this payment to unpaid?")) return;
+        if (!window.confirm(t('ConfirmRevert', "Revert this payment to unpaid?"))) return;
         try {
             await apiClient.patch(`/payroll/${id}/revert`);
+            showSuccess(t('RevertSuccess', "Payment reverted to unpaid."));
             fetchPayroll();
             fetchStats();
         } catch (error) {
             console.error("Revert failed", error);
+            showError(error, t('RevertError', "Revert failed."));
         }
     };
 
     const handleDeletePayroll = async (id) => {
-        if (!window.confirm("Delete this payroll record?")) return;
+        if (!window.confirm(t('ConfirmDeletePayroll', "Delete this payroll record?"))) return;
         try {
             await apiClient.delete(`/payroll/${id}`);
+            showSuccess(t('DeletePayrollSuccess', "Payroll record deleted successfully."));
             fetchPayroll();
             fetchStats();
         } catch (error) {
             console.error("Delete failed", error);
+            showError(error, t('DeletePayrollError', "Failed to delete payroll record."));
         }
     };
 
@@ -197,12 +211,12 @@ const MonthlyPayroll = () => {
         if (!selectedMonth) return;
         try {
             const res = await apiClient.post('/bonus-rules/apply', { month: selectedMonth });
-            showSuccess(res.data?.message || "Bonus rules applied successfully.");
+            showSuccess(res.data?.message || t('BonusApplySuccess', "Bonus rules applied successfully."));
             fetchPayroll();
             fetchStats();
         } catch (error) {
             console.error("Failed to apply bonus rules", error);
-            showError(error, "Application failed.");
+            showError(error, t('BonusApplyError', "Failed to apply bonus rules."));
         }
     };
 
@@ -215,10 +229,10 @@ const MonthlyPayroll = () => {
             await apiClient.post('/bonus-rules', dataToSubmit);
             setIsBonusModalOpen(false);
             fetchBonusRules();
-            showSuccess("Bonus rule saved successfully.");
+            showSuccess(t('BonusRuleSuccess', "Bonus rule saved successfully."));
         } catch (error) {
             console.error("Failed to save bonus rule", error);
-            showError(error, "Failed to save bonus rule.");
+            showError(error, t('BonusRuleError', "Failed to save bonus rule."));
         }
     };
 
@@ -233,20 +247,36 @@ const MonthlyPayroll = () => {
             fetchPayroll();
             fetchStats();
             if (activeTab === 'deductions') fetchAllAdjustments();
-            showSuccess(dataToSubmit.is_addition ? "Addition recorded successfully." : "Deduction recorded successfully.");
+            showSuccess(t('AdjSaveSuccess', dataToSubmit.is_addition ? "Addition recorded successfully." : "Deduction recorded successfully."));
         } catch (error) {
             console.error("Failed to save deduction", error);
-            showError(error, "Failed to save adjustment. Make sure the employee has a payroll record for this month.");
+            showError(error, t('AdjSaveError', "Failed to save adjustment. Make sure the employee has a payroll record for this month."));
         }
     };
 
     const handleDeleteBonusRule = async (id) => {
-        if (!window.confirm("Delete this rule?")) return;
+        if (!window.confirm(t('ConfirmDeleteRule', "Delete this rule?"))) return;
         try {
             await apiClient.delete(`/bonus-rules/${id}`);
+            showSuccess(t('DeleteRuleSuccess', "Bonus rule deleted successfully."));
             fetchBonusRules();
         } catch (error) {
             console.error("Failed to delete rule", error);
+            showError(error, t('DeleteRuleError', "Failed to delete bonus rule."));
+        }
+    };
+
+    const handleDeleteAdjustment = async (id) => {
+        if (!window.confirm(t('ConfirmDeleteAdj', "Delete this adjustment?"))) return;
+        try {
+            await apiClient.delete(`/deductions/${id}`);
+            showSuccess(t('AdjDeleteSuccess', "Adjustment deleted successfully."));
+            fetchAllAdjustments();
+            fetchPayroll();
+            fetchStats();
+        } catch (error) {
+            console.error("Failed to delete adjustment", error);
+            showError(error, t('AdjDeleteError', "Failed to delete adjustment."));
         }
     };
 
@@ -255,9 +285,12 @@ const MonthlyPayroll = () => {
         if (unpaidIds.length === 0) return;
         try {
             await apiClient.post(`/payroll/pay-all`, { ids: unpaidIds });
+            showSuccess(t('PayAllSuccess', "All pending payroll records marked as paid."));
             fetchPayroll();
+            fetchStats();
         } catch (error) {
             console.error("Bulk payment failed", error);
+            showError(error, t('PayAllError', "Bulk payment failed."));
         }
     };
 
@@ -330,10 +363,12 @@ const MonthlyPayroll = () => {
         try {
             await apiClient.patch(`/payroll/${editingRecord.id}`, editFormData);
             setIsEditModalOpen(false);
+            showSuccess(t('UpdateSuccess', "Payroll record updated successfully."));
             fetchPayroll();
             fetchStats();
         } catch (error) {
             console.error("Update failed", error);
+            showError(error, t('UpdateError', "Failed to update payroll record."));
         }
     };
 
@@ -486,7 +521,11 @@ const MonthlyPayroll = () => {
                         </thead>
                         <tbody className='salaryinfo'>
                             {isLoading ? (
-                                <tr><td colSpan="11" style={{ textAlign: 'center', padding: '20px' }}>Loading...</td></tr>
+                                <tr>
+                                    <td colSpan="11" style={{ textAlign: 'center', padding: '3rem 1rem' }}>
+                                        <DashboardLoader text={t('LoadingPayroll', 'Loading payroll data...')} size="md" />
+                                    </td>
+                                </tr>
                             ) : payrollData.length > 0 ? payrollData.map((row, idx) => (
                                 <tr key={idx} className="">
                                     <td className="" style={{ fontWeight: '500' }}>{row.name}</td>
@@ -518,80 +557,78 @@ const MonthlyPayroll = () => {
                                             <span>$0.00</span>
                                         )}
                                     </td>
-                                    <td className="final-salary-bold">{row.final}</td>
-                                    <td className="status-actions-cell">
-                                        <div className={`status-badge ${row.status === 'Paid' ? 'paid' : 'unpaid'}`}>
-                                            {t(row.status, row.status)}
-                                        </div>
-                                        {row.status === "Unpaid" && (
-                                            <div style={{ display: 'flex', gap: '5px' }}>
-                                                <button className="pay-btn" onClick={() => handlePayEmployee(row.id)}>
-                                                    {t('Pay', 'Pay')}
-                                                </button>
-                                                <button className="btn-icon-edit" title="Edit" onClick={() => openEditModal(row)}>
-                                                    <i className="bi bi-pencil-square"></i>
-                                                </button>
-                                                <button className="btn-icon-add" title="Add Adjustment" onClick={() => {
-                                                    setDedFormData({ ...dedFormData, user_id: row.userId, amount: "", reason: "", is_addition: false });
-                                                    setIsDedModalOpen(true);
-                                                }} style={{ color: '#10b981' }}>
-                                                    <i className="bi bi-plus-circle"></i>
-                                                </button>
-                                                <button className="btn-icon-delete" title="Delete" onClick={() => handleDeletePayroll(row.id)}>
-                                                    <i className="bi bi-trash"></i>
-                                                </button>
+                                    <td className="" style={{ fontWeight: '600' }}>{row.final}</td>
+                                    <td className="">
+                                        <div className="payroll-actions-cell">
+                                            <div className={`status-badge ${row.status === 'Paid' ? 'paid' : 'unpaid'}`}>
+                                                {t(row.status, row.status)}
                                             </div>
-                                        )}
-                                        {row.status === "Paid" && (
-                                            <button className="revert-pay-btn" title="Revert to Unpaid" onClick={() => handleRevertPayment(row.id)}>
-                                                <i className="bi bi-arrow-counterclockwise"></i>
+                                            {row.status === "Unpaid" ? (
+                                                <button className="pay-btn" onClick={() => handlePayEmployee(row.id)}>
+                                                    <i className="bi bi-cash-stack"></i> {t('Pay', 'Pay')}
+                                                </button>
+                                            ) : (
+                                                <button className="revert-btn" onClick={() => handleRevertPayment(row.id)} title="Revert to Unpaid">
+                                                    <i className="bi bi-arrow-counterclockwise"></i>
+                                                </button>
+                                            )}
+                                            <button className="btn-icon-edit" onClick={() => openEditModal(row)} title="Edit Record">
+                                                <i className="bi bi-pencil"></i>
                                             </button>
-                                        )}
-                                        <button className="moredetails" onClick={(e) => { moredetails(e, row.abs, row.dedLines, row.date, row.reason, row.by, row.allowanceVal, row.bonusVal) }}>
-                                            {t('more', 'More Details')}
-                                        </button>
+                                            <button className="btn-icon-delete" onClick={() => handleDeletePayroll(row.id)} title="Delete Record">
+                                                <i className="bi bi-trash"></i>
+                                            </button>
+                                            <button className="moredetails" onClick={(e) => { moredetails(e, row.abs, row.dedLines, row.date, row.reason, row.by, row.allowanceVal, row.bonusVal) }}>
+                                                {t('more', 'More')}
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             )) : (
-                                <tr>
-                                    <td colSpan="11" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
-                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
-                                            <i className="bi bi-inbox" style={{ fontSize: '2rem' }}></i>
-                                            <p>{t('NoData', 'No payroll records found for the selected criteria.')}</p>
-                                        </div>
-                                    </td>
-                                </tr>
+                                <tr><td colSpan="11" style={{ textAlign: 'center', padding: '30px' }}>No payroll records found.</td></tr>
                             )}
                         </tbody>
                     </table>
                 </div>
 
                 <div className='salaryinfocard'>
-                    {payrollData.length > 0 ? payrollData.map((row, idx) => (
-                        <div key={idx} className="infocard">
+                    {isLoading ? (
+                        <div style={{ textAlign: 'center', padding: '3rem 1rem' }}>
+                            <DashboardLoader text={t('LoadingPayroll', 'Loading payroll data...')} size="md" />
+                        </div>
+                    ) : payrollData.length > 0 ? payrollData.map((row, idx) => (
+                        <div key={idx} className='infocard'>
                             <div className='infocardsalary'>
                                 <p className="" >{t('name')}: </p>
-                                <p className="" style={{ fontWeight: 'bold' }}>{row.name}</p>
+                                <p className="" >{row.name}</p>
                             </div>
                             <div className='infocardsalary'>
-                                <p className="" >{t('Department', 'Department')}: </p>
-                                <p className="">{row.department}</p>
+                                <p className="" >{t('Department')}: </p>
+                                <p className="" >{row.department}</p>
                             </div>
                             <div className='infocardsalary'>
-                                <p className="" >{t('JobTitle', 'Job Title')}: </p>
-                                <p className="">{row.jobTitle}</p>
+                                <p className="" >{t('JobTitle')}: </p>
+                                <p className="" >{row.jobTitle}</p>
                             </div>
                             <div className='infocardsalary'>
                                 <p className="" >{t('BasicSalary')}: </p>
-                                <p className="">{row.basic}</p>
+                                <p className="" >{row.basic}</p>
+                            </div>
+                            <div className='infocardsalary'>
+                                <p className="" >{t('Allowances')}: </p>
+                                <p className="" >{row.allowances}</p>
+                            </div>
+                            <div className='infocardsalary'>
+                                <p className="" >{t('Bonuses')}: </p>
+                                <p className="" >{row.bonuses}</p>
                             </div>
                             <div className='infocardsalary'>
                                 <p className="" >{t('Overtime')}: </p>
-                                <p className="">{row.ot}</p>
+                                <p className="" >{row.ot}</p>
                             </div>
                             <div className='infocardsalary'>
-                                <p className="" >{t('DeductionType', 'Deduction Type')}: </p>
-                                <div className="">
+                                <p className="" >{t('DeductionType')}: </p>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
                                     {row.dedTypes.length > 0 ? row.dedTypes.map((type, i) => <div key={i} style={{ fontSize: '12px' }} >{type.label}</div>) : "None"}
                                 </div>
                             </div>
@@ -650,8 +687,14 @@ const MonthlyPayroll = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {allAdjustments.length > 0 ? allAdjustments.map((adj, i) => (
-                                    <tr key={i}>
+                                {isLoading ? (
+                                    <tr>
+                                        <td colSpan="7" style={{ textAlign: 'center', padding: '3rem 1rem' }}>
+                                            <DashboardLoader text={t('LoadingAdjustments', 'Loading adjustments...')} size="md" />
+                                        </td>
+                                    </tr>
+                                ) : allAdjustments.length > 0 ? allAdjustments.map((adj, i) => (
+                                    <tr key={adj.id || i}>
                                         <td>{adj.payroll_record?.user?.employee_profile?.full_name || 'N/A'}</td>
                                         <td>
                                             <span className={`deduction-type-tag ${adj.is_addition ? 'text-success' : 'tag-policy'}`}>
@@ -665,11 +708,7 @@ const MonthlyPayroll = () => {
                                         <td>{adj.applied_by}</td>
                                         <td>{adj.applied_date}</td>
                                         <td>
-                                            <button className="btn-icon-delete" onClick={() => {
-                                                if(window.confirm("Delete this adjustment?")) {
-                                                    apiClient.delete(`/deductions/${adj.id}`).then(() => fetchAllAdjustments());
-                                                }
-                                            }}>
+                                            <button className="btn-icon-delete" onClick={() => handleDeleteAdjustment(adj.id)}>
                                                 <i className="bi bi-trash"></i>
                                             </button>
                                         </td>
@@ -705,8 +744,14 @@ const MonthlyPayroll = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {bonusRules.length > 0 ? bonusRules.map((rule, i) => (
-                                    <tr key={i}>
+                                {isLoading ? (
+                                    <tr>
+                                        <td colSpan="7" style={{ textAlign: 'center', padding: '3rem 1rem' }}>
+                                            <DashboardLoader text={t('LoadingRules', 'Loading bonus rules...')} size="md" />
+                                        </td>
+                                    </tr>
+                                ) : bonusRules.length > 0 ? bonusRules.map((rule, i) => (
+                                    <tr key={rule.id || i}>
                                         <td style={{ fontWeight: '600' }}>{rule.name}</td>
                                         <td>{rule.target_type === 'all' ? 'Everyone' : `${rule.target_type} ID: ${rule.target_id}`}</td>
                                         <td>{rule.amount}{rule.is_percentage ? '%' : '$'}</td>

@@ -13,6 +13,7 @@ class Position extends Model
     protected $fillable = [
         'title',
         'department_id',
+        'openings',
         'description',
         'requirements',
         'reporting_to',
@@ -42,6 +43,11 @@ class Position extends Model
     public function children(): HasMany
     {
         return $this->hasMany(Position::class, 'parent_position_id');
+    }
+
+    public function employees(): HasMany
+    {
+        return $this->hasMany(EmployeeProfile::class, 'position_id');
     }
 
     public function employee(): HasOne

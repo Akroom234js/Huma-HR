@@ -3,6 +3,7 @@ import "./Performance.css";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import DashboardLoader from "../../../Shared/DashboardLoader/DashboardLoader";
 import { getMyEvaluation, getMyTasks } from "../../../../services/performanceService";
 
 export default function PerformanceManagement() {
@@ -53,6 +54,10 @@ export default function PerformanceManagement() {
     : Number(finalScore) >= 75
     ? (t('ratingLabels.veryGood', { defaultValue: isAr ? 'جيد جداً' : 'Very Good' }))
     : (t('ratingLabels.good', { defaultValue: isAr ? 'جيد' : 'Good' }));
+
+  if (loading) {
+    return <DashboardLoader text={t('loading', { defaultValue: isAr ? 'جاري تحميل ملخص الأداء...' : 'Loading performance overview...' })} fullPage size="lg" />;
+  }
 
   return (
     <div className={`performance-page ${isAr ? 'rtl' : 'ltr'}`}>

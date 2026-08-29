@@ -20,7 +20,7 @@ class PositionController extends Controller
     public function index(Request $request): JsonResponse
     {
         $positions = Position::with('department')
-            // ->withCount('jobPostings as openings')
+            ->withCount('employees')
             ->when($request->filled('search'),
                 fn($q) => $q->search($request->search)
             )
@@ -48,7 +48,7 @@ class PositionController extends Controller
     // Middleware: auth:sanctum + role:hr|manager
     public function show(int $id): JsonResponse
     {
-        $position = Position::with('department')->find($id);
+        $position = Position::with(['department', 'employees'])->withCount('employees')->find($id);
 
         if (! $position) {
             return $this->errorResponse(
@@ -70,7 +70,7 @@ class PositionController extends Controller
         $position = Position::create($request->validated());
 
         return $this->successResponse(
-            data: new PositionResource($position->load('department')),
+            data: new PositionResource($position->load('department')->loadCount('employees')),
             message: 'Position created successfully.',
             statusCode: 201
         );
@@ -92,7 +92,7 @@ class PositionController extends Controller
         $position->update($request->validated());
 
         return $this->successResponse(
-            data: new PositionResource($position->fresh('department')),
+            data: new PositionResource($position->fresh(['department', 'employees'])->loadCount('employees')),
             message: 'Position updated successfully.'
         );
     }
@@ -111,7 +111,9 @@ class PositionController extends Controller
         }
 
         // تحقق إن ما في موظفين بهذا المنصب
-        $inUse = \App\Models\EmployeeProfile::where('job_title', $position->title)->exists();
+        $inUse = \App\Models\EmployeeProfile::where('position_id', $position->id)
+            ->orWhere('job_title', $position->title)
+            ->exists();
 
         if ($inUse) {
             return $this->errorResponse(

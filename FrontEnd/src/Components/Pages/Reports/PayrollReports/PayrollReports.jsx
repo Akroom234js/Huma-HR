@@ -10,6 +10,7 @@ import ReportPdfPreview from "../components/ReportPdfPreview/ReportPdfPreview";
 
 import SummaryCard from './SummaryCard';
 import DepartmentCard from './DepartmentCard';
+import DashboardLoader from '../../../Shared/DashboardLoader/DashboardLoader';
 
 import './PayrollReports.css';
 
@@ -178,7 +179,9 @@ export default function PayrollReports() {
                 />
 
                 {loading ? (
-                    <div style={{ padding: '40px', textAlign: 'center' }}>{t('loading') || "Loading..."}</div>
+                    <div style={{ padding: '60px 20px', textAlign: 'center' }}>
+                        <DashboardLoader text={t('loading', 'Loading payroll report...')} size="lg" />
+                    </div>
                 ) : error ? (
                     <div className="error-message" style={{ padding: '20px', color: 'red', textAlign: 'center' }}>{error}</div>
                 ) : (

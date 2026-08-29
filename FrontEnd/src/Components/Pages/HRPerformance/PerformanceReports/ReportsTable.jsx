@@ -3,6 +3,7 @@ import FinalScoreBreakdown from '../../../Shared/Performance/FinalScoreBreakdown
 import DecisionBadge from '../../../Shared/Performance/DecisionBadge/DecisionBadge';
 import CompetencyGapTag from '../../../Shared/Performance/CompetencyGapTag/CompetencyGapTag';
 import AIRecommendationCard from '../../../Shared/Performance/AIRecommendationCard/AIRecommendationCard';
+import DashboardLoader from '../../../Shared/DashboardLoader/DashboardLoader';
 import { getPeerEvaluationsForEmployee } from '../../../../services/PerformanceHrService';
 import { useTranslation } from 'react-i18next';
 
@@ -154,9 +155,8 @@ export default function ReportsTable({ evaluations = [], cycleId = null }) {
                                             </div>
 
                                             {peerFeedbackState[e.employee?.id]?.loading ? (
-                                                <div className="peer-feedback-loading">
-                                                    <i className="fa-solid fa-spinner fa-spin"></i>
-                                                    <span>{t("decrypting_comments") || 'جاري جلب وفك تشفير الملاحظات...'}</span>
+                                                <div style={{ padding: '20px 0', textAlign: 'center' }}>
+                                                    <DashboardLoader size="sm" text={t("decrypting_comments") || 'جاري جلب وفك تشفير الملاحظات...'} />
                                                 </div>
                                             ) : peerFeedbackState[e.employee?.id]?.data && peerFeedbackState[e.employee?.id]?.data.length > 0 ? (
                                                 <div className="peer-comments-grid">

@@ -2,6 +2,7 @@
   "title": "Leaves Management",
   "stats": {
     "pending": "Pending Requests",
+    "pending_requests": "Pending Requests",
     "annual_balance": "Total Annual Balance",
     "highest_requester": "Highest Requester",
     "used_days": "Used Days (Period)"

@@ -3,6 +3,7 @@ import "./Payroll.css";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
 import apiClient from "../../../../apiConfig";
 import { useTranslation } from "react-i18next";
+import DashboardLoader from "../../../Shared/DashboardLoader/DashboardLoader";
 
 const Payroll = () => {
   const { t, i18n } = useTranslation("EmployeePortal/Payroll");
@@ -15,7 +16,7 @@ const Payroll = () => {
     const fetchHistory = async () => {
       try {
         const response = await apiClient.get('/employee/payroll');
-        setPayrollHistory(response.data.data || []);
+        setPayrollHistory(response.data?.data || []);
       } catch (error) {
         console.error("Error fetching payroll history:", error);
       } finally {
@@ -97,7 +98,11 @@ const Payroll = () => {
 
             <tbody>
               {loading ? (
-                <tr><td colSpan="9" style={{ textAlign: 'center', padding: '20px' }}>{t("loading")}</td></tr>
+                <tr>
+                  <td colSpan="9" style={{ padding: '3rem 1rem', textAlign: 'center' }}>
+                    <DashboardLoader text={t("loading", "Loading payroll history...")} size="md" />
+                  </td>
+                </tr>
               ) : payrollHistory.length === 0 ? (
                 <tr><td colSpan="9" style={{ textAlign: 'center', padding: '20px', color: '#94a3b8' }}>{t("noRecords")}</td></tr>
               ) : (
