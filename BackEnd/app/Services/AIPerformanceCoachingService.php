@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 class AIPerformanceCoachingService
 {
     private string $apiKey;
-    private string $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+    private string $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent';
 
     /* العتبة: أي component تحتها يُعتبر نقطة ضعف */
     private const GAP_THRESHOLD = 70.0;
@@ -94,8 +94,8 @@ class AIPerformanceCoachingService
                 ['parts' => [['text' => $prompt]]]
             ],
             'generationConfig' => [
-                'temperature' => 0.4,
-                'maxOutputTokens' => 800,
+                'temperature'     => 0.4,
+                'maxOutputTokens' => 2048,
             ]
         ]);
 
@@ -104,9 +104,9 @@ class AIPerformanceCoachingService
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => $body,
-            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-            // أقصر من الـ Resume service — ما بدنا نبطئ الأداء Job كامل الرواتب... يعني
-            CURLOPT_TIMEOUT => 20, 
+            CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
+            CURLOPT_TIMEOUT        => 20, 
+            CURLOPT_SSL_VERIFYPEER => false,
         ]);
 
         $response = curl_exec($ch);

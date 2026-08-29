@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 class AIResumeEvaluationService
 {
     private string $apiKey;
-    private string $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+    private string $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent';
 
     public function __construct()
     {
@@ -89,7 +89,7 @@ class AIResumeEvaluationService
             ],
             'generationConfig' => [
                 'temperature'     => 0.3,
-                'maxOutputTokens' => 1000,
+                'maxOutputTokens' => 2048,
             ]
         ]);
 
@@ -100,6 +100,7 @@ class AIResumeEvaluationService
             CURLOPT_POSTFIELDS     => $body,
             CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
             CURLOPT_TIMEOUT        => 30,
+            CURLOPT_SSL_VERIFYPEER => false,
         ]);
 
         $response = curl_exec($ch);
