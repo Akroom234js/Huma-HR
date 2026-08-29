@@ -169,3 +169,23 @@
         max-width: 100%;
     }
 }
+
+.notification-toast.rtl {
+    right: auto;
+    left: 24px;
+    direction: rtl;
+    text-align: right;
+    font-family: inherit;
+}
+
+.notification-toast.rtl .notification-progress {
+    left: auto;
+    right: 0;
+}
+
+@media (max-width: 640px) {
+    .notification-toast.rtl {
+        left: 16px;
+        right: 16px;
+    }
+}

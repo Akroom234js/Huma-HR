@@ -8,14 +8,15 @@ import logo from '../../../assets/logo.png';
  */
 const DashboardLoader = ({
     text,
-    size = 'md', // 'sm' | 'md' | 'lg' | 'xl'
+    size = 'md', // 'xs' | 'sm' | 'md' | 'lg' | 'xl'
     fullPage = false,
+    inline = false,
     className = '',
     style = {}
 }) => {
     return (
         <div 
-            className={`dashboard-loader-container size-${size} ${fullPage ? 'full-page' : ''} ${className}`}
+            className={`dashboard-loader-container size-${size} ${fullPage ? 'full-page' : ''} ${inline ? 'inline' : ''} ${className}`}
             style={style}
             role="status"
             aria-live="polite"

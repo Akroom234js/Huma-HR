@@ -138,6 +138,16 @@ body {
   min-height: 100vh;
 }
 
+::selection {
+  background-color: rgba(53, 158, 255, 0.3);
+  color: inherit;
+}
+
+::-moz-selection {
+  background-color: rgba(53, 158, 255, 0.3);
+  color: inherit;
+}
+
 body::before {
   content: "";
   position: fixed;
