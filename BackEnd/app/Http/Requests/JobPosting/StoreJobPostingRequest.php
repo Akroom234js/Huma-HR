@@ -24,7 +24,7 @@ class StoreJobPostingRequest extends FormRequest
         'location'           => 'nullable|string|max:255',
         'employment_type'    => 'nullable|in:full-time,part-time,contract,temporary,internship',
         'experience_level'   => 'nullable|in:entry-level,associate,mid-senior,director,executive',
-        'application_deadline' => 'nullable|date|after:today',
+        'application_deadline' => 'nullable|date|after_or_equal:today',
     ];
 }
 
@@ -42,7 +42,7 @@ public function messages(): array
         'position_id.exists'       => 'المنصب المحدد غير موجود.',
         'department_id.exists'     => 'القسم المحدد غير موجود.',
         'salary_max.gte'           => 'الحد الأعلى للراتب يجب أن يكون أكبر من الحد الأدنى.',
-        'application_deadline.after' => 'موعد التقديم يجب أن يكون بعد اليوم.',
+        'application_deadline.after_or_equal' => 'موعد التقديم لا يمكن أن يكون في الماضي.',
     ];
 }
 }
