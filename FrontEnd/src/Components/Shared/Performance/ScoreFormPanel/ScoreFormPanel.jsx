@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './ScoreFormPanel.css';
 import { useTranslation } from 'react-i18next';
+import { useNotification } from '../../../Notification/NotificationContext';
+import DashboardLoader from '../../DashboardLoader/DashboardLoader';
 
 const ScoreFormPanel = ({
     task = {},
@@ -13,6 +15,7 @@ const ScoreFormPanel = ({
     const { i18n } = useTranslation();
     const currentLang = lang || (i18n ? i18n.language : sessionStorage.getItem('lang')) || 'en';
     const isAr = currentLang === 'ar';
+    const { showWarning } = useNotification();
 
     // State variables
     const [completion, setCompletion] = useState(80);
@@ -37,7 +40,7 @@ const ScoreFormPanel = ({
     const handleRevisionRequest = (e) => {
         e.preventDefault();
         if (!notes.trim()) {
-            alert(isAr ? 'يرجى كتابة ملاحظات التعديل المطلوبة لتوجيه الموظف' : 'Please write revision notes to guide the employee');
+            showWarning(isAr ? 'يرجى كتابة ملاحظات التعديل المطلوبة لتوجيه الموظف' : 'Please write revision notes to guide the employee');
             return;
         }
         if (onSubmitRevision) {
@@ -160,7 +163,11 @@ const ScoreFormPanel = ({
                         onClick={handleRevisionRequest}
                         disabled={isSubmitting}
                     >
-                        <i className="fa-solid fa-rotate-left"></i>
+                        {isSubmitting ? (
+                            <DashboardLoader size="xs" inline text="" />
+                        ) : (
+                            <i className="fa-solid fa-rotate-left"></i>
+                        )}
                         <span>{isAr ? 'إعادة للتعديل' : 'Request Revision'}</span>
                     </button>
                     <button 
@@ -169,7 +176,11 @@ const ScoreFormPanel = ({
                         onClick={handleScoreSubmit}
                         disabled={isSubmitting}
                     >
-                        <i className="fa-solid fa-check-double"></i>
+                        {isSubmitting ? (
+                            <DashboardLoader size="xs" inline text="" />
+                        ) : (
+                            <i className="fa-solid fa-check-double"></i>
+                        )}
                         <span>{isAr ? 'اعتماد رصد الدرجة' : 'Approve & Score'}</span>
                     </button>
                 </div>

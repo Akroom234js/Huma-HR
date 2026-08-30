@@ -5,6 +5,7 @@ import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 import { useTranslation } from "react-i18next";
 import Avatar from '../../../Shared/Avatar/Avatar';
 import apiClient from '../../../../apiConfig';
+import DashboardLoader from '../../../Shared/DashboardLoader/DashboardLoader';
 
 const Leaves = () => {
     const { t } = useTranslation("Dashboard/Leaves");
@@ -39,14 +40,17 @@ const Leaves = () => {
     // Fallbacks to mock data if backend has no records yet
     const stats = useMemo(() => {
         if (dashboardData?.stats) {
-            return dashboardData.stats.map(s => ({
-                label: t(`stats.${s.label.toLowerCase().replace(' ', '_')}`) || s.label,
-                value: s.value,
-                icon: s.icon
-            }));
+            return dashboardData.stats.map(s => {
+                const key = s.label.toLowerCase().replace(/ /g, '_');
+                return {
+                    label: t(`stats.${key}`) || t(`stats.${key.replace('_requests', '')}`) || s.label,
+                    value: s.value,
+                    icon: s.icon
+                };
+            });
         }
         return [
-            { label: t('stats.pending') || "Pending Requests", value: "0", icon: "pending_actions" },
+            { label: t('stats.pending_requests') || t('stats.pending') || "Pending Requests", value: "0", icon: "pending_actions" },
             { label: t('stats.annual_balance') || "Annual Balance", value: "0 Days", icon: "account_balance" },
             { label: t('stats.highest_requester') || "Highest Requester", value: "None", icon: "person_alert" },
             { label: t('stats.used_days') || "Used Days", value: "0", icon: "calendar_today" }
@@ -56,6 +60,40 @@ const Leaves = () => {
     const leaveRequests = useMemo(() => {
         return dashboardData?.leave_requests || [];
     }, [dashboardData]);
+
+    const departmentOptions = useMemo(() => {
+        const depts = new Set();
+        leaveRequests.forEach(req => {
+            if (req.dept && req.dept !== 'General') depts.add(req.dept);
+        });
+        if (depts.size === 0) {
+            ['IT', 'Marketing', 'HR', 'Engineering', 'Design', 'Product Management'].forEach(d => depts.add(d));
+        }
+        return [
+            { value: "", label: t('filters.department') || "All Departments" },
+            ...Array.from(depts).map(d => ({ value: d, label: d }))
+        ];
+    }, [leaveRequests, t]);
+
+    const leaveTypeOptions = useMemo(() => {
+        const types = new Set();
+        leaveRequests.forEach(req => {
+            if (req.type) types.add(req.type);
+        });
+        ['Annual', 'Sick', 'Emergency', 'Vacation', 'Unpaid'].forEach(lt => types.add(lt));
+
+        return [
+            { value: "", label: t('filters.leave_type') || "All Leave Types" },
+            ...Array.from(types).map(lt => ({ value: lt, label: lt }))
+        ];
+    }, [leaveRequests, t]);
+
+    const statusOptions = useMemo(() => [
+        { value: "", label: t('filters.status') || "All Statuses" },
+        { value: "approved", label: t('status.approved') || "Approved" },
+        { value: "pending", label: t('status.pending') || "Pending" },
+        { value: "rejected", label: t('status.rejected') || "Rejected" }
+    ], [t]);
 
     const calculatedImpacts = useMemo(() => {
         return dashboardData?.department_impact || [];
@@ -70,6 +108,37 @@ const Leaves = () => {
         ];
     }, [dashboardData]);
 
+    const dynamicPieGradient = useMemo(() => {
+        if (!distribution || distribution.length === 0) {
+            return 'conic-gradient(#e2e8f0 0% 100%)';
+        }
+
+        const colorMap = {
+            'bg-blue': 'var(--primary-color, #359EFF)',
+            'bg-amber': 'var(--amber-500, #f59e0b)',
+            'bg-red': 'var(--red-500, #ef4444)',
+            'bg-emerald': 'var(--emerald-500, #10b981)',
+            'bg-purple': '#8b5cf6'
+        };
+
+        const totalPercent = distribution.reduce((sum, item) => sum + (Number(item.percent) || 0), 0);
+        if (totalPercent === 0) {
+            return 'conic-gradient(#e2e8f0 0% 100%)';
+        }
+
+        let current = 0;
+        const segments = distribution.map((item, index) => {
+            const color = colorMap[item.color] || 'var(--primary-color, #359EFF)';
+            const start = current;
+            const itemPercent = ((Number(item.percent) || 0) / totalPercent) * 100;
+            current += itemPercent;
+            const end = index === distribution.length - 1 ? 100 : current;
+            return `${color} ${start.toFixed(1)}% ${end.toFixed(1)}%`;
+        });
+
+        return `conic-gradient(${segments.join(', ')})`;
+    }, [distribution]);
+
     const trends = useMemo(() => {
         return dashboardData?.trends || [
             { label: 'Q1', percent: 0 },
@@ -81,10 +150,30 @@ const Leaves = () => {
 
     const filteredRequests = useMemo(() => {
         return leaveRequests.filter(req => {
-            const matchSearch = !searchTerm || req.name.toLowerCase().includes(searchTerm.toLowerCase()) || (req.reason && req.reason.toLowerCase().includes(searchTerm.toLowerCase()));
-            const matchDept = !dept || req.dept.toLowerCase() === dept.toLowerCase();
-            const matchType = !leaveType || req.type.toLowerCase() === leaveType.toLowerCase();
-            const matchStatus = !status || req.status.toLowerCase() === status.toLowerCase();
+            const term = searchTerm.trim().toLowerCase();
+            const matchSearch = !term ||
+                (req.name && req.name.toLowerCase().includes(term)) ||
+                (req.reason && req.reason.toLowerCase().includes(term)) ||
+                (req.type && req.type.toLowerCase().includes(term)) ||
+                (req.dept && req.dept.toLowerCase().includes(term));
+
+            const matchDept = !dept ||
+                (req.dept && (
+                    req.dept.toLowerCase() === dept.toLowerCase() ||
+                    req.dept.toLowerCase().includes(dept.toLowerCase()) ||
+                    dept.toLowerCase().includes(req.dept.toLowerCase())
+                ));
+
+            const matchType = !leaveType ||
+                (req.type && (
+                    req.type.toLowerCase() === leaveType.toLowerCase() ||
+                    req.type.toLowerCase().includes(leaveType.toLowerCase()) ||
+                    leaveType.toLowerCase().includes(req.type.toLowerCase())
+                ));
+
+            const matchStatus = !status ||
+                (req.status && req.status.toLowerCase() === status.toLowerCase());
+
             return matchSearch && matchDept && matchType && matchStatus;
         });
     }, [leaveRequests, searchTerm, dept, leaveType, status]);
@@ -102,14 +191,7 @@ const Leaves = () => {
     };
 
     if (loading) {
-        return (
-            <div className="portal-page-container-leaves fade-in-section" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
-                <div className="premium-spinner-container" style={{ textAlign: 'center' }}>
-                    <div className="premium-spinner"></div>
-                    <p style={{ marginTop: '1rem', color: 'var(--text-secondary)' }}>Loading Dashboard Analytics...</p>
-                </div>
-            </div>
-        );
+        return <DashboardLoader text={t('loading') || "Loading Leave Analytics..."} fullPage size="lg" />;
     }
 
     return (
@@ -162,32 +244,17 @@ const Leaves = () => {
                         <FilterDropdown
                             value={dept}
                             onChange={setDept}
-                            options={[
-                                { value: "", label: t('filters.department') || "All Departments" }, 
-                                { value: "it", label: "IT" }, 
-                                { value: "marketing", label: "Marketing" }, 
-                                { value: "hr", label: "HR" }
-                            ]}
+                            options={departmentOptions}
                         />
                         <FilterDropdown
                             value={leaveType}
                             onChange={setLeaveType}
-                            options={[
-                                { value: "", label: t('filters.leave_type') || "All Leave Types" }, 
-                                { value: "annual", label: "Annual" }, 
-                                { value: "sick", label: "Sick" }, 
-                                { value: "emergency", label: "Emergency" }
-                            ]}
+                            options={leaveTypeOptions}
                         />
                         <FilterDropdown
                             value={status}
                             onChange={setStatus}
-                            options={[
-                                { value: "", label: t('filters.status') || "All Statuses" }, 
-                                { value: "approved", label: t('status.approved') || "Approved" }, 
-                                { value: "pending", label: t('status.pending') || "Pending" }, 
-                                { value: "rejected", label: t('status.rejected') || "Rejected" }
-                            ]}
+                            options={statusOptions}
                         />
                     </div>
                 </div>
@@ -247,12 +314,9 @@ const Leaves = () => {
                         <h3>{t('reports.distribution') || "Leave Type Distribution"}</h3>
                     </div>
                     <div className="chart-preview-container">
-                        <div className="premium-pie-mock">
-                            <div className="pie-slice annual"></div>
-                            <div className="pie-slice sick"></div>
-                            <div className="pie-slice emergency"></div>
+                        <div className="premium-pie-mock" style={{ background: dynamicPieGradient }}>
                             <div className="pie-inner-circle">
-                                <span className="pie-total-label">Total</span>
+                                <span className="pie-total-label">{t('table.total') || "Total"}</span>
                                 <span className="pie-total-val">100%</span>
                             </div>
                         </div>

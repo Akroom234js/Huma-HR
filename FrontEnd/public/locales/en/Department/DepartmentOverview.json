@@ -1,0 +1,21 @@
+{
+    "page-title": "Department Overview",
+    "total-departments": "Total Departments",
+    "avg-employees": "Avg. Employees / Dept.",
+    "highest-headcount": "Highest Headcount",
+    "total-budget": "Total Staff Budget",
+    "chart-distribution-title": "Employee Distribution by Department",
+    "chart-budget-title": "Budget Allocation",
+    "th-dept-name": "Department Name",
+    "th-dept-head": "Department Head",
+    "th-employees": "Employees",
+    "th-open-positions": "Open Positions",
+    "th-annual-budget": "Annual Budget",
+    "th-actions": "Actions",
+    "delete": "Delete Department",
+    "confirm-delete": "Are you sure you want to delete department \"{{name}}\"?",
+    "toast-delete-success": "Department deleted successfully.",
+    "toast-delete-error": "Failed to delete department.",
+    "no-data": "No data found.",
+    "loading": "Loading department data..."
+}

@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import './General.css';
 import ThemeToggle from '../../../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
 import apiClient from '../../../../apiConfig';
+import DashboardLoader from '../../../Shared/DashboardLoader/DashboardLoader';
 import {
     BarChart,
     Bar,
@@ -32,7 +32,6 @@ export default function General() {
 
                 const response = await apiClient.get('/dashboard/general');
                 const result = response.data;
-                console.log("dddddddd",result);
 
                 if (result && (result.status || result.success)) {
                     const apiData = result.data || {};
@@ -43,6 +42,8 @@ export default function General() {
                         newThisMonth: fetchedStats.new_this_month ?? fetchedStats.newThisMonth ?? 0,
                         performanceRate: fetchedStats.performance_rate ?? fetchedStats.performanceRate ?? 0,
                         employeesOnLeaveToday: fetchedStats.employees_on_leave_today ?? fetchedStats.employeesOnLeaveToday ?? 0,
+                        sickLeavesCount: fetchedStats.sick_leaves_count,
+                        annualLeavesCount: fetchedStats.annual_leaves_count,
                         leaveBreakdown: fetchedStats.leave_breakdown ?? fetchedStats.leaveBreakdown ?? '',
                         overtimeHours: fetchedStats.overtime_hours ?? fetchedStats.overtimeHours ?? 0,
                         overtimeGrowthPercent: fetchedStats.overtime_growth_percent ?? fetchedStats.overtimeGrowthPercent ?? 0,
@@ -56,11 +57,11 @@ export default function General() {
                     const rawComparison = apiData.month_comparison || apiData.monthComparison || apiData.comparison || [];
                     setComparisonData(rawComparison);
                 } else {
-                    setError(result.message || 'Failed to load data');
+                    setError(result.message || t('error_loading'));
                 }
             } catch (err) {
                 console.error("Error fetching general dashboard data:", err);
-                const serverMsg = err.response?.data?.message || err.message || 'Error connecting to the server';
+                const serverMsg = err.response?.data?.message || err.message || t('error_loading');
                 setError(serverMsg);
             } finally {
                 setLoading(false);
@@ -70,12 +71,29 @@ export default function General() {
         fetchDashboardData();
     }, [i18n.language]);
 
-    if (loading) return <div style={{ padding: '40px', textAlign: 'center' }}>{t("loading") || "Loading..."}</div>;
+    if (loading) return <DashboardLoader text={t("loading") || "Loading Dashboard Data..."} fullPage size="lg" />;
     if (error) return (
         <div className="error-message" style={{ padding: '20px', color: '#ef4444', textAlign: 'center', fontWeight: 'bold' }}>
             {error}
         </div>
     );
+
+    // Dynamic states for badges
+    const isPerformanceHigh = (stats.performanceRate ?? 0) >= 75;
+    const isLateHigh = (stats.employeesLateToday ?? 0) > 5;
+    const isGrowthPositive = (stats.performanceGrowthQuarter ?? 0) >= 0;
+    const isOvertimePositive = (stats.overtimeGrowthPercent ?? 0) >= 0;
+
+    // Formatted leave breakdown with localization
+    const leaveBreakdownText = (stats.sickLeavesCount !== undefined && stats.annualLeavesCount !== undefined)
+        ? `${stats.sickLeavesCount} ${t('Sick')}, ${stats.annualLeavesCount} ${t('Annual')}`
+        : stats.leaveBreakdown;
+
+    // Translated chart data
+    const translatedComparisonData = comparisonData.map(item => ({
+        ...item,
+        name: t(item.name) || item.name
+    }));
 
     return (
         <div className={`dashboard-page ${isAr ? 'rtl' : 'ltr'}`}>
@@ -92,15 +110,15 @@ export default function General() {
                     <h3 className="title-card">{t("TotalEmployees")}</h3>
                     <p className="number">{stats.totalEmployees}</p>
                     <span className="badge badge-green">
-                        <i className="bi bi-arrow-up-short"></i> +{stats.newThisMonth} {t("newthismonth")}
+                        <i className="bi bi-arrow-up-short"></i> {stats.newThisMonth > 0 ? `+${stats.newThisMonth}` : stats.newThisMonth} {t("newthismonth")}
                     </span>
                 </div>
 
                 <div className='general-info-card'>
                     <h3 className="title-card">{t("PerformanceRate")}</h3>
                     <p className="number">{stats.performanceRate}%</p>
-                    <span className="badge badge-green">
-                        {t("High")}
+                    <span className={`badge ${isPerformanceHigh ? 'badge-green' : 'badge-red'}`}>
+                        {isPerformanceHigh ? t("High") : t("Low")}
                     </span>
                 </div>
 
@@ -108,15 +126,15 @@ export default function General() {
                     <h3 className="title-card">{t("EmployeesonLeaveToday")}</h3>
                     <p className="number">{stats.employeesOnLeaveToday}</p>
                     <span className="badge badge-gray">
-                        {stats.leaveBreakdown}
+                        {leaveBreakdownText}
                     </span>
                 </div>
 
                 <div className='general-info-card'>
                     <h3 className="title-card">{t("OvertimeHours")}</h3>
                     <p className="number">{stats.overtimeHours}</p>
-                    <span className="badge badge-green">
-                        +{stats.overtimeGrowthPercent}% {t("fromlastmonth")}
+                    <span className={`badge ${isOvertimePositive ? 'badge-green' : 'badge-red'}`}>
+                        {isOvertimePositive ? `+${stats.overtimeGrowthPercent}` : stats.overtimeGrowthPercent}% {t("fromlastmonth")}
                     </span>
                 </div>
 
@@ -134,23 +152,23 @@ export default function General() {
                     <h3 className="title-card">{t("EmployeesonLeavethisMonth")}</h3>
                     <p className="number">{stats.employeesOnLeaveThisMonth}</p>
                     <span className="badge badge-gray">
-                        (Total)
+                        ({t("Total")})
                     </span>
                 </div>
 
                 <div className='general-info-card'>
                     <h3 className="title-card">{t("EmployeesLateToday")}</h3>
                     <p className="number">{stats.employeesLateToday}</p>
-                    <span className="badge badge-red">
-                        {t("Higherthanusual")}
+                    <span className={`badge ${isLateHigh ? 'badge-red' : 'badge-green'}`}>
+                        {isLateHigh ? t("Higherthanusual") : t("Lowerthanusual")}
                     </span>
                 </div>
 
                 <div className='general-info-card'>
                     <h3 className="title-card">{t("AveragePerformanceRating")}</h3>
                     <p className="number">{stats.avgPerformanceRating} <span>/ 5.0</span></p>
-                    <span className="badge badge-green">
-                        {t("Up")} {stats.performanceGrowthQuarter} {t("fromlastquarter")}
+                    <span className={`badge ${isGrowthPositive ? 'badge-green' : 'badge-red'}`}>
+                        {isGrowthPositive ? t("Up") : t("Down")} {Math.abs(stats.performanceGrowthQuarter || 0)} {t("fromlastquarter")}
                     </span>
                 </div>
             </div>
@@ -158,7 +176,7 @@ export default function General() {
             <div className='graph'>
                 <h3>{t("Month-over-monthComparison")}</h3>
                 <ResponsiveContainer width="100%" height={400}>
-                    <BarChart data={comparisonData}>
+                    <BarChart data={translatedComparisonData}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
                         <XAxis
                             dataKey="name"

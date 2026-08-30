@@ -12,6 +12,7 @@ class PositionResource extends JsonResource
         return [
             'id'           => $this->id,
             'title'        => $this->title,
+            'department_id'=> $this->department_id,
             'description'  => $this->description,
             'requirements' => $this->requirements,
             'reporting_to' => $this->reporting_to,
@@ -24,8 +25,15 @@ class PositionResource extends JsonResource
             'tax_percent'      => $this->tax_percent,
             'insurance_amount' => $this->insurance_amount,
             'allowances'       => $this->allowances,
-            // عدد الشواغر من job_postings
-            'openings'     => $this->whenCounted('jobPostings'),
+            'openings'         => (int) ($this->openings ?? 1),
+            'assigned_count'   => (int) ($this->employees_count ?? ($this->relationLoaded('employees') ? $this->employees->count() : 0)),
+            'available_openings' => max(0, (int) ($this->openings ?? 1) - (int) ($this->employees_count ?? ($this->relationLoaded('employees') ? $this->employees->count() : 0))),
+            'employees'        => $this->whenLoaded('employees', fn() => $this->employees->map(fn($e) => [
+                'id'          => $e->id,
+                'name'        => $e->full_name,
+                'employee_id' => $e->employee_id,
+                'profile_pic' => $e->profile_pic,
+            ])),
             'created_at'   => $this->created_at?->format('Y-m-d'),
         ];
     }

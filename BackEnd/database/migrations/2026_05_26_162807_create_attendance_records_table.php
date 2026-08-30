@@ -27,7 +27,7 @@ return new class extends Migration
             $table->foreignId('office_location_id')->nullable()->constrained('office_locations')->onDelete('set null');
             $table->integer('distance_in_meters')->nullable();
             
-            $table->enum('status', ['present', 'absent', 'late', 'half_day'])->default('present');
+            $table->string('status', 50)->default('present');
             $table->text('lateness_reason')->nullable();
             $table->timestamps();
             

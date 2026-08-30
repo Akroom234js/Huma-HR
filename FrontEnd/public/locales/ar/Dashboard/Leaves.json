@@ -2,6 +2,7 @@
   "title": "إدارة الإجازات",
   "stats": {
     "pending": "الطلبات المعلقة",
+    "pending_requests": "الطلبات المعلقة",
     "annual_balance": "إجمالي الرصيد السنوي",
     "highest_requester": "الأكثر طلباً",
     "used_days": "الأيام المستخدمة (فترة)"

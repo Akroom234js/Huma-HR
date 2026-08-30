@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 import Avatar from '../../../Shared/Avatar/Avatar';
 import apiClient from '../../../../apiConfig';
+import DashboardLoader from '../../../Shared/DashboardLoader/DashboardLoader';
 
 export default function EmployeeReports() {
     const { t, i18n } = useTranslation('Dashboard/EmployeeReports');
@@ -85,7 +86,7 @@ export default function EmployeeReports() {
         { label: t('stats.stabilityRate'), value: statsData.stability_rate ?? '0%' },
     ];
 
-    if (loading) return <div style={{ padding: '40px', textAlign: 'center' }}>{t("loading") || "Loading..."}</div>;
+    if (loading) return <DashboardLoader text={t("loading") || "Loading Employee Reports..."} fullPage size="lg" />;
     
     if (error) return (
         <div className="error-message" style={{ padding: '20px', color: '#ef4444', textAlign: 'center', fontWeight: 'bold' }}>

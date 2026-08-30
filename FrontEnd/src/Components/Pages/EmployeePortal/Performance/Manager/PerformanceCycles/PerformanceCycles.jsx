@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './PerformanceCycles.css';
 import CycleResultsModal from './CycleResultsModal';
 import { useTranslation } from 'react-i18next';
+import DashboardLoader from '../../../../../Shared/DashboardLoader/DashboardLoader';
 import { getPerformanceCycles } from '../../../../../../services/performanceService';
 
 const PerformanceCycles = () => {
@@ -38,6 +39,7 @@ const PerformanceCycles = () => {
             case 'processing':
                 return t('jobStates.processing');
             case 'closed':
+            case 'completed':
                 return t('jobStates.closed');
             case 'draft':
             default:
@@ -70,10 +72,7 @@ const PerformanceCycles = () => {
                 </div>
 
                 {isLoading ? (
-                    <div style={{ textAlign: 'center', padding: '50px', color: 'var(--text-secondary)' }}>
-                        <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', marginBottom: '12px', display: 'block' }}></i>
-                        {t('loading')}
-                    </div>
+                    <DashboardLoader text={t('loading')} size="lg" />
                 ) : (
                     <div className="table-wrapper">
                         <table className="custom-table">
@@ -111,15 +110,15 @@ const PerformanceCycles = () => {
                                                             <span>{t('statuses.active')}</span>
                                                         </span>
                                                     )}
-                                                    {c.status === 'closed' && (
+                                                    {(c.status === 'closed' || c.status === 'completed') && (
                                                         <span className="badge badge-cycle-closed">
                                                             <span>{t('statuses.closed')}</span>
                                                         </span>
                                                     )}
                                                     {c.status === 'processing' && (
                                                         <span className="badge" style={{ backgroundColor: '#fef3c7', color: '#b45309' }}>
-                                                            <i className="fa-solid fa-spinner fa-spin"></i>
-                                                            <span>{t('statuses.processing')}</span>
+                                                            <DashboardLoader size="xs" inline text="" />
+                                                            <span style={{ marginInlineStart: '4px' }}>{t('statuses.processing')}</span>
                                                         </span>
                                                     )}
                                                     {c.status === 'draft' && (
@@ -133,8 +132,8 @@ const PerformanceCycles = () => {
                                                         <span className={`state-indicator-dot ${c.status}`}></span>
                                                         <span style={{ 
                                                             fontSize: '13px', 
-                                                            color: c.status === 'closed' ? 'var(--color-scored)' : 'var(--text-secondary)',
-                                                            fontWeight: c.status === 'closed' ? 600 : 'normal'
+                                                            color: (c.status === 'closed' || c.status === 'completed') ? 'var(--color-scored)' : 'var(--text-secondary)',
+                                                            fontWeight: (c.status === 'closed' || c.status === 'completed') ? 600 : 'normal'
                                                         }}>
                                                             {getJobStateText(c.status)}
                                                         </span>
@@ -146,7 +145,7 @@ const PerformanceCycles = () => {
                                                             <i className="fa-solid fa-clock"></i>
                                                             <span>{t('table.calculatedOnClose')}</span>
                                                         </button>
-                                                    ) : c.status === 'closed' ? (
+                                                    ) : (c.status === 'closed' || c.status === 'completed') ? (
                                                         <button className="btn btn-secondary btn-sm" onClick={() => setSelectedCycle(c)}>
                                                             <i className="fa-solid fa-chart-line"></i>
                                                             <span>{t('table.viewResults')}</span>

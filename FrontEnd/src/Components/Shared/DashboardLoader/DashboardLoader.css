@@ -1,0 +1,193 @@
+.dashboard-loader-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    padding: 2.5rem;
+    width: 100%;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    pointer-events: none;
+    background: transparent;
+}
+
+.dashboard-loader-container.full-page {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dashboard-loader-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dashboard-loader-container.inline {
+    display: inline-flex;
+    flex-direction: row;
+    padding: 0;
+    width: auto;
+    gap: 0.5rem;
+}
+
+/* SIZES */
+.dashboard-loader-container.size-xs .dashboard-loader-wrapper {
+    width: 22px;
+    height: 22px;
+}
+.dashboard-loader-container.size-xs {
+    padding: 0;
+    gap: 0.35rem;
+}
+.dashboard-loader-container.size-sm .dashboard-loader-wrapper {
+    width: 36px;
+    height: 36px;
+}
+.dashboard-loader-container.size-sm {
+    padding: 0.5rem;
+    gap: 0.5rem;
+}
+.dashboard-loader-container.size-md .dashboard-loader-wrapper {
+    width: 72px;
+    height: 72px;
+}
+.dashboard-loader-container.size-lg .dashboard-loader-wrapper {
+    width: 100px;
+    height: 100px;
+}
+.dashboard-loader-container.size-xl .dashboard-loader-wrapper {
+    width: 130px;
+    height: 130px;
+}
+
+/* OUTER SPINNING ORBIT RING */
+.dashboard-loader-ring-outer {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: var(--primary-color, #359EFF);
+    border-right-color: rgba(53, 158, 255, 0.4);
+    box-shadow: 0 0 15px rgba(53, 158, 255, 0.25);
+    animation: humaSpin 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+}
+
+/* INNER COUNTER-SPINNING ACCENT RING */
+.dashboard-loader-ring-inner {
+    position: absolute;
+    inset: 6px;
+    border-radius: 50%;
+    border: 2px dashed rgba(56, 189, 248, 0.7);
+    animation: humaSpinReverse 1.8s linear infinite;
+}
+
+.size-sm .dashboard-loader-ring-inner {
+    inset: 3px;
+    border-width: 1.5px;
+}
+
+/* LOGO / BRAND CORE */
+.dashboard-loader-core {
+    position: relative;
+    width: 55%;
+    height: 55%;
+    border-radius: 50%;
+    background: var(--bg-card, #ffffff);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.15), inset 0 0 8px rgba(53, 158, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: humaPulse 1.6s ease-in-out infinite alternate;
+    overflow: hidden;
+    padding: 12%;
+    box-sizing: border-box;
+    border: 1px solid var(--border-color, rgba(53, 158, 255, 0.15));
+}
+
+[data-theme="dark"] .dashboard-loader-core,
+:root[data-theme="dark"] .dashboard-loader-core,
+html[data-theme="dark"] .dashboard-loader-core,
+body[data-theme="dark"] .dashboard-loader-core,
+.dark .dashboard-loader-core {
+    background: #1e293b !important;
+    border-color: rgba(53, 158, 255, 0.3) !important;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.7), inset 0 0 10px rgba(53, 158, 255, 0.3) !important;
+}
+
+.dashboard-loader-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(37, 99, 235, 0.2));
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+}
+
+/* TEXT STYLING */
+.dashboard-loader-text {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text-secondary, #64748b);
+    letter-spacing: -0.2px;
+    text-align: center;
+    animation: humaShimmer 2s ease-in-out infinite alternate;
+    user-select: none;
+    -webkit-user-select: none;
+    pointer-events: none;
+    background: transparent;
+}
+
+.size-sm .dashboard-loader-text {
+    font-size: 0.8125rem;
+}
+
+.size-lg .dashboard-loader-text,
+.size-xl .dashboard-loader-text {
+    font-size: 1.05rem;
+}
+
+/* KEYFRAME ANIMATIONS */
+@keyframes humaSpin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes humaSpinReverse {
+    0% {
+        transform: rotate(360deg);
+    }
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+@keyframes humaPulse {
+    0% {
+        transform: scale(0.9);
+        box-shadow: 0 2px 8px rgba(53, 158, 255, 0.1);
+    }
+    100% {
+        transform: scale(1.08);
+        box-shadow: 0 6px 20px rgba(53, 158, 255, 0.35);
+    }
+}
+
+@keyframes humaShimmer {
+    0% {
+        opacity: 0.6;
+    }
+    100% {
+        opacity: 1;
+    }
+}

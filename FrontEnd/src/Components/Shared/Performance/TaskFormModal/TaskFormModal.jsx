@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './TaskFormModal.css';
 import { useTranslation } from 'react-i18next';
+import { useNotification } from '../../../Notification/NotificationContext';
+import DashboardLoader from '../../DashboardLoader/DashboardLoader';
 
 const TaskFormModal = ({
     isOpen = false,
@@ -14,6 +16,7 @@ const TaskFormModal = ({
     const { i18n } = useTranslation();
     const currentLang = lang || (i18n ? i18n.language : sessionStorage.getItem('lang')) || 'en';
     const isAr = currentLang === 'ar';
+    const { showWarning } = useNotification();
 
     const isEditMode = !!task;
 
@@ -32,7 +35,7 @@ const TaskFormModal = ({
     // Load task data if in edit mode
     useEffect(() => {
         if (task) {
-            setEmployeeId(task.employee_id || '');
+            setEmployeeId(task.employee_id ? task.employee_id.toString() : '');
             setTitle(task.title || '');
             setDescription(task.description || '');
             
@@ -68,7 +71,7 @@ const TaskFormModal = ({
         if (effectiveSubmitting) return;
 
         if (!employeeId) {
-            alert(isAr ? 'يرجى تحديد الموظف المسند إليه' : 'Please select an assigned employee');
+            showWarning(isAr ? 'يرجى تحديد الموظف المسند إليه' : 'Please select an assigned employee');
             return;
         }
 
@@ -261,8 +264,8 @@ const TaskFormModal = ({
                         >
                             {effectiveSubmitting ? (
                                 <>
-                                    <i className="fa-solid fa-circle-notch fa-spin"></i>
-                                    <span>{isAr ? 'جاري الحفظ والتكليف...' : 'Saving Assignment...'}</span>
+                                    <DashboardLoader size="xs" inline text="" />
+                                    <span style={{ marginInlineStart: '6px' }}>{isAr ? 'جاري الحفظ والتكليف...' : 'Saving Assignment...'}</span>
                                 </>
                             ) : (
                                 <>

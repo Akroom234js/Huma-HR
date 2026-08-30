@@ -1,0 +1,27 @@
+{
+  "pageTitle": "Payroll Reports",
+  "latestNetPaid": "Latest Net Paid",
+  "totalBonusesYearly": "Total Bonuses (Yearly)",
+  "totalDeductionsYearly": "Total Deductions (Yearly)",
+  "historyTitle": "Payroll Cycle History",
+  "searchPlaceholder": "Search...",
+  "filter": {
+    "last6Months": "Last 6 Months",
+    "thisYear": "This Year"
+  },
+  "loading": "Loading...",
+  "noRecords": "No payroll records found.",
+  "table": {
+    "month": "Month",
+    "salaries": "Base Salary",
+    "allowances": "Allowances",
+    "bonuses": "Bonuses",
+    "tax": "Tax",
+    "insurance": "Insurance",
+    "absences": "Deductions & Absence",
+    "net": "Net Salary",
+    "status": "Status",
+    "paid": "Paid",
+    "pending": "Pending"
+  }
+}

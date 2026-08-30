@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import apiClient from '../../../../apiConfig';
+
 import PageHeader from '../../Reports/components/PageHeader/PageHeader';
 import ReportsNavbar from '../../Reports/components/ReportsNavbar/ReportsNavbar';
 import FilterBar from '../../Reports/components/FilterBar/FilterBar';
@@ -7,40 +10,99 @@ import ReportPdfPreview from "../components/ReportPdfPreview/ReportPdfPreview";
 
 import SummaryCard from './SummaryCard';
 import DepartmentCard from './DepartmentCard';
+import DashboardLoader from '../../../Shared/DashboardLoader/DashboardLoader';
 
 import './PayrollReports.css';
 
-const PayrollReports = () => {
-    const { t } = useTranslation('Reports/PayrollReports');
+export default function PayrollReports() {
+    const { t, i18n } = useTranslation('Reports/PayrollReports');
+    const isAr = i18n ? i18n.language === 'ar' : false;
+
+    const [month, setMonth] = useState(8);
+    const [year, setYear] = useState(2026);
+
     const [showPreview, setShowPreview] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const overviewData = [
-        { label: 'metrics.total_monthly_salary', value: '$1,254,300', icon: 'fa-solid fa-money-bill-wave', color: 'var(--primary-color)' },
-        { label: 'metrics.avg_salary_per_emp', value: '$6,432', icon: 'fa-solid fa-users-gear', color: 'var(--primary-color)' },
-        { label: 'metrics.total_overtime', value: '$45,200', icon: 'fa-solid fa-clock', color: 'var(--amber-500)' },
-        { label: 'metrics.total_deductions', value: '$32,150', icon: 'fa-solid fa-circle-minus', color: 'var(--red-500)' },
-    ];
+    const [overviewData, setOverviewData] = useState([]);
+    const [indicatorData, setIndicatorData] = useState([]);
+    const [departmentsData, setDepartmentsData] = useState([]);
 
-    const indicatorData = [
-        { label: 'metrics.payroll_revenue_ratio', value: '28.5%', icon: 'fa-solid fa-chart-pie' },
-        { label: 'metrics.benefit_cost', value: '$1,150', icon: 'fa-solid fa-shield-halved' },
-        { label: 'metrics.new_hires_cost', value: '$65,000', icon: 'fa-solid fa-user-plus' },
-        { label: 'metrics.yoy_growth', value: '+4.2%', icon: 'fa-solid fa-chart-line', isTrend: true },
-    ];
+    const handleMonthChange = (newMonth) => {
+        setMonth(parseInt(newMonth, 10));
+    };
 
-    const departments = [
-        { name: 'Engineering', total: '$550,000', headcount: 85, avg: '$6,470' },
-        { name: 'Marketing', total: '$240,000', headcount: 42, avg: '$5,714' },
-        { name: 'Sales', total: '$380,000', headcount: 60, avg: '$6,333' },
-        { name: 'Product Design', total: '$125,000', headcount: 18, avg: '$6,944' },
-        { name: 'Human Resources', total: '$70,000', headcount: 12, avg: '$5,833' },
-        { name: 'Operations & Admin', total: '$108,000', headcount: 24, avg: '$4,500' },
-    ];
+    const handleYearChange = (newYear) => {
+        setYear(parseInt(newYear, 10));
+    };
+
+    const formatCurrency = (val) => (typeof val === 'number' ? `$${val.toLocaleString()}` : val || '---');
+
+    useEffect(() => {
+        let isMounted = true; 
+
+        const fetchPayrollReport = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+
+                const token = localStorage.getItem('token');
+                const response = await apiClient.get('/reports/payroll', {
+                    params: { 
+                        month: Number(month), 
+                        year: Number(year) 
+                    },
+                    headers: {
+                        Authorization: token ? `Bearer ${token}` : ''
+                    }
+                });
+
+                if (isMounted && response.data?.status && response.data?.data) {
+                    const apiData = response.data.data;
+
+                    const overview = apiData.overview || {};
+                    setOverviewData([
+                        { label: 'metrics.total_monthly_salary', value: formatCurrency(overview.total_monthly_salary), icon: 'fa-solid fa-money-bill-wave', color: 'var(--primary-color)' },
+                        { label: 'metrics.avg_salary_per_emp', value: formatCurrency(overview.avg_salary_per_employee), icon: 'fa-solid fa-users-gear', color: 'var(--primary-color)' },
+                        { label: 'metrics.total_overtime', value: formatCurrency(overview.total_overtime), icon: 'fa-solid fa-clock', color: 'var(--amber-500)' },
+                        { label: 'metrics.total_deductions', value: formatCurrency(overview.total_deductions), icon: 'fa-solid fa-circle-minus', color: 'var(--red-500)' },
+                    ]);
+
+                    
+                    const indicators = apiData.indicators || {};
+                    setIndicatorData([
+                        { label: 'metrics.new_hires_cost', value: formatCurrency(indicators.new_hires_cost), icon: 'fa-solid fa-user-plus' },
+                        { label: 'metrics.yoy_growth', value: indicators.yoy_growth || 'N/A', icon: 'fa-solid fa-chart-line', isTrend: true },
+                    ]);
+
+                    const rawDepts = apiData.departments || [];
+                    setDepartmentsData(rawDepts.map((dept) => ({
+                        name: dept.name || 'N/A',
+                        total: formatCurrency(dept.total),
+                        headcount: dept.headcount || 0,
+                        avg: formatCurrency(dept.avg)
+                    })));
+                }
+            } catch (err) {
+                if (isMounted) {
+                    console.error("Failed fetching payroll report:", err);
+                    setError(err.response?.data?.message || t('error'));
+                }
+            } finally {
+                if (isMounted) setLoading(false);
+            }
+        };
+
+        fetchPayrollReport();
+
+        return () => { isMounted = false; };
+    }, [month, year, i18n.language]);
 
     const reportConfig = {
         title: t('title'),
         summary: t('report_config.summary'),
-        kpis: overviewData.map(item => ({ label: t(item.label), value: item.value })),
+        kpis: overviewData.map((item) => ({ label: t(item.label), value: item.value })),
         sections: [
             {
                 title: t('sections.indicators_title'),
@@ -68,7 +130,7 @@ const PayrollReports = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {departments.map((dept, i) => (
+                            {departmentsData.map((dept, i) => (
                                 <tr key={i} style={{ borderBottom: '1px solid #f8fafc' }}>
                                     <td style={{ padding: '10px 5px', fontWeight: '600' }}>{dept.name}</td>
                                     <td style={{ padding: '10px 5px' }}>{dept.headcount}</td>
@@ -85,43 +147,61 @@ const PayrollReports = () => {
     };
 
     return (
-        <>
+        <div className={`reports-page ${isAr ? 'rtl' : 'ltr'}`}>
             <ReportPdfPreview
                 show={showPreview}
                 onClose={() => setShowPreview(false)}
                 {...reportConfig}
             />
 
-            <div className="reports-page">
-                <PageHeader
-                    title={t('title')}
-                    subtitle={t('subtitle')}
-                    actions={
-                        <button className="emp-export-btn" onClick={() => setShowPreview(true)}>
-                            <i className="bi bi-file-earmark-arrow-down" /> {t('export_pdf')}
-                        </button>
-                    }
+            <PageHeader
+                title={t('title')}
+                subtitle={t('subtitle')}
+                actions={
+                    <button 
+                        className="emp-export-btn" 
+                        onClick={() => setShowPreview(true)}
+                        disabled={loading || !!error}
+                    >
+                        <i className="bi bi-file-earmark-arrow-down" /> {t('export_pdf')}
+                    </button>
+                }
+            />
+            
+            <ReportsNavbar />
+
+            <div className="reports-container">
+                <FilterBar 
+                    month={month} 
+                    year={year} 
+                    onMonthChange={handleMonthChange} 
+                    onYearChange={handleYearChange} 
                 />
-                <ReportsNavbar />
 
-                <div className="reports-container">
-                    <div className="stats-grid-payroll-report">
-                        <SummaryCard title="sections.overview_title" metrics={overviewData} />
-                        <SummaryCard title="sections.indicators_title" metrics={indicatorData} />
+                {loading ? (
+                    <div style={{ padding: '60px 20px', textAlign: 'center' }}>
+                        <DashboardLoader text={t('loading', 'Loading payroll report...')} size="lg" />
                     </div>
-
-                    <div className="breakdown-section">
-                        <h3 className="section-title">{t('sections.breakdown_title')}</h3>
-                        <div className="department-grid">
-                            {departments.map((dept, index) => (
-                                <DepartmentCard key={index} {...dept} />
-                            ))}
+                ) : error ? (
+                    <div className="error-message" style={{ padding: '20px', color: 'red', textAlign: 'center' }}>{error}</div>
+                ) : (
+                    <>
+                        <div className="stats-grid-payroll-report">
+                            <SummaryCard title="sections.overview_title" metrics={overviewData} />
+                            <SummaryCard title="sections.indicators_title" metrics={indicatorData} />
                         </div>
-                    </div>
-                </div>
-            </div>
-        </>
-    );
-};
 
-export default PayrollReports;
+                        <div className="breakdown-section">
+                            <h3 className="section-title">{t('sections.breakdown_title')}</h3>
+                            <div className="department-grid">
+                                {departmentsData.map((dept, index) => (
+                                    <DepartmentCard key={index} {...dept} />
+                                ))}
+                            </div>
+                        </div>
+                    </>
+                )}
+            </div>
+        </div>
+    );
+}

@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import './PeerReviewForm.css';
 import ThemeToggle from '../../../../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
+import { useNotification } from '../../../../Notification/NotificationContext';
+import DashboardLoader from '../../../../Shared/DashboardLoader/DashboardLoader';
 import { getDepartmentEmployees, getPerformanceCycles, submitPeerEvaluation } from '../../../../../services/performanceService';
 
 const PeerReviewForm = () => {
     const { t, i18n } = useTranslation('EmployeePortal/PeerReviewForm');
     const isAr = i18n ? i18n.language === 'ar' : false;
+    const { showSuccess, showError, showWarning } = useNotification();
 
     const [colleaguesList, setColleaguesList] = useState([]);
     const [cyclesList, setCyclesList] = useState([]);
@@ -45,11 +48,15 @@ const PeerReviewForm = () => {
                     const cycleData = Array.isArray(rawCycle?.data) 
                         ? rawCycle.data 
                         : (Array.isArray(rawCycle) ? rawCycle : []);
-                    setCyclesList(cycleData);
                     
-                    // Auto-select active or latest cycle if available
-                    const active = cycleData.find(c => c.status === 'active') || cycleData[0];
-                    if (active) setSelectedCycle(active.id);
+                    const activeCycles = cycleData.filter(c => c.status === 'active');
+                    setCyclesList(activeCycles);
+                    
+                    if (activeCycles.length > 0) {
+                        setSelectedCycle(activeCycles[0].id);
+                    } else {
+                        setSelectedCycle('');
+                    }
                 }
             } catch (err) {
                 console.error("Error loading peer review metadata:", err);
@@ -72,7 +79,7 @@ const PeerReviewForm = () => {
         e.preventDefault();
         if (!selectedColleague) return;
         if (!selectedCycle) {
-            alert(t('selectCycleAlert'));
+            showWarning(t('selectCycleAlert'));
             return;
         }
 
@@ -86,37 +93,42 @@ const PeerReviewForm = () => {
                 comment: comment.trim() || t('defaultComment')
             });
 
-            alert(t('successMsg'));
+            showSuccess(t('successMsg'));
             handleClear();
         } catch (error) {
             console.error("Error submitting peer review:", error);
             const errors = error.response?.data?.errors;
             let serverMsg = error.response?.data?.message;
             if (errors && typeof errors === 'object') {
-                const detailed = Object.values(errors).flat().join('\n');
-                if (detailed) serverMsg = detailed;
+                const firstKey = Object.keys(errors)[0];
+                if (firstKey && errors[firstKey].length > 0) {
+                    serverMsg = errors[firstKey][0];
+                }
             }
-            alert(serverMsg || t('errorMsg'));
+            showError(serverMsg || t('errorMsg'));
         } finally {
-            setIsSubmitting(false);
+            setSubmitting(false);
         }
     };
+
+    if (loading) {
+        return <DashboardLoader text={t('loading')} fullPage size="lg" />;
+    }
 
     return (
         <div className={`peer-review-portal-container ${isAr ? 'rtl' : 'ltr'}`}>
             <section className="peer-header-section">
                 <h1>{t('title')}</h1>
-                <div className="sm-theme-toggle-wrapper">
-                    <ThemeToggle />
-                </div>
-                <p className="subtitle">
-                    {t('subtitle')}
-                </p>
+                <p className="subtitle">{t('subtitle')}</p>
             </section>
+
+            <div className="sm-theme-toggle-wrapper">
+                <ThemeToggle />
+            </div>
 
             <div className="privacy-guarantee-banner">
                 <div className="privacy-icon-wrapper">
-                    <i className="fa-solid fa-user-shield"></i>
+                    <i className="bi bi-shield-lock-fill"></i>
                 </div>
                 <div className="privacy-text-content">
                     <strong>{t('privacyTitle')}</strong> {t('privacyBody')}
@@ -127,161 +139,140 @@ const PeerReviewForm = () => {
                 <div className="peer-card-header-flex">
                     <h2 className="card-inner-title">{t('formTitle')}</h2>
                     <span className="salt-status-badge">
-                        <i className="fa-solid fa-key"></i> {t('saltActive')}
+                        <i className="bi bi-key-fill me-1"></i> {t('saltSecured')}
                     </span>
                 </div>
 
-                {loading ? (
-                    <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
-                        <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', marginBottom: '12px', display: 'block' }}></i>
-                        {t('loadingData')}
-                    </div>
-                ) : (
-                    <form onSubmit={handleSubmit} className="peer-actual-form">
-                        {cyclesList.length > 0 && (
-                            <div className="peer-form-group">
-                                <label>{t('selectCycle')}</label>
-                                <select
-                                    className="peer-select-input"
-                                    value={selectedCycle}
-                                    onChange={(e) => setSelectedCycle(e.target.value)}
-                                    required
-                                >
-                                    <option value="" disabled hidden>
-                                        {t('selectCyclePlaceholder')}
-                                    </option>
-                                    {cyclesList.map(c => (
-                                        <option key={c.id} value={c.id}>
-                                            {c.title} ({c.status})
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        )}
-
-                        <div className="peer-form-group">
-                            <label>{t('selectColleague')}</label>
-                            <select
-                                className="peer-select-input"
-                                value={selectedColleague}
-                                onChange={(e) => setSelectedColleague(e.target.value)}
-                                required
-                            >
-                                <option value="" disabled hidden>
-                                    {t.selectColleaguePlaceholder}
+                <form onSubmit={handleSubmit}>
+                    {/* Performance Cycle Selection */}
+                    <div className="peer-form-group">
+                        <label className="peer-required-label">{t('cycleLabel')}</label>
+                        <select
+                            className="peer-select-input"
+                            value={selectedCycle}
+                            onChange={(e) => setSelectedCycle(e.target.value)}
+                            required
+                        >
+                            <option value="">{t('selectCyclePlaceholder')}</option>
+                            {cyclesList.map(cycle => (
+                                <option key={cycle.id} value={cycle.id}>
+                                    {cycle.title} ({cycle.start_date} - {cycle.end_date})
                                 </option>
-                                {colleaguesList.map(col => (
-                                    <option key={col.id} value={col.id}>
-                                        {col.full_name || col.name} {col.job_title ? `— (${col.job_title})` : ''}
-                                    </option>
-                                ))}
-                            </select>
-                            {colleaguesList.length === 0 && (
-                                <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '6px' }}>{t('noColleagues')}</p>
-                            )}
-                        </div>
+                            ))}
+                        </select>
+                    </div>
 
-                        <div className="peer-form-group slider-box-wrap">
+                    {/* Colleague Target */}
+                    <div className="peer-form-group">
+                        <label className="peer-required-label">{t('selectColleague')}</label>
+                        <select 
+                            className="peer-select-input"
+                            value={selectedColleague}
+                            onChange={(e) => setSelectedColleague(e.target.value)}
+                            required
+                        >
+                            <option value="">{t('selectPlaceholder')}</option>
+                            {colleaguesList.map((colleague) => (
+                                <option key={colleague.id} value={colleague.id}>
+                                    {colleague.full_name || colleague.name || colleague.user?.name || `Employee #${colleague.id}`}
+                                    {colleague.position ? ` — ${colleague.position}` : (colleague.job_title ? ` — ${colleague.job_title}` : '')}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Teamwork Competency Slider */}
+                    <div className="peer-form-group">
+                        <div className="slider-box-wrap">
                             <div className="slider-label-header">
                                 <span className="slider-title">
-                                    {t('teamworkLabel')}
+                                    <i className="bi bi-people-fill me-1"></i> {t('teamworkTitle')}
                                 </span>
-                                <span className="slider-counter-badge">
-                                    {teamworkScore.toFixed(1)}
-                                </span>
+                                <span className="slider-counter-badge">{teamworkScore} / 10</span>
                             </div>
-
-                            <input
-                                type="range"
-                                min="0"
-                                max="10"
+                            <input 
+                                type="range" 
+                                className="peer-range-slider" 
+                                min="1.0" 
+                                max="10.0" 
                                 step="0.5"
-                                className="peer-range-slider"
                                 value={teamworkScore}
-                                onChange={(e) =>
-                                    setTeamworkScore(parseFloat(e.target.value))
-                                }
+                                onChange={(e) => setTeamworkScore(parseFloat(e.target.value))}
                             />
-
-                            <p className="slider-bottom-desc">
-                                {t('teamworkDesc')}
-                            </p>
                         </div>
+                    </div>
 
-                        <div className="peer-form-group slider-box-wrap">
+                    {/* Communication Competency Slider */}
+                    <div className="peer-form-group">
+                        <div className="slider-box-wrap">
                             <div className="slider-label-header">
                                 <span className="slider-title">
-                                    {t('commLabel')}
+                                    <i className="bi bi-chat-left-quote-fill me-1"></i> {t('commTitle')}
                                 </span>
-                                <span className="slider-counter-badge">
-                                    {commScore.toFixed(1)}
-                                </span>
+                                <span className="slider-counter-badge">{commScore} / 10</span>
                             </div>
-
-                            <input
-                                type="range"
-                                min="0"
-                                max="10"
+                            <input 
+                                type="range" 
+                                className="peer-range-slider" 
+                                min="1.0" 
+                                max="10.0" 
                                 step="0.5"
-                                className="peer-range-slider"
                                 value={commScore}
-                                onChange={(e) =>
-                                    setCommScore(parseFloat(e.target.value))
-                                }
-                            />
-
-                            <p className="slider-bottom-desc">
-                                {t('commDesc')}
-                            </p>
-                        </div>
-
-                        <div className="peer-form-group">
-                            <label>{t('feedbackLabel')}</label>
-                            <textarea
-                                className="peer-textarea-field"
-                                rows={4}
-                                placeholder={t('feedbackPlaceholder')}
-                                value={comment}
-                                onChange={(e) => setComment(e.target.value)}
+                                onChange={(e) => setCommScore(parseFloat(e.target.value))}
                             />
                         </div>
+                    </div>
 
-                        <div className="anonymous-validation-footer-box">
-                            <div className="validation-meta-text">
-                                <h4>{t('validationTitle')}</h4>
-                                <p>{t('validationDesc')}</p>
-                            </div>
+                    {/* Subjective Comments */}
+                    <div className="peer-form-group">
+                        <label>{t('commentLabel')}</label>
+                        <textarea
+                            className="peer-textarea-field"
+                            rows="4"
+                            placeholder={t('commentPlaceholder')}
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                        ></textarea>
+                    </div>
 
-                            <span className="hash-secured-badge">
-                                <i className="fa-solid fa-shield-halved"></i> {t('hashSecured')}
-                            </span>
+                    <div className="anonymous-validation-footer-box">
+                        <div className="validation-meta-text">
+                            <h4>{t('anonymityVerified')}</h4>
+                            <p>{t('anonymityDisclaimer')}</p>
                         </div>
+                        <span className="hash-secured-badge">
+                            <i className="bi bi-check-circle-fill"></i> {t('hashBadge')}
+                        </span>
+                    </div>
 
-                        <div className="peer-form-actions">
-                            <button
-                                type="button"
-                                className="btn-peer-clear"
-                                onClick={handleClear}
-                            >
-                                {t('clearBtn')}
-                            </button>
-
-                            <button 
-                                type="submit" 
-                                className="btn-peer-submit"
-                                disabled={submitting || colleaguesList.length === 0}
-                            >
-                                {submitting ? (
-                                    <i className="fa-solid fa-spinner fa-spin"></i>
-                                ) : (
-                                    <>
-                                        <i className="fa-solid fa-lock"></i> {t('submitBtn')}
-                                    </>
-                                )}
-                            </button>
-                        </div>
-                    </form>
-                )}
+                    <div className="peer-form-actions">
+                        <button 
+                            type="button" 
+                            className="btn-peer-clear" 
+                            onClick={handleClear}
+                            disabled={submitting}
+                        >
+                            {t('clear')}
+                        </button>
+                        <button 
+                            type="submit" 
+                            className="btn-peer-submit"
+                            disabled={submitting || colleaguesList.length === 0}
+                        >
+                            {submitting ? (
+                                <>
+                                    <DashboardLoader size="xs" inline text="" />
+                                    <span style={{ marginInlineStart: '6px' }}>{t('submitting')}</span>
+                                </>
+                            ) : (
+                                <>
+                                    <i className="bi bi-send-fill me-1"></i>
+                                    {t('submit')}
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     );

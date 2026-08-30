@@ -4,6 +4,8 @@ import './TaskScoreDrawer.css';
 import StatusBadge from '../../../../../Shared/Performance/StatusBadge/StatusBadge';
 import ScoreFormPanel from '../../../../../Shared/Performance/ScoreFormPanel/ScoreFormPanel';
 import { useTranslation } from 'react-i18next';
+import { useNotification } from '../../../../../Notification/NotificationContext';
+import DashboardLoader from '../../../../../Shared/DashboardLoader/DashboardLoader';
 import { 
     getTaskDetails, 
     getDepartmentTasks, 
@@ -17,6 +19,7 @@ const TaskScoreDrawer = () => {
     const { id } = useParams();
     const { t, i18n } = useTranslation('EmployeePortal/TaskScoreDrawer');
     const isAr = i18n ? i18n.language === 'ar' : false;
+    const { showSuccess, showError } = useNotification();
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [task, setTask] = useState(null);
@@ -152,11 +155,11 @@ const TaskScoreDrawer = () => {
                 quality_score: data.quality_score,
                 manager_note: data.notes
             });
-            alert(t('alerts.scoreSuccess'));
+            showSuccess(t('alerts.scoreSuccess'));
             navigate('/portal/manager/tasks');
         } catch (error) {
             console.error("Failed to score task:", error);
-            alert(t('alerts.scoreError'));
+            showError(t('alerts.scoreError'));
         } finally {
             setIsSubmitting(false);
         }
@@ -168,23 +171,18 @@ const TaskScoreDrawer = () => {
             await requestRevision(task.id, {
                 manager_note: data.notes
             });
-            alert(t('alerts.revisionSuccess'));
+            showSuccess(t('alerts.revisionSuccess'));
             navigate('/portal/manager/tasks');
         } catch (error) {
             console.error("Failed to request revision:", error);
-            alert(t('alerts.revisionError'));
+            showError(t('alerts.revisionError'));
         } finally {
             setIsSubmitting(false);
         }
     };
 
     if (isLoading) {
-        return (
-            <div style={{ padding: '80px 40px', textAlign: 'center', color: 'var(--text-color)' }}>
-                <i className="fa-solid fa-circle-notch fa-spin" style={{ fontSize: '32px', marginBottom: '16px', color: 'var(--color-primary)' }}></i>
-                <div>{isAr ? 'جاري تحميل تفاصيل المهمة...' : 'Loading task details...'}</div>
-            </div>
-        );
+        return <DashboardLoader text={isAr ? 'جاري تحميل تفاصيل المهمة...' : 'Loading task details...'} fullPage size="lg" />;
     }
 
     if (!task) {

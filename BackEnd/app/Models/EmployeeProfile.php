@@ -145,6 +145,11 @@ class EmployeeProfile extends Model
         return $this->hasMany(Task::class, 'employee_profile_id');
     }
 
+    public function leaveBalances(): HasMany
+    {
+        return $this->hasMany(LeaveBalance::class, 'employee_profile_id');
+    }
+
     // ── Query Scopes ──────────────────────────────────────────────────────────
 
     public function scopeSearch(Builder $query, string $value): Builder

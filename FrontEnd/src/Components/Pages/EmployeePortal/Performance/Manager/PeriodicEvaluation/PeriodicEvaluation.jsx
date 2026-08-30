@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import './PeriodicEvaluation.css';
 import ManagerEvalForm from '../../../../../Shared/Performance/ManagerEvalForm/ManagerEvalForm';
 import { useTranslation } from 'react-i18next';
+import { useNotification } from '../../../../../Notification/NotificationContext';
+import DashboardLoader from '../../../../../Shared/DashboardLoader/DashboardLoader';
 import { 
     getDepartmentEmployees, 
     getPerformanceCycles, 
@@ -16,6 +18,7 @@ const PeriodicEvaluation = () => {
     const { employee_id } = useParams();
     const { t, i18n } = useTranslation('EmployeePortal/PeriodicEvaluation');
     const isAr = i18n ? i18n.language === 'ar' : false;
+    const { showSuccess, showError, showWarning } = useNotification();
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -139,7 +142,7 @@ const PeriodicEvaluation = () => {
     const handleSubmit = async (data) => {
         if (!activeEmployee) return;
         if (!selectedCycleId) {
-            alert(t('alerts.noActiveCycle'));
+            showWarning(t('alerts.noActiveCycle'));
             return;
         }
 
@@ -183,7 +186,7 @@ const PeriodicEvaluation = () => {
                     }
                 }));
 
-                alert(t('alerts.updateSuccess'));
+                showSuccess(t('alerts.updateSuccess'));
             } else {
                 // Create new evaluation via POST
                 const res = await submitManagerEvaluation({
@@ -217,12 +220,12 @@ const PeriodicEvaluation = () => {
                     evaluation: newEval
                 }));
 
-                alert(t('alerts.submitSuccess'));
+                showSuccess(t('alerts.submitSuccess'));
             }
         } catch (error) {
             console.error("Failed to save manager evaluation:", error);
             if (error.response?.status === 409) {
-                alert(t('alerts.alreadyEvaluated'));
+                showWarning(t('alerts.alreadyEvaluated'));
                 // Resync data with backend
                 loadTeamEvaluations(selectedCycleId, activeEmployee.id);
             } else {
@@ -232,7 +235,7 @@ const PeriodicEvaluation = () => {
                     const detailed = Object.values(errors).flat().join('\n');
                     if (detailed) msg = detailed;
                 }
-                alert(msg);
+                showError(msg);
             }
         } finally {
             setIsSubmitting(false);
@@ -240,12 +243,7 @@ const PeriodicEvaluation = () => {
     };
 
     if (isLoading) {
-        return (
-            <div style={{ textAlign: 'center', padding: '80px', color: 'var(--text-color)' }}>
-                <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', color: 'var(--primary-color)', marginBottom: '16px', display: 'block' }}></i>
-                <div>{t('loading')}</div>
-            </div>
-        );
+        return <DashboardLoader text={t('loading')} fullPage size="lg" />;
     }
 
     if (allEmployees.length === 0) {

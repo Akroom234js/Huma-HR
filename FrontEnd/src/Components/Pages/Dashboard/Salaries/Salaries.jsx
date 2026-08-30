@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import FilterDropdown from '../../../FilterDropdown/FilterDropdown';
 import apiClient from '../../../../apiConfig';
 import Avatar from '../../../Shared/Avatar/Avatar';
+import DashboardLoader from '../../../Shared/DashboardLoader/DashboardLoader';
 
 const Salaries = () => {
     const { t } = useTranslation('Dashboard/SalariesCompensation');
@@ -179,7 +180,9 @@ const Salaries = () => {
                         <tbody>
                             {loading ? (
                                 <tr>
-                                    <td colSpan="7" className="text-center py-4">{t('Loading', 'Loading payroll data...')}</td>
+                                    <td colSpan="7" className="text-center py-5">
+                                        <DashboardLoader text={t('Loading', 'Loading payroll data...')} size="md" />
+                                    </td>
                                 </tr>
                             ) : payrollData.length > 0 ? payrollData.map((row, i) => {
                                 const totalDeductions = row.deductions?.reduce((acc, d) => acc + Number(d.amount), 0) || 0;

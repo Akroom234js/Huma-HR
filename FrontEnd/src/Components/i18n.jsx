@@ -15,7 +15,14 @@ i18n
 
 		ns: [
 			'Sidebar/Sidebar',
+			'Dashboard/GeneralDashboard',
 			'EmployeeMovement/EmployeeMovement',
+			'AllEmployees/AllEmployees',
+			'Department/DepartmentOverview',
+			'Department/OrganizationalChart',
+			'Department/PositionRoles',
+			'Department/AddDepartment',
+			'Department/AddRole',
 			'SalaryManagement/SalaryStructure',
 			'Dashboard/EmployeeReports',
 			'Dashboard/Attendance',

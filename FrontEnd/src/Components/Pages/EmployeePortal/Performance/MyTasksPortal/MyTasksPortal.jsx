@@ -5,12 +5,15 @@ import StatusBadge from "../../../../Shared/Performance/StatusBadge/StatusBadge"
 import ManagerNoteBox from "../../../../Shared/Performance/ManagerNoteBox/ManagerNoteBox";
 import ThemeToggle from '../../../../ThemeToggle/ThemeToggle';
 import { useTranslation } from 'react-i18next';
+import { useNotification } from '../../../../Notification/NotificationContext';
+import DashboardLoader from '../../../../Shared/DashboardLoader/DashboardLoader';
 import { getMyTasks, startTask } from '../../../../../services/performanceService';
 
 const MyTasksPortal = () => {
     const navigate = useNavigate();
     const { t, i18n } = useTranslation('EmployeePortal/MyTasksPortal');
     const isAr = i18n ? i18n.language === 'ar' : false;
+    const { showSuccess, showError } = useNotification();
 
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -38,10 +41,11 @@ const MyTasksPortal = () => {
         try {
             setActionLoadingId(taskId);
             await startTask(taskId);
+            showSuccess(isAr ? 'تم بدء العمل على المهمة بنجاح!' : 'Task started successfully!');
             await fetchTasks();
         } catch (error) {
             console.error("Failed to start task:", error);
-            alert(t('startError'));
+            showError(t('startError'));
         } finally {
             setActionLoadingId(null);
         }
@@ -89,33 +93,45 @@ const MyTasksPortal = () => {
 
             <div className="stats-grid">
                 <div className="stat-card total">
-                    <i className="fa-solid fa-briefcase stat-icon"></i>
-                    <div className="stat-label">{t('stats.assignedTasks')}</div>
+                    <div className="stat-card-top">
+                        <span className="stat-label">{t('stats.assignedTasks')}</span>
+                        <i className="bi bi-briefcase-fill stat-icon"></i>
+                    </div>
                     <div className="stat-value">{tasks.length}</div>
                 </div>
                 <div className="stat-card pending">
-                    <i className="fa-solid fa-circle-pause stat-icon"></i>
-                    <div className="stat-label">{t('stats.unstarted')}</div>
+                    <div className="stat-card-top">
+                        <span className="stat-label">{t('stats.unstarted')}</span>
+                        <i className="bi bi-pause-circle-fill stat-icon"></i>
+                    </div>
                     <div className="stat-value">{countByNormStatus('pending')}</div>
                 </div>
                 <div className="stat-card progress">
-                    <i className="fa-solid fa-spinner stat-icon"></i>
-                    <div className="stat-label">{t('stats.activeProgress')}</div>
+                    <div className="stat-card-top">
+                        <span className="stat-label">{t('stats.activeProgress')}</span>
+                        <i className="bi bi-arrow-repeat stat-icon"></i>
+                    </div>
                     <div className="stat-value">{countByNormStatus('in_progress')}</div>
                 </div>
                 <div className="stat-card review">
-                    <i className="fa-solid fa-paper-plane stat-icon"></i>
-                    <div className="stat-label">{t('stats.submittedReview')}</div>
+                    <div className="stat-card-top">
+                        <span className="stat-label">{t('stats.submittedReview')}</span>
+                        <i className="bi bi-send-fill stat-icon"></i>
+                    </div>
                     <div className="stat-value">{countByNormStatus('pending_review')}</div>
                 </div>
                 <div className="stat-card revision">
-                    <i className="fa-solid fa-circle-exclamation stat-icon"></i>
-                    <div className="stat-label" style={{ color: '#f87171' }}>{t('stats.requiresRevision')}</div>
-                    <div className="stat-value" style={{ color: 'var(--color-revision)' }}>{countByNormStatus('needs_revision')}</div>
+                    <div className="stat-card-top">
+                        <span className="stat-label" style={{ color: '#ef4444' }}>{t('stats.requiresRevision')}</span>
+                        <i className="bi bi-exclamation-circle-fill stat-icon" style={{ color: '#ef4444' }}></i>
+                    </div>
+                    <div className="stat-value" style={{ color: 'var(--color-revision, #ef4444)' }}>{countByNormStatus('needs_revision')}</div>
                 </div>
                 <div className="stat-card average">
-                    <i className="fa-solid fa-trophy stat-icon"></i>
-                    <div className="stat-label">{t('stats.avgScore')}</div>
+                    <div className="stat-card-top">
+                        <span className="stat-label">{t('stats.avgScore')}</span>
+                        <i className="bi bi-trophy-fill stat-icon"></i>
+                    </div>
                     <div className="stat-value">{avgScore}</div>
                 </div>
             </div>
@@ -128,7 +144,7 @@ const MyTasksPortal = () => {
 
                 <div className="filter-bar">
                     <div className="search-wrapper">
-                        <i className="fa-solid fa-magnifying-glass"></i>
+                        <i className="bi bi-search"></i>
                         <input 
                             type="text" 
                             className="search-input" 
@@ -140,13 +156,12 @@ const MyTasksPortal = () => {
                 </div>
 
                 {loading ? (
-                    <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
-                        <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', marginBottom: '12px', display: 'block' }}></i>
-                        {t('loading')}
+                    <div style={{ textAlign: 'center', padding: '40px' }}>
+                        <DashboardLoader text={t('loading')} size="md" />
                     </div>
                 ) : filteredTasks.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
-                        <i className="fa-solid fa-clipboard-check" style={{ fontSize: '2.5rem', marginBottom: '12px', display: 'block', color: '#cbd5e1' }}></i>
+                    <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted, #64748b)' }}>
+                        <i className="bi bi-clipboard-check" style={{ fontSize: '2.5rem', marginBottom: '12px', display: 'block', color: 'var(--border-color, #cbd5e1)' }}></i>
                         {t('noTasks')}
                     </div>
                 ) : (
@@ -186,14 +201,14 @@ const MyTasksPortal = () => {
                                     <div>
                                         <div className="task-meta-list">
                                             <span>
-                                                <i className="fa-solid fa-calendar"></i>
+                                                <i className="bi bi-calendar-event me-1"></i>
                                                 {normStatus === 'scored' && taskItem.completed_at
                                                     ? ` ${t('completedDate')} ${taskItem.completed_at.substring(0, 10)}`
                                                     : ` ${t('due')} ${taskItem.due_date || '-'}`}
                                             </span>
                                             {taskItem.difficulty && (
-                                                <span style={{ marginInlineStart: '12px', fontSize: '0.8rem', color: '#64748b' }}>
-                                                    <i className="fa-solid fa-layer-group"></i> {taskItem.difficulty}
+                                                <span style={{ marginInlineStart: '12px', fontSize: '0.8rem', color: 'var(--text-muted, #64748b)' }}>
+                                                    <i className="bi bi-layers-fill me-1"></i> {taskItem.difficulty}
                                                 </span>
                                             )}
                                         </div>
@@ -201,13 +216,13 @@ const MyTasksPortal = () => {
                                         <div className="task-card-actions">
                                             {isLate ? (
                                                 <span className="penalty-text">
-                                                    <i className="fa-solid fa-triangle-exclamation"></i> {t('penaltyActive')} (-{taskItem.penalty_points || 0})
+                                                    <i className="bi bi-exclamation-triangle-fill me-1"></i> {t('penaltyActive')} (-{taskItem.penalty_points || 0})
                                                 </span>
                                             ) : (
                                                 <span className="placeholder-text">
                                                     {normStatus === 'pending_review' && t('awaitingSupervisor')}
                                                     {normStatus === 'scored' && Number(taskItem.final_score) >= 85 && (
-                                                        <span className="excellent-badge"><i className="fa-solid fa-star"></i> {t('excellentWork')}</span>
+                                                        <span className="excellent-badge"><i className="bi bi-star-fill me-1"></i> {t('excellentWork')}</span>
                                                     )}
                                                 </span>
                                             )}
@@ -234,7 +249,7 @@ const MyTasksPortal = () => {
                                                     disabled={actionLoadingId === taskItem.id}
                                                     onClick={() => handleStart(taskItem.id)}
                                                 >
-                                                    {actionLoadingId === taskItem.id ? <i className="fa-solid fa-spinner fa-spin"></i> : t('buttons.start')}
+                                                    {actionLoadingId === taskItem.id ? <DashboardLoader size="xs" inline text="" /> : t('buttons.start')}
                                                 </button>
                                             )}
                                             {normStatus === 'scored' && (

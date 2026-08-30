@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './CycleResultsModal.css';
 import { useTranslation } from 'react-i18next';
+import DashboardLoader from '../../../../../Shared/DashboardLoader/DashboardLoader';
 import { getEvaluationsByCycle } from '../../../../../../services/PerformanceHrService';
 
 const CycleResultsModal = ({ isOpen, onClose, cycle }) => {
@@ -34,19 +35,18 @@ const CycleResultsModal = ({ isOpen, onClose, cycle }) => {
     const cycleTitle = cycle.title || (isAr ? cycle.nameAr : cycle.nameEn) || '';
 
     return (
-        <div className={`modal-overlay cycle-results-modal-overlay ${isAr ? 'rtl' : 'ltr'}`}>
-            <div className="modal-container cycle-results-modal">
+        <div className={`cycle-results-modal-overlay ${isAr ? 'rtl' : 'ltr'}`} onClick={onClose}>
+            <div className="cycle-results-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
                     <h2>{t('modal.cycleResults', { name: cycleTitle })}</h2>
-                    <button className="close-btn" onClick={onClose}>
+                    <button className="close-btn" onClick={onClose} aria-label="Close">
                         <i className="fa-solid fa-times"></i>
                     </button>
                 </div>
                 <div className="modal-body">
                     {loading ? (
-                        <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
-                            <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', marginBottom: '12px', display: 'block' }}></i>
-                            {t('modal.loadingResults')}
+                        <div style={{ textAlign: 'center', padding: '40px' }}>
+                            <DashboardLoader text={t('modal.loadingResults')} size="md" />
                         </div>
                     ) : (
                         <div className="table-wrapper">

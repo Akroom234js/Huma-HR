@@ -33,10 +33,16 @@ class EmployeeController extends Controller
             ->when($request->filled('department_id'),
                 fn($q) => $q->department((int) $request->department_id)
             )
-            ->when($request->filled('job_title'),
-                fn($q) => $q->jobTitle($request->job_title)
+            ->when($request->filled('position_id'),
+                fn($q) => $q->where('position_id', (int) $request->position_id)
             )
-            ->paginate($request->get('per_page', 15));
+            ->when($request->filled('job_title'),
+                fn($q) => $q->where(function($sub) use ($request) {
+                    $sub->where('job_title', 'like', "%{$request->job_title}%")
+                        ->orWhere('position_id', $request->job_title);
+                })
+            )
+            ->paginate($request->get('per_page', 50));
 
         return $this->successResponse(
             data: [
@@ -299,6 +305,35 @@ class EmployeeController extends Controller
         return $this->successResponse(
             data: EmployeeResource::collection($colleagues)->resolve(),
             message: 'Department employees retrieved successfully.'
+        );
+    }
+
+    // ── GET /api/employee/org-summary ─────────────────────────────────────────
+    // Middleware: auth:sanctum (any role)
+    // يُرجع إجمالي موظفي الشركة وموظفي قسم الموظف الحالي للاستخدام في Dashboard الموظف
+    public function orgSummary(): JsonResponse
+    {
+        $employee = auth()->user()->employeeProfile;
+
+        $companyCount = EmployeeProfile::whereHas('user', fn($q) => $q->where('account_status', 'active'))->count();
+
+        $deptCount = 0;
+        $deptName = null;
+
+        if ($employee && $employee->department_id) {
+            $deptCount = EmployeeProfile::where('department_id', $employee->department_id)
+                ->whereHas('user', fn($q) => $q->where('account_status', 'active'))
+                ->count();
+            $deptName = $employee->department?->name;
+        }
+
+        return $this->successResponse(
+            data: [
+                'company_employees_count'    => $companyCount,
+                'department_employees_count' => $deptCount,
+                'department_name'            => $deptName,
+            ],
+            message: 'Organization summary retrieved successfully.'
         );
     }
 }

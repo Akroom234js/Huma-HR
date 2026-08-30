@@ -4,11 +4,13 @@ import { useTranslation } from 'react-i18next';
 import apiClient from '../../../../apiConfig';
 
 export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = [] }) {
-    const { t } = useTranslation("EmployeePortal/Requestaleave");
+    const { t, i18n } = useTranslation("EmployeePortal/Requestaleave");
+    const isAr = i18n.language === "ar";
+
     const [requestCategory, setRequestCategory] = useState('vacation');
     
     // Vacation/Leave fields
-    const [leaveType, setLeaveType] = useState('Sick Leave');
+    const [leaveType, setLeaveType] = useState('');
     const [startDate, setStartDate] = useState('');
     const [duration, setDuration] = useState('');
     
@@ -82,14 +84,17 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
             let details = {};
             
             switch (requestCategory) {
-                case 'vacation':
+                case 'vacation': {
+                    const matchedType = leaveTypes.find(t => t.name_en === leaveType || t.id === Number(leaveType));
                     details = {
-                        leave_type_id: leaveTypes.find(t => t.name_en === leaveType)?.id,
-                        leave_type_name: leaveType,
+                        leave_type_id: matchedType ? matchedType.id : null,
+                        leave_type_name: matchedType ? matchedType.name_en : leaveType,
+                        leave_type_name_ar: matchedType ? matchedType.name_ar : '',
                         start_date: startDate || new Date().toISOString().split('T')[0],
                         duration: Number(duration) || 1
                     };
                     break;
+                }
                 case 'advance':
                     details = {
                         amount: amount,
@@ -100,15 +105,14 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
                 case 'equipment':
                     details = {
                         deviceType: deviceType,
-                        specs: specs,
-                        reason: reason
+                        specs: specs
                     };
                     break;
                 case 'compensation':
                     details = {
                         amount: compAmount,
                         category: compCategory,
-                        date: compDate
+                        spending_date: compDate
                     };
                     break;
                 case 'data-update':
@@ -127,13 +131,13 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
                     details = {
                         currentDept: currentDept,
                         newDept: newDept,
-                        newTitle: newTitle
+                        proposedTitle: newTitle
                     };
                     break;
                 case 'promotion':
                     details = {
                         proposedTitle: proposedTitle,
-                        salaryIncrease: proposedSalary
+                        proposedSalary: proposedSalary
                     };
                     break;
                 case 'experience-certificate':
@@ -142,6 +146,7 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
                     };
                     break;
                 default:
+                    details = { note: reason };
                     break;
             }
 
@@ -151,17 +156,17 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
                 formData.append('attachment', fileObj);
             }
 
-            const response = await apiClient.post('/requests', formData, {
+            await apiClient.post('/requests', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
 
             if (onSubmit) {
-                onSubmit(response.data.data);
+                onSubmit();
             }
 
-            // Reset form fields
+            // Reset state
             setStartDate('');
             setDuration('');
             setReason('');
@@ -189,21 +194,21 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
 
         } catch (error) {
             console.error('Error submitting request:', error);
-            setErrorMessage(error.response?.data?.message || 'Failed to submit request. Please try again.');
+            setErrorMessage(error.response?.data?.message || (isAr ? 'فشل إرسال الطلب، يرجى المحاولة لاحقاً.' : 'Failed to submit request. Please try again.'));
         } finally {
             setIsSubmitting(false);
         }
     };
 
     return (
-        <div className="request-leave-modal-overlay" onClick={onClose}>
+        <div className={`request-leave-modal-overlay ${isAr ? "rtl" : "ltr"}`} onClick={onClose}>
             <div className="request-leave-modal-container" onClick={(e) => e.stopPropagation()}>
                 <div className="request-leave-modal-header">
                     <div className="header-title-wrapper">
                         <div className="header-icon-glow">
                             <span className="material-symbols-outlined">assignment</span>
                         </div>
-                        <h3>Submit New Request (تقديم طلب جديد)</h3>
+                        <h3>{t("modalTitle")}</h3>
                     </div>
                     <button className="modal-close-btn" onClick={onClose} type="button" aria-label="Close">
                         <i className="bi bi-x-lg"></i>
@@ -211,17 +216,18 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
                 </div>
                 
                 <form onSubmit={handleSubmit} className="request-leave-form">
-                    {errorMessage && (
-                        <div className="leave-error-banner" style={{ color: '#ff4d4f', backgroundColor: '#fff2f0', border: '1px solid #ffccc7', padding: '10px', borderRadius: '6px', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>error</span>
-                            <span>{errorMessage}</span>
-                        </div>
-                    )}
+                    <div className="modal-form-scrollable-body">
+                        {errorMessage && (
+                            <div className="leave-error-banner">
+                                <span className="material-symbols-outlined">error</span>
+                                <span>{errorMessage}</span>
+                            </div>
+                        )}
 
-                    <div className="form-grid">
-                        {/* ── Request Category Picker ── */}
+                        <div className="form-grid">
+                        {/* Request Category Picker */}
                         <div className="form-group col-full">
-                            <label className="form-label">Request Category (تصنيف الطلب)</label>
+                            <label className="form-label">{t("requestCategory")}</label>
                             <div className="select-wrapper">
                                 <select 
                                     className="premium-input premium-select"
@@ -229,25 +235,25 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
                                     onChange={(e) => setRequestCategory(e.target.value)}
                                     required
                                 >
-                                    <option value="vacation">Vacation / Leave (إجازة)</option>
-                                    <option value="advance">Advance Request (طلب سلفة)</option>
-                                    <option value="equipment">Equipment Request (طلب عهدة / أجهزة)</option>
-                                    <option value="compensation">Compensation (طلب تعويض مالي)</option>
-                                    <option value="data-update">Data Update (تعديل بيانات الموظف)</option>
-                                    <option value="resignation">Resignation (تقديم استقالة)</option>
-                                    <option value="transfer">Transfer Department (نقل قسم)</option>
-                                    <option value="promotion">Promotion Request (طلب ترقية)</option>
-                                    <option value="experience-certificate">Experience Certificate (شهادة خبرة)</option>
+                                    <option value="vacation">{t("categories.vacation")}</option>
+                                    <option value="advance">{t("categories.advance")}</option>
+                                    <option value="equipment">{t("categories.equipment")}</option>
+                                    <option value="compensation">{t("categories.compensation")}</option>
+                                    <option value="data-update">{t("categories.dataUpdate")}</option>
+                                    <option value="resignation">{t("categories.resignation")}</option>
+                                    <option value="transfer">{t("categories.transfer")}</option>
+                                    <option value="promotion">{t("categories.promotion")}</option>
+                                    <option value="experience-certificate">{t("categories.expCertificate")}</option>
                                 </select>
                                 <span className="select-arrow material-symbols-outlined">expand_more</span>
                             </div>
                         </div>
 
-                        {/* ── Dynamic Fields based on Category ── */}
+                        {/* Category: Vacation / Leave */}
                         {requestCategory === 'vacation' && (
                             <>
                                 <div className="form-group col-full">
-                                    <label className="form-label">{t('type') || "Leave Type"}</label>
+                                    <label className="form-label">{t('type')}</label>
                                     <div className="select-wrapper">
                                         <select 
                                             className="premium-input premium-select"
@@ -256,14 +262,16 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
                                             required
                                         >
                                             {leaveTypes.length > 0 ? (
-                                                leaveTypes.map(t => (
-                                                    <option key={t.id} value={t.name_en}>{t.name_en} {t.name_ar ? `(${t.name_ar})` : ''}</option>
+                                                leaveTypes.map(tObj => (
+                                                    <option key={tObj.id} value={tObj.name_en}>
+                                                        {isAr ? (tObj.name_ar || tObj.name_en) : (tObj.name_en || tObj.name_ar)}
+                                                    </option>
                                                 ))
                                             ) : (
                                                 <>
-                                                    <option value="Sick Leave">Sick Leave</option>
-                                                    <option value="Annual Leave">Annual Leave</option>
-                                                    <option value="Emergency Leave">Emergency Leave</option>
+                                                    <option value="Sick Leave">{isAr ? "إجازة مرضية" : "Sick Leave"}</option>
+                                                    <option value="Annual Leave">{isAr ? "إجازة سنوية" : "Annual Leave"}</option>
+                                                    <option value="Emergency Leave">{isAr ? "إجازة اضطرارية" : "Emergency Leave"}</option>
                                                 </>
                                             )}
                                         </select>
@@ -271,7 +279,7 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
                                     </div>
                                 </div>
                                 <div className="form-group col-half">
-                                    <label className="form-label">{t('Dates') || "Start Date"}</label>
+                                    <label className="form-label">{t('Dates')}</label>
                                     <input 
                                         type="date" 
                                         required 
@@ -281,7 +289,7 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
                                     />
                                 </div>
                                 <div className="form-group col-half">
-                                    <label className="form-label">{t('duration') || "Duration"} (Days)</label>
+                                    <label className="form-label">{t('duration')}</label>
                                     <input 
                                         type="number" 
                                         min="1"
@@ -294,28 +302,29 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
                             </>
                         )}
 
+                        {/* Category: Advance Request */}
                         {requestCategory === 'advance' && (
                             <>
                                 <div className="form-group col-half">
-                                    <label className="form-label">Advance Amount (مبلغ السلفة)</label>
+                                    <label className="form-label">{t("advance.amount")}</label>
                                     <input 
                                         type="number" 
                                         min="1"
                                         required 
                                         className="premium-input"
-                                        placeholder="e.g. 500"
+                                        placeholder="500"
                                         value={amount}
                                         onChange={(e) => setAmount(e.target.value)}
                                     />
                                 </div>
                                 <div className="form-group col-half">
-                                    <label className="form-label">Installments (عدد الأشهر لسدادها)</label>
+                                    <label className="form-label">{t("advance.installments")}</label>
                                     <input 
                                         type="number" 
                                         min="1"
                                         required 
                                         className="premium-input"
-                                        placeholder="e.g. 6"
+                                        placeholder="6"
                                         value={installments}
                                         onChange={(e) => setInstallments(e.target.value)}
                                     />
@@ -323,26 +332,27 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
                             </>
                         )}
 
+                        {/* Category: Equipment */}
                         {requestCategory === 'equipment' && (
                             <>
                                 <div className="form-group col-half">
-                                    <label className="form-label">Device Type (نوع الجهاز المطلوب)</label>
+                                    <label className="form-label">{t("equipment.deviceType")}</label>
                                     <input 
                                         type="text" 
                                         required 
                                         className="premium-input"
-                                        placeholder="e.g. Laptop, Monitor"
+                                        placeholder={isAr ? "مثال: كمبيوتر محمول، شاشة" : "e.g. Laptop, Monitor"}
                                         value={deviceType}
                                         onChange={(e) => setDeviceType(e.target.value)}
                                     />
                                 </div>
                                 <div className="form-group col-half">
-                                    <label className="form-label">Specifications (المواصفات المطلوبة)</label>
+                                    <label className="form-label">{t("equipment.specs")}</label>
                                     <input 
                                         type="text" 
                                         required 
                                         className="premium-input"
-                                        placeholder="e.g. 16GB RAM, i7"
+                                        placeholder={isAr ? "مثال: 16GB RAM, Core i7" : "e.g. 16GB RAM, Core i7"}
                                         value={specs}
                                         onChange={(e) => setSpecs(e.target.value)}
                                     />
@@ -350,33 +360,34 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
                             </>
                         )}
 
+                        {/* Category: Compensation */}
                         {requestCategory === 'compensation' && (
                             <>
                                 <div className="form-group col-half">
-                                    <label className="form-label">Compensation Amount (مبلغ التعويض)</label>
+                                    <label className="form-label">{t("compensation.amount")}</label>
                                     <input 
                                         type="number" 
                                         min="1"
                                         required 
                                         className="premium-input"
-                                        placeholder="e.g. 150"
+                                        placeholder="150"
                                         value={compAmount}
                                         onChange={(e) => setCompAmount(e.target.value)}
                                     />
                                 </div>
                                 <div className="form-group col-half">
-                                    <label className="form-label">Category (التصنيف)</label>
+                                    <label className="form-label">{t("compensation.category")}</label>
                                     <input 
                                         type="text" 
                                         required 
                                         className="premium-input"
-                                        placeholder="e.g. Business Travel, Overtime"
+                                        placeholder={isAr ? "مثال: مصاريف سفر، بدل وجبات" : "e.g. Business Travel, Overtime"}
                                         value={compCategory}
                                         onChange={(e) => setCompCategory(e.target.value)}
                                     />
                                 </div>
                                 <div className="form-group col-full">
-                                    <label className="form-label">Spending Date (تاريخ الإنفاق)</label>
+                                    <label className="form-label">{t("compensation.date")}</label>
                                     <input 
                                         type="date" 
                                         required 
@@ -388,21 +399,22 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
                             </>
                         )}
 
+                        {/* Category: Data Update */}
                         {requestCategory === 'data-update' && (
                             <>
                                 <div className="form-group col-full">
-                                    <label className="form-label">Field Name (اسم الحقل المطلوب تعديله)</label>
+                                    <label className="form-label">{t("dataUpdate.fieldName")}</label>
                                     <input 
                                         type="text" 
                                         required 
                                         className="premium-input"
-                                        placeholder="e.g. Phone Number, Address"
+                                        placeholder={isAr ? "مثال: رقم الهاتف، العنوان" : "e.g. Phone Number, Address"}
                                         value={fieldName}
                                         onChange={(e) => setFieldName(e.target.value)}
                                     />
                                 </div>
                                 <div className="form-group col-half">
-                                    <label className="form-label">Old Value (القيمة الحالية)</label>
+                                    <label className="form-label">{t("dataUpdate.oldValue")}</label>
                                     <input 
                                         type="text" 
                                         required 
@@ -412,7 +424,7 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
                                     />
                                 </div>
                                 <div className="form-group col-half">
-                                    <label className="form-label">New Value (القيمة الجديدة)</label>
+                                    <label className="form-label">{t("dataUpdate.newValue")}</label>
                                     <input 
                                         type="text" 
                                         required 
@@ -424,9 +436,10 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
                             </>
                         )}
 
+                        {/* Category: Resignation */}
                         {requestCategory === 'resignation' && (
                             <div className="form-group col-full">
-                                <label className="form-label">Last Working Day (آخر يوم عمل مقترح)</label>
+                                <label className="form-label">{t("resignation.lastWorkingDay")}</label>
                                 <input 
                                     type="date" 
                                     required 
@@ -437,10 +450,11 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
                             </div>
                         )}
 
+                        {/* Category: Transfer */}
                         {requestCategory === 'transfer' && (
                             <>
                                 <div className="form-group col-half">
-                                    <label className="form-label">Current Department (القسم الحالي)</label>
+                                    <label className="form-label">{t("transfer.currentDept")}</label>
                                     <input 
                                         type="text" 
                                         required 
@@ -450,7 +464,7 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
                                     />
                                 </div>
                                 <div className="form-group col-half">
-                                    <label className="form-label">Target Department (القسم المنقول إليه)</label>
+                                    <label className="form-label">{t("transfer.newDept")}</label>
                                     <input 
                                         type="text" 
                                         required 
@@ -460,7 +474,7 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
                                     />
                                 </div>
                                 <div className="form-group col-full">
-                                    <label className="form-label">Proposed Job Title (المسمى الوظيفي الجديد)</label>
+                                    <label className="form-label">{t("transfer.newTitle")}</label>
                                     <input 
                                         type="text" 
                                         required 
@@ -472,26 +486,27 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
                             </>
                         )}
 
+                        {/* Category: Promotion */}
                         {requestCategory === 'promotion' && (
                             <>
                                 <div className="form-group col-half">
-                                    <label className="form-label">Proposed Job Title (المسمى الوظيفي الجديد)</label>
+                                    <label className="form-label">{t("promotion.proposedTitle")}</label>
                                     <input 
                                         type="text" 
                                         required 
                                         className="premium-input"
-                                        placeholder="e.g. Senior Backend Developer"
+                                        placeholder={isAr ? "مثال: مبرمج أول" : "e.g. Senior Developer"}
                                         value={proposedTitle}
                                         onChange={(e) => setProposedTitle(e.target.value)}
                                     />
                                 </div>
                                 <div className="form-group col-half">
-                                    <label className="form-label">Proposed Salary Increase (الزيادة المقترحة للراتب)</label>
+                                    <label className="form-label">{t("promotion.proposedSalary")}</label>
                                     <input 
                                         type="text" 
                                         required 
                                         className="premium-input"
-                                        placeholder="e.g. 500"
+                                        placeholder="500"
                                         value={proposedSalary}
                                         onChange={(e) => setProposedSalary(e.target.value)}
                                     />
@@ -499,35 +514,36 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
                             </>
                         )}
 
+                        {/* Category: Exp. Certificate */}
                         {requestCategory === 'experience-certificate' && (
                             <div className="form-group col-full">
-                                <label className="form-label">Purpose of Certificate (الغرض من الشهادة)</label>
+                                <label className="form-label">{t("expCertificate.purpose")}</label>
                                 <input 
                                     type="text" 
                                     required 
                                     className="premium-input"
-                                    placeholder="e.g. Bank Account, Visa Application"
+                                    placeholder={isAr ? "مثال: تقديم لسفارة، جهة بنكية" : "e.g. Visa Application, Banking"}
                                     value={purpose}
                                     onChange={(e) => setPurpose(e.target.value)}
                                 />
                             </div>
                         )}
 
-                        {/* ── General Common Reason Filed ── */}
+                        {/* Reason / Comments */}
                         <div className="form-group col-full">
-                            <label className="form-label">Reason / Comments (السبب أو ملاحظات إضافية)</label>
+                            <label className="form-label">{t("reason")}</label>
                             <textarea 
                                 className="premium-input premium-textarea" 
-                                placeholder="Describe details or reasoning..."
+                                placeholder={t("placeholder")}
                                 rows="3"
                                 value={reason}
                                 onChange={(e) => setReason(e.target.value)}
                             ></textarea>
                         </div>
 
-                        {/* ── Common File Attachment ── */}
+                        {/* File Attachment */}
                         <div className="form-group col-full">
-                            <label className="form-label">{t("attah") || "Attachment (مرفق)"}</label>
+                            <label className="form-label">{t("attah")}</label>
                             <div className="premium-file-dropzone">
                                 <input 
                                     type="file"  
@@ -545,28 +561,29 @@ export default function Requestaleave({ isOpen, onClose, onSubmit, leaveTypes = 
                                                 <i className="bi bi-file-earmark-check"></i> {fileName}
                                             </span>
                                         ) : (
-                                            t("click") || "Click to upload attachment"
+                                            t("click")
                                         )}
                                     </span>
-                                    <span className="dropzone-subtext">Supports PDF, PNG, JPG up to 10MB</span>
+                                    <span className="dropzone-subtext">PDF, PNG, JPG (Max: 10MB)</span>
                                 </label>
                             </div>
                         </div>
                     </div>
+                    </div>
 
                     <div className="modal-actions-footer">
                         <button className="btn-tertiary" type="button" onClick={onClose} disabled={isSubmitting}>
-                            {t("cancel") || "Cancel"}
+                            {t("cancel")}
                         </button>
                         <button className="btn-primary-gradient" type="submit" disabled={isSubmitting}>
                             {isSubmitting ? (
                                 <>
-                                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" style={{ marginRight: '8px', display: 'inline-block', width: '1rem', height: '1rem', border: '0.2em solid currentColor', borderRightColor: 'transparent', borderRadius: '50%', verticalAlign: 'text-bottom', animation: 'spinner-border .75s linear infinite' }}></span>
-                                    Submitting...
+                                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" style={{ marginInlineEnd: '8px', display: 'inline-block', width: '1rem', height: '1rem', border: '0.2em solid currentColor', borderRightColor: 'transparent', borderRadius: '50%', verticalAlign: 'text-bottom', animation: 'spinner-border .75s linear infinite' }}></span>
+                                    {t("submitting")}
                                 </>
                             ) : (
                                 <>
-                                    <i className="bi bi-check2-circle"></i> {t("confirm") || "Confirm"}
+                                    <i className="bi bi-check2-circle"></i> {t("confirm")}
                                 </>
                             )}
                         </button>

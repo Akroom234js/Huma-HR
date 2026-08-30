@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PageHeader from '../components/PageHeader/PageHeader';
 import ReportsNavbar from '../components/ReportsNavbar/ReportsNavbar';
 import FilterBar from '../components/FilterBar/FilterBar';

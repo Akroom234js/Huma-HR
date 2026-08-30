@@ -3,9 +3,12 @@ import "./DeductionsPenalties.css";
 import ThemeToggle from "../../../ThemeToggle/ThemeToggle";
 import apiClient from "../../../../apiConfig";
 import { useTranslation } from "react-i18next";
+import { useNotification } from "../../../Notification/NotificationContext";
+import DashboardLoader from "../../../Shared/DashboardLoader/DashboardLoader";
 
 const DeductionsPenalties = () => {
   const { t } = useTranslation('SalaryManagement/DeductionsPenalties');
+  const { showSuccess, showError, showWarning } = useNotification();
   const [employees, setEmployees] = useState([]);
   const [deductions, setDeductions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -59,17 +62,18 @@ const DeductionsPenalties = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.user_id || !formData.amount || !formData.month) {
-      alert("Please fill in all required fields.");
+      showWarning(t('FillRequired', "Please fill in all required fields."));
       return;
     }
 
+    setIsSubmitting(true);
     try {
       const payload = {
         ...formData,
         is_addition: formData.category === "addition"
       };
       await apiClient.post('/deductions', payload);
-      alert(formData.category === "addition" ? "Addition recorded!" : "Deduction recorded!");
+      showSuccess(formData.category === "addition" ? t('BonusSuccess', "Addition recorded successfully!") : t('DeductionSuccess', "Deduction recorded successfully!"));
       setFormData({
         user_id: "",
         category: "deduction",
@@ -82,7 +86,7 @@ const DeductionsPenalties = () => {
       fetchDeductions();
     } catch (err) {
       console.error("Error submitting deduction", err);
-      alert("Failed to record deduction.");
+      showError(err, t('RecordError', "Failed to record deduction."));
     } finally {
       setIsSubmitting(false);
     }
@@ -230,7 +234,11 @@ const DeductionsPenalties = () => {
               </thead>
               <tbody>
                 {isLoading ? (
-                  <tr><td colSpan="5" className="text-center">Loading...</td></tr>
+                  <tr>
+                    <td colSpan="5" style={{ padding: '3rem 1rem', textAlign: 'center' }}>
+                      <DashboardLoader text={t('Loading', 'Loading adjustments...')} size="md" />
+                    </td>
+                  </tr>
                 ) : deductions.length > 0 ? deductions.map(d => (
                   <tr key={d.id}>
                     <td>{new Date(d.applied_date).toLocaleDateString()}</td>

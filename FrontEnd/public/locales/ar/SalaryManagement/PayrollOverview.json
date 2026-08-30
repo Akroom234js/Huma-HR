@@ -14,5 +14,8 @@
   "Design": "التصميم",
   "Other": "أخرى",
   "Marketing": "التسويق",
-  "OtherDepartments": "أقسام أخرى"
+  "OtherDepartments": "أقسام أخرى",
+  "NoData": "لا توجد بيانات متاحة.",
+  "Loading": "جاري تحميل بيانات الرواتب...",
+  "FetchError": "فشل تحميل ملخص الرواتب."
 }

@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { activatePerformanceCycle, closePerformanceCycle } from "../../../../services/PerformanceHrService";
+import { useNotification } from "../../../Notification/NotificationContext";
+import DashboardLoader from "../../../Shared/DashboardLoader/DashboardLoader";
 
 export default function CycleTable({ cycles = [], onRefresh }) {
     const { t } = useTranslation("HrPerformance/CompanyOverview");
+    const { showSuccess, showError } = useNotification();
     const [actionLoadingId, setActionLoadingId] = useState(null);
 
     const handleActivate = async (cycleId) => {
@@ -11,10 +14,11 @@ export default function CycleTable({ cycles = [], onRefresh }) {
         try {
             setActionLoadingId(cycleId);
             await activatePerformanceCycle(cycleId);
+            showSuccess("تم تفعيل دورة الأداء بنجاح!");
             if (onRefresh) onRefresh();
         } catch (err) {
             console.error("Failed to activate cycle:", err);
-            alert("تعذر تفعيل الدورة.");
+            showError("تعذر تفعيل الدورة.");
         } finally {
             setActionLoadingId(null);
         }
@@ -25,10 +29,11 @@ export default function CycleTable({ cycles = [], onRefresh }) {
         try {
             setActionLoadingId(cycleId);
             await closePerformanceCycle(cycleId);
+            showSuccess("تم إغلاق الدورة وحساب الدرجات بنجاح!");
             if (onRefresh) onRefresh();
         } catch (err) {
             console.error("Failed to close cycle:", err);
-            alert("تعذر إغلاق الدورة.");
+            showError("تعذر إغلاق الدورة.");
         } finally {
             setActionLoadingId(null);
         }
@@ -41,7 +46,7 @@ export default function CycleTable({ cycles = [], onRefresh }) {
             case 'closed':
                 return <span className="badge badge-cycle-closed">{t("status.closed") || 'Closed'}</span>;
             case 'processing':
-                return <span className="badge" style={{ backgroundColor: '#fef3c7', color: '#b45309' }}><i className="fa-solid fa-spinner fa-spin"></i> {t("status.processing") || 'Processing'}</span>;
+                return <span className="badge" style={{ backgroundColor: '#fef3c7', color: '#b45309' }}><DashboardLoader size="xs" inline text="" /> {t("status.processing") || 'Processing'}</span>;
             case 'draft':
             default:
                 return <span className="badge badge-cycle-draft">{t("status.draft") || 'Draft'}</span>;
@@ -104,7 +109,7 @@ export default function CycleTable({ cycles = [], onRefresh }) {
                                                     disabled={actionLoadingId === c.id}
                                                     onClick={() => handleActivate(c.id)}
                                                 >
-                                                    {actionLoadingId === c.id ? <i className="fa-solid fa-spinner fa-spin"></i> : (t("btn_activate") || 'تفعيل الدورة')}
+                                                    {actionLoadingId === c.id ? <DashboardLoader size="xs" inline text="" /> : (t("btn_activate") || 'تفعيل الدورة')}
                                                 </button>
                                             )}
                                             {c.status === 'active' && (
@@ -114,7 +119,7 @@ export default function CycleTable({ cycles = [], onRefresh }) {
                                                     disabled={actionLoadingId === c.id}
                                                     onClick={() => handleClose(c.id)}
                                                 >
-                                                    {actionLoadingId === c.id ? <i className="fa-solid fa-spinner fa-spin"></i> : (t("btn_close") || 'إغلاق وحساب')}
+                                                    {actionLoadingId === c.id ? <DashboardLoader size="xs" inline text="" /> : (t("btn_close") || 'إغلاق وحساب')}
                                                 </button>
                                             )}
                                             {c.status === 'closed' && (

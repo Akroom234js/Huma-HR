@@ -1,0 +1,12 @@
+{
+    "subtitle": "هيكل الشركة",
+    "page-title": "الهيكل التنظيمي",
+    "all-departments": "جميع الأقسام",
+    "vacant-only": "الشواغر فقط",
+    "btn-vertical": "عمودي",
+    "btn-horizontal": "أفقي",
+    "vacant": "شاغر",
+    "loading": "جاري تحميل المخطط التنظيمي...",
+    "error-load": "فشل تحميل الهيكل التنظيمي.",
+    "btn-retry": "إعادة المحاولة"
+}

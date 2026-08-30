@@ -1,12 +1,58 @@
 {
-    "Requestaleave":"Request a leave",
-    "type":"Type leave",
- "Dates":"Date Start",
-  "duration":"Number of days",
-  "reason":"Reason for request",
-  "placeholder":"Enter your reason",
-  "click":"Click to upload",
-  "attah":"Attach medical document (optional)",
-  "cancel":"cancel",
-  "confirm":"confirm"
+    "modalTitle": "Submit New Request",
+    "requestCategory": "Request Category",
+    "categories": {
+        "vacation": "Vacation / Leave",
+        "advance": "Advance Request",
+        "equipment": "Equipment Request",
+        "compensation": "Compensation Request",
+        "dataUpdate": "Data Update",
+        "resignation": "Resignation",
+        "transfer": "Department Transfer",
+        "promotion": "Promotion Request",
+        "expCertificate": "Experience Certificate"
+    },
+    "type": "Leave Type",
+    "Dates": "Start Date",
+    "duration": "Duration (Days)",
+    "reason": "Reason / Justification",
+    "placeholder": "Enter request details or reason...",
+    "click": "Click to select a file",
+    "attah": "Attach Document / Receipt (Optional)",
+    "cancel": "Cancel",
+    "confirm": "Submit Request",
+    "submitting": "Submitting...",
+    "advance": {
+        "amount": "Requested Advance Amount ($)",
+        "installments": "Repayment Installments (Months)"
+    },
+    "equipment": {
+        "deviceType": "Device / Equipment Type",
+        "specs": "Required Specifications / Notes"
+    },
+    "compensation": {
+        "amount": "Compensation Amount ($)",
+        "category": "Expense Category (Travel, Meals, Operations)",
+        "date": "Date Incurred"
+    },
+    "dataUpdate": {
+        "fieldName": "Field to Update",
+        "oldValue": "Current Value",
+        "newValue": "Proposed New Value"
+    },
+    "resignation": {
+        "lastWorkingDay": "Proposed Last Working Day"
+    },
+    "transfer": {
+        "currentDept": "Current Department",
+        "newDept": "Target Department",
+        "newTitle": "Proposed Job Title"
+    },
+    "promotion": {
+        "proposedTitle": "Proposed Job Title",
+        "proposedSalary": "Proposed Base Salary ($)"
+    },
+    "expCertificate": {
+        "purpose": "Purpose of Certificate (Recipient / Organization)"
+    }
 }

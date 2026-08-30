@@ -80,8 +80,10 @@ export const getManagerEvaluationForEmployee = (cycleId, employeeId) =>
   apiClient.get(`/performance/manager-evaluations/${cycleId}/${employeeId}`);
 
 // GET /api/performance/peer-evaluations/{cycleId}/{employeeId}
-export const getPeerEvaluationsForEmployee = (cycleId, employeeId) =>
-  apiClient.get(`/performance/peer-evaluations/${cycleId}/${employeeId}`);
+export const getPeerEvaluationsForEmployee = (cycleId, employeeId, params = {}) =>
+  apiClient.get(`/performance/peer-evaluations/${cycleId}/${employeeId}`, {
+    params: { include_comments: 1, ...params }
+  });
 
 // ══════════════════════════════════════════════════════════════════
 // ⚡ 5. Performance Actions & Auto-Decisions (HR)

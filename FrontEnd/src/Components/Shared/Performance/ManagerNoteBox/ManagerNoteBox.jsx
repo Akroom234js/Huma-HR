@@ -12,7 +12,7 @@ const ManagerNoteBox = ({ notes = '', isRevision = false, lang }) => {
     return (
         <div className={`performance-manager-remarks-box ${isRevision ? 'highlight-revision' : 'standard-remarks'}`}>
             <div className="remarks-header">
-                <i className={`fa-solid ${isRevision ? 'fa-triangle-exclamation' : 'fa-comment-dots'} remarks-icon`}></i>
+                <i className={`bi ${isRevision ? 'bi-exclamation-triangle-fill' : 'bi-chat-left-text-fill'} remarks-icon me-1`}></i>
                 <span className="remarks-title-text">
                     {isRevision 
                         ? (isAr ? 'ملاحظات تعديل الأداء المطلوبة' : 'Required Performance Revision Notes')

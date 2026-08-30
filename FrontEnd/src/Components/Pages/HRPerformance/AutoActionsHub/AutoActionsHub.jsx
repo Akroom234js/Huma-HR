@@ -5,9 +5,12 @@ import { useTranslation } from 'react-i18next';
 import PendingActions from './PendingActions';
 import ActionsLog from './ActionsLog';
 import { getPerformanceActions, approvePerformanceAction, rejectPerformanceAction } from '../../../../services/PerformanceHrService';
+import { useNotification } from '../../../Notification/NotificationContext';
+import DashboardLoader from '../../../Shared/DashboardLoader/DashboardLoader';
 
 const AutoActionsHub = () => {
     const { t } = useTranslation("HrPerformance/AutoActionsHub");
+    const { showSuccess, showError } = useNotification();
     const [pendingActions, setPendingActions] = useState([]);
     const [actionsLog, setActionsLog] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -52,11 +55,11 @@ const AutoActionsHub = () => {
     const handleApprove = async (actionId) => {
         try {
             await approvePerformanceAction(actionId);
-            alert("تمت الموافقة على الإجراء بنجاح!");
+            showSuccess("تمت الموافقة على الإجراء بنجاح!");
             loadActions();
         } catch (error) {
             console.error("Failed to approve action:", error);
-            alert("تعذر اعتماد الإجراء.");
+            showError("تعذر اعتماد الإجراء.");
         }
     };
 
@@ -64,11 +67,11 @@ const AutoActionsHub = () => {
         const reason = window.prompt("سبب الرفض (اختياري):") || "";
         try {
             await rejectPerformanceAction(actionId, reason);
-            alert("تم رفض الإجراء.");
+            showSuccess("تم رفض الإجراء بنجاح.");
             loadActions();
         } catch (error) {
             console.error("Failed to reject action:", error);
-            alert("تعذر رفض الإجراء.");
+            showError("تعذر رفض الإجراء.");
         }
     };
 
@@ -81,10 +84,7 @@ const AutoActionsHub = () => {
             </div>
 
             {isLoading ? (
-                <div style={{ textAlign: 'center', padding: '50px', color: '#64748b' }}>
-                    <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', marginBottom: '12px', display: 'block' }}></i>
-                    <span>{t("loading") || 'جاري تحميل الإجراءات التلقائية...'}</span>
-                </div>
+                <DashboardLoader text={t("loading") || 'جاري تحميل الإجراءات التلقائية...'} size="lg" />
             ) : (
                 <>
                     <PendingActions 

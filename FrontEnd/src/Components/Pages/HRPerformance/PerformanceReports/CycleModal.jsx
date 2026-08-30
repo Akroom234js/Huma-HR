@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import './Model.css';
 import { useTranslation } from 'react-i18next';
 import { createPerformanceCycle, getPerformanceTemplates } from '../../../../services/PerformanceHrService';
+import { useNotification } from '../../../Notification/NotificationContext';
+import DashboardLoader from '../../../Shared/DashboardLoader/DashboardLoader';
 
 export default function CycleModal({ onClose, onSuccess }) {
     const { t } = useTranslation("HrPerformance/PerformanceReports");
+    const { showSuccess, showError } = useNotification();
     const [name, setName] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
@@ -54,7 +57,7 @@ export default function CycleModal({ onClose, onSuccess }) {
 
             await createPerformanceCycle(payload);
 
-            alert('تم إنشاء دورة الأداء بنجاح!');
+            showSuccess('تم إنشاء دورة الأداء بنجاح!');
             if (onSuccess) onSuccess();
         } catch (error) {
             console.error("Failed to create performance cycle:", error);
@@ -64,7 +67,7 @@ export default function CycleModal({ onClose, onSuccess }) {
                 const detailed = Object.values(errors).flat().join('\n');
                 if (detailed) errorText = detailed;
             }
-            alert(errorText);
+            showError(errorText);
         } finally {
             setIsSubmitting(false);
         }
@@ -175,7 +178,7 @@ export default function CycleModal({ onClose, onSuccess }) {
                         disabled={isSubmitting || !name || !startDate || !endDate}
                     >
                         {isSubmitting ? (
-                            <i className="fa-solid fa-spinner fa-spin"></i>
+                            <DashboardLoader size="xs" inline text="" />
                         ) : (
                             <>
                                 <i className="fa-solid fa-circle-play"></i>
