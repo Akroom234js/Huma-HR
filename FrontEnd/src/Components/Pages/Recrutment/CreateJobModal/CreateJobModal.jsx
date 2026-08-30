@@ -250,7 +250,7 @@ const CreateJobModal = ({ isOpen, onClose, onSave, editingJob, departmentOptions
                 <label>Employment Type</label>
                 <div className="employment-type-selector">
                   {['full-time','part-time','contract','temporary','internship'].map(type => {
-                    const isSelectable = type === 'full-time';
+                    const isSelectable = true;
                     const isSelected = formData.employment_type === type;
                     return (
                       <div
