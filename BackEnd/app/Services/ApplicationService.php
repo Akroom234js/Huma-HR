@@ -99,12 +99,11 @@ class ApplicationService
             return $application;
         });
 
-        // ─── 5. إرسال التقييم للـ Queue ──────────────────────
-        // ✅ الطلب بيرجع فوراً للمتقدم
-        // التقييم يصير في الخلفية بشكل مستقل عن الـ HTTP Request
+        // ─── 5. تشغيل التقييم فوراً (Synchronous) ───────────────
+        // على Render Free Tier، queue:work في الخلفية غير موثوق.
+        // dispatchSync يشغل التقييم مباشرة أثناء الـ Request نفسه.
         if ($resume) {
-            EvaluateResumeJob::dispatch($application->id, $jobPosting->id)
-                ->onQueue('ai-evaluation');
+            EvaluateResumeJob::dispatchSync($application->id, $jobPosting->id);
         }
 
         return $application;
