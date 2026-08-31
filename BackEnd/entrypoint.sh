@@ -16,6 +16,9 @@ echo "Caching config and routes..."
 php artisan config:cache
 php artisan route:cache
 
+echo "Starting Queue Worker in background..."
+php artisan queue:work --queue=ai-evaluation,default &
+
 echo "Starting Nginx and PHP-FPM..."
 nginx
 php-fpm
