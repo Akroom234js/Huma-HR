@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 class AIPerformanceCoachingService
 {
     private string $apiKey;
-    private string $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent';
+    private string $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent';
 
     /* العتبة: أي component تحتها يُعتبر نقطة ضعف */
     private const GAP_THRESHOLD = 70.0;
