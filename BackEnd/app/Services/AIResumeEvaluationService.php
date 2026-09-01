@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Log;
 
 /**
  * AIResumeEvaluationService — مبني على Google Gemini
- * مع Prompt محسّن بأفضل الممارسات
+ * المعادلة: 100% AI — وفي حال فشل الـ AI: 100% Keyword
  */
 class AIResumeEvaluationService
 {
@@ -20,12 +20,13 @@ class AIResumeEvaluationService
 
     /**
      * التقييم الكامل — نقطة الدخول الرئيسية
-     * المعادلة: 40% keyword + 60% AI — تُحسب هنا فقط
+     * المعادلة: 100% AI — وفي حال فشل: 100% Keyword Fallback
      */
     public function evaluateResume(
         string $resumeText,
         string $jobDescription,
     ): array {
+        // نحتاج الـ keyword analysis فقط كـ Fallback في حال فشل الـ AI
         $parsingService  = app(ResumeParsingService::class);
         $keywordAnalysis = $parsingService->compareWithJobDescription(
             $resumeText,
@@ -33,30 +34,22 @@ class AIResumeEvaluationService
         );
 
         try {
-            $prompt   = $this->buildEvaluationPrompt(
-                $resumeText,
-                $jobDescription,
-                $keywordAnalysis['missing_skills']
-            );
-
+            $prompt   = $this->buildEvaluationPrompt($resumeText, $jobDescription);
             $aiResult = $this->callGeminiAPI($prompt);
 
             if (!($aiResult['success'] ?? false)) {
-                Log::warning('AIResumeEvaluationService: Gemini failed, using fallback');
+                Log::warning('AIResumeEvaluationService: Gemini failed, using 100% keyword fallback');
                 return $this->buildFallbackResult($keywordAnalysis);
             }
 
-            // ✅ المعادلة تُحسب هنا فقط — مرة واحدة
-            $finalScore = round(
-                ($keywordAnalysis['match_score'] * 0.4) +
-                ($aiResult['overall_score']      * 0.6)
-            );
+            // ✅ النتيجة النهائية = 100% من الـ AI
+            $finalScore = $aiResult['overall_score'];
 
             return [
                 'success'             => true,
                 'overall_score'       => $finalScore,
                 'keyword_score'       => $keywordAnalysis['match_score'],
-                'ai_score'            => $aiResult['overall_score'],
+                'ai_score'            => $finalScore,
                 'skills_match'        => $aiResult['breakdown']['skills']     ?? 0,
                 'experience_match'    => $aiResult['breakdown']['experience'] ?? 0,
                 'education_match'     => $aiResult['breakdown']['education']  ?? 0,
@@ -123,64 +116,48 @@ class AIResumeEvaluationService
     }
 
     /**
-     * Prompt محسّن بأفضل الممارسات
-     *
-     * ليش هاد الـ Prompt أفضل؟
-     * ─────────────────────────
-     * 1. Role Prompting: بيعرّف Gemini إنه خبير ATS
-     * 2. معايير واضحة بنسب مئوية
-     * 3. مرونة: يفهم التقنيات المرتبطة (Docker ↔ Kubernetes)
-     * 4. يدعم العربي والإنجليزي
-     * 5. JSON صارم بدون markdown
+     * الـ Prompt — يرسل وصف الوظيفة + نص السيرة كاملاً
+     * ويطلب من الـ AI تقييم مدى التطابق
      */
     private function buildEvaluationPrompt(
         string $resumeText,
         string $jobDescription,
-        array  $missingSkills = []
     ): string {
-        $missingList       = !empty($missingSkills)
-            ? implode(', ', array_slice($missingSkills, 0, 15))
-            : 'None identified';
         $resumeTextTrimmed = mb_substr($resumeText, 0, 3000, 'UTF-8');
         $jobDescTrimmed    = mb_substr($jobDescription, 0, 1500, 'UTF-8');
 
         return <<<PROMPT
-Act as an expert ATS (Applicant Tracking System) with 15 years of experience evaluating technical candidates. Your task is to evaluate the provided RESUME against the JOB DESCRIPTION.
+أنت خبير ATS (Applicant Tracking System) بخبرة 15 سنة في تقييم المرشحين للوظائف التقنية.
 
-### EVALUATION CRITERIA:
-1. **Skills Match (40%)**: Compare technical and soft skills. If a related technology is present (e.g., Docker vs Kubernetes), give partial credit.
-2. **Experience Match (40%)**: Verify years of experience and relevant roles. Analyze seniority level based on responsibilities, not just years.
-3. **Education & Certifications (20%)**: Check for required degrees or equivalent certifications.
+مهمتك: قدّر مدى التطابق بين محتوى السيرة الذاتية ووصف الوظيفة التالي.
 
-### LANGUAGE NOTE:
-Understand Arabic and English technical terms equally (e.g., "مطور واجهات" = "Frontend Developer").
-
-### DATA:
-JOB DESCRIPTION:
+### وصف الوظيفة:
 {$jobDescTrimmed}
 
-RESUME:
+### السيرة الذاتية للمرشح:
 {$resumeTextTrimmed}
 
-PRE-IDENTIFIED MISSING KEYWORDS: {$missingList}
+### تعليمات التقييم:
+- قيّم مدى تطابق مهارات المرشح مع متطلبات الوظيفة.
+- قيّم مدى تطابق خبرته ومستواه الوظيفي.
+- قيّم مؤهلاته الأكاديمية والشهادات.
+- إذا وجدت تقنيات مرتبطة (مثل Docker وKubernetes)، أعطِ نقاطاً جزئية.
+- افهم المصطلحات التقنية بالعربي والإنجليزي على حدٍّ سواء.
+- كن موضوعياً ومهنياً في تقييمك.
+- لا تضيف أي نص خارج الـ JSON.
 
-### INSTRUCTIONS:
-- Be objective and professional.
-- Base your evaluation strictly on the job requirements above.
-- Do NOT add markdown code blocks or any text outside the JSON.
-
-### OUTPUT FORMAT (Strict JSON only):
+### صيغة الإجابة (JSON فقط بدون أي إضافات):
 {
-    "overall_score": <integer 0-100>,
+    "overall_score": <عدد صحيح من 0 إلى 100>,
     "breakdown": {
-        "skills": <integer 0-100>,
-        "experience": <integer 0-100>,
-        "education": <integer 0-100>
+        "skills": <عدد صحيح من 0 إلى 100>,
+        "experience": <عدد صحيح من 0 إلى 100>,
+        "education": <عدد صحيح من 0 إلى 100>
     },
     "summary": {
-        "strengths": ["strength 1", "strength 2", "strength 3"],
-        "weaknesses": ["gap 1", "gap 2", "gap 3"],
-        "verdict": "<one professional sentence recommendation>"
+        "strengths": ["نقطة قوة 1", "نقطة قوة 2", "نقطة قوة 3"],
+        "weaknesses": ["نقطة ضعف 1", "نقطة ضعف 2"],
+        "verdict": "<جملة واحدة احترافية بالتوصية>"
     },
     "fit_level": "<High|Medium|Low>"
 }
@@ -188,7 +165,7 @@ PROMPT;
     }
 
     /**
-     * تحليل رد Gemini — يتعامل مع الـ JSON الجديد
+     * تحليل رد Gemini
      */
     private function parseAIResponse(string $content): array
     {
@@ -240,7 +217,7 @@ PROMPT;
     }
 
     /**
-     * Fallback — لو فشل Gemini
+     * Fallback — لو فشل Gemini → 100% Keyword Score
      */
     private function buildFallbackResult(array $keywordAnalysis): array
     {
