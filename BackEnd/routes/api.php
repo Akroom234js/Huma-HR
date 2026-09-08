@@ -35,26 +35,6 @@ use Illuminate\Support\Facades\Artisan;
 // Public Routes — بدون مصادقة
 // ══════════════════════════════════════════════════════════════════════════════
 
-Route::get('/system-repair-db', function () {
-     if (request()->query('secret') !== env('DB_REPAIR_SECRET')) {
-        abort(404);
-    }
-    try {
-        echo "Starting Database Sync...<br>";
-        $driver = DB::getDriverName();
-        echo "Database Driver: {$driver}<br>";
-        if ($driver === 'mysql') DB::statement('SET FOREIGN_KEY_CHECKS = 0;');
-        \Illuminate\Support\Facades\Schema::dropAllTables();
-        if ($driver === 'mysql') DB::statement('SET FOREIGN_KEY_CHECKS = 1;');
-        Artisan::call('migrate', ['--force' => true]);
-        echo "<pre>" . Artisan::output() . "</pre>";
-        Artisan::call('db:seed', ['--force' => true]);
-        echo "<pre>" . Artisan::output() . "</pre>";
-        return "<h2 style='color:green'>Database Synced & Seeded Successfully!</h2>";
-    } catch (\Exception $e) {
-        return "<h2 style='color:red'>Sync Failed!</h2><p>Error: " . $e->getMessage() . "</p>";
-    }
-});
 
 Route::prefix('auth')->group(function () {
     Route::post('/sessions',        [AuthController::class, 'login']);
